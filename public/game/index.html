@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Level 29 · Blood in the Bayou</title>
+<link rel="icon" href="/icons/icon-192.png">
+<link rel="apple-touch-icon" href="/apple-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'Barlow Condensed',sans-serif;color:#f6f3e6}
+#gl,#c{position:absolute;inset:0;width:100%;height:100%}
+#c{z-index:2}
+/* title screen: city camera keeps moving behind a dark left-side wash */
+#menu{position:absolute;inset:0;z-index:5;display:flex;align-items:center;box-sizing:border-box;padding:0 6vw;overflow-y:auto;
+  background:linear-gradient(90deg,rgba(8,9,11,.93) 0%,rgba(8,9,11,.84) 34%,rgba(8,9,11,.5) 58%,rgba(8,9,11,.12) 100%);font-family:'IBM Plex Mono',ui-monospace,Menlo,monospace}
+#menu .copy{position:relative;width:min(620px,100%);margin:auto 0;padding:28px 0}
+#menu .eyebrow{font:500 11px 'IBM Plex Mono',monospace;letter-spacing:.26em;color:#e8bd52;margin:0 0 6px;text-transform:uppercase;white-space:nowrap}
+#menu h1{margin:0;font:900 clamp(56px,6.2vw,90px)/.9 'Barlow Condensed',sans-serif;letter-spacing:.005em;color:#f6f2e4;text-transform:uppercase;text-shadow:5px 5px 0 rgba(0,0,0,.65)}
+#menu h1 span{display:block;color:#f0c45a}
+#menu .logo{position:absolute;top:-40px;left:min(420px,calc(100% - 112px));width:112px;height:112px;filter:drop-shadow(0 3px 6px rgba(0,0,0,.6))}
+#menu .logo svg,#menu .logo img{width:100%;height:100%;display:block;object-fit:contain}
+#menu .blurb{font:400 13px/1.75 'IBM Plex Mono',monospace;color:#d2cdbd;margin:22px 0 22px;max-width:378px}
+#menu .row{display:flex;flex-wrap:wrap;gap:12px;align-items:stretch}
+#menu select{font:600 11px 'IBM Plex Mono',monospace;padding:0 24px 0 7px;height:38px;width:226px;color:#f3efe2;border:1px solid #5b5e63;border-radius:2px;
+  background:linear-gradient(#6a6d72 0%,#3a3d41 48%,#232629 52%,#2b2e32 100%);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);cursor:pointer}
+#menu button{font:700 14px 'IBM Plex Mono',monospace;letter-spacing:.02em;height:38px;padding:0 21px;cursor:pointer;border-radius:2px;text-transform:uppercase}
+#menu #start{background:#ecc35c;color:#101114;border:0;height:40px}
+#menu #start:hover{background:#f5d174}
+#menu #resume{display:none;margin-top:10px;max-width:100%;background:rgba(16,17,20,.82);color:#ecc35c;border:1px solid #ecc35c;min-height:40px;padding:8px 16px;font:700 13px/1.25 'JetBrains Mono',monospace;letter-spacing:.08em;cursor:pointer;text-align:left}
+#menu #resume:hover{background:#ecc35c;color:#101114}
+#menu #mpbtn{background:rgba(14,16,19,.6);color:#f0c45a;border:1px solid #c79c3a;height:40px}
+#menu #mpbtn:hover{background:rgba(240,196,90,.14)}
+#menu .keys{font:400 11px/1.75 'IBM Plex Mono',monospace;color:#8f9195;margin:24px 0 0;max-width:545px}
+#menu .keys b{color:#fff;font-weight:700}
+#audio{position:fixed;right:16px;bottom:14px;z-index:7;font:700 11px 'IBM Plex Mono',monospace;letter-spacing:.04em;color:#fff;background:#0d0f12;border:1px solid #2c2f34;border-radius:2px;padding:11px 14px;cursor:pointer;text-transform:uppercase}
+#audio:hover{background:#181b20}
+#touch.off{display:none}#touch{position:absolute;bottom:10px;right:10px;z-index:4;display:none}
+#joy{width:120px;height:120px}#joyKnob{width:40px;height:40px}
+@media(max-width:700px){#menu{padding:0 22px;background:linear-gradient(180deg,rgba(8,9,11,.9),rgba(8,9,11,.72))}#menu .eyebrow{font-size:9px;letter-spacing:.28em;white-space:normal;max-width:240px}#menu .logo{left:auto;right:0;top:-6px;width:72px;height:86px}#menu h1{font-size:62px}#menu .blurb{font-size:12px}#menu select{width:100%}#menu .keys{font-size:10px}}
+
+/* in-game panels: Ronniebaby dialog, armory shop, cheat box, multiplayer, places */
+#rbtalk,#shop,#cheat,#mp,#placePanel{display:none;position:fixed;inset:0;z-index:40;align-items:center;justify-content:center;padding:18px;box-sizing:border-box;background:rgba(5,8,10,.74);font-family:'Barlow Condensed',sans-serif;color:#f1ecda}
+.sbox{width:min(640px,100%);max-height:92vh;overflow:auto;box-sizing:border-box;background:linear-gradient(180deg,#171d22,#0f1316);border:1px solid #c79c3a;box-shadow:0 24px 90px #000a;padding:22px 24px}
+.sbox.small{width:min(380px,100%)}
+.sbox .eyebrow{font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.22em;color:#e8bd52;text-transform:uppercase}
+.sbox h2{margin:4px 0 8px;font:900 40px/1 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.01em}
+.sbox p{font:400 14px/1.6 'IBM Plex Mono',monospace;color:#cfcab9;margin:8px 0}
+.sbox .cash{font:800 28px 'Barlow Condensed',sans-serif;color:#f0c45a;margin:2px 0 10px}
+.sbox button{font:700 14px 'IBM Plex Mono',monospace;text-transform:uppercase;letter-spacing:.02em;background:#232a30;color:#f0e8cf;border:1px solid #4b555c;padding:10px 14px;cursor:pointer;border-radius:2px}
+.sbox button:hover:not(:disabled){background:#2f3a42;border-color:#c79c3a}
+.sbox button:disabled{opacity:.38;cursor:not-allowed}
+.sbox button.go{background:#ecc35c;color:#101114;border-color:#ecc35c}
+.sbox button.go:hover:not(:disabled){background:#f5d174}
+.sbox .item{display:flex;align-items:center;justify-content:space-between;gap:14px;padding:11px 0;border-top:1px solid #2a3238}
+.sbox .item b{display:block;font:800 20px 'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:.02em}
+.sbox .item b em{font:600 12px 'IBM Plex Mono',monospace;font-style:normal;color:#e8bd52;margin-left:6px}
+.sbox .item span{display:block;font:400 12px/1.5 'IBM Plex Mono',monospace;color:#a9a695}
+.sbox .item button{flex:none;min-width:128px}
+.sbox .acts{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.sbox .close{margin-top:14px;width:100%}
+.sbox .hint{font-size:11px;color:#8f9195}
+.sbox input{font:600 15px 'IBM Plex Mono',monospace;width:100%;box-sizing:border-box;margin-top:10px;padding:10px;background:#0b0e10;color:#fff;border:1px solid #5b5e63}
+.rbhead{display:flex;gap:18px;align-items:center;margin-bottom:12px}
+.rbhead img{width:104px;height:104px;object-fit:cover;border:2px solid #c79c3a;filter:grayscale(1) contrast(1.05);flex:none}
+.rbhead h2{font-size:44px;margin:2px 0 6px}
+.tabs{display:flex;gap:8px}.tabs button.on{background:#ecc35c;color:#101114;border-color:#ecc35c}
+.quote{font:500 15px/1.65 'IBM Plex Mono',monospace;color:#f4f0e2;border-left:3px solid #c79c3a;padding-left:14px;margin:12px 0}
+.jobmeta{display:flex;flex-wrap:wrap;gap:6px 18px;align-items:baseline;font:500 11px 'IBM Plex Mono',monospace;color:#a9a695;margin:6px 0}
+.jobmeta b{font:900 22px 'Barlow Condensed',sans-serif;color:#f0c45a;text-transform:uppercase}
+.mpcols{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:12px 0}.mpcols div b{display:block;font:800 20px 'Barlow Condensed',sans-serif}
+.mpcols span{display:block;font:400 12px/1.5 'IBM Plex Mono',monospace;color:#a9a695;margin:4px 0 10px}
+.mpjoin{display:flex;gap:8px}.mpjoin input{margin:0;width:90px}.mpl{display:block;font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.12em;color:#e8bd52}
+.mpstatus.bad{color:#ff8a8a}
+@media(max-width:560px){.sbox{padding:16px}.sbox h2{font-size:32px}.rbhead img{width:76px;height:76px}.mpcols{grid-template-columns:1fr}.sbox .item{flex-direction:column;align-items:stretch}.sbox .item button{min-width:0}}
+</style></head><body>
+<canvas id="gl"></canvas><canvas id="c"></canvas>
+<div id="menu"><div class="copy">
+<div class="eyebrow">Level 29 / First-person open-world survival</div>
+<div class="logo" id="jesterLogo"><img src="logo.png" alt="Level 29 jester logo"></div>
+<h1>Blood in<span>the Bayou.</span></h1>
+<p class="blurb">See it through the jester's eyes. Walk the streets, hijack a ride with Ronniebaby on the radio, gear up at Ammu-Nation, and hold the line from the French Quarter to Parris Island.</p>
+<div class="row"><select id="district" hidden aria-hidden="true" tabindex="-1" style="display:none"><option value="0" selected>Level 29 City</option></select>
+<button id="start">Enter the city</button></div>
+<div class="keys"><b>MOUSE</b> look &bull; <b>CLICK</b> fire &bull; <b>W/S</b> move &bull; <b>A/D</b> strafe &bull; <b>&larr; &rarr;</b> turn<br>
+<b>E</b> enter / exit vehicle &bull; <b>C</b> car camera &bull; <b>SHIFT</b> sprint / nitro &bull; <b>SPACE</b> brake<br>
+<b>F</b> fire with aim assist &bull; <b>Q</b> weapon wheel &bull; <b>1-5</b> weapons &bull; <b>T</b> cheat code<br>
+<b>R</b> Spotify car playlist &bull; <b>TAB</b> map &bull; <b>P</b> pause &bull; <b>N</b> music &bull; <b>M</b> mute<br>
+<b>JOYSTICK</b> on touch screens moves you, drag the screen to look &bull; plug in an Xbox or PlayStation controller to play with sticks. 210 missions, a boss every fifth. <b>MULTIPLAYER</b> lets up to 6 Jesters team up with a room code.</div>
+</div></div>
+<button id="audio">SOUND ON</button>
+<div id="touch" class="off"><div class="group"><button id="shoot">FIRE</button><button id="enter">ENTER</button></div></div>
+<div id="joy"><div id="joyKnob"></div></div>
+<script src="three.min.js"></script><script src="graphics-pre.js"></script><script src="peerjs.min.js"></script><script src="audio.js"></script><script src="vo.js"></script>
+<script src="game.js"></script><script src="fp.js"></script><script src="ronnie.js"></script><script src="gta.js"></script><script src="arsenal-visuals.js"></script><script src="mp.js"></script><script src="joy.js"></script><script src="expansion.js"></script><script src="cars.js"></script><script src="world.js"></script><script src="gulf.js?v=2"></script><script src="intro.js"></script><script src="places.js"></script><script src="guard.js"></script><script src="jobs.js"></script><script src="dailyreward.js"></script><script src="campaign.js"></script><script src="estate.js"></script><script src="savegame.js"></script><script src="life.js"></script><script src="graphics.js"></script><script src="smooth.js"></script><script src="boomcity.js"></script><script src="downtown.js?v=3"></script><script src="coastline.js?v=11"></script>
+<script src="polish.js?v=2"></script><script src="feel.js?v=3"></script>
+<script> if (typeof navigator.serviceWorker !== 'undefined' && !/v0\.|localhost|vusercontent/.test(location.hostname)) { navigator.serviceWorker.register('/sw.js') } </script>
+<script>
+(function(){
+  // district list: one entry per chapter, labelled like the original title screen
+  var sel=document.getElementById('district'); if(sel&&typeof DISTRICTS!=='undefined'){
+    var t=function(n){return n.toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});};
+    for(var i=0;i<sel.options.length;i++){var v=+sel.options[i].value,k=v/30; if(DISTRICTS[k]) sel.options[i].textContent=t(DISTRICTS[k].name)+' \u00b7 Missions '+(v+1)+'-'+(v+30);}
+  }
+  // sound button sits bottom-right on the title screen and stays out of the way in game
+  var st=document.createElement('style'); st.textContent='#menu[style*="none"]~#audio{opacity:.75;padding:8px 10px;font-size:10px}'; document.head.appendChild(st);
+})();
+</script>
+</body></html>
