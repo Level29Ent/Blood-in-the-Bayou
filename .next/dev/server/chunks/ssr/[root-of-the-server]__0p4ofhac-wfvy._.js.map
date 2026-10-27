@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 10, "column": 0}, "map": {"version":3,"sources":["file:///Volumes/ArmorATD2/Games/Blood%20in%20the%20Bayou%20(site%20files)/app/page.tsx"],"sourcesContent":["export default function Page() {\n  return (\n    <main className=\"fixed inset-0 bg-[#0b0e10]\">\n      <iframe\n        src=\"/game/index.html\"\n        title=\"Level 29 · Blood in the Bayou\"\n        className=\"h-full w-full border-0\"\n        allow=\"autoplay; fullscreen; gamepad\"\n        allowFullScreen\n      />\n    </main>\n  )\n}\n"],"names":["Page","className","src","title","allow","allowFullScreen"],"mappings":";;;;;;AAAe,SAASA;IACtB,qBACE,8OAAC;QAAKC,WAAU;kBACd,cAAA,8OAAC;YACCC,KAAI;YACJC,OAAM;YACNF,WAAU;YACVG,OAAM;YACNC,eAAe;;;;;;;;;;;AAIvB"}}]
+}
