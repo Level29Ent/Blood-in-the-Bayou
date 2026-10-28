@@ -300,7 +300,7 @@ const oldUpdate=update;update=function(){const ox=player&&player.x,oy=player&&pl
  if(drinkT>0)drinkT--;if(regenT>0){regenT--;if(frame%60===0)player.hp=Math.min(player.maxHp,player.hp+4);}
  if(!player.car&&!player.dead&&Number.isFinite(ox)){const boost=saved.cardio*.05+(drinkT>0?.15:0);if(boost)moveCircle(player,(player.x-ox)*boost,(player.y-oy)*boost,player.r);}
  if(saved.owned.length&&frame%60===0){saved.income+=saved.owned.length*220/60;persist();}
- const now=city.penthouse&&city.penthouse.active?null:city.venues.find(v=>insideVenue(v,player));if(now!==currentVenue){if(now)speak(roles[now.id]?roles[now.id][0]:window.level29World.jobs[now.id]?.[0]||'STAFF',greetings[now.id]||'You are safe inside. Search the supply station, then head back to the street.',now.col);currentVenue=now;}
+ const now=city.penthouse&&city.penthouse.active?null:city.venues.find(v=>insideVenue(v,player));if(now!==currentVenue){if(now)speak(roles[now.id]?roles[now.id][0]:window.level29World.jobs[now.id]?.[0]||'STAFF',greetings[now.id]||'Welcome inside. Approach the service station and press U or USE.',now.col);currentVenue=now;}
  // Remove any migrated/spawned zombie from protected interiors, without a kill reward.
  for(const z of zombies){if(!z.alive)continue;let protectedArea=false;for(const v of city.venues){if(inside(z.x,z.y,v.b)){protectedArea=true;break;}}if(!protectedArea)for(const sf of city.safes){if(sf.fort&&inside(z.x,z.y,sf.fort)){protectedArea=true;break;}}if(protectedArea){z.alive=false;z.hp=0;z.deathT=60;}}
  if(player.dead&&robbery)robbery=null;

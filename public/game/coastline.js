@@ -138,6 +138,14 @@ function buildPier(g){
   for(const x of [-2.45,2.45])box(grp,1,6,(W-5.5)*T,x*T,4,(6.5+(W-5.5)/2)*T,white);
   box(grp,12*T,6,1,0,4,1*T,white);for(const x of [-6,6])box(grp,1,6,5.5*T,x*T,4,3.75*T,white);
   for(let z=1.6;z<W+1;z+=1.4)for(const x of [-2.3,2.3]){cyl(grp,.8,.8,24,x*T,13,z*T,std('#20262b',{metalness:.6}),6);const b=new THREE.Mesh(new THREE.SphereGeometry(2.4,10,8),bulb);b.position.set(x*T,26,z*T);grp.add(b);}
+  // Harbor fittings sit along the edge, leaving the center deck unobstructed.
+  for(let z=7*T;z<W*T;z+=3*T)for(const side of [-1,1]){
+    const x=side*2.25*T;box(grp,6,2,3,x,3,z,steel);box(grp,2,4,2,x,5,z,steel);
+    const ring=new THREE.Mesh(new THREE.TorusGeometry(5,1,8,20),red);ring.position.set(x,8,z+10);ring.rotation.y=Math.PI/2;grp.add(ring);
+    box(grp,12,4,6,x-side*10,4,z+15,wood);box(grp,12,5,1,x-side*10,8,z+18,white);
+  }
+  for(const x of [-1.9*T,1.9*T]){box(grp,9,7,8,x,5,(W-1)*T,blue);box(grp,10,1,9,x,9,(W-1)*T,white);}
+  sign(grp,'FISHING: I / FISH · WAIT · HOOK · REEL / REST',110,9,0,22,(W-.5)*T,'#f3e2b4','#194b54');
   // Entrance arch (inland end).
   const az=(W+1.4)*T;for(const x of [-2.3,2.3]){box(grp,6,52,6,x*T,26,az,white);}
   box(grp,4.8*T,14,4,0,50,az,std('#e9e1cf'));
@@ -305,6 +313,13 @@ function hash(x,y){const s=Math.sin(x*127.1+y*311.7)*43758.5453;return s-Math.fl
 function noise(x,y){const ix=Math.floor(x),iy=Math.floor(y),fx=x-ix,fy=y-iy,u=fx*fx*(3-2*fx),v=fy*fy*(3-2*fy);
   const a=hash(ix,iy),b=hash(ix+1,iy),c=hash(ix,iy+1),d=hash(ix+1,iy+1);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v;}
 function fbm(x,y){let s=0,a=.5,f=1;for(let i=0;i<5;i++){s+=a*(1-Math.abs(noise(x*f,y*f)*2-1));f*=2.03;a*=.5;}return s;}
+let rockSurface=null;
+function terrainSurface(){
+  if(rockSurface)return rockSurface;
+  const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d'),im=g.createImageData(128,128);
+  for(let y=0;y<128;y++)for(let x=0;x<128;x++){const i=(y*128+x)*4,n=noise(x*.15,y*.15),strata=Math.sin(y*.45+noise(x*.06,y*.02)*4),v=Math.round(145+n*65+strata*9);im.data[i]=v;im.data[i+1]=v;im.data[i+2]=v;im.data[i+3]=255;}
+  g.putImageData(im,0,0);rockSurface=new THREE.CanvasTexture(c);rockSurface.wrapS=rockSurface.wrapT=THREE.RepeatWrapping;rockSurface.repeat.set(18,18);return rockSurface;
+}
 function rebuildMountains(c){
   const old=cityGroup.getObjectByName('level29-mountains');if(!old||typeof c.heightAt!=='function')return;
   old.parent.remove(old);const grp=new THREE.Group();grp.name='level29-mountains';cityGroup.add(grp);
@@ -318,18 +333,21 @@ function rebuildMountains(c){
       pos.setXYZ(i,x,Math.max(road?-3:0,h),z);}
     geo.computeVertexNormals();const nor=geo.attributes.normal,col=new Float32Array(pos.count*3);let maxH=1;for(let i=0;i<pos.count;i++)maxH=Math.max(maxH,pos.getY(i));
     for(let i=0;i<pos.count;i++){const h=pos.getY(i),k=h/maxH,slope=1-nor.getY(i),j=(noise(pos.getX(i)*.08,pos.getZ(i)*.08)-.5)*.08;let r,g,b;
-      if(k>.78&&slope<.45){r=.92;g=.93;b=.95;}else if(slope>.42||k>.6){r=.45;g=.42;b=.38;}else if(k>.3){r=.3;g=.36;b=.24;}else if(k>.04){r=.25;g=.34;b=.2;}else{r=.36;g=.33;b=.24;}
+      if(k>.87+noise(pos.getX(i)*.009,pos.getZ(i)*.009)*.08&&slope<.34){r=.92;g=.93;b=.95;}else if(slope>.42||k>.6){r=.45;g=.42;b=.38;}else if(k>.3){r=.3;g=.36;b=.24;}else if(k>.04){r=.25;g=.34;b=.2;}else{r=.36;g=.33;b=.24;}
       col[i*3]=r+j;col[i*3+1]=g+j;col[i*3+2]=b+j;
       const x=pos.getX(i),z=pos.getZ(i),hr=hash(x*.13,z*.17);
       if(h>8&&slope>.3&&hr<.012)rocks.push([x,h,z,4+hr*600]);
       else if(h>4&&k<.55&&slope<.35&&hr<.03)pines.push([x,h,z,.8+hash(z,x)*.6]);}
     geo.setAttribute('color',new THREE.BufferAttribute(col,3));
-    const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.96,metalness:0}));m.position.y=.4;grp.add(m);}
+    const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,map:terrainSurface(),bumpMap:terrainSurface(),bumpScale:1.2,roughness:.96,metalness:0}));m.position.y=.4;grp.add(m);}
   const dummy=new THREE.Object3D();
   if(rocks.length){const im=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,0),rockM,rocks.length);rocks.forEach(([x,y,z,s],i)=>{dummy.position.set(x,y,z);dummy.rotation.set(s,s*2,s*3);dummy.scale.set(s,s*.7,s*1.1);dummy.updateMatrix();im.setMatrixAt(i,dummy.matrix);});grp.add(im);}
-  if(pines.length){const n=Math.min(pines.length,900),cone=new THREE.InstancedMesh(new THREE.ConeGeometry(7,26,7),pineM,n),tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(1.2,1.6,8,5),trunkM,n);
+  if(pines.length){const n=Math.min(pines.length,900),cone=new THREE.InstancedMesh(new THREE.ConeGeometry(7,26,11),pineM,n),tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(1.2,1.6,8,5),trunkM,n);
     for(let i=0;i<n;i++){const [x,y,z,s]=pines[i];dummy.rotation.set(0,s*9,0);dummy.scale.set(s,s,s);dummy.position.set(x,y+4*s,z);dummy.updateMatrix();tr.setMatrixAt(i,dummy.matrix);dummy.position.set(x,y+19*s,z);dummy.updateMatrix();cone.setMatrixAt(i,dummy.matrix);}
-    grp.add(tr);grp.add(cone);}
+    grp.add(tr);grp.add(cone);
+    // A second offset crown breaks up the single traffic-cone silhouette, still instanced.
+    const crown=new THREE.InstancedMesh(new THREE.ConeGeometry(5.8,20,11),std('#36533a',{roughness:1}),n);
+    for(let i=0;i<n;i++){const [x,y,z,s]=pines[i];dummy.rotation.set(.04*Math.sin(x),s*4,.04*Math.cos(z));dummy.scale.set(s,s,s);dummy.position.set(x+1.2*s,y+28*s,z);dummy.updateMatrix();crown.setMatrixAt(i,dummy.matrix);}grp.add(crown);}
 }
 function upgradeMaterials(root){if(!root)return;const cache=new Map();
   root.traverse(o=>{if(!o.isMesh)return;const list=Array.isArray(o.material)?o.material:[o.material];
@@ -544,6 +562,7 @@ if(typeof makeCarMesh==='function'){
     glassMat=new THREE.MeshStandardMaterial({color:0x1c2630,metalness:.6,roughness:.08,transparent:true,opacity:.82});
   makeCarMesh=function(c){
     const g=baseCarMesh(c);
+    if(c.boat)return g; // Boats have their own hull, deck and helm; never attach car wheels.
     try{
       const s=c.spec,L=s.len,W=s.wid,top=g.userData.top,old=g.userData.paint;
       if(old&&old.color){const paint=new THREE.MeshStandardMaterial({color:old.color.clone(),metalness:.55,roughness:.32});

@@ -21,7 +21,7 @@ test('zombie protection accounts for radius outside threshold',()=>{
 function fishing({boat=false,rod=false,caught=0}={}){
  const source=fs.readFileSync('public/game/gulf.js','utf8');
  const bar={style:{},textContent:'',innerHTML:'',querySelector:()=>({style:{}})};
- const ctx=vm.createContext({city:{world:true},state:'play',player:{x:100,y:100,dead:false,car:boat?{x:100,y:100,boat:true,v:0}:null},T_WATER:2,tileAt:()=>2,cash:0,frame:0,save:{owned:{rod},fishCaught:caught},sfx:()=>{},toast:()=>{},persist:()=>{},dist:Math.hypot.bind(Math),document:{createElement:()=>bar,body:{appendChild:()=>{}}},fishingBar:null,fish:null,Math:Object.assign(Object.create(Math),{random:()=>.5})});
+ const ctx=vm.createContext({window:{},city:{world:true},state:'play',player:{x:100,y:100,dead:false,car:boat?{x:100,y:100,boat:true,v:0}:null},T_WATER:2,tileAt:()=>2,cash:0,frame:0,save:{owned:{rod},fishCaught:caught},sfx:()=>{},toast:()=>{},persist:()=>{},dist:Math.hypot.bind(Math),document:{createElement:()=>bar,body:{appendChild:()=>{}}},fishingBar:null,fish:null,Math:Object.assign(Object.create(Math),{random:()=>.5})});
  vm.runInContext(source.slice(source.indexOf('const fishTable='),source.indexOf('function cacheTick()')),ctx);
  vm.runInContext('drawFishingVisual=()=>{};dist=(x,y,a,b)=>Math.hypot(x-a,y-b)',ctx);
  return {run:s=>vm.runInContext(s,ctx),ctx};
@@ -57,7 +57,7 @@ test('new shelters connect to streets and protect open doors and spawn positions
  assert.equal(run('moverCtx=player;blockedCircle(50,85,12)'),false);
 });
 test('supply searches require three uninterrupted seconds and cannot be farmed',()=>{
- const run=shelter();run('for(let i=0;i<100;i++)update();player.x=100;update();player.x=50;for(let i=0;i<179;i++)update()');assert.equal(run('cash'),0);
+ const run=shelter();run("city.venues[0].id='safe'");run('for(let i=0;i<100;i++)update();player.x=100;update();player.x=50;for(let i=0;i<179;i++)update()');assert.equal(run('cash'),0);
  run('update()');assert.equal(run('cash'),120);assert.equal(run('player.hp'),65);
  run('for(let i=0;i<360;i++)update()');assert.equal(run('cash'),120);
 });
@@ -69,4 +69,12 @@ test('fishing requires a stopped boat and the rod reduces reel attempts',()=>{
  const moving=fishing({boat:true});moving.run('player.car.v=2;startFishing()');assert.equal(moving.run('fish'),null);
  const {run}=fishing({rod:true});run('startFishing();fish.phase="bite";fish.needle=.5;reel()');
  for(let i=0;i<6;i++)run('for(let j=0;j<50;j++)fishTick();reel()');assert.equal(run('save.fishCaught'),1);
+});
+
+test('secondary neighborhood safehouses clear their solid tile footprints',()=>{
+ const run=shelter();run("city.venues[0].id='safe';city.buildings[0].venue='safe';city.g.fill(3);genCity()");
+ assert.equal(run('city.g[4*20+5]'),4);
+});
+test('landed fish are stocked for market sales as well as catch rewards',()=>{
+ const {run}=fishing();run('startFishing();catchFish()');assert.equal(run('save.fishStock'),1);
 });

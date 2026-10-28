@@ -20,6 +20,11 @@ function overlaps(x,y,r,b){return x+r>b.x&&x-r<b.x+b.w&&y+r>b.y&&y-r<b.y+b.h;}
 if(typeof module!=='undefined')module.exports={streetRoute,overlaps};
 if(typeof window==='undefined')return;
 VENUE_TYPES.push({id:'shelter',name:'NEIGHBORHOOD SHELTER',short:'SAFE INTERIOR',letter:'·',col:'#9ed5c1'});
+const SHOP_TYPES=[
+ {name:'BAYOU SMOKE & SUPPLY',short:'SMOKE SHOP',col:'#d3af79',letter:'S',kind:'smoke'},
+ {name:'BAYOU COMMUNITY HOSPITAL',short:'HOSPITAL',col:'#9adbe0',letter:'+',kind:'clinic'},
+ {name:'GULF FRESH FISH MARKET',short:'FISH MARKET',col:'#81c9d2',letter:'F',kind:'fish'}
+];
 const generate=genCity;
 genCity=function(){
  const c=generate.apply(this,arguments);if(!c.world)return c;
@@ -29,6 +34,15 @@ genCity=function(){
   const t=3;v.colliderWalls=[{x:b.x,y:b.y,w:b.w,h:t},{x:b.x,y:b.y,w:t,h:b.h},{x:b.x+b.w-t,y:b.y,w:t,h:b.h},{x:b.x,y:b.y+b.h-t,w:(b.w-v.doorW)/2,h:t},{x:v.doorX+v.doorW/2,y:b.y+b.h-t,w:(b.w-v.doorW)/2,h:t}];
   v.colliderDoor={x:v.doorX-v.doorW/2,y:v.doorY-t,w:v.doorW,h:t};c.venues.push(v);
   for(let y=Math.floor(b.y/TILE);y<Math.ceil((b.y+b.h)/TILE);y++)for(let x=Math.floor(b.x/TILE);x<Math.ceil((b.x+b.w)/TILE);x++)c.g[y*MW+x]=T_LOT;
+ }
+ // Give the converted street buildings distinct services; preserve their collision/door layout.
+ const converted=c.venues.filter(v=>v.id==='shelter').sort((a,b)=>{
+  const p=c.pier;return p?Math.hypot(a.doorX-p.x1,a.doorY-p.y)-Math.hypot(b.doorX-p.x1,b.doorY-p.y):a.doorX-b.doorX;
+ });
+ converted.forEach((v,i)=>{const spec=SHOP_TYPES[(i+2)%3];Object.assign(v,spec);});
+ // Secondary neighborhood safehouses were still marked solid on the tile grid.
+ for(const v of c.venues)if(v.id==='safe'){
+  const b=v.b;for(let y=Math.floor(b.y/TILE);y<Math.ceil((b.y+b.h)/TILE);y++)for(let x=Math.floor(b.x/TILE);x<Math.ceil((b.x+b.w)/TILE);x++)c.g[y*MW+x]=T_LOT;
  }
  c.streetRoutes=[];
  for(const v of c.venues){const route=streetRoute(c,v,TILE,MW,MH,T_ROAD,T_WATER,T_BRIDGE);v.streetAccessible=route.length>0;
@@ -50,7 +64,7 @@ buildVenue=function(v){
   return;
  }
  const b=v.b,g=new THREE.Group();v.mesh=g;cityGroup.add(g);g.position.y=terrainHeight(b.x+b.w/2,b.y+b.h/2);
- const {material}=window.level29World,wall=material(b.col||'#b7b4a0'),wood=material('#715746'),trim=material('#e4c78d'),green=material('#405d55');
+ const {material,facade}=window.level29World,wall=facade(b.col||'#b7b4a0','brick'),wood=material('#715746'),trim=material('#e4c78d'),green=material('#405d55');
  const part=(w,h,d,x,y,z,m)=>addPart(g,w,h,d,x,y,z,m);
  part(b.w,1,b.h,b.x+b.w/2,.5,b.y+b.h/2,material('#d3cabb'));
  for(const r of v.colliderWalls)part(r.w,48,r.h,r.x+r.w/2,24,r.y+r.h/2,wall);
@@ -65,12 +79,35 @@ buildVenue=function(v){
  part(Math.min(21,b.w*.16),14,2.1,b.x+b.w*.72,26,b.y+3.2,green);
  part(b.w-8,2,1,b.x+b.w/2,14,b.y+3,trim);
  part(Math.min(22,b.w*.3),.5,10,b.x+b.w/2,46,b.y+b.h*.5,new THREE.MeshBasicMaterial({color:'#fff1cb'}));
- part(12,6,10,v.stationX,3,v.stationY,wood);
- addSign(g,'STAND HERE · SEARCH SUPPLIES',Math.min(110,b.w-8),7,v.stationX,23,b.y+4,v.col);
- addSign(g,'STREET SHELTER · ZOMBIE FREE',Math.min(140,b.w),9,v.doorX,59,v.doorY,v.col);v.labelH=72;
+ if(v.kind==='clinic'){
+  part(22,5,12,b.x+b.w-24,4,b.y+24,trim);part(20,2,11,b.x+b.w-24,8,b.y+24,material('#e9f4ef'));
+  part(1,25,1,b.x+b.w-10,14,b.y+24,trim);part(3,6,2,b.x+b.w-10,24,b.y+24,material('#c1d8de'));
+  part(8,7,1,b.x+b.w-24,20,b.y+4,material('#263c40'));
+  part(4,18,1,b.x+b.w*.72,26,b.y+4,material('#c84444'));part(14,4,1.1,b.x+b.w*.72,26,b.y+4.1,material('#c84444'));
+ }else{
+  const w=Math.min(38,b.w*.35);part(w,10,12,b.x+b.w-10-w/2,5,b.y+20,wood);
+  if(v.kind==='fish')for(let i=0;i<4;i++){
+   const m=new THREE.Mesh(new THREE.SphereGeometry(1,10,6),material(i%2?'#b0c5bd':'#658991'));m.scale.set(3,1,1.2);m.position.set(b.x+b.w-14-i*7,11,b.y+20);g.add(m);
+  }else for(let i=0;i<5;i++)part(3,7,3,b.x+b.w-14-i*5,14,b.y+20,material(i%2?'#b09564':'#4b5968'));
+ }
+ if(v.kind==='clinic')v.furniture.push({x:b.x+b.w-35,y:b.y+18,w:22,h:12});else {const w=Math.min(38,b.w*.35);v.furniture.push({x:b.x+b.w-10-w,y:b.y+14,w,h:12});}
+ part(12,2,10,v.stationX,1,v.stationY,green);
+ addSign(g,'U / USE · '+v.short,Math.min(110,b.w-8),7,v.stationX,23,b.y+4,v.col);
+ addSign(g,v.name,Math.min(140,b.w),9,v.doorX,59,v.doorY,v.col);v.labelH=72;
 };
 const service=serviceVenue;
-serviceVenue=function(){const v=nearStation();if(v&&v.id==='shelter'){toast(searched.includes(v.key)?'SUPPLIES ALREADY SEARCHED · THIS ROOM IS STILL SAFE':'STAY BY THE SUPPLY STATION FOR 3 SECONDS');return;}return service.apply(this,arguments);};
+serviceVenue=function(){const v=nearStation();if(v&&v.id==='shelter'){if(window.level29Trading)level29Trading.open(v);return;}return service.apply(this,arguments);};
+const buildSafe=buildVenue;
+buildVenue=function(v){
+ buildSafe(v);if(v.id!=='safe'||!v.mesh)return;
+ // Locate the service/search marker only after furniture and staff colliders exist.
+ const b=v.b;let target=null;
+ for(let y=b.y+b.h-28;y>b.y+20&&!target;y-=8)for(let x=b.x+20;x<b.x+b.w-20;x+=8){
+  if(!v.furniture.some(r=>hitRect(x,y,14,r))){target={x,y};break;}
+ }
+ if(target){v.stationX=target.x;v.stationY=target.y;if(v.pad)v.pad.position.set(target.x,1,target.y);}
+ addSign(v.mesh,'STAND HERE · SEARCH SUPPLIES',110,7,v.stationX,23,v.stationY,'#9ed5c1');
+};
 // Also covers spawn/migration and collision calls made without moverCtx.
 const blocked=blockedCircle;
 blockedCircle=function(x,y,r){if(city&&moverCtx&&moverCtx.alive!==undefined&&city.buildings.some(b=>overlaps(x,y,r,b)))return true;return blocked(x,y,r);};
@@ -78,8 +115,8 @@ const spawn=spawnZombieAt;
 spawnZombieAt=function(x,y,type){if(city&&city.buildings.some(b=>overlaps(x,y,12,b)))return null;return spawn.apply(this,arguments);};
 const tick=update;
 update=function(){tick.apply(this,arguments);if(!city||!player||state!=='play')return;
- const v=!player.car&&!player.dead&&city.venues.find(v=>v.id==='shelter'&&insideVenue(v,player)&&dist(player.x,player.y,v.stationX,v.stationY)<24);
- for(const room of city.venues)if(room.id==='shelter'&&room!==v)room.searchT=0;
+ const v=!player.car&&!player.dead&&!(city.penthouse&&city.penthouse.active)&&city.venues.find(v=>v.id==='safe'&&insideVenue(v,player)&&dist(player.x,player.y,v.stationX,v.stationY)<24);
+ for(const room of city.venues)if(room.id==='safe'&&room!==v)room.searchT=0;
  if(v&&!searched.includes(v.key)){
   v.searchT=(v.searchT||0)+1;
   if(v.searchT===1)toast('SEARCHING SUPPLIES · STAY HERE 3 SECONDS');
