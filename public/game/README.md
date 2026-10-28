@@ -26,3 +26,14 @@ Ronniebaby's uploaded voice clips, existing road layout, mission extensions, dri
 Car music uses the Level 29 Spotify playlist only. Spotify's own playback, account and browser restrictions still control playback and shuffle; this game does not override them.
 
 Graphics are procedural and stylized, with added shape, material and environmental detail rather than photorealistic scanned assets. Multiplayer smoke testing covers two connected browser sessions, not a six-device load test or a guarantee of frame rate on every phone.
+
+## Street access and survival activities
+
+- Remaining houses, towers, helipad buildings and the cathedral now have walk-in ground-floor shelter interiors. Monument props (the dome, water tower and memorial) are not occupiable buildings. Upper floors of converted towers remain scenery.
+- Every business and shelter gets a walking route to a road or bridge, avoiding other building footprints and water. Trees, rocks and parked land vehicles are cleared from those routes; doors still open automatically.
+- Shelters have seating, wall art, lighting and a supply station. Stand by the supply station for three uninterrupted seconds to find $120 and recover up to 15 health, once per shelter per browser save. Search progress travels with exported save codes.
+- Zombie collision and spawning reject all building footprints, even with doors open. Zombies migrated into a building are removed without a kill reward.
+- **Fishing:** Press I or tap FISH beside water or on a stopped boat. Wait for a bite, then press again in the gold zone to hook. Tap to reel, pausing between taps to lower tension; the line snaps at 100% tension. Moving away cancels the cast. The professional rod improves the hook window and reel strength.
+- Boat fishing favors offshore catches and pays 20% more. Every fifth landed catch earns a $350 angler-contract bonus. Bobbers, fishing lines and expanding ripples show the cast in the world; moving boats leave pooled foam wakes instead of smoke.
+
+Run the dependency-free regression suite with `node --test tests/*.test.cjs`.
