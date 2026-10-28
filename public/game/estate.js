@@ -440,6 +440,7 @@ syncRonnie=function(){
   window.level29BatchStatic(u.body,[u.armL,u.armR,u.legL,u.legR,u.helmet]);
   rbMesh.position.copy(pos);rbMesh.rotation.copy(rot);rbMesh.scale.copy(scale);u.body.position.copy(bp);u.estateBatched=true;
  }
+ if(missionIdx>0&&!penthouse.active){rbMesh.visible=state!=='menu';poseFigure(rbMesh,ronnie.x,ronnie.y,0,0,'stand');rbMesh.position.y=terrainHeight(ronnie.x,ronnie.y);return;}
  const b=penthouse.b;ronnie.x=b.x+b.w/2;ronnie.y=b.y+34;
  rbMesh.visible=state!=='menu'&&penthouse.active;
  poseFigure(rbMesh,ronnie.x,ronnie.y,Math.PI/2,0,'stand');rbMesh.position.y=penthouse.base+1;

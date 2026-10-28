@@ -25,7 +25,7 @@
 
   // Call after your CMP has resolved consent. Do not enable both parent and iframe.
   function initialize() {
-    if (initialized || !gameDocument || !config.enabled || !config.consentGranted ||
+    if (window.level29Premium?.adFree || initialized || !gameDocument || !config.enabled || !config.consentGranted ||
         !/^ca-pub-\d{16}$/.test(config.publisherId)) return false;
     initialized = true;
     const tag = document.createElement('script');
@@ -49,7 +49,7 @@
   // Invoke from a retry/next-level user action, never from the running game loop.
   // Hooks must synchronously pause/mute and restore the previous game/audio state.
   function requestBreak(name, hooks) {
-    if (!ready || pending || !config.enabled || !config.consentGranted || !hooks ||
+    if (window.level29Premium?.adFree || !ready || pending || !config.enabled || !config.consentGranted || !hooks ||
         typeof hooks.pauseAndMute !== 'function' || typeof hooks.restore !== 'function') return false;
     pending = true;
     window.adBreak({

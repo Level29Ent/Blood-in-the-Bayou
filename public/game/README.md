@@ -50,3 +50,17 @@ Run the dependency-free regression suite with `node --test tests/*.test.cjs`.
 - Pier edges gain cleats, liferings, seating, bins and fishing guidance while keeping the central deck clear.
 - The confidence course has visible stations and proximity-based rope/wall tapping, timed hurdle/crawl drills and a narrow balance alignment challenge. Hold progress resets when leaving the station; climb taps are rate-limited. Existing medals, timers and record rewards remain.
 - Trading ownership, equipment finishes, catch inventory and safehouse search claims travel with exported save codes. Storage is browser-local, not a server-authoritative economy.
+
+## City-life expansion
+
+- The mission mansion is the only safehouse. Former neighborhood safehouses become grocery branches or business offices, using their matching interior/service builders. A shelter superseded by a new bank lot is removed, not nested inside it.
+- Four bank branches are placed in separate city blocks. Operation/robbery targets rotate between matching branches rather than always choosing the closest.
+- Bonnie's dealership gets allocation priority and a larger showroom/lot. Display cars show in-game prices. Walk inside to Bonnie, press ENTER / E to talk, then buy. Clear the delivery bay before buying or recalling an owned vehicle. Ownership is saved in the local garage, with recall from Bonnie after reload. Delivery is not server-authoritative multiplayer ownership.
+- The waterfront casino is walk-in: approach a machine/table and use ENTER / E for slots, blackjack, poker or roulette. These use fictional earned game currency only and never real money or paid credits.
+- The dance club is walk-in with animated adult NPCs and the existing player rhythm minigame. The Level 29 Spotify controller is available inside the club as well as in cars. Tap play if required; browser autoplay restrictions, Spotify availability and music licensing still apply.
+- Golden Hills is a Hollywood-themed studio/film-row addition with a cafe, talent agency and screen-test annex where free plots are available at the far end near the mountains, not a separate fully simulated city. The farm has cows, pigs and chickens; USE inside the farm buys feed for $20 and restores 15 health, with a one-minute cooldown.
+- The eastern bay is extended north/south. Skiffs and cabin cruisers are driveable; four ambient boats have fishing/helm crews. Boats bob with the existing vehicle model; NPC crews perform bounded procedural idle/fishing poses, not a full navigation simulation.
+- Fire uses a tapered flame sprite; civilian figures gain clothing seams and badges. Bayou Arsenal and Bayou Shine replace the previously copied weapon-shop/carwash names. This is not a legal clearance of every name or asset.
+- After mission one, briefing locations vary across passable street checkpoints instead of always returning to the penthouse. Existing mission target beams/map markers remain, with an added visible checkpoint column. Field objectives and extractions retain existing mission logic; not all 210 missions have bespoke unique interiors.
+- New walk-in interiors cover the dealership, casino, club, retail annexes, airport terminal, university classroom and film studio. Stadium activities remain exterior-only.
+- Monetization is **not live**. See `docs/app-store-purchases.md` for the native StoreKit release blockers; no unfulfilled paid cosmetic is offered. Ad-free promotions remain hidden until actual ads and native billing are configured.

@@ -5,7 +5,7 @@ const VENUE_TYPES = [
   {id:'safe',name:'LEVEL 29 SAFE HOUSE',short:'SAFE HOUSE',letter:'S',col:'#6ecf96'},
   {id:'garage',name:'LEVEL 29 GARAGE',short:'GARAGE',letter:'G',col:'#e8bc64'},
   {id:'armory',name:'LEVEL 29 ARMORY',short:'ARMORY',letter:'A',col:'#e58e72'},
-  {id:'spray',name:"PAY N SPRAY CARWASH",short:'PAY N SPRAY',letter:'P',col:'#73bddd'},
+  {id:'spray',name:"BAYOU SHINE AUTO SPA",short:'BAYOU SHINE',letter:'P',col:'#73bddd'},
   {id:'business',name:'LEVEL 29 BUSINESS',short:'BUSINESS',letter:'B',col:'#bea0dd'}
 ];
 const expansionSaveKey='level29.venues.v1';
@@ -584,7 +584,7 @@ const spotifyScript=document.createElement('script');spotifyScript.src='https://
 spotifyScript.onerror=mountSpotifyFallback;document.head.appendChild(spotifyScript);
 setTimeout(()=>{if(!spotifyCtl)mountSpotifyFallback();},6000);
 let spotifyWanted=false;
-function spotifyWantedNow(){return soundMode===0&&['play','shop'].includes(state)&&player&&player.car&&!player.dead;}
+function spotifyWantedNow(){return soundMode===0&&['play','shop'].includes(state)&&player&&(player.car||window.level29CityLife?.inClub)&&!player.dead;}
 const _baseRadio=updateRadio;
 updateRadio=function(){
   _baseRadio();
