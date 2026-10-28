@@ -3,7 +3,7 @@
 // and the BoomCity waterfront casino (slots + blackjack). Load after every other world file.
 (function(){
 const T=TILE;
-const BAY={x0:118,x1:135,y0:62,y1:100};          // tiles turned into open Gulf water
+const BAY={x0:118,x1:135,y0:54,y1:114};          // tiles turned into open Gulf water
 const PLAZA={x0:104,x1:114,y0:76,y1:86};          // waterfront block that hosts BoomCity
 const CASINO={x0:105,x1:111,y0:77,y1:82};         // casino footprint (solid)
 const PIER={x0:118,x1:120,y0:80,y1:82};
@@ -71,8 +71,8 @@ function signPlane(g,text,w,h,x,y,z,ry,fg,bg,glow){const m=new THREE.Mesh(new TH
 function buildCasino(){
   const g=new THREE.Group(),x0=CASINO.x0*T,z0=CASINO.y0*T,w=(CASINO.x1-CASINO.x0+1)*T,d=(CASINO.y1-CASINO.y0+1)*T,cxp=x0+w/2,czp=z0+d/2,front=z0+d;
   const body=lam('#1b1420'),trim=basic('#f2c14e'),pink=basic('#ff3d8b'),cyan=basic('#3de0ff');
-  put(g,geoBox(w,64,d),body,cxp,32,czp);
-  put(g,geoBox(w*.46,150,d*.42),lam('#251a2c'),cxp,75,z0+d*.3);
+  if(city.casinoVenue)buildVenue(city.casinoVenue);else put(g,geoBox(w,64,d),body,cxp,32,czp);
+  put(g,geoBox(w*.46,150,d*.42),lam('#251a2c'),cxp,139,z0+d*.3);
   for(const y of [64,150])put(g,geoBox(y===64?w+2:w*.46+2,3,y===64?d+2:d*.42+2),y===64?pink:cyan,cxp,y,y===64?czp:z0+d*.3);
   for(let k=0;k<6;k++)put(g,geoBox(w*.46+1,1.5,d*.42+1),k%2?pink:trim,cxp,82+k*11,z0+d*.3);
   put(g,geoBox(w,3,2),trim,cxp,20,front+.6);put(g,geoBox(w,2,2),pink,cxp,48,front+.6);
@@ -280,7 +280,7 @@ panel.addEventListener('pointerdown',e=>e.stopPropagation());
 // ---------------------------------------------------------------- input
 const nearDoor=()=>isEastCity(city)&&city.boom&&player&&!player.car&&dist(player.x,player.y,DOOR.x,DOOR.y)<80;
 const nearCaptain=()=>isEastCity(city)&&city.boom&&player&&!player.car&&dist(player.x,player.y,CAPTAIN.x,CAPTAIN.y)<90;
-function useAction(){if(nearDoor()){openPanel('casino');return true;}if(nearCaptain()){openPanel('shrimp');return true;}return false;}
+function useAction(){if(nearDoor()){toast('WALK INSIDE · APPROACH A SLOT OR TABLE');return true;}if(nearCaptain()){openPanel('shrimp');return true;}return false;}
 addEventListener('keydown',e=>{if(e.target&&e.target.matches&&e.target.matches('input,textarea,select'))return;const k=e.key.toLowerCase();
   if(panelKind&&(k==='escape'||k==='o')){e.preventDefault();e.stopImmediatePropagation();closePanel();return;}
   if(panelKind){if(k!=='tab')e.stopImmediatePropagation();return;}

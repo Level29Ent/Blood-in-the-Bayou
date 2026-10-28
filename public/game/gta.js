@@ -1,7 +1,7 @@
 'use strict';
 // =====================================================================
 // BLOOD IN THE BAYOU — open-world extras: weapon wheel, gun shop,
-// Pay 'n' Spray, rampages, hidden packages, stunt jumps, traffic, cheats.
+// Bayou Shine, rampages, hidden packages, stunt jumps, traffic, cheats.
 // =====================================================================
 
 // ---------- Weapons ----------
@@ -178,7 +178,7 @@ const SHOP_ITEMS = () => [
 function openShop(){
   state = 'shop'; mouse.down = false;
   const items = SHOP_ITEMS();
-  shopEl.innerHTML = '<div class="sbox"><div class="eyebrow">AMMU-NATION · ' + D.name + '</div><h2>Gun shop</h2><p class="cash">' + money(cash) + '</p>' +
+  shopEl.innerHTML = '<div class="sbox"><div class="eyebrow">BAYOU ARSENAL · ' + D.name + '</div><h2>Gun shop</h2><p class="cash">' + money(cash) + '</p>' +
     items.map(it => '<div class="item"><div><b>' + it.label + '</b><span>' + it.desc + '</span></div><button data-id="' + it.id + '"' + ((it.buy === 'OWNED' || cash < it.price) ? ' disabled' : '') + '>' + it.buy + (it.price ? ' · $' + it.price : '') + '</button></div>').join('') +
     '<button class="close">LEAVE SHOP · ESC</button></div>';
   shopEl.style.display = 'flex';
@@ -356,12 +356,12 @@ function updateStunts(){
   }
 }
 
-// ---------- Pay 'n' Spray ----------
+// ---------- Bayou Shine ----------
 function updateSpray(){
   const p = player; if (!world || !p.car) { sprayT = 0; return; }
   const s = world.sprays.find(s => dist(p.car.x, p.car.y, s.x, s.y) < 46);
   if (!s){ sprayT = 0; return; }
-  if (Math.abs(p.car.v) > 1){ if (frame % 60 === 0) toast("STOP IN THE PAY 'N' SPRAY"); return; }
+  if (Math.abs(p.car.v) > 1){ if (frame % 60 === 0) toast("STOP IN THE BAYOU SHINE"); return; }
   sprayT++;
   if (sprayT === 1){ if (cash < 250){ toast('PAY \'N\' SPRAY COSTS $250'); sprayT = -9999; return; } sfx('door'); }
   if (sprayT === 90){
@@ -456,7 +456,7 @@ drawHUD = function(){
   _drawHUD();
   const small = SW < 700 || SH < 500, p = player;
   if (rampage){ const s = Math.ceil(rampage.t / 60); hudText('RAMPAGE  ' + rampage.kills + ' / ' + rampage.r.need, SW/2, small ? 64 : 52, small ? 18 : 24, '#d23aff', 'center', '900 '); hudText('0:' + String(s).padStart(2, '0'), SW/2, small ? 86 : 80, 18, s < 10 && frame % 30 < 15 ? '#ff5a4a' : '#fff', 'center', '800 '); }
-  if (world && p && p.car && sprayT > 0 && sprayT < 90){ cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(SW/2 - 120, SH*.62, 240, 30); cx.fillStyle = '#5fb7ff'; cx.fillRect(SW/2 - 116, SH*.62 + 22, 232 * sprayT / 90, 4); hudText("PAY 'N' SPRAY · $250", SW/2, SH*.62 + 3, 16, '#5fb7ff', 'center'); }
+  if (world && p && p.car && sprayT > 0 && sprayT < 90){ cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(SW/2 - 120, SH*.62, 240, 30); cx.fillStyle = '#5fb7ff'; cx.fillRect(SW/2 - 116, SH*.62 + 22, 232 * sprayT / 90, 4); hudText("BAYOU SHINE · $250", SW/2, SH*.62 + 3, 16, '#5fb7ff', 'center'); }
   // stats line on the full map
   if (showMap){ hudText('PACKAGES ' + packagesFound.size + '/' + DISTRICTS.length*10 + '   ·   STUNT JUMPS ' + jumpsDone.size + '/' + DISTRICTS.length*4 + '   ·   RAMPAGES ' + rampagesDone.size + '/' + DISTRICTS.length*3 + '', SW/2, SH - 26, 13, '#f4c355', 'center', '700 '); hudText('$ gun shop   P pay \'n\' spray   R rampage   J stunt jump', SW/2, 14, 12, '#c9d1d4', 'center', '600 '); }
   drawWheel();
@@ -468,8 +468,8 @@ fpHUD = function(small){
   // world labels for nearby features
   const ox = p.car ? p.car.x : p.x, oy = p.car ? p.car.y : p.y;
   const label = (x, y, h, t, col, maxD) => { const d = dist(ox, oy, x, y); if (d > maxD) return; const pr = project(x, y, h); if (!pr || pr.x < 0 || pr.x > SW || pr.y < 0 || pr.y > SH) return; cx.globalAlpha = clamp(1.4 - d / maxD, 0, 1); hudText(t, pr.x, pr.y, 15, col, 'center', '900 '); hudText(Math.round(d/10) + ' M', pr.x, pr.y + 18, 11, '#f6f3e6', 'center', '700 '); cx.globalAlpha = 1; };
-  for (const s of world.shops) label(s.x, s.y, 60, 'AMMU-NATION', '#ff8a3a', 650);
-  for (const s of world.sprays) label(s.x, s.y, 54, "PAY 'N' SPRAY", '#5fb7ff', 650);
+  for (const s of world.shops) label(s.x, s.y, 60, 'BAYOU ARSENAL', '#ff8a3a', 650);
+  for (const s of world.sprays) label(s.x, s.y, 54, "BAYOU SHINE", '#5fb7ff', 650);
   for (const r of world.rampages) if (!rampagesDone.has(r.id) && !rampage) label(r.x, r.y, 36, 'RAMPAGE', '#d23aff', 420);
   for (const j of world.jumps) if (!jumpsDone.has(j.id)) label(j.x, j.y, 26, 'STUNT JUMP', '#f6f3e6', 380);
 };
@@ -480,12 +480,12 @@ function buildGtaMeshes(){
   if (gtaGroup){ scene.remove(gtaGroup); gtaGroup.traverse(o => o.geometry && o.geometry.dispose()); }
   gtaGroup = new THREE.Group(); scene.add(gtaGroup); gtaBuiltFor = world; pkgMeshes = []; rampMeshes = []; jumpMeshes = [];
   for (const s of world.shops){
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(90, 22), new THREE.MeshBasicMaterial({ map: signTex('AMMU-NATION', '#1a1a1a', '#ff8a3a', 360, 88) }));
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(90, 22), new THREE.MeshBasicMaterial({ map: signTex('BAYOU ARSENAL', '#1a1a1a', '#ff8a3a', 360, 88) }));
     sign.position.set(s.x, 50, s.B.y + s.B.h + .8); gtaGroup.add(sign);
     const door = box(26, 30, 1.2, lam('#2a1a10', { emissive: 0x401800 })); door.position.set(s.x, 15, s.B.y + s.B.h + .6); gtaGroup.add(door);
   }
   for (const s of world.sprays){
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(100, 22), new THREE.MeshBasicMaterial({ map: signTex("PAY 'N' SPRAY", '#0e2a4a', '#5fb7ff', 400, 88) }));
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(100, 22), new THREE.MeshBasicMaterial({ map: signTex("BAYOU SHINE", '#0e2a4a', '#5fb7ff', 400, 88) }));
     sign.position.set(s.x, 52, s.B.y + s.B.h + .8); gtaGroup.add(sign);
     const bay = new THREE.Mesh(new THREE.PlaneGeometry(70, 70).rotateX(-Math.PI/2), new THREE.MeshBasicMaterial({ color: 0x5fb7ff, transparent: true, opacity: .25, depthWrite: false })); bay.position.set(s.x, .8, s.y); gtaGroup.add(bay);
     const garage = box(64, 36, 1.2, lam('#9aa8b4')); garage.position.set(s.x, 18, s.B.y + s.B.h + .5); gtaGroup.add(garage);

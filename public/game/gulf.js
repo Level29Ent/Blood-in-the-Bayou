@@ -229,7 +229,7 @@ updateCar=function(c,input){if(c.boat&&c.dead)return;if(city&&city.world&&!input
 // ---------------------------------------------------------------- boating models
 const prevCarMesh=makeCarMesh;
 makeCarMesh=function(c){if(!c.boat)return prevCarMesh(c);
-  const g=new THREE.Group(),L=c.spec.len,W=c.spec.wid,yacht=c.type==='yacht';
+  const g=new THREE.Group(),L=c.spec.len,W=c.spec.wid,yacht=c.type==='yacht'||c.type==='cabinboat';
   const paint=new THREE.MeshStandardMaterial({color:c.col,metalness:.25,roughness:.3});
   const hull=new THREE.Shape();hull.moveTo(-L/2,-W/2);hull.lineTo(L*.22,-W/2);hull.quadraticCurveTo(L*.54,-W*.35,L/2,0);hull.quadraticCurveTo(L*.54,W*.35,L*.22,W/2);hull.lineTo(-L/2,W/2);hull.closePath();
   const hgeo=new THREE.ExtrudeGeometry(hull,{depth:8,bevelEnabled:true,bevelThickness:2,bevelSize:1.8,bevelSegments:2,steps:1,curveSegments:7});hgeo.rotateX(-Math.PI/2);hgeo.translate(0,5,0);g.add(new THREE.Mesh(hgeo,paint));
