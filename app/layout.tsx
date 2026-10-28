@@ -39,6 +39,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Disabled placeholder configuration; Google loads only inside the game document. */}
+        <script src="/game/ads.js" />
+      </head>
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && (
