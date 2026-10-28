@@ -1,3 +1,4 @@
+import { AdMob, BannerAdPosition, BannerAdSize } from '@capacitor-community/admob';
 'use strict';
 // =====================================================================
 // LEVEL 29 · BLOOD IN THE BAYOU — first-person open-world zombie action
@@ -1550,4 +1551,49 @@ function loop(now){
   // On 90/120Hz phones a frame with no simulation step would redraw an identical image; skipping it halves GPU load and heat.
   if (!stepped && window.L29_SKIP_IDLE_FRAMES) return;
   try { render(); } catch (e) { reportLoopError('render', e); }
+}
+// Initialize AdMob when the game loads
+async function initAdMob() {
+  try {
+    await AdMob.initialize({
+      requestTrackingAuthorization: true,
+    });
+    // Show your banner automatically at the bottom
+    showGameBanner();
+  } catch (e) {
+    console.error("AdMob Init Error:", e);
+  }
+}
+
+// Banner Ad (Using your Banner ID)
+async function showGameBanner() {
+  try {
+    await AdMob.showBanner({
+      adId: 'ca-app-pub-9730543201329278/8674949283', // Your Banner ID
+      position: BannerAdPosition.BOTTOM_CENTER,
+      size: BannerAdSize.BANNER,
+      margin: 0,
+      isTesting: false,
+    });
+  } catch (e) {
+    console.error("Banner Error:", e);
+  }
+}
+
+// Rewarded Ad (Call this when a player wants a bonus/revive)
+async function playRewardedAd() {
+  try {
+    await AdMob.prepareRewardVideoAd({
+      adId: 'ca-app-pub-9730543201329278/2903747857', // Your Rewarded ID
+      isTesting: false,
+    });
+    
+    const reward = await AdMob.showRewardVideoAd();
+    if (reward) {
+      // TODO: Give the player their in-game reward here!
+      console.log("Reward granted!");
+    }
+  } catch (e) {
+    console.error("Rewarded Ad Error:", e);
+  }
 }

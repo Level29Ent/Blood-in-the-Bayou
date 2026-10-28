@@ -502,6 +502,7 @@ applyLightMode=function(){
   }
 };
 const _venueRay=new THREE.Raycaster(),_venueTarget=new THREE.Vector3();
+_venueRay.camera = camera; // Or whatever your active camera variable is named
 function venueLabelVisible(v,top){
   if(typeof cityGroup==='undefined'||!camera)return true;
   _venueTarget.set(v.doorX,top+terrainHeight(v.doorX,v.doorY),v.doorY+4);

@@ -85,6 +85,7 @@
   }
 
   const ray = new THREE.Raycaster(), UP = new THREE.Vector3(0, 1, 0);
+  _venueRay.camera = camera; // Or whatever your active camera variable is named
   let coverCheck = 0;
   function updateCover(){
     if (++coverCheck % 30 !== 0 || typeof cityGroup === 'undefined' || !cityGroup) return;

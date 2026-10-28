@@ -1,0 +1,76 @@
+# Ad Events
+
+Google documents these lifecycle callbacks on each format page, for example [banner ad events](https://developers.google.com/admob/android/banner#ad_events). This plugin exposes the same moments under the names in the table below, not the native `AdListener` method names. For the paid payload, see [impression-level ad revenue](https://developers.google.com/admob/android/impression-level-ad-revenue) ([iOS](https://developers.google.com/admob/ios/impression-level-ad-revenue)).
+
+Register listeners before loading or showing an ad so that the first lifecycle and impression events are not missed.
+
+## Adding and removing listeners
+
+`AdMob.addListener` returns a handle. Await the registration, then call `remove()` when the owning screen is destroyed:
+
+```ts
+import { AdMob, BannerAdPluginEvents } from '@capacitor-community/admob';
+
+const handle = await AdMob.addListener(BannerAdPluginEvents.Loaded, () => {
+  console.log('Banner loaded');
+});
+
+await handle.remove();
+```
+
+<!-- !::PluginListenerHandle:: -->
+
+## Common lifecycle events
+
+| Event                     | Emitted when                                           |
+| ------------------------- | ------------------------------------------------------ |
+| `Loaded`                  | The ad finished loading and is ready to show.          |
+| `FailedToLoad`            | The ad could not load. Check `AdMobError` for details. |
+| `Showed` / `Opened`       | The ad became visible to the user.                     |
+| `FailedToShow`            | A loaded ad failed to display.                         |
+| `Dismissed` / `Closed`    | The user closed the full-screen ad or overlay.         |
+| `adClicked`               | The SDK recorded a click on a rewarded ad (since 8.2.0). |
+| `Rewarded`                | The user earned the advertised reward.                 |
+| `SizeChanged`             | Banner dimensions changed.                             |
+| `AdImpression` / `AdPaid` | An impression was recorded. See revenue events below.  |
+
+## Errors
+
+`FailedToLoad` and `FailedToShow` listeners receive an `AdMobError` payload. Codes are native, platform-specific numbers. Since 8.2.0, SDK load failures from interstitial, rewarded, and rewarded-interstitial prepare methods also reject with the same code as a string; iOS load failure events now report the actual code instead of `0`.
+
+<!-- !::AdMobError:: -->
+
+## Impression-level revenue
+
+Full-screen formats emit `AdMobRevenueData` on their `AdImpression` event. Banners emit the same payload on `AdPaid`. Banner `AdImpression` has no payload; it only signals that an impression was recorded.
+
+`valueMicros` is an integer in millionths of the currency identified by `currencyCode`: divide by `1_000_000` for currency units. The iOS conversion was corrected in 8.2.0; see [Migration](https://docs.rdlabo.dev/projects/capacitor-admob/docs/migration) if your analytics compensates for the previous values.
+
+<!-- !::AdMobRevenueData:: -->
+
+## Per-format guides
+
+- [App Open Ads](https://docs.rdlabo.dev/projects/capacitor-admob/docs/app-open)
+- [Banner Ads](https://docs.rdlabo.dev/projects/capacitor-admob/docs/banner)
+- [Interstitial Ads](https://docs.rdlabo.dev/projects/capacitor-admob/docs/interstitial)
+- [Rewarded Ads](https://docs.rdlabo.dev/projects/capacitor-admob/docs/rewarded)
+
+<!-- !::addListener.AppOpenAdPluginEvents:: -->
+
+<!-- !::AppOpenAdPluginEvents:: -->
+
+<!-- !::addListener.BannerAdPluginEvents:: -->
+
+<!-- !::BannerAdPluginEvents:: -->
+
+<!-- !::addListener.InterstitialAdPluginEvents:: -->
+
+<!-- !::InterstitialAdPluginEvents:: -->
+
+<!-- !::addListener.RewardAdPluginEvents:: -->
+
+<!-- !::RewardAdPluginEvents:: -->
+
+<!-- !::addListener.RewardInterstitialAdPluginEvents:: -->
+
+<!-- !::RewardInterstitialAdPluginEvents:: -->
