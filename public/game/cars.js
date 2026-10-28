@@ -232,6 +232,13 @@
     rb(g,3,2,W*.76,bf-1.6,B+.7,0,materials.trim,.45);
     const steering=mesh(g,new THREE.TorusGeometry(1.8,.20,8,24),materials.leather,bf-4,B+2.0,-W*.22);steering.rotation.y=Math.PI/2-.35;
     beam(g,[bf-3,B+1.3,-W*.22],[bf-4,B+2,-W*.22],.24,materials.trim);
+    for(const side of [-1,1]){
+      rb(g,Math.max(8,bf-br-3),3,.8,(bf+br)*.5,B-.8,side*W*.45,materials.leather,.2);
+      rb(g,2,.35,.8,bf-4,B+.3,side*W*.44,materials.chrome,.08);
+      for(let i=0;i<3;i++)line(g,[[seatX-1.5,B-.05,side*W*.22-1.6+i*1.5],[seatX+1.5,B-.05,side*W*.22-1.6+i*1.5]],materials.seam,.035);
+    }
+    rb(g,.4,2,2,bf-3,B+1.7,0,materials.darkGlass,.08);
+    for(const z of [-W*.19,-W*.28])mesh(g,new THREE.CircleGeometry(.7,12),materials.chrome,bf-3.15,B+1.7,z).rotation.y=-Math.PI/2;
     // Separate wipers rest on the lower windshield.
     for(const z of [-W*.17,W*.17])beam(g,[bf+.2,B+.6,z-2.0],[bf-1.4,B+1.2,z+3],.075,materials.trim);
     return seatX;

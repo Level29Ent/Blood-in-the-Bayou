@@ -100,17 +100,29 @@ let logoTex=null;const getLogo=()=>logoTex||(logoTex=new THREE.TextureLoader().l
 let bonnieTex=null;const getBonnie=()=>bonnieTex||(bonnieTex=new THREE.TextureLoader().load('bonnie.png'));
 
 function planeMesh(bomber){
-  const g=new THREE.Group(),body=lam(COL.purple),gold=lam(COL.gold),green=lam(COL.green),s=bomber?1.25:1;
-  const f=cyl(g,7*s,5*s,80*s,0,0,0,body);f.rotation.z=Math.PI/2;
-  const nose=new THREE.Mesh(new THREE.SphereGeometry(7*s,12,10),gold);nose.position.set(40*s,0,0);g.add(nose);
-  box(g,80*s,2,14.4*s,0,0,0,gold);
-  box(g,22*s,1.6,112*s,4*s,-1,0,body);box(g,8*s,2,6,4*s,-1,56*s,green);box(g,8*s,2,6,4*s,-1,-56*s,green);
-  box(g,12*s,1.2,36*s,-36*s,1,0,body);
-  box(g,16*s,22*s,1.6,-34*s,12*s,0,body);
-  const logo=new THREE.MeshBasicMaterial({map:getLogo(),transparent:true,side:THREE.DoubleSide});
-  for(const z of [1,-1]){const p=new THREE.Mesh(new THREE.PlaneGeometry(14*s,14*s),logo);p.position.set(-34*s,13*s,z*1.0);g.add(p);}
-  const eng=bomber?[-38,-18,18,38]:[-24,24];for(const z of eng){const e=cyl(g,3.4*s,3.4*s,14*s,8*s,-4*s,z*s,green);e.rotation.z=Math.PI/2;}
-  if(bomber){const tur=new THREE.Mesh(new THREE.SphereGeometry(6,10,8),gold);tur.position.set(-6,7*s,0);g.add(tur);const gun=cyl(g,.8,.8,18,4,9*s,0,lam('#222'));gun.rotation.z=Math.PI/2;}
+  const g=new THREE.Group(),s=bomber?1.25:1,body=lam(bomber?'#69716e':'#dadfdc'),metal=lam('#78868e'),dark=lam('#202b36'),rubber=lam('#202326');
+  // Lathed tapered fuselage, aligned nose-forward along +X.
+  const profile=[[-45,.2],[-38,2],[-24,5],[-5,6.8],[22,6.3],[33,4.8],[41,2.2],[44,.2]];
+  const fuselage=new THREE.Mesh(new THREE.LatheGeometry(profile.map(([x,r])=>new THREE.Vector2(r*s,x*s)),24),body);fuselage.rotation.z=-Math.PI/2;g.add(fuselage);
+  const pane=(points,mat)=>{const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(points.flatMap(p=>p.map(v=>v*s)),3));geo.setIndex([0,1,2,0,2,3]);geo.computeVertexNormals();const m=new THREE.Mesh(geo,mat);g.add(m);return m;};
+  body.side=THREE.DoubleSide;metal.side=THREE.DoubleSide;
+  for(const side of [-1,1]){
+    pane([[12,0,4*side],[-16,0,55*side],[-29,-1,55*side],[-13,-1,5*side]],body);
+    pane([[-30,2,2*side],[-38,2,22*side],[-46,2,22*side],[-42,2,2*side]],metal);
+    for(let x=-24;x<20;x+=6){const w=new THREE.Mesh(new THREE.SphereGeometry(1,8,6),dark);w.scale.set(1.5,1.2,.35);w.position.set(x*s,2*s,side*5.9*s);g.add(w);}
+    const cockpit=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),dark);cockpit.scale.set(5,2.7,2.5);cockpit.position.set(29*s,3.4*s,side*2.7*s);g.add(cockpit);
+    for(const z of (bomber?[18,36]:[24])){
+      const engine=cyl(g,3.3*s,3.8*s,16*s,1*s,-4*s,side*z*s,metal,16);engine.rotation.z=Math.PI/2;
+      const intake=cyl(g,2.6*s,2.6*s,.6,9.4*s,-4*s,side*z*s,dark,16);intake.rotation.z=Math.PI/2;
+    }
+    box(g,14*s,1,2,-27*s,0,side*48*s,metal);
+    const lamp=new THREE.Mesh(new THREE.SphereGeometry(1,8,6),new THREE.MeshBasicMaterial({color:side<0?'#df4b40':'#4ca986'}));lamp.position.set(-23*s,0,side*55*s);g.add(lamp);
+  }
+  pane([[-29,3,0],[-38,23,0],[-45,23,0],[-43,2,0]],metal);
+  for(const [x,z]of [[24,0],[-13,-9],[-13,9]]){
+    cyl(g,.7,.7,6,x*s,-8*s,z*s,metal,8);
+    const tire=cyl(g,2.7,2.7,2,x*s,-11*s,z*s,rubber,12);tire.rotation.x=Math.PI/2;
+  }
   return g;}
 
 function lowriderMesh(color){
@@ -202,14 +214,23 @@ function buildCourse(g){
   const pts=[
     {x:f.x+W/2,y:f.y+H+40,type:'start'},
     {x:f.x+20,y:f.y+H-24,type:'gate',name:'SPRINT GATE'},
-    {x:f.x+20,y:f.y+30,type:'gate',name:'HURDLE LANE'},
+    {x:f.x+20,y:f.y+30,type:'hold',hold:90,name:'HURDLE DRILL'},
     {x:f.x+W/2,y:f.y+28,type:'rope',taps:8,name:'ROPE CLIMB'},
-    {x:f.x+W-20,y:f.y+30,type:'gate',name:'LOW CRAWL'},
+    {x:f.x+W-20,y:f.y+30,type:'hold',hold:120,name:'LOW CRAWL'},
     {x:f.x+W-20,y:f.y+H/2,type:'wall',taps:6,name:'WALL OVER'},
-    {x:f.x+W/2,y:f.y+H/2,type:'gate',name:'BALANCE BEAM'},
+    {x:f.x+W/2,y:f.y+H/2,type:'balance',hold:120,name:'BALANCE BEAM'},
     {x:f.x+W/2,y:f.y+H+40,type:'finish',name:'FINISH'},
   ];
   const rings=pts.map((p,i)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(15,1.6,8,24),new THREE.MeshBasicMaterial({color:i===0?COL.green:COL.purple}));m.position.set(p.x,16,p.y);g.add(m);return m;});
+  const timber=lam('#806548'),steel=lam('#6c7875'),rope=lam('#bdad83');
+  for(let i=1;i<pts.length-1;i++){
+    const p=pts[i];sign(g,(i)+' · '+p.name,65,8,p.x,42,p.y-18,'#f3d38d','#263b34');
+    if(p.type==='rope'){for(const x of [-20,20])box(g,3,52,3,p.x+x,26,p.y-12,steel);box(g,44,3,3,p.x,52,p.y-12,steel);cyl(g,.8,.8,45,p.x,27,p.y-12,rope,6);}
+    else if(p.type==='wall'){box(g,40,28,3,p.x,14,p.y-15,timber);for(let y=5;y<28;y+=7)box(g,28,1,2,p.x,y,p.y-12,rope);}
+    else if(p.type==='balance'){box(g,9,3,48,p.x,2,p.y,timber);for(const z of [-20,20])box(g,12,2,5,p.x,1,p.y+z,steel);}
+    else if(p.name==='LOW CRAWL'){for(const x of [-20,20])box(g,2,12,35,p.x+x,6,p.y,steel);for(let z=-15;z<=15;z+=6)box(g,40,.5,1,p.x,12,p.y+z,rope);}
+    else for(const x of [-22,22])box(g,2,24,2,p.x+x,12,p.y,steel);
+  }
   course={f,pts,rings};
 }
 
@@ -292,16 +313,21 @@ function endRide(){const r=ride;ride=null;fireHeld=false;scene.remove(r.mesh);pl
 
 // ---------------------------------------------------------------- obstacle course
 let run=null;
-function startCourse(){if(run)return;if(player.car)return toast('THE COURSE IS ON FOOT');run={i:1,t0:frame,taps:0};setRing();toast('GO! RUN THROUGH THE GOLD RINGS');}
+function startCourse(){if(run)return;if(player.car)return toast('THE COURSE IS ON FOOT');run={i:1,t0:frame,taps:0,hold:0};setRing();toast('GO! RUN THROUGH THE GOLD RINGS');}
 function setRing(){if(!course)return;course.rings.forEach((m,i)=>m.material.color.set(run&&i===run.i?COL.gold:i===0||i===course.pts.length-1?COL.green:COL.purple));}
 function updateCourse(){
   if(!run||!course)return;const p=course.pts[run.i];
   if(player.car||player.dead||frame-run.t0>150*60){run=null;setRing();return toast('COURSE FAILED · TRY AGAIN AT THE START');}
+  if(p.type==='hold'||p.type==='balance'){
+    const close=d2(player.x,player.y,p.x,p.y)<(p.type==='balance'?26:30),balanced=p.type!=='balance'||Math.abs(player.x-p.x)<7;
+    run.hold=close&&balanced?(run.hold||0)+1:0;
+    if(run.hold>=p.hold){run.i++;run.hold=0;sfx('cash');setRing();toast('DRILL CLEARED · '+course.pts[run.i].name);}
+  }
   if((p.type==='gate'||p.type==='finish')&&d2(player.x,player.y,p.x,p.y)<34){
     if(p.type==='finish')return finishCourse();run.i++;run.taps=0;sfx('cash');setRing();toast((course.pts[run.i].name||'NEXT'));}
   course.rings[run.i]&&(course.rings[run.i].rotation.y+=.05);
 }
-function climbTap(){const p=course.pts[run.i];run.taps++;if(run.taps>=p.taps){run.i++;run.taps=0;sfx('cash');setRing();toast(p.name+' CLEARED');}}
+function climbTap(){if(!run||!course||state!=='play'||player.car||player.dead)return;const p=course.pts[run.i];if(!p.taps||d2(player.x,player.y,p.x,p.y)>46||frame-(run.lastTap??-100)<10)return;run.lastTap=frame;run.taps++;if(run.taps>=p.taps){run.i++;run.taps=0;sfx('cash');setRing();toast(p.name+' CLEARED');}}
 function finishCourse(){const secs=(frame-run.t0)/60;run=null;setRing();
   const medal=secs<45?'GOLD':secs<65?'SILVER':'BRONZE',pay={GOLD:1500,SILVER:900,BRONZE:400}[medal];
   const record=!save.courseBest||secs<save.courseBest;if(record){save.courseBest=secs;persist();}
@@ -547,7 +573,7 @@ drawHUD=function(){const r=prevHUD.apply(this,arguments);try{
   if(curSpot&&!coarse()){const t='E · '+curSpot.label;cx.font="800 18px 'Barlow Condensed'";const w=cx.measureText(t).width+28;cx.fillStyle='rgba(20,10,34,.85)';cx.fillRect(SW/2-w/2,SH-128,w,34);cx.strokeStyle=COL.gold;cx.strokeRect(SW/2-w/2,SH-128,w,34);cx.fillStyle='#fff';cx.fillText(t,SW/2,SH-111);}
   if(ride){cx.fillStyle='rgba(120,10,20,.12)';cx.fillRect(0,0,SW,SH);cx.strokeStyle='#ffd36b';cx.lineWidth=2;cx.beginPath();cx.arc(SW/2,SH/2,34,0,6.283);cx.moveTo(SW/2-50,SH/2);cx.lineTo(SW/2+50,SH/2);cx.moveTo(SW/2,SH/2-50);cx.lineTo(SW/2,SH/2+50);cx.stroke();
     cx.font="800 26px 'Barlow Condensed'";cx.fillStyle='#ffd36b';cx.fillText('B-29 GUNNER · '+(ride.t/60).toFixed(1)+'s · KILLS '+ride.kills,SW/2,70);}
-  if(run&&course){cx.font="800 24px 'Barlow Condensed'";cx.fillStyle=COL.gold;const p=course.pts[run.i];cx.fillText('COURSE '+((frame-run.t0)/60).toFixed(1)+'s · '+(p.name||'')+' ('+run.i+'/'+(course.pts.length-1)+')',SW/2,70);}
+  if(run&&course){cx.font="800 24px 'Barlow Condensed'";cx.fillStyle=COL.gold;const p=course.pts[run.i];cx.fillText('COURSE '+((frame-run.t0)/60).toFixed(1)+'s · '+(p.name||'')+(p.hold?' · HOLD '+Math.round((run.hold||0)/p.hold*100)+'%':'')+' ('+run.i+'/'+(course.pts.length-1)+')',SW/2,70);}
   cx.restore();}catch(_){}return r;};
 const prevFullMap=drawFullMap;
 drawFullMap=function(){prevFullMap.apply(this,arguments);if(!isWorld(city))return;try{

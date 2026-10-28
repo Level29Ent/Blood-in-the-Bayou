@@ -241,6 +241,20 @@ makeCarMesh=function(c){if(!c.boat)return prevCarMesh(c);
   if(yacht){addPart(g,L*.37,14,W*.74,-L*.12,19,0,deck);addPart(g,L*.26,10,W*.65,-L*.14,31,0,glass);addPart(g,L*.43,1.6,W*.88,-L*.12,37,0,deck);
     for(const z of [-W*.37,W*.37])addPart(g,L*.5,1,1,L*.22,17,z,lam('#b8c4c9'));}
   else{addPart(g,22,2,1,2,16,-W*.33,deck);addPart(g,22,2,1,2,16,W*.33,deck);}
+  const chrome=new THREE.MeshStandardMaterial({color:'#c3cccd',metalness:.8,roughness:.26}),teak=lam('#967354'),rubber=lam('#252b2e');
+  for(let x=-L*.34;x<L*.29;x+=5)addPart(g,1,.3,W*.7,x,10,0,teak);
+  for(const side of [-1,1]){
+    for(const x of [-L*.39,-L*.1,L*.22])addPart(g,.65,7,.65,x,13,side*W*.43,chrome);
+    addPart(g,L*.64,.7,.7,-L*.07,16.5,side*W*.43,chrome);
+    addPart(g,4,.7,1,-L*.35,11,side*W*.32,chrome);
+    addPart(g,L*.68,1,.8,-L*.07,7,side*W*.49,rubber);
+    for(const x of [-L*.25,0]){const f=new THREE.Mesh(new THREE.CylinderGeometry(1.4,1.4,6,8),deck);f.position.set(x,6,side*W*.52);g.add(f);}
+    addPart(g,3,.8,1.5,L*.27,15,side*W*.38,new THREE.MeshBasicMaterial({color:side<0?'#dd5544':'#51b487'}));
+  }
+  addPart(g,L*.19,5,W*.34,-L*.27,13,0,lam('#d2c5ac'));
+  const helm=new THREE.Mesh(new THREE.TorusGeometry(2,.25,6,18),chrome);helm.position.set(-L*.06,16,0);helm.rotation.y=Math.PI/2;g.add(helm);
+  const prop=new THREE.Mesh(new THREE.TorusGeometry(2,.45,6,12),rubber);prop.position.set(-L*.53,1,0);prop.rotation.y=Math.PI/2;g.add(prop);
+  addPart(g,1,2,5,-L*.53,1,0,chrome);addPart(g,.8,5,1,-L*.53,1,0,chrome);
   addSign(g,yacht?'LEVEL 29 YACHT':'LEVEL 29',yacht?46:28,6,-L/2-.3,10,0,'#d9b861').rotation.y=-Math.PI/2;
   g.userData={paint,dead:false,col:c.col,top:16,bar:null};scene.add(g);return g;
 };
@@ -573,7 +587,7 @@ function catchFish(){
   let r=Math.random()*table.reduce((n,f)=>n+f[2],0),pick=table[table.length-1];
   for(const f of table){r-=f[2];if(r<=0){pick=f;break;}}
   const offshore=fish.boat,gain=Math.round(pick[1]*(.85+Math.random()*.4)*(save.owned.rod?1.25:1)*(offshore?1.2:1));
-  cash+=gain;save.fishCaught++;sfx('cash');
+  cash+=gain;save.fishCaught++;if(pick[0]!=='Sealed dockside lockbox')save.fishStock=(Number(save.fishStock)||0)+1;sfx('cash');
   const goal=save.fishCaught%5===0,bonus=goal?350:0;if(goal)cash+=bonus;
   stopFishing(pick[0].toUpperCase()+' CAUGHT · +$'+gain+(goal?' · ANGLER CONTRACT +$350':' · '+(5-save.fishCaught%5)+' TO CONTRACT BONUS'));
   persist();
@@ -592,7 +606,7 @@ function reel(){
     if(fish.reelCooldown>0)return;
     fish.reelCooldown=10;fish.tension+=save.owned.rod?.14:.19;
     if(fish.tension>=1){stopFishing('LINE SNAPPED · REST BETWEEN REELS');return;}
-    fish.progress+=save.owned.rod?.19:.15;fish.t=600;sfx('door');
+    fish.progress+=(save.owned.rod?.19:.15)*(window.level29Trading?.reelPower||1);fish.t=600;sfx('door');
     if(fish.progress>=1)return catchFish();fishingUI();return;
   }
   const width=save.owned.rod?.34:.24;

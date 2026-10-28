@@ -367,6 +367,15 @@ function buildCity(){
     normal.forEach((t, i) => { dummy.position.set(t.x, 0, t.y); dummy.scale.set(1, 22 + t.r*.6, 1); dummy.rotation.set(0, 0, 0); dummy.updateMatrix(); tr.setMatrixAt(i, dummy.matrix);
       dummy.position.set(t.x, 26 + t.r*.9, t.y); dummy.scale.set(t.r*1.15, t.r*1.05, t.r*1.15); dummy.rotation.set(0, t.x, 0); dummy.updateMatrix(); lf.setMatrixAt(i, dummy.matrix); });
     cityGroup.add(tr, lf);
+    // Offset crown lobes and forked branches replace the spherical lollipop silhouette.
+    for(let side=-1;side<=1;side+=2){
+      const crown=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),lam(side<0?'#355b35':'#486a3b'),normal.length);
+      const branch=new THREE.InstancedMesh(new THREE.CylinderGeometry(.65,1.2,1,5).translate(0,.5,0),MAT.trunk,normal.length);
+      normal.forEach((t,i)=>{
+        dummy.position.set(t.x+side*t.r*.65,26+t.r*.7,t.y+Math.sin(t.x)*t.r*.45);dummy.rotation.set(.2,t.y*.1,side*.15);dummy.scale.set(t.r*.8,t.r*.65,t.r*.8);dummy.updateMatrix();crown.setMatrixAt(i,dummy.matrix);crown.setColorAt(i,new THREE.Color().setScalar(.8+hash(t.x+t.y)*.3));
+        dummy.position.set(t.x,17+t.r*.3,t.y);dummy.rotation.set(0,t.y*.1,-side*.6);dummy.scale.set(1,t.r*1.4,1);dummy.updateMatrix();branch.setMatrixAt(i,dummy.matrix);
+      });cityGroup.add(crown,branch);
+    }
   }
   if (palms.length){
     const tr = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1.6, 1, 6).translate(0, .5, 0), MAT.trunk, palms.length);
@@ -448,6 +457,24 @@ function buildViewModel(){
   const gauge = new THREE.Mesh(new THREE.CircleGeometry(2.6, 24), new THREE.MeshBasicMaterial({ color: 0x0f2a18 })); gauge.position.set(-5.5, -7.6, -12.5); gauge.rotation.x = -.35; dash.add(gauge);
   wheel = new THREE.Mesh(new THREE.TorusGeometry(4.2, .55, 8, 28), lam('#101010')); wheel.position.set(-5.5, -7.2, -9.5); wheel.rotation.x = -.45; dash.add(wheel);
   const spoke = box(8, .6, .6, lam('#1b1b1b')); wheel.add(spoke); const hub = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, .8, 12), lam('#1b1b1b')); hub.rotation.x = Math.PI/2; wheel.add(hub);
+  // Cockpit furnishings use the view-model camera, so they remain readable in first person.
+  const trim=lam('#647078'),accent=new THREE.MeshStandardMaterial({color:'#353c41',roughness:.45,metalness:.35});dash.userData.accent=accent;
+  const part=(w,h,d,x,y,z,mat)=>{const o=box(w,h,d,mat);o.position.set(x,y,z);dash.add(o);return o;};
+  part(18,.4,.6,0,-7.9,-13,accent);
+  for(const x of [-18,10,18]){part(4,1.7,.6,x,-8.4,-12.1,trim);for(let j=0;j<4;j++)part(3,.12,.3,x,-8.9+j*.35,-11.6,lam('#111719'));}
+  const cluster=new THREE.Group();cluster.position.set(-5.5,-7.8,-11.7);cluster.rotation.x=-.35;dash.add(cluster);
+  const needles=[];
+  for(const x of [-2.1,2.1]){
+    const dial=new THREE.Mesh(new THREE.CircleGeometry(1.6,24),new THREE.MeshBasicMaterial({color:'#18232a'}));dial.position.x=x;cluster.add(dial);
+    const rim=new THREE.Mesh(new THREE.TorusGeometry(1.65,.12,6,24),trim);rim.position.x=x;cluster.add(rim);
+    for(let i=0;i<10;i++){const a=-.8+i*.48,tick=box(.12,.28,.1,lam('#d6dfd8'));tick.position.set(x+Math.sin(a)*1.25,Math.cos(a)*1.25,.12);tick.rotation.z=-a;cluster.add(tick);}
+    const n=box(.08,1.2,.12,lam('#e19d51'));n.geometry.translate(0,.5,0);n.position.set(x,0,.2);cluster.add(n);needles.push(n);
+  }
+  dash.userData.needles=needles;
+  part(5.5,3,.5,3,-8.2,-11.4,lam('#151d23'));part(4.5,2,.1,3,-8.2,-11.05,new THREE.MeshBasicMaterial({color:'#426c76'}));
+  for(const x of [1.7,4.3]){const knob=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.4,10),trim);knob.rotation.x=Math.PI/2;knob.position.set(x,-10,-10.8);dash.add(knob);}
+  part(.5,2,.5,3,-12,-8,trim);part(1,.5,1,3,-11,-8,lam('#232a2e'));
+  part(9,2,.5,0,5,-18,lam('#253036'));part(7.5,1.3,.1,0,5,-17.7,lam('#9caeae'));
   vmScene.add(dash);
 }
 
@@ -655,6 +682,7 @@ function syncViewModel(){
   const inCar = show && p.car;
   gun.visible = !!(show) && (!inCar || (mouse.down || keys['f'] || keys['j'] || touch.shoot)) && !view.chase && (typeof curW === 'undefined' || curW === 'm240' || (!!inCar && curW === 'bat'));
   dash.visible = !!inCar && !view.chase;
+  if(inCar){const ratio=Math.min(1,Math.abs(p.car.v||0)/(p.car.spec.max||6));for(const [i,n]of (dash.userData.needles||[]).entries())n.rotation.z=2.1-ratio*(i?3.8:4.2);if(dash.userData.accent)dash.userData.accent.color.set(window.level29Trading?.color||'#353c41');}
   if (!show) return;
   if (p.flash > 0 && p.flash === 3){ view.kick = 1; }
   view.kick *= .72;
