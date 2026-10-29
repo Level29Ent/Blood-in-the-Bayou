@@ -103,7 +103,7 @@ buildVenue=function(v){
  else {for(const side of [-1,1]){part(25,10,20,b.x+b.w/2+side*30,5,b.y+24,wood);part(12,7,10,b.x+b.w/2+side*30,3.5,b.y+43,dark);}addSign(g,'COFFEE · FRESH FOOD',100,9,b.x+b.w/2,32,b.y+4,v.col);}
 };
 const build=buildCity;
-buildCity=function(){farmGPS=false;farmButton.textContent='FIND FARM';dancers=[];animals=[];crew=[];build.apply(this,arguments);if(!city.world)return;root=new THREE.Group();cityGroup.add(root);
+buildCity=function(){farmGPS=false;farmButton.textContent='MAP';dancers=[];animals=[];crew=[];build.apply(this,arguments);if(!city.world)return;root=new THREE.Group();cityGroup.add(root);
  const mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:.8});
  const part=(w,h,d,x,y,z,c)=>addPart(root,w,h,d,x,y,z,mat(c));
  if(city.hollywood){const b=city.hollywood.b;addSign(root,'GOLDEN HILLS · HOLLYWOOD',240,24,b.x+b.w/2,100,b.y,'#f3dfb5');for(let i=0;i<8;i++){part(18,.3,18,b.x+i*28,1,b.y+b.h+22,i%2?'#b39b70':'#74637c');part(14,30,2,b.x+i*30,15,b.y+2,'#a38b6b');}addSign(root,'FILM ROW · CAFES · STUDIO TOURS',220,10,b.x+b.w/2,35,b.y+b.h+2,'#e5d2a4');}
@@ -131,11 +131,22 @@ makeFigure=function(zombie){const m=figure(zombie);if(zombie)return m;
  for(const z of [-2.1,2.1])addPart(body,.4,3.5,.4,2.4,12,z,cloth);
  addPart(body,.5,1.4,1.6,2.6,13,-1.5,new THREE.MeshStandardMaterial({color:'#b6c3c9',metalness:.5,roughness:.4}));return m;};
 let checkpoint=null,farmGPS=false;
-const farmButton=document.createElement('button');farmButton.id='findFarm';farmButton.type='button';farmButton.textContent='FIND FARM';farmButton.style.cssText='position:fixed;right:12px;top:92px;z-index:25;padding:8px;background:#17271fe8;color:#e2d5a6;border:1px solid #958455;font:700 11px monospace;display:none';document.body.appendChild(farmButton);
-farmButton.onclick=()=>{if(farmGPS&&showMap){showMap=false;farmButton.textContent='CANCEL FARM GPS';return;}if(!city?.farmEntrance)return toast('FARM UNAVAILABLE IN THIS AREA');farmGPS=!farmGPS;farmButton.textContent=farmGPS?'RETURN TO GAME':'FIND FARM';showMap=farmGPS;if(farmGPS)toast('FARM GPS · FOLLOW THE GREEN BEAM / F ON THE MAP');};
+const mapActions=document.createElement('div');mapActions.id='hudMapActions';mapActions.setAttribute('role','group');mapActions.setAttribute('aria-label','Map and rewards');
+const mapStyle=document.createElement('style');mapStyle.textContent=`
+ #hudMapActions{position:fixed;right:max(18px,env(safe-area-inset-right));top:calc(var(--hud-status-bottom, 200px) + 12px);z-index:25;display:none;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none}
+ #hudMapActions>button{pointer-events:auto;margin:0;box-sizing:border-box}
+ #findFarm{min-width:64px;min-height:44px;padding:8px 12px;background:#17271fe8;color:#e2d5a6;border:1px solid #958455;font:700 11px monospace;cursor:pointer}
+ #hudMapActions #dailyBadge{position:static;right:auto;top:auto}
+ @media(max-height:499px){#hudMapActions{flex-direction:row;align-items:center}}
+`;document.head.appendChild(mapStyle);document.body.appendChild(mapActions);
+const farmButton=document.createElement('button');farmButton.id='findFarm';farmButton.type='button';farmButton.textContent='MAP';mapActions.appendChild(farmButton);
+// One spaced action stack also prevents the daily-reward button covering MAP on phones.
+const dailyBadge=document.getElementById('dailyBadge');if(dailyBadge)mapActions.appendChild(dailyBadge);
+function mapActionLabel(){const action=farmGPS?(showMap?'Return to game; keep farm directions':'Cancel farm directions'):'Open map with farm directions';farmButton.title=action;farmButton.setAttribute('aria-label','MAP · '+action);farmButton.setAttribute('aria-expanded',String(!!showMap));}
+farmButton.onclick=()=>{if(farmGPS&&showMap){showMap=false;mapActionLabel();return;}if(!city?.farmEntrance)return toast('FARM UNAVAILABLE IN THIS AREA');farmGPS=!farmGPS;showMap=farmGPS;mapActionLabel();if(farmGPS)toast('FARM GPS · FOLLOW THE GREEN BEAM / F ON THE MAP');};
 const renderBase=render;
-render=function(){renderBase.apply(this,arguments);farmButton.style.display=state==='play'&&city?.farm?'block':'none';if(!scene||!city?.world)return;
- if(farmGPS&&city.farmEntrance&&dist(player.x,player.y,city.farmEntrance.x,city.farmEntrance.y)<50){farmGPS=false;farmButton.textContent='FIND FARM';toast('BAYOU FARM · WALK THROUGH THE ENTRANCE · USE TO FEED');}
+render=function(){renderBase.apply(this,arguments);mapActions.style.display=state==='play'?'flex':'none';farmButton.hidden=!city?.farm;mapActionLabel();if(!scene||!city?.world)return;
+ if(farmGPS&&city.farmEntrance&&dist(player.x,player.y,city.farmEntrance.x,city.farmEntrance.y)<50){farmGPS=false;farmButton.textContent='MAP';toast('BAYOU FARM · WALK THROUGH THE ENTRANCE · USE TO FEED');}
  if(!checkpoint||checkpoint.parent!==scene){checkpoint=new THREE.Mesh(new THREE.CylinderGeometry(20,20,110,20,1,true),new THREE.MeshBasicMaterial({color:'#f1c361',transparent:true,opacity:.18,side:THREE.DoubleSide,depthWrite:false}));scene.add(checkpoint);}
  const t=farmGPS&&city.farmEntrance?{...city.farmEntrance,col:'#a4d876',label:'FARM'}:missionTarget();checkpoint.visible=!!t&&state==='play';if(t){checkpoint.position.set(t.x,terrainHeight(t.x,t.y)+55,t.y);checkpoint.material.color.set(t.col||'#f1c361');}
 };

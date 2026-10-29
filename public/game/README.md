@@ -141,3 +141,8 @@ The entire renderer now uses `NoToneMapping` at fixed exposure 1, with no animat
 - **Marsh Pistol** and **Delta Marksman** are purchasable, ammo-consuming playable weapons with distinct damage/range/cooldown, models, wheel/keyboard entries (8/9), saved inventory and dedicated armory pedestals. All armories now have nine exhibits. These use only earned game cash.
 - JOBS adds **Farm Hand** (animal care/harvest and produce delivery, dispatched from a grocery) and **Airport Ground Crew** (apron inspection and freight courier, dispatched from the terminal), with task markers, hold-to-work props, wages, ranks and saved results. Farm care requires using and returning the supplied van. Daily reward promotion is deferred until an active shift ends so it cannot interrupt a work interaction.
 - Fixed Low/direct rendering, transparent glass, no tone mapping and the quiet rain mix are unchanged. Local touch-browser checks are not a claim of physical-iPhone FPS, photorealism, or exhaustive visual clearance at every camera angle. The existing Next.js security-upgrade reminder remains separate.
+
+
+## MAP HUD action slot
+
+The farm-map action now displays **MAP** in every state. Its existing open-map / return-with-directions / cancel-directions behavior is unchanged; the tooltip and accessible label describe the current action. MAP and the daily reward badge share a spaced DOM action container anchored 12px below the actual canvas status stack, including armor, weapon/ammo, vehicle and visible upgrade rows. Short landscape viewports use a horizontal action row. The map target remains at least 44px tall and hides outside gameplay.
