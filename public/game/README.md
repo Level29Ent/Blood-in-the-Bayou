@@ -104,3 +104,15 @@ The ground canvas is explicitly sRGB and uses a dedicated rough, nonmetallic Sta
 ## Fixed performance-first graphics
 
 The graphics selector and G shortcut are removed. Every device uses the fixed Low/direct-rendering policy, ignoring saved High/Medium selections. The compatibility setter cannot re-enable expensive effects. Transparent modeled glass, dark asphalt/color restoration, ACES and adaptive resolution remain; no SSAO/compositor targets, transmission or dynamic shadow maps are re-enabled. Physical-device FPS still varies by hardware.
+
+## Mountain activity anchors, visible farm and original penthouse paint
+
+- Mountain mesh vertices no longer add a visual-only fractal height offset above collision terrain. Footing uses the same piecewise triangle surface as the rendered mountain grid (including the grid diagonal), preventing actors from standing on a different analytical surface. This retains the lighter mountain tessellation, not additional GPU passes.
+- Stunt ramps, rampage markers and packages now validate their full footprint against mountain features, buildings, the farm, height and slope. Invalid activity sites relocate to flat lowland candidates with their IDs preserved. If no safe site exists it is omitted rather than floating on a mountain.
+- The existing lowland farm has 12 animals, a barn landmark, larger entrance signs and an open fence entrance. **FIND FARM** opens the map with a labeled farm and enables a green destination beam. RETURN TO GAME closes the map while keeping directions; CANCEL FARM GPS then clears the guide. Reaching the entrance clears the guide. Mission state is not changed. Walk into the field and USE to feed animals; the existing feed price/cooldown remains. This is directions, not teleportation.
+- Penthouse wall paint retains the original `#672e79` purple, `#173f30` green, `#c5a23c` gold band and pale trim. The wall texture is explicitly sRGB; wall paint and matching edge panels bypass tone mapping/lighting so they do not bleach to pink/gray. Furniture, metallic trim, floors and transparent glazing retain their existing materials. Low/direct rendering stays fixed and the graphics selector remains absent.
+
+
+## Global color and basketball/market separation
+
+The entire renderer now uses `NoToneMapping` at fixed exposure 1, with no animated exposure or cinematic tone curve. Standard sRGB output is retained (it is color correction, not a washout filter), along with transparent glass and fixed lightweight/direct rendering. Day/dusk key/bounce intensity is restrained and fog is pushed to distant scenery. The basketball allocator reserves market and other amenity footprints with a full-tile buffer; its final court reservation is also excluded from farm/business allocation and relocated building candidates. The existing market stays in its own site instead of sharing the court. This supersedes the earlier ACES configuration.

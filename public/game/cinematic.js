@@ -59,9 +59,11 @@ function beforeWorld(){
  if(quality()==='low'&&composer)dispose();setup();if(!scene)return;
  if(!composer&&mode!==quality()){mode=quality();prepared=new WeakSet();converted=new WeakMap();ticks=0;scene.traverse(o=>{for(const m of (Array.isArray(o.material)?o.material:[o.material]))if(m?.isMeshPhysicalMaterial&&!['vehiclePaint','boatPaint'].includes(m.name)){m.transmission=0;m.opacity=.27;m.needsUpdate=true;}});}
  if(composer)configure();if(ssao?.ssaoMaterial){const u=ssao.ssaoMaterial.uniforms;u.cameraProjectionMatrix.value.copy(camera.projectionMatrix);u.cameraInverseProjectionMatrix.value.copy(camera.projectionMatrixInverse);u.cameraNear.value=camera.near;u.cameraFar.value=camera.far;}ticks++;if(preparedCity!==(typeof city==='undefined'?null:city)||ticks===1){prepare(scene);prepare(vmScene);preparedCity=typeof city==='undefined'?null:city;}
- if(scene.fog){scene.fog.near=lightMode==='night'?180:600;scene.fog.far=lightMode==='night'?1000:1550;}
+ // Retain only distant depth haze; no nearby gray veil.
+ if(scene.fog){scene.fog.near=lightMode==='night'?400:1000;scene.fog.far=lightMode==='night'?1400:2400;}
+ renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;
  // One lighting palette for direct rendering and postprocessing; avoid bleaching dark albedo.
- sun.intensity=lightMode==='day'?1.05:lightMode==='dusk'?.8:.25;hemi.intensity=lightMode==='night'?.36:.55;
+ sun.intensity=lightMode==='day'?.8:lightMode==='dusk'?.65:.2;hemi.intensity=lightMode==='night'?.3:.45;
  scene.environment=env?.texture||scene.environment;if(vmScene)vmScene.environment=scene.environment;
 }
 function drawWorld(){

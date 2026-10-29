@@ -85,6 +85,8 @@ function layoutCourt(c,avoid){
   const W=c.width,H=c.height;
   const ref=c.residence?c.residence.lobby:{x:W*T/2,y:H*T/2},tx0=ref.x/T,ty0=ref.y/T;let best=null;
   const DL=window.level29Downtown&&window.level29Downtown.lots;const taken=avoid.slice();if(DL)for(const k in DL)taken.push(tileRect(DL[k]));
+  // Amenity footprints must not be reused: market stalls and court floor previously shared park tiles.
+  for(const f of c.features||[])if(['market','basketball','cemetery','training','skatepark','mountain'].includes(f.kind))taken.push({x:f.x-T,y:f.y-T,w:f.w+T*2,h:f.h+T*2});
   const tries=[[8,5,1,t=>t===T_GRASS||t===T_PARK||t===T_LOT],[8,5,0,t=>t===T_GRASS||t===T_PARK||t===T_LOT||t===T_SAND],[6,4,0,t=>t===T_GRASS||t===T_PARK||t===T_LOT||t===T_SAND||t===T_PLAZA],
     [8,5,0,t=>t!==T_WATER&&t!==T_BRIDGE&&t!==T_BLD&&t!==T_ROAD],[6,4,0,t=>t!==T_WATER&&t!==T_BRIDGE&&t!==T_BLD]];
   for(const [w,h,m,ok] of tries){let bd=1e9;
@@ -94,7 +96,7 @@ function layoutCourt(c,avoid){
     if(best)break;}
   if(!best)return null;const r=tileRect(best);clearArea(c,r,[]);
   for(let y=best.y0;y<=best.y1;y++)for(let x=best.x0;x<=best.x1;x++)c.g[y*W+x]=T_PLAZA;
-  flats.push(r);return Object.assign(best,{r});
+  c.basketballReservation={...r};flats.push(r);return Object.assign(best,{r});
 }
 
 const prevGen=genCity;
@@ -329,7 +331,8 @@ function rebuildMountains(c){
     const seg=Math.min(64,Math.max(24,Math.round(Math.max(f.w,f.h)/24))),geo=new THREE.PlaneGeometry(f.w,f.h,seg,seg);geo.rotateX(-Math.PI/2);
     const pos=geo.attributes.position;
     for(let i=0;i<pos.count;i++){const x=pos.getX(i)+f.x+f.w/2,z=pos.getZ(i)+f.y+f.h/2;const road=(c.curveDist?c.curveDist(x,z)<64:false)&&!(c.developmentWeight&&c.developmentWeight(x,z)>.5);
-      const base=c.heightAt(x,z);let h=road?-3:base;if(!road&&base>2){const m=Math.min(1,base/90)*(c.developmentWeight?1-c.developmentWeight(x,z):1);h+=(fbm(x*.006,z*.006)-.45)*60*m+(noise(x*.05,z*.05)-.5)*6*m;}
+      // Use the same surface as collision/characters; visual-only height noise caused floating props.
+      const base=c.heightAt(x,z),h=road?Math.min(0,base):base;
       pos.setXYZ(i,x,Math.max(road?-3:0,h),z);}
     geo.computeVertexNormals();const nor=geo.attributes.normal,col=new Float32Array(pos.count*3);let maxH=1;for(let i=0;i<pos.count;i++)maxH=Math.max(maxH,pos.getY(i));
     for(let i=0;i<pos.count;i++){const h=pos.getY(i),k=h/maxH,slope=1-nor.getY(i),j=(noise(pos.getX(i)*.08,pos.getZ(i)*.08)-.5)*.08;let r,g,b;
@@ -339,7 +342,7 @@ function rebuildMountains(c){
       if(h>8&&slope>.3&&hr<.012)rocks.push([x,h,z,4+hr*600]);
       else if(h>4&&k<.55&&slope<.35&&hr<.03)pines.push([x,h,z,.8+hash(z,x)*.6]);}
     geo.setAttribute('color',new THREE.BufferAttribute(col,3));
-    const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,map:terrainSurface(),bumpMap:terrainSurface(),bumpScale:1.2,roughness:.96,metalness:0}));m.position.y=.4;grp.add(m);}
+    const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,map:terrainSurface(),bumpMap:terrainSurface(),bumpScale:1.2,roughness:.96,metalness:0}));m.position.y=0;grp.add(m);}
   const dummy=new THREE.Object3D();
   if(rocks.length){const im=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,0),rockM,rocks.length);rocks.forEach(([x,y,z,s],i)=>{dummy.position.set(x,y,z);dummy.rotation.set(s,s*2,s*3);dummy.scale.set(s,s*.7,s*1.1);dummy.updateMatrix();im.setMatrixAt(i,dummy.matrix);});grp.add(im);}
   if(pines.length){const n=Math.min(pines.length,240),cone=new THREE.InstancedMesh(new THREE.ConeGeometry(7,26,11),pineM,n),tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(1.2,1.6,8,5),trunkM,n);

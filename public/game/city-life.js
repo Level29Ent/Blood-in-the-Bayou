@@ -20,6 +20,7 @@ function prepare(c,b,id,key){
 function freeLot(c,w,h,predicate,grade=false){
  for(let y=4;y<MH-h-4;y+=2)for(let x=GULF_X+8;x<MW-w-4;x+=2){
   if(predicate&&!predicate(x,y))continue;const r={x:x*TILE,y:y*TILE,w:w*TILE,h:h*TILE};if(!grade&&window.level29Terrain&&!level29Terrain.lowland(c,r))continue;
+  if(c.basketballReservation&&level29SiteLayout.intersects(r,c.basketballReservation))continue;
   if(c.buildings.some(b=>r.x<b.x+b.w+32&&r.x+r.w>b.x-32&&r.y<b.y+b.h+32&&r.y+r.h>b.y-32))continue;
   if(Object.values(window.level29Downtown.lots).some(l=>r.x<(l.x1+2)*TILE&&r.x+r.w>(l.x0-1)*TILE&&r.y<(l.y1+2)*TILE&&r.y+r.h>(l.y0-1)*TILE))continue;
   let ok=true;for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)if(![T_GRASS,T_PARK,T_LOT,T_SAND].includes(c.g[yy*MW+xx]))ok=false;
@@ -70,6 +71,7 @@ function routeToStreet(c,v){
  const out=[];if(end<0)return out;for(let k=end;k!==-1;k=prev.get(k))out.push(k);return out;
 }
 let dancers=[],animals=[],crew=[],root=null;
+function cFarmEntrance(r){city.farmEntrance={x:r.x+r.w/2,y:r.y+r.h+24};}
 const oldBuild=buildVenue;
 buildVenue=function(v){
  if(!TYPES.some(t=>t.id===v.id))return oldBuild(v);
@@ -101,12 +103,21 @@ buildVenue=function(v){
  else {for(const side of [-1,1]){part(25,10,20,b.x+b.w/2+side*30,5,b.y+24,wood);part(12,7,10,b.x+b.w/2+side*30,3.5,b.y+43,dark);}addSign(g,'COFFEE · FRESH FOOD',100,9,b.x+b.w/2,32,b.y+4,v.col);}
 };
 const build=buildCity;
-buildCity=function(){dancers=[];animals=[];crew=[];build.apply(this,arguments);if(!city.world)return;root=new THREE.Group();cityGroup.add(root);
+buildCity=function(){farmGPS=false;farmButton.textContent='FIND FARM';dancers=[];animals=[];crew=[];build.apply(this,arguments);if(!city.world)return;root=new THREE.Group();cityGroup.add(root);
  const mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:.8});
  const part=(w,h,d,x,y,z,c)=>addPart(root,w,h,d,x,y,z,mat(c));
  if(city.hollywood){const b=city.hollywood.b;addSign(root,'GOLDEN HILLS · HOLLYWOOD',240,24,b.x+b.w/2,100,b.y,'#f3dfb5');for(let i=0;i<8;i++){part(18,.3,18,b.x+i*28,1,b.y+b.h+22,i%2?'#b39b70':'#74637c');part(14,30,2,b.x+i*30,15,b.y+2,'#a38b6b');}addSign(root,'FILM ROW · CAFES · STUDIO TOURS',220,10,b.x+b.w/2,35,b.y+b.h+2,'#e5d2a4');}
- if(city.farm){const r=city.farm;addSign(root,'LEVEL 29 BAYOU FARM',150,14,r.x+r.w/2,40,r.y,'#d3c38c');
-  for(let x=r.x;x<=r.x+r.w;x+=24)for(const y of [r.y,r.y+r.h]){part(2,16,2,x,8,y,'#96774e');part(23,2,2,x,11,y,'#ad9268');}
+ if(city.farm){const r=city.farm,base=city.heightAt?city.heightAt(r.x+r.w/2,r.y+r.h/2):0;
+  // A visible lowland landmark and open entrance, not just a small remote sign.
+  const farmGroup=new THREE.Group();farmGroup.name='Bayou Farm landmark';farmGroup.position.y=base;root.add(farmGroup);
+  const barnMat=new THREE.MeshStandardMaterial({color:'#993f32',roughness:1}),roofMat=new THREE.MeshStandardMaterial({color:'#313b3b',roughness:.9});
+  city.farmBarn={x:r.x+r.w-77.5,y:r.y+15.5,w:65,h:45};addPart(farmGroup,65,35,45,r.x+r.w-45,17.5,r.y+38,barnMat);const roof=addPart(farmGroup,76,4,58,r.x+r.w-45,37,r.y+38,roofMat);roof.rotation.z=.08;
+  addPart(farmGroup,24,25,1,r.x+r.w-45,12.5,r.y+61,new THREE.MeshStandardMaterial({color:'#efe3be',roughness:1}));
+  addSign(farmGroup,'BAYOU FARM · ANIMALS & PRODUCE',190,17,r.x+r.w/2,45,r.y+r.h,'#edcf7c');
+  addSign(farmGroup,'ENTER HERE · USE TO FEED ANIMALS',160,10,r.x+r.w/2,24,r.y+r.h+1,'#d5e5b0');
+  cFarmEntrance(r);
+  addSign(root,'LEVEL 29 BAYOU FARM',150,14,r.x+r.w/2,base+48,r.y,'#d3c38c');
+  for(let x=r.x;x<=r.x+r.w;x+=24)for(const y of [r.y,r.y+r.h]){if(y===r.y+r.h&&Math.abs(x-(r.x+r.w/2))<40)continue;part(2,16,2,x,8,y,'#96774e');part(23,2,2,x,11,y,'#ad9268');}
   for(let i=0;i<12;i++){const kind=i<4?'cow':i<8?'pig':'chicken',g=new THREE.Group(),color=kind==='cow'?'#d8d1b8':kind==='pig'?'#d29e91':'#b59a61',m=mat(color);const mesh=(w,h,d,x,y,z)=>addPart(g,w,h,d,x,y,z,m);
    const s=kind==='chicken'?.45:1;mesh(15*s,8*s,8*s,0,9*s,0);mesh(7*s,7*s,6*s,9*s,11*s,0);for(const x of [-5,5])for(const z of [-3,3])mesh(2*s,7*s,2*s,x*s,3.5*s,z*s);if(kind==='cow')for(const x of [-4,3])addPart(g,5,1,8,x,13,0,mat('#4d463d'));
    root.add(g);animals.push({g,x:r.x+35+(i%4)*40,y:r.y+45+Math.floor(i/4)*45,seed:i});}
@@ -115,16 +126,20 @@ buildCity=function(){dancers=[];animals=[];crew=[];build.apply(this,arguments);i
 };
 CAR_SPECS.skiff={...CAR_SPECS.boat,name:'BAYOU SKIFF',len:58,wid:22,hp:180,cols:['#698b72','#b1b9ad'],boat:true};
 CAR_SPECS.cabinboat={...CAR_SPECS.yacht,name:'GULF CABIN CRUISER',len:92,wid:34,hp:350,cols:['#d7e0d7','#547b8a'],boat:true};
+const block=blockedCircle;blockedCircle=function(x,y,r){if(city?.farmBarn&&hitRect(x,y,r,city.farmBarn))return true;return block.apply(this,arguments);};
 const figure=makeFigure;
 makeFigure=function(zombie){const m=figure(zombie);if(zombie)return m;
  const body=m.userData.body,cloth=new THREE.MeshStandardMaterial({color:'#dcc6a3',roughness:.7});
  for(const z of [-2.1,2.1])addPart(body,.4,3.5,.4,2.4,12,z,cloth);
  addPart(body,.5,1.4,1.6,2.6,13,-1.5,new THREE.MeshStandardMaterial({color:'#b6c3c9',metalness:.5,roughness:.4}));return m;};
-let checkpoint=null;
+let checkpoint=null,farmGPS=false;
+const farmButton=document.createElement('button');farmButton.id='findFarm';farmButton.type='button';farmButton.textContent='FIND FARM';farmButton.style.cssText='position:fixed;right:12px;top:92px;z-index:25;padding:8px;background:#17271fe8;color:#e2d5a6;border:1px solid #958455;font:700 11px monospace;display:none';document.body.appendChild(farmButton);
+farmButton.onclick=()=>{if(farmGPS&&showMap){showMap=false;farmButton.textContent='CANCEL FARM GPS';return;}if(!city?.farmEntrance)return toast('FARM UNAVAILABLE IN THIS AREA');farmGPS=!farmGPS;farmButton.textContent=farmGPS?'RETURN TO GAME':'FIND FARM';showMap=farmGPS;if(farmGPS)toast('FARM GPS · FOLLOW THE GREEN BEAM / F ON THE MAP');};
 const renderBase=render;
-render=function(){renderBase.apply(this,arguments);if(!scene||!city?.world)return;
+render=function(){renderBase.apply(this,arguments);farmButton.style.display=state==='play'&&city?.farm?'block':'none';if(!scene||!city?.world)return;
+ if(farmGPS&&city.farmEntrance&&dist(player.x,player.y,city.farmEntrance.x,city.farmEntrance.y)<50){farmGPS=false;farmButton.textContent='FIND FARM';toast('BAYOU FARM · WALK THROUGH THE ENTRANCE · USE TO FEED');}
  if(!checkpoint||checkpoint.parent!==scene){checkpoint=new THREE.Mesh(new THREE.CylinderGeometry(20,20,110,20,1,true),new THREE.MeshBasicMaterial({color:'#f1c361',transparent:true,opacity:.18,side:THREE.DoubleSide,depthWrite:false}));scene.add(checkpoint);}
- const t=missionTarget();checkpoint.visible=!!t&&state==='play';if(t){checkpoint.position.set(t.x,terrainHeight(t.x,t.y)+55,t.y);checkpoint.material.color.set(t.col||'#f1c361');}
+ const t=farmGPS&&city.farmEntrance?{...city.farmEntrance,col:'#a4d876',label:'FARM'}:missionTarget();checkpoint.visible=!!t&&state==='play';if(t){checkpoint.position.set(t.x,terrainHeight(t.x,t.y)+55,t.y);checkpoint.material.color.set(t.col||'#f1c361');}
 };
 const tick=update;
 update=function(){tick.apply(this,arguments);if(state!=='play'||!city||!player)return;
@@ -144,5 +159,7 @@ placeMissionStart=function(){start.apply(this,arguments);if(!city?.world||!missi
 };
 const blips=extraBlips;
 extraBlips=function(){const out=blips();for(const c of cars)if(c.dealerOwned&&!c.dead&&!c.gone)out.push({x:c.x,y:c.y,col:'#e6bf78',label:'V'});if(city?.farm)out.push({x:city.farm.x+city.farm.w/2,y:city.farm.y+city.farm.h/2,col:'#a4c379',label:'FARM'});return out;};
-window.level29CityLife={get inClub(){return !!player&&city?.venues?.some(v=>v.id==='nightclub'&&insideVenue(v,player));},get animals(){return animals;},get crew(){return crew;}};
+const fullMap=drawFullMap;
+drawFullMap=function(){fullMap.apply(this,arguments);if(!city?.farm)return;const r=city.farm,S=Math.min(SW,SH)-80,X=(SW-S)/2,Y=(SH-S)/2;cx.save();cx.font='bold 13px monospace';cx.textAlign='center';cx.fillStyle='#111d16';const x=X+(r.x+r.w/2)/WORLD*S,y=Y+(r.y+r.h/2)/WORLD*S;cx.fillRect(x-42,y-10,84,20);cx.fillStyle='#b8e58b';cx.fillText('BAYOU FARM',x,y+4);cx.restore();};
+window.level29CityLife={get farmGPS(){return farmGPS;},get inClub(){return !!player&&city?.venues?.some(v=>v.id==='nightclub'&&insideVenue(v,player));},get animals(){return animals;},get crew(){return crew;}};
 })();

@@ -96,7 +96,6 @@
     return mesh;
   }
 
-  const EXPOSURE = { day: 0.74, dusk: 1.0, night: 1.15 };
   const DAY_ZENITH = new THREE.Color('#3f74b8'), DUSK_ZENITH = new THREE.Color('#4a3d6e'), NIGHT_ZENITH = new THREE.Color('#03060f');
   function updateSky(){
     if (!sky) return;
@@ -109,8 +108,7 @@
     u.sunDir.value.copy(sunDir);
     u.night.value = mode === 'night' ? 1 : 0;
     u.sunSize.value = mode === 'night' ? 0.25 : 1;
-    const target = EXPOSURE[mode] || EXPOSURE.day;
-    renderer.toneMappingExposure += (target - renderer.toneMappingExposure) * 0.05;
+    renderer.toneMappingExposure = 1;
   }
 
   function applyQuality(){
@@ -158,8 +156,8 @@
     if (ready || !renderer) return;
     ready = true;
     renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
+    renderer.toneMapping = THREE.NoToneMapping;
+    renderer.toneMappingExposure = 1;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     sunDir.copy(sun.position).normalize();
     scene.add(sun.target);
