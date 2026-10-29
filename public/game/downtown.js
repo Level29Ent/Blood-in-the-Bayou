@@ -191,7 +191,7 @@ function buildLots(g){
       const cols=['#6a1fb0','#c21f6a','#1f9e5a','#d9a520'];
       cols.forEach((c,k)=>{const pad=new THREE.Group();pad.position.set((L.x0+1+k*(L.x1-L.x0-1)/3)*T,0,(L.y0+5)*T);g.add(pad);
         cyl(pad,30,32,3,0,1.5,0,lam('#1a1424'));const rec=L.inventory[k],sample=rec?makeCar(0,0,0,rec.type):null;if(sample)sample.col=c;const car=sample?makeCarMesh(sample):lowriderMesh(c);car.position.set(0,3,0);car.rotation.y=Math.PI/2;pad.add(car);spins.push(car);if(rec)sign(pad,CAR_SPECS[rec.type].name+' · '+money(rec.price),56,9,0,29,26,'#f2c14e','#172229');});
-      const fig=bonnieMesh();fig.position.set((L.x0+2)*T,0,(L.y0+1.2)*T);g.add(fig);dealerFig=fig;
+      const fig=bonnieMesh(),bp=window.level29Frontage?level29Frontage.lotPoint(L,{x:(L.x0+2)*T,y:(L.y0+1.2)*T}):{x:(L.x0+2)*T,y:(L.y0+1.2)*T};fig.position.set(bp.x,L.venue?.baseY||0,bp.y);g.add(fig);dealerFig=fig;
       const bb=new THREE.Mesh(new THREE.PlaneGeometry(56,32),new THREE.MeshBasicMaterial({map:getBonnie(),side:THREE.DoubleSide}));bb.position.set((L.x0+6.6)*T,62,(L.y0+.5)*T);g.add(bb);
       cyl(g,1.5,1.5,46,(L.x0+6.6)*T,23,(L.y0+.5)*T,lam('#333'));
       sign(g,'BONNIE DE VETTE · OWNER',56,9,(L.x0+6.6)*T,41,(L.y0+.5)*T+.4,COL.gold,'#14231a');
@@ -336,7 +336,7 @@ function finishCourse(){const secs=(frame-run.t0)/60;run=null;setRing();
 
 // ---------------------------------------------------------------- interaction spots
 function spots(){
-  const out=[];const add=(p,label,act)=>{if(p)out.push({x:p.x,y:p.y,label,act});};
+  const out=[];const add=(p,label,act)=>{if(p){const l=Object.values(lots).find(l=>l.venue&&p.x>=l.venue.b.x&&p.x<=l.venue.b.x+l.venue.b.w&&p.y>=l.venue.b.y&&p.y<=l.venue.b.y+l.venue.b.h);const casino=city.casinoVenue,f=casino?.frontage;const q=l&&window.level29Frontage?level29Frontage.lotPoint(l,p):f&&window.level29Frontage&&p.x>=casino.b.x&&p.x<=casino.b.x+casino.b.w&&p.y>=casino.b.y&&p.y<=casino.b.y+casino.b.h?level29Frontage.lotPoint({venue:casino},p):p;out.push({x:q.x,y:q.y,label,act});}};
   for(const id in lots){const L=lots[id];
     if(id==='airport'){add({x:(L.fb.x0+L.fb.x1+1)/2*T,y:(L.fb.y0+1.2)*T},'AIRPORT TERMINAL',()=>openPanel(airportPanel));add({x:(L.x0+(L.x1-L.x0+1)*.8)*T,y:(L.y0+4.6)*T},'BOMBER GUNNER RIDE · '+money(BOMBER_COST),()=>openPanel(airportPanel));}
     if(id==='stadium')add(L.door,'JESTER STADIUM · KICK FIELD GOALS',()=>openPanel(kickPanel()));

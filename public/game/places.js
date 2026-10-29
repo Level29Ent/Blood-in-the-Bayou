@@ -34,7 +34,7 @@ window.drawCharacterCaption=function(s){
 };
 // Actual voice captions remain visible over Ronniebaby's conversation panel.
 const voiceCaption=document.createElement('div');voiceCaption.id='voiceCaption';voiceCaption.style.cssText='display:none;position:fixed;z-index:65;left:50%;bottom:16px;transform:translateX(-50%);width:min(680px,calc(100% - 32px));background:#0b1319f5;border-left:3px solid #d4b266;padding:10px 14px;box-sizing:border-box;color:#f3eddb;font:13px/1.5 "IBM Plex Mono",monospace;pointer-events:none';document.body.appendChild(voiceCaption);
-const oldRbSay=rbSay;rbSay=function(key,next){const out=oldRbSay(key,next);if(RB_TEXT[key])speak('RONNIEBABY',RB_TEXT[key]);return out;};
+// Recorded Ronnie captions are emitted on the media 'playing' event by dialogue-sequencer.
 // Concrete blocks are reserved before the existing renderer builds the city.
 const sites=[['bank',7,1,8,7],['bank',5,7,8,7],['bank',4,4,8,7],['grocery',6,4,8,7],['gym',4,5,8,7],['police',4,6,8,7],['hospital',5,6,9,8],['bank',6,6,8,7],['gas',3,6,7,4],['gas',5,2,7,4],['fire',6,2,8,7]];
 function walls(v){const b=v.b,t=3;v.colliderWalls=[{x:b.x,y:b.y,w:b.w,h:t},{x:b.x,y:b.y,w:t,h:b.h},{x:b.x+b.w-t,y:b.y,w:t,h:b.h},{x:b.x,y:b.y+b.h-t,w:(b.w-v.doorW)/2,h:t},{x:v.doorX+v.doorW/2,y:b.y+b.h-t,w:(b.w-v.doorW)/2,h:t}];v.colliderDoor={x:v.doorX-v.doorW/2,y:v.doorY-t,w:v.doorW,h:t};}
