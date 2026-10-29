@@ -99,3 +99,8 @@ Native-iPhone GPU performance, visual quality on physical devices and six-player
 ## Restore road color without restoring expensive effects
 
 The ground canvas is explicitly sRGB and uses a dedicated rough, nonmetallic Standard material with environment reflection intensity zero. Grid and curved asphalt use the same near-black base, while lane markings and bridge surfaces retain their own colors. Day/dusk key and bounce light are reduced to avoid washing out dark albedo; haze starts farther away so nearby streets/buildings keep their contrast. High/Medium's output pass no longer applies a separate desaturating warm tint, making its base palette consistent with direct Low rendering. Transparent glass and performance-first phone defaults are unchanged; no extra pass is introduced on phones.
+
+
+## Fixed performance-first graphics
+
+The graphics selector and G shortcut are removed. Every device uses the fixed Low/direct-rendering policy, ignoring saved High/Medium selections. The compatibility setter cannot re-enable expensive effects. Transparent modeled glass, dark asphalt/color restoration, ACES and adaptive resolution remain; no SSAO/compositor targets, transmission or dynamic shadow maps are re-enabled. Physical-device FPS still varies by hardware.

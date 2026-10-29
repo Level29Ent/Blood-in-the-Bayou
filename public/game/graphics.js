@@ -2,13 +2,8 @@
 // gradient sky dome with sun glow and stars, and a cinematic vignette.
 // Loaded last; wraps initGL/render the same way the other expansion files do.
 (function(){
-  const QUALITY_KEY = 'l29_gfx_quality';
-  const LEVELS = ['high', 'medium', 'low'];
-  const touch = matchMedia('(pointer: coarse)').matches;
-  let quality = localStorage.getItem(QUALITY_KEY);
-  // Migrate phones off the previous expensive default once; explicit later choices persist.
-  if(touch&&localStorage.getItem('l29_mobile_perf_v2')!=='1'){quality='low';localStorage.setItem(QUALITY_KEY,'low');localStorage.setItem('l29_mobile_perf_v2','1');}
-  if (!LEVELS.includes(quality)) quality = touch ? 'low' : 'medium';
+  // Performance-first policy on every device; ignore previously saved expensive settings.
+  const quality = 'low';
 
   const SHADOW = {
     high:   { size: 2048, extent: 260, every: 1 },
@@ -191,28 +186,5 @@
     baseRender.apply(this, arguments);
   };
 
-  function toast(text){
-    let el = document.getElementById('gfx-toast');
-    if (!el){
-      el = document.createElement('div'); el.id = 'gfx-toast'; el.setAttribute('role', 'status');
-      el.style.cssText = 'position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:20;padding:8px 14px;' +
-        'background:rgba(8,9,11,.82);border:1px solid rgba(246,243,230,.25);color:#f6f3e6;font:600 14px "IBM Plex Mono",monospace;' +
-        'letter-spacing:.08em;pointer-events:none;transition:opacity .3s';
-      document.body.appendChild(el);
-    }
-    el.textContent = text; el.style.opacity = '1';
-    clearTimeout(el._t); el._t = setTimeout(() => { el.style.opacity = '0'; }, 1400);
-  }
-
-  window.level29Graphics={get quality(){return quality;},setQuality(q){if(!LEVELS.includes(q))return;quality=q;localStorage.setItem(QUALITY_KEY,q);if(ready)applyQuality();toast('GRAPHICS: '+q.toUpperCase());}};
-  const qualityButton=document.createElement('button');qualityButton.type='button';qualityButton.textContent='Graphics: '+quality;
-  qualityButton.addEventListener('click',()=>{window.level29Graphics.setQuality(LEVELS[(LEVELS.indexOf(quality)+1)%LEVELS.length]);qualityButton.textContent='Graphics: '+quality;});
-  document.querySelector('#menu .row')?.appendChild(qualityButton);
-  addEventListener('keydown', e => {
-    if (e.code !== 'KeyG' || e.repeat || e.target.closest('input,textarea')) return;
-    quality = LEVELS[(LEVELS.indexOf(quality) + 1) % LEVELS.length];
-    localStorage.setItem(QUALITY_KEY, quality);
-    if (ready) applyQuality();
-    toast('GRAPHICS: ' + quality.toUpperCase());
-  });
+  window.level29Graphics={get quality(){return quality;},setQuality(){ /* Fixed performance policy. */ }};
 })();
