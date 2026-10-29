@@ -2,8 +2,8 @@
 // r149 composer, SSAO, PBR lighting and grading. World-only: HUD and weapon remain crisp.
 (function(){
 let composer=null,ssao=null,renderPass=null,grade=null,width=0,height=0,failed=false,mode='',env=null,aoSupported=false;
-let prepared=new WeakSet(),converted=new WeakMap(),ticks=0;
-const quality=()=>window.level29Graphics?.quality||localStorage.getItem('l29_gfx_quality')|| (matchMedia('(pointer: coarse)').matches?'medium':'high');
+let prepared=new WeakSet(),converted=new WeakMap(),ticks=0,preparedCity=null;
+const quality=()=>window.level29Graphics?.quality||localStorage.getItem('l29_gfx_quality')|| (matchMedia('(pointer: coarse)').matches?'low':'medium');
 const glassCache=new WeakMap();
 const drawingSize=new THREE.Vector2();
 function physicalGlass(m){
@@ -24,6 +24,7 @@ function prepare(root){if(!root)return;root.traverse(o=>{
  if(!o.isMesh||prepared.has(o))return;prepared.add(o);
  o.material=Array.isArray(o.material)?o.material.map(standard):standard(o.material);
  const mats=Array.isArray(o.material)?o.material:[o.material];
+ for(const m of mats)if(m?.isMeshPhysicalMaterial&&m.transmission>0&&quality()!=='high'){m.transmission=0;if(!['vehiclePaint','boatPaint'].includes(m.name))m.opacity=.27;m.needsUpdate=true;}
  o.castShadow=mats.some(m=>m?.isMeshStandardMaterial&&!m.transparent&&!(m.transmission>0));o.receiveShadow=mats.some(m=>m?.isMeshStandardMaterial);
  if(o.geometry?.type==='PlaneGeometry'&&mats.some(m=>m?.transparent))o.castShadow=false;
  });}
@@ -36,7 +37,7 @@ function makeEnvironment(){
  const pm=new THREE.PMREMGenerator(renderer);const target=pm.fromScene(s,.03);env=target;scene.environment=target.texture;vmScene.environment=target.texture;pm.dispose();s.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});
 }
 function setup(){
- if(composer||failed||!window.BayouPost||!renderer)return;
+ if(quality()==='low'||composer||failed||!window.BayouPost||!renderer)return;
  try{
  aoSupported=renderer.capabilities.isWebGL2||(renderer.extensions.has('WEBGL_depth_texture')&&renderer.extensions.has('OES_texture_float'));
  const A=window.BayouPost;composer=new A.EffectComposer(renderer);renderPass=new A.RenderPass(scene,camera);ssao=new A.SSAOPass(scene,camera,256,256);ssao.needsSwap=true;ssao.kernelRadius=7;ssao.minDistance=.001;ssao.maxDistance=.035;
@@ -55,8 +56,9 @@ function configure(){
  if(w!==width||h!==height){width=w;height=h;composer.setPixelRatio(1);composer.setSize(w,h);}
 }
 function beforeWorld(){
- setup();if(!scene)return;
- if(composer)configure();if(ssao?.ssaoMaterial){const u=ssao.ssaoMaterial.uniforms;u.cameraProjectionMatrix.value.copy(camera.projectionMatrix);u.cameraInverseProjectionMatrix.value.copy(camera.projectionMatrixInverse);u.cameraNear.value=camera.near;u.cameraFar.value=camera.far;}ticks++;if(ticks%30===1){prepare(scene);prepare(vmScene);}
+ if(quality()==='low'&&composer)dispose();setup();if(!scene)return;
+ if(!composer&&mode!==quality()){mode=quality();prepared=new WeakSet();converted=new WeakMap();ticks=0;scene.traverse(o=>{for(const m of (Array.isArray(o.material)?o.material:[o.material]))if(m?.isMeshPhysicalMaterial&&!['vehiclePaint','boatPaint'].includes(m.name)){m.transmission=0;m.opacity=.27;m.needsUpdate=true;}});}
+ if(composer)configure();if(ssao?.ssaoMaterial){const u=ssao.ssaoMaterial.uniforms;u.cameraProjectionMatrix.value.copy(camera.projectionMatrix);u.cameraInverseProjectionMatrix.value.copy(camera.projectionMatrixInverse);u.cameraNear.value=camera.near;u.cameraFar.value=camera.far;}ticks++;if(preparedCity!==(typeof city==='undefined'?null:city)||ticks===1){prepare(scene);prepare(vmScene);preparedCity=typeof city==='undefined'?null:city;}
  if(scene.fog){scene.fog.near=lightMode==='night'?110:300;scene.fog.far=lightMode==='night'?800:1250;}
  // Keep a readable bounce level while allowing a strong key light.
  sun.intensity=lightMode==='day'?1.65:lightMode==='dusk'?1.1:.25;hemi.intensity=lightMode==='night'?.36:.72;

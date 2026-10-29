@@ -404,7 +404,7 @@ function syncTeam(){
 }
 const _renderMP = render;
 render = function(){ if (renderer){
-  const ratio=mpRole?Math.min(1,devicePixelRatio||1):Math.min(1.5,devicePixelRatio||1);
+  const ratio=mpRole?Math.min(1,devicePixelRatio||1):Math.min(matchMedia('(pointer: coarse)').matches?1:1.5,devicePixelRatio||1);
   if(MP.renderScale!==ratio){MP.renderScale=ratio;renderer.setPixelRatio(ratio);}
   syncTeam();
 } _renderMP(); };

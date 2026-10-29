@@ -326,7 +326,7 @@ function rebuildMountains(c){
   const rockM=new THREE.MeshStandardMaterial({color:'#7d776d',roughness:.95,flatShading:true}),pineM=std('#24412b',{roughness:.9}),trunkM=std('#4a3726',{roughness:.95});
   const rocks=[],pines=[];
   for(const f of c.features){if(f.kind!=='mountain')continue;
-    const seg=Math.min(110,Math.max(40,Math.round(Math.max(f.w,f.h)/14))),geo=new THREE.PlaneGeometry(f.w,f.h,seg,seg);geo.rotateX(-Math.PI/2);
+    const seg=Math.min(64,Math.max(24,Math.round(Math.max(f.w,f.h)/24))),geo=new THREE.PlaneGeometry(f.w,f.h,seg,seg);geo.rotateX(-Math.PI/2);
     const pos=geo.attributes.position;
     for(let i=0;i<pos.count;i++){const x=pos.getX(i)+f.x+f.w/2,z=pos.getZ(i)+f.y+f.h/2;const road=(c.curveDist?c.curveDist(x,z)<64:false)&&!(c.developmentWeight&&c.developmentWeight(x,z)>.5);
       const base=c.heightAt(x,z);let h=road?-3:base;if(!road&&base>2){const m=Math.min(1,base/90)*(c.developmentWeight?1-c.developmentWeight(x,z):1);h+=(fbm(x*.006,z*.006)-.45)*60*m+(noise(x*.05,z*.05)-.5)*6*m;}
@@ -342,7 +342,7 @@ function rebuildMountains(c){
     const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,map:terrainSurface(),bumpMap:terrainSurface(),bumpScale:1.2,roughness:.96,metalness:0}));m.position.y=.4;grp.add(m);}
   const dummy=new THREE.Object3D();
   if(rocks.length){const im=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,0),rockM,rocks.length);rocks.forEach(([x,y,z,s],i)=>{dummy.position.set(x,y,z);dummy.rotation.set(s,s*2,s*3);dummy.scale.set(s,s*.7,s*1.1);dummy.updateMatrix();im.setMatrixAt(i,dummy.matrix);});grp.add(im);}
-  if(pines.length){const n=Math.min(pines.length,900),cone=new THREE.InstancedMesh(new THREE.ConeGeometry(7,26,11),pineM,n),tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(1.2,1.6,8,5),trunkM,n);
+  if(pines.length){const n=Math.min(pines.length,240),cone=new THREE.InstancedMesh(new THREE.ConeGeometry(7,26,11),pineM,n),tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(1.2,1.6,8,5),trunkM,n);
     for(let i=0;i<n;i++){const [x,y,z,s]=pines[i];dummy.rotation.set(0,s*9,0);dummy.scale.set(s,s,s);dummy.position.set(x,y+4*s,z);dummy.updateMatrix();tr.setMatrixAt(i,dummy.matrix);dummy.position.set(x,y+19*s,z);dummy.updateMatrix();cone.setMatrixAt(i,dummy.matrix);}
     grp.add(tr);grp.add(cone);
     // A second offset crown breaks up the single traffic-cone silhouette, still instanced.
