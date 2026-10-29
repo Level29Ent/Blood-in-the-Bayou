@@ -66,7 +66,7 @@ genCity=function(){
 function routeToStreet(c,v){
  const start=Math.floor((v.doorY+16)/TILE)*MW+Math.floor(v.doorX/TILE),q=[start],prev=new Map([[start,-1]]);let end=-1;
  for(let i=0;i<q.length;i++){const k=q[i],x=k%MW,y=Math.floor(k/MW);if([T_ROAD,T_BRIDGE].includes(c.g[k])){end=k;break;}
- for(const [xx,yy]of [[x+1,y],[x-1,y],[x,y+1],[x,y-1]]){const n=yy*MW+xx;if(xx<1||yy<1||xx>=MW-1||yy>=MH-1||prev.has(n)||c.g[n]===T_WATER||c.buildings.some(b=>xx*TILE<b.x+b.w&&(xx+1)*TILE>b.x&&yy*TILE<b.y+b.h&&(yy+1)*TILE>b.y))continue;prev.set(n,k);q.push(n);}}
+ for(const [xx,yy]of [[x+1,y],[x-1,y],[x,y+1],[x,y-1]]){const n=yy*MW+xx;if(xx<1||yy<1||xx>=MW-1||yy>=MH-1||prev.has(n)||c.g[n]===T_WATER||(c.farm&&level29SiteLayout.contains(c.farm,(xx+.5)*TILE,(yy+.5)*TILE,TILE))||c.buildings.some(b=>xx*TILE<b.x+b.w&&(xx+1)*TILE>b.x&&yy*TILE<b.y+b.h&&(yy+1)*TILE>b.y))continue;prev.set(n,k);q.push(n);}}
  const out=[];if(end<0)return out;for(let k=end;k!==-1;k=prev.get(k))out.push(k);return out;
 }
 let dancers=[],animals=[],crew=[],root=null;

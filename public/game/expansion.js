@@ -320,10 +320,8 @@ function buildVenue(v){
     addPart(group,b.w-45,3,4,b.x+b.w/2,35,b.y+60,trim);
     addSign(group,'WASH + RESPRAY · $250',100,9,b.x+b.w/2,21,b.y+3,v.col);
   }else if(v.id==='armory'){
-    furniture(b.x+b.w/2,b.y+18,b.w-22,10,15,'#5f6859');
-    for(const z of [b.y+40,b.y+72]){furniture(b.x+14,z,18,30,24,'#424a45');furniture(b.x+b.w-14,z,18,30,24,'#424a45');}
-    for(let i=0;i<4;i++){const gun=new THREE.Group();addPart(gun,20,1.6,1,0,0,0,MAT.pole);addPart(gun,5,4,1,-6,-1,0,MAT.pole);gun.position.set(b.x+23+i*(b.w-46)/3,25,b.y+4);group.add(gun);}
-    addSign(group,'U BUY WEAPONS / ARMOR',100,9,b.x+b.w/2,16,b.y+4,v.col);
+    if(window.level29ArmoryShowroom)level29ArmoryShowroom.build(v,group);
+    addSign(group,'U BUY WEAPONS / ARMOR',100,9,b.x+b.w/2,38,b.y+4,v.col);
   }else if(v.id==='business'){
     furniture(b.x+30,b.y+30,40,9,24,'#805f42');furniture(b.x+b.w-22,b.y+40,25,22,45,'#5a625b');
     addPart(group,14,10,1,b.x+30,18,b.y+32,new THREE.MeshStandardMaterial({color:'#243840',metalness:.2,roughness:.2}));

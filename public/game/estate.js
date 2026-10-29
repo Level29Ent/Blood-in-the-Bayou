@@ -234,7 +234,7 @@ function decorateVenues(){
  for(const v of city.venues||[]){
   const b=v.b,levels=v.id==='hospital'?5:1;
   for(let l=0;l<levels;l++){
-   const z=l*56,x=b.x+b.w/2,y=b.y+7;
+   const z=(v.baseY||0)+l*56,x=b.x+b.w/2,y=b.y+7;
    // Painted skirting, tiled floor joints and ceiling fixture covers.
    for(const xx of [b.x+3,b.x+b.w-3])q.box(1,3,b.h-8,xx,z+2,b.y+b.h/2,dark);
    for(let yy=b.y+24;yy<b.y+b.h-5;yy+=32)q.box(b.w-8,.06,.22,x,z+.9,yy,steel);
@@ -245,8 +245,7 @@ function decorateVenues(){
     if(v.id==='garage')for(let k=0;k<5;k++){q.box(2,6+k%2*2,1,b.x+24+k*9,z+26,b.y+3,steel);q.box(4,2,1,b.x+24+k*9,z+30,b.y+3,steel);}
     else for(const xx of [b.x+9,b.x+b.w-9]){q.box(4,35,4,xx,z+18,b.y+b.h*.45,blue);for(let k=0;k<9;k++)q.box(4,2,7,xx,z+5+k*3,b.y+b.h*.45,green);}
    }else if(v.id==='armory'){
-    q.box(b.w-20,20,2,x,z+23,b.y+3,dark);
-    for(let k=0;k<5;k++){const xx=b.x+20+k*(b.w-40)/4;q.box(2,14,1.5,xx,z+24,b.y+5,steel);q.box(4,5,2,xx,z+17,b.y+5,wood);}
+    // Dedicated model pedestals are built by armory-showroom.js; no duplicate wall rack.
    }else if(['business','police','bank'].includes(v.id)){
     q.box(47,23,1,b.x+32,z+25,b.y+3,dark);
     for(let k=0;k<6;k++)q.box(10,6,.4,b.x+17+(k%3)*13,z+20+Math.floor(k/3)*8,b.y+4,paper);

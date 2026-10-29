@@ -8,7 +8,7 @@ test('local kills retain rewards and cannot pay twice',()=>{const {ctx,z}=kill('
 test('matched Three addon bundle does not contain a second renderer',()=>{const three=require('../public/game/three.min.js');assert.equal(three.REVISION,'149');const bundle=fs.readFileSync('public/game/vendor/postprocessing-r149.js','utf8');assert.match(bundle,/window.THREE/);assert.ok(bundle.length<60000);});
 test('terrain padding survives later terrain-provider replacement without flattening apartment floors',()=>{
  const desc=fs.readFileSync('public/game/terrain-layout.js','utf8');const c={world:true,buildings:[{x:100,y:100,w:100,h:100}],trees:[],heightAt:()=>80};
- const ctx={window:{level29Downtown:{lots:{}},level29OpenWorld:{interior:null}},level29Terrain:require('../public/game/terrain-sites.js'),genCity:()=>c,TILE:32,indexTrees(){}};vm.createContext(ctx);vm.runInContext(desc,ctx);ctx.genCity();assert.equal(c.heightAt(150,150),0);assert.equal(c.heightAt(500,500),80);c.heightAt=()=>120;assert.equal(c.heightAt(150,150),0);assert.equal(c.heightAt(500,500),120);
+ const ctx={window:{level29Downtown:{lots:{}},level29OpenWorld:{interior:null}},level29SiteLayout:require('../public/game/site-layout.js'),buildVenue(){},level29Terrain:require('../public/game/terrain-sites.js'),genCity:()=>c,TILE:32,indexTrees(){}};vm.createContext(ctx);vm.runInContext(desc,ctx);ctx.genCity();assert.equal(c.heightAt(150,150),80);assert.equal(c.heightAt(500,500),80);c.heightAt=()=>120;assert.equal(c.heightAt(150,150),80);assert.equal(c.heightAt(500,500),120);
  c.residence={b:c.buildings[0]};ctx.window.level29OpenWorld.interior='apartment';c.heightAt=()=>420;assert.equal(c.heightAt(150,150),420);
 });
 test('ambient car damage clears old player attribution before a later explosion',()=>{

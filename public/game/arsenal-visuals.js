@@ -248,5 +248,8 @@ syncGta=function(){
 };
 const oldView=syncViewModel;
 syncViewModel=function(){oldView();if(gun&&installed){gun.scale.setScalar(SW<700?.53:.55);if(SW<700){gun.position.x-=2.9;gun.position.y+=1.6;}}};
-window.level29ArsenalVisuals={version:1,createCacheMesh(){const m=supplyCase();m.traverse(o=>{o.userData.noBatch=true;});return m;},get packages(){return pkgMeshes;},get weapons(){return {m240:gun,...extraWeap};}};
+window.level29ArsenalVisuals={version:1,createDisplayModels(){
+ ensurePools();const models={m240:gun,...extraWeap},out={};
+ for(const [id,source]of Object.entries(models)){const clone=source.clone(true);clone.visible=true;clone.traverse(o=>{if(o.isMesh){o.userData.noBatch=true;if(o.material?.transparent&&o.material?.blending===THREE.AdditiveBlending)o.visible=false;}});out[id]=clone;}return out;
+},createCacheMesh(){const m=supplyCase();m.traverse(o=>{o.userData.noBatch=true;});return m;},get packages(){return pkgMeshes;},get weapons(){return {m240:gun,...extraWeap};}};
 })();
