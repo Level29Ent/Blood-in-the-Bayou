@@ -12,9 +12,10 @@ genCity=function(){const c=generate.apply(this,arguments);if(!c.world)return c;
  const buckets=new Map(),cell=256;for(const b of pads)for(let y=Math.floor((b.y-96)/cell);y<=Math.floor((b.y+b.h+96)/cell);y++)for(let x=Math.floor((b.x-96)/cell);x<=Math.floor((b.x+b.w+96)/cell);x++){const k=x+','+y;if(!buckets.has(k))buckets.set(k,[]);buckets.get(k).push(b);}
  const influence=(x,y)=>{let weight=0,base=0;for(const b of buckets.get(Math.floor(x/cell)+','+Math.floor(y/cell))||[]){const w=level29Terrain.padWeight(x,y,b,96);if(w>weight){weight=w;base=b.baseY;}}return {weight,base};};
  c.developmentWeight=(x,y)=>influence(x,y).weight;
- const height=(x,y)=>{const f=desc?.get?desc.get.call(c):raw;const h=f?f(x,y):0;const b=c.residence?.b;
+ const analytic=(x,y)=>{const f=desc?.get?desc.get.call(c):raw;const h=f?f(x,y):0;const b=c.residence?.b;
  if(window.level29OpenWorld?.interior==='apartment'&&b&&x>b.x&&x<b.x+b.w&&y>b.y&&y<b.y+b.h)return h;
  const p=influence(x,y);return h*(1-p.weight)+p.base*p.weight;};
+ const height=(x,y)=>level29Terrain.mountainSurface(c,analytic,x,y);
  Object.defineProperty(c,'heightAt',{enumerable:true,configurable:true,get:()=>height,set(f){if(desc?.set)desc.set.call(c,f);else raw=f;}});
  for(const v of c.venues||[]){v.baseY=c.heightAt(v.b.x+v.b.w/2,v.b.y+v.b.h/2);v.b.baseY=v.baseY;
  for(const box of [...(v.colliderWalls||[]),...(v.furniture||[]),...(v.colliderDoor?[v.colliderDoor]:[])]){box.minY=v.baseY;box.maxY=v.baseY+(v.id==='hospital'?280:52);}}

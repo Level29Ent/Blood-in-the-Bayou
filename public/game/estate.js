@@ -116,7 +116,8 @@ function buildPenthouse(){
  const marble=canvasTex(256,256,c=>{c.fillStyle='#8b8171';c.fillRect(0,0,256,256);const r=mkRng(2928);for(let k=0;k<60;k++){c.strokeStyle=k%3?'rgba(239,226,192,.12)':'rgba(40,32,30,.22)';c.lineWidth=.3+r()*1.8;c.beginPath();const y=r()*256;c.moveTo(0,y);c.bezierCurveTo(70,y-25,130,y+20,256,y+20);c.stroke();}});
  marble.wrapS=marble.wrapT=THREE.RepeatWrapping;marble.repeat.set(4,3);
  const floorMat=new THREE.MeshStandardMaterial({map:marble,roughness:.4,metalness:.04});
- const walls=new THREE.MeshStandardMaterial({map:wallTexture(),roughness:.88}),q=batch(g),cx=b.x+b.w/2,cy=b.y+b.h/2;
+ const paintTexture=wallTexture();paintTexture.encoding=THREE.sRGBEncoding;
+ const walls=new THREE.MeshBasicMaterial({name:'penthouseOriginalPaint',map:paintTexture,toneMapped:false}),q=batch(g),cx=b.x+b.w/2,cy=b.y+b.h/2;
  penthouse={b,base,active:false,lift:{x:cx,y:b.y+b.h+12},exit:{x:cx,y:b.y+b.h-19},furniture:[]};
  city.penthouse=penthouse;
  q.box(b.w,2,b.h,cx,base,cy,floorMat);
@@ -125,8 +126,8 @@ function buildPenthouse(){
   addMesh(g,new THREE.BoxGeometry(w,48,d),walls,x,base+25,z);
  // City-facing penthouse glazing, with a sill and slim brass mullions.
  for(const z of [b.y+10,b.y+b.h-10])addMesh(g,new THREE.BoxGeometry(2,48,20),walls,b.x+b.w,base+25,z);
- q.box(2,13,b.h-40,b.x+b.w,base+7,cy,material('#173f30'));
- q.box(2,11,b.h-40,b.x+b.w,base+43,cy,material('#672e79'));
+ q.box(2,13,b.h-40,b.x+b.w,base+7,cy,new THREE.MeshBasicMaterial({name:'penthouseOriginalGreen',color:'#173f30',toneMapped:false}));
+ q.box(2,11,b.h-40,b.x+b.w,base+43,cy,new THREE.MeshBasicMaterial({name:'penthouseOriginalPurple',color:'#672e79',toneMapped:false}));
  const glass=new THREE.MeshPhysicalMaterial({name:'buildingGlass',color:'#b9d0d6',transmission:.78,thickness:.25,ior:1.45,transparent:true,opacity:1,roughness:.1,metalness:0,depthWrite:false});
  q.box(.5,24,b.h-40,b.x+b.w,base+26,cy,glass);
  for(const z of [b.y+20,cy-20,cy+20,b.y+b.h-20])q.box(2,25,1,b.x+b.w-1,base+26,z,gold);
