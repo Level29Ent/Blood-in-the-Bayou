@@ -87,16 +87,16 @@ function layoutCourt(c,avoid){
   const DL=window.level29Downtown&&window.level29Downtown.lots;const taken=avoid.slice();if(DL)for(const k in DL)taken.push(tileRect(DL[k]));
   // Amenity footprints must not be reused: market stalls and court floor previously shared park tiles.
   for(const f of c.features||[])if(['market','basketball','cemetery','training','skatepark','mountain'].includes(f.kind))taken.push({x:f.x-T,y:f.y-T,w:f.w+T*2,h:f.h+T*2});
-  const tries=[[8,5,1,t=>t===T_GRASS||t===T_PARK||t===T_LOT],[8,5,0,t=>t===T_GRASS||t===T_PARK||t===T_LOT||t===T_SAND],[6,4,0,t=>t===T_GRASS||t===T_PARK||t===T_LOT||t===T_SAND||t===T_PLAZA],
-    [8,5,0,t=>t!==T_WATER&&t!==T_BRIDGE&&t!==T_BLD&&t!==T_ROAD],[6,4,0,t=>t!==T_WATER&&t!==T_BRIDGE&&t!==T_BLD]];
+  const tries=[[8,5,1,t=>[T_GRASS,T_PARK,T_LOT,T_SAND,T_PLAZA].includes(t)],[6,4,1,t=>[T_GRASS,T_PARK,T_LOT,T_SAND,T_PLAZA].includes(t)]];
   for(const [w,h,m,ok] of tries){let bd=1e9;
     for(let y=4;y+h<H-4;y++)for(let x=4;x+w<W-4;x++){const d=Math.abs(x-tx0)+Math.abs(y-ty0);if(d>=bd)continue;
       let good=true;for(let yy=y-m;yy<y+h+m&&good;yy++)for(let xx=x-m;xx<x+w+m;xx++)if(!ok(c.g[yy*W+xx])||keptBuilding(c,(xx+.5)*T,(yy+.5)*T)){good=false;break;}
-      if(good){const r=tileRect({x0:x,y0:y,x1:x+w-1,y1:y+h-1});if(taken.some(o=>rectHit(r,o)))continue;best={x0:x,y0:y,x1:x+w-1,y1:y+h-1};bd=d;}}
+      if(good){const r=tileRect({x0:x,y0:y,x1:x+w-1,y1:y+h-1});if(taken.some(o=>rectHit({x:r.x-T,y:r.y-T,w:r.w+T*2,h:r.h+T*2},o)))continue;best={x0:x,y0:y,x1:x+w-1,y1:y+h-1};bd=d;}}
     if(best)break;}
   if(!best)return null;const r=tileRect(best);clearArea(c,r,[]);
+  for(let y=best.y0-1;y<=best.y1+1;y++)for(let x=best.x0-1;x<=best.x1+1;x++)c.g[y*W+x]=T_PARK;
   for(let y=best.y0;y<=best.y1;y++)for(let x=best.x0;x<=best.x1;x++)c.g[y*W+x]=T_PLAZA;
-  c.basketballReservation={...r};flats.push(r);return Object.assign(best,{r});
+  c.basketballReservation={x:r.x-T,y:r.y-T,w:r.w+T*2,h:r.h+T*2};c.recreationParcel={...c.basketballReservation};flats.push(c.basketballReservation);return Object.assign(best,{r});
 }
 
 const prevGen=genCity;
