@@ -20,6 +20,7 @@ function prepare(c,b,id,key){
 function freeLot(c,w,h,predicate,grade=false){
  for(let y=4;y<MH-h-4;y+=2)for(let x=GULF_X+8;x<MW-w-4;x+=2){
   if(predicate&&!predicate(x,y))continue;const r={x:x*TILE,y:y*TILE,w:w*TILE,h:h*TILE};if(!grade&&window.level29Terrain&&!level29Terrain.lowland(c,r))continue;
+  if(c.basketballReservation&&level29SiteLayout.intersects(r,c.basketballReservation))continue;
   if(c.buildings.some(b=>r.x<b.x+b.w+32&&r.x+r.w>b.x-32&&r.y<b.y+b.h+32&&r.y+r.h>b.y-32))continue;
   if(Object.values(window.level29Downtown.lots).some(l=>r.x<(l.x1+2)*TILE&&r.x+r.w>(l.x0-1)*TILE&&r.y<(l.y1+2)*TILE&&r.y+r.h>(l.y0-1)*TILE))continue;
   let ok=true;for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)if(![T_GRASS,T_PARK,T_LOT,T_SAND].includes(c.g[yy*MW+xx]))ok=false;

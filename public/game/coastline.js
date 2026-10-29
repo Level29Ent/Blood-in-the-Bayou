@@ -85,6 +85,8 @@ function layoutCourt(c,avoid){
   const W=c.width,H=c.height;
   const ref=c.residence?c.residence.lobby:{x:W*T/2,y:H*T/2},tx0=ref.x/T,ty0=ref.y/T;let best=null;
   const DL=window.level29Downtown&&window.level29Downtown.lots;const taken=avoid.slice();if(DL)for(const k in DL)taken.push(tileRect(DL[k]));
+  // Amenity footprints must not be reused: market stalls and court floor previously shared park tiles.
+  for(const f of c.features||[])if(['market','basketball','cemetery','training','skatepark','mountain'].includes(f.kind))taken.push({x:f.x-T,y:f.y-T,w:f.w+T*2,h:f.h+T*2});
   const tries=[[8,5,1,t=>t===T_GRASS||t===T_PARK||t===T_LOT],[8,5,0,t=>t===T_GRASS||t===T_PARK||t===T_LOT||t===T_SAND],[6,4,0,t=>t===T_GRASS||t===T_PARK||t===T_LOT||t===T_SAND||t===T_PLAZA],
     [8,5,0,t=>t!==T_WATER&&t!==T_BRIDGE&&t!==T_BLD&&t!==T_ROAD],[6,4,0,t=>t!==T_WATER&&t!==T_BRIDGE&&t!==T_BLD]];
   for(const [w,h,m,ok] of tries){let bd=1e9;
@@ -94,7 +96,7 @@ function layoutCourt(c,avoid){
     if(best)break;}
   if(!best)return null;const r=tileRect(best);clearArea(c,r,[]);
   for(let y=best.y0;y<=best.y1;y++)for(let x=best.x0;x<=best.x1;x++)c.g[y*W+x]=T_PLAZA;
-  flats.push(r);return Object.assign(best,{r});
+  c.basketballReservation={...r};flats.push(r);return Object.assign(best,{r});
 }
 
 const prevGen=genCity;

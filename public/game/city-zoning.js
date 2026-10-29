@@ -22,6 +22,7 @@ genCity=function(){const c=generate.apply(this,arguments);if(!c.world)return c;
   let best=null,score=Infinity;
   for(let y=6*TILE;y+b.h<(MH-4)*TILE;y+=TILE)for(let x=(GULF_X+7)*TILE;x+b.w<(MW-4)*TILE;x+=TILE){
    const r={x,y,w:b.w,h:b.h};if(!valid(c,r,placed,TILE,MW,MH,[T_WATER,T_ROAD,T_BRIDGE]))continue;
+   if(c.basketballReservation&&overlap(r,c.basketballReservation,32)||(c.features||[]).some(f=>['market','basketball','training','skatepark'].includes(f.kind)&&overlap(r,f,16)))continue;
    if(c.farm&&overlap(r,c.farm,64)||lots.some(l=>l.venue?.b!==b&&overlap(r,{x:l.x0*TILE,y:l.y0*TILE,w:(l.x1-l.x0+1)*TILE,h:(l.y1-l.y0+1)*TILE},32)))continue;
    const s=Math.abs(x-old.x)+Math.abs(y-old.y);if(s<score){best=r;score=s;}
   }
