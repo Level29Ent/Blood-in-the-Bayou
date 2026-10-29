@@ -127,7 +127,7 @@ function buildPenthouse(){
  for(const z of [b.y+10,b.y+b.h-10])addMesh(g,new THREE.BoxGeometry(2,48,20),walls,b.x+b.w,base+25,z);
  q.box(2,13,b.h-40,b.x+b.w,base+7,cy,material('#173f30'));
  q.box(2,11,b.h-40,b.x+b.w,base+43,cy,material('#672e79'));
- const glass=new THREE.MeshStandardMaterial({color:'#9abac0',transparent:true,opacity:.22,roughness:.18,metalness:.15,depthWrite:false});
+ const glass=new THREE.MeshPhysicalMaterial({name:'buildingGlass',color:'#b9d0d6',transmission:.78,thickness:.25,ior:1.45,transparent:true,opacity:1,roughness:.1,metalness:0,depthWrite:false});
  q.box(.5,24,b.h-40,b.x+b.w,base+26,cy,glass);
  for(const z of [b.y+20,cy-20,cy+20,b.y+b.h-20])q.box(2,25,1,b.x+b.w-1,base+26,z,gold);
  q.box(2,1,b.h-40,b.x+b.w-1,base+14,cy,gold);q.box(2,1,b.h-40,b.x+b.w-1,base+38,cy,gold);

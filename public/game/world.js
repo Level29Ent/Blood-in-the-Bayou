@@ -177,7 +177,7 @@ const oldVenue=buildVenue;buildVenue=function(v){oldVenue(v);const b=v.b,g=v.mes
  for(let k=0;k<5;k++)q.box(.8,6,20,b.x+b.w*.73-8+k*4,60,b.y+b.h*.45,dark);
  for(const xx of [b.x+b.w*.17,b.x+b.w*.83]){
   if(Math.abs(xx-v.doorX)<v.doorW/2+12)continue;
-  q.box(21,21,.9,xx,23,v.doorY+1,stone);q.box(17,17,1,xx,23,v.doorY+1.7,material('#3f6269',.4,.25));q.box(.8,17,1,xx,23,v.doorY+2.3,dark);q.box(17,.8,1,xx,23,v.doorY+2.3,dark);
+  q.box(21,21,.9,xx,23,v.doorY+1,stone);q.box(17,17,1,xx,23,v.doorY+1.7,new THREE.MeshPhysicalMaterial({name:'buildingGlass',color:'#b9d0d2',metalness:0,roughness:.1,transmission:.6,thickness:.25,ior:1.45,transparent:true,opacity:1,depthWrite:false}));q.box(.8,17,1,xx,23,v.doorY+2.3,dark);q.box(17,.8,1,xx,23,v.doorY+2.3,dark);
  }
  q.finish();worker(v);
  // Interior finish: light ceiling with fluorescent fixtures and a less glaring floor.

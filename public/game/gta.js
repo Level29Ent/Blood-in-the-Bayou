@@ -45,14 +45,14 @@ fireWeapon = function(ox, oy, aim){
   } else if (curW === 'bat'){
     batSwing = 14; p.fireCd = 26; snd('bump');
     let hit = false;
-    for (const z of zombies){ if (!z.alive) continue; const d = dist(ox, oy, z.x, z.y); if (d < 46 + z.r && Math.abs(angDiff(aim, Math.atan2(z.y - oy, z.x - ox))) < .9){ z.hp -= 3.2 + up.ap; z.flash = 5; z.stun = 30; moveCircle(z, Math.cos(aim)*18, Math.sin(aim)*18, z.r*.8); gore(z.x, z.y, 4); hit = true; if (z.hp <= 0) killZombie(z, Math.cos(aim)*6, Math.sin(aim)*6); else snd('zhit'); } }
+    for (const z of zombies){ if (!z.alive) continue; const d = dist(ox, oy, z.x, z.y); if (d < 46 + z.r && Math.abs(angDiff(aim, Math.atan2(z.y - oy, z.x - ox))) < .9){ z.killSource='player';z.lastHit=0;z.hp -= 3.2 + up.ap; z.flash = 5; z.stun = 30; moveCircle(z, Math.cos(aim)*18, Math.sin(aim)*18, z.r*.8); gore(z.x, z.y, 4); hit = true; if (z.hp <= 0) killZombie(z, Math.cos(aim)*6, Math.sin(aim)*6); else snd('zhit'); } }
     if (boss && !boss.dead && dist(ox, oy, boss.x, boss.y) < 60 + boss.r){ damageBoss(4); hit = true; }
     if (hit){ view.hit = 7; shake = Math.max(shake, 4); sfx('splat'); }
   }
   lastShotFrame = frame; heat = Math.min(5, heat + .02);
 };
 let rockets = [], throws = [], fires = [];
-function boom(x, y, max){ explosions.push({ x, y, r: 0, max: max || 120, t: 28, dealt: false }); sfx('explode'); shake = Math.max(shake, 16); decal(x, y, 'scorch', 1); for (let k=0;k<22;k++) parts.push({ k:'fire', x, y, vx: rnd(-5,5), vy: rnd(-5,5), t: rnd(20,45) }); }
+function boom(x, y, max, owner){ explosions.push({ x, y, r: 0, max: max || 120, playerOwned:!owner, owner:owner||0, t: 28, dealt: false }); sfx('explode'); shake = Math.max(shake, 16); decal(x, y, 'scorch', 1); for (let k=0;k<22;k++) parts.push({ k:'fire', x, y, vx: rnd(-5,5), vy: rnd(-5,5), t: rnd(20,45) }); }
 function updateWeapons(){
   const p = player;
   if (batSwing > 0) batSwing--;
@@ -62,20 +62,20 @@ function updateWeapons(){
     let hit = solidAt(r.x, r.y) || r.life <= 0;
     if (!hit) for (const z of zombies) if (z.alive && dist(r.x, r.y, z.x, z.y) < z.r + 6){ hit = true; break; }
     if (!hit && boss && !boss.dead && dist(r.x, r.y, boss.x, boss.y) < boss.r + 6){ hit = true; damageBoss(18 + up.ap*4); }
-    if (!hit) for (const c of cars) if (!c.dead && c !== p.car && dist(r.x, r.y, c.x, c.y) < c.r){ hit = true; damageCar(c, 300); break; }
-    if (hit){ r.life = 0; boom(r.x, r.y, 130); if (boss && !boss.dead && dist(r.x, r.y, boss.x, boss.y) < 140) damageBoss(10); }
+    if (!hit) for (const c of cars) if (!c.dead && c !== p.car && dist(r.x, r.y, c.x, c.y) < c.r){ hit = true; damageCar(c, 300,r.owner?'remote':'player',r.owner); break; }
+    if (hit){ r.life = 0; boom(r.x, r.y, 130,r.owner); if (boss && !boss.dead && dist(r.x, r.y, boss.x, boss.y) < 140) damageBoss(10); }
   }
   rockets = rockets.filter(r => r.life > 0);
   for (const t of throws){
     t.t++; const k = t.t / t.T; t.x = t.sx + (t.tx - t.sx) * k; t.y = t.sy + (t.ty - t.sy) * k; t.h = 14 + Math.sin(k * Math.PI) * 40;
-    if (solidAt(t.x, t.y) || t.t >= t.T){ t.done = true; fires.push({ x: t.x, y: t.y, t: 300, r: 70 }); sfx('crash', 3); for (let j=0;j<30;j++) parts.push({ k:'fire', x: t.x + rnd(-30,30), y: t.y + rnd(-30,30), vx: rnd(-1,1), vy: rnd(-1,1), t: rnd(20,40) }); }
+    if (solidAt(t.x, t.y) || t.t >= t.T){ t.done = true; fires.push({ x: t.x, y: t.y, owner:t.owner||0, t: 300, r: 70 }); sfx('crash', 3); for (let j=0;j<30;j++) parts.push({ k:'fire', x: t.x + rnd(-30,30), y: t.y + rnd(-30,30), vx: rnd(-1,1), vy: rnd(-1,1), t: rnd(20,40) }); }
   }
   throws = throws.filter(t => !t.done);
   for (const f of fires){
     f.t--;
     if (frame % 2 === 0) parts.push({ k:'fire', x: f.x + rnd(-f.r, f.r) * .8, y: f.y + rnd(-f.r, f.r) * .8, vx: rnd(-.3,.3), vy: rnd(-.3,.3), t: rnd(15, 30) });
     if (frame % 10 === 0){
-      for (const z of zombies) if (z.alive && dist(z.x, z.y, f.x, f.y) < f.r){ z.hp -= 1.1; z.flash = 3; if (z.hp <= 0) killZombie(z, 0, 0); }
+      for (const z of zombies) if (z.alive && dist(z.x, z.y, f.x, f.y) < f.r){ z.killSource=f.owner?'remote':'player';z.lastHit=f.owner||0;z.hp -= 1.1; z.flash = 3; if (z.hp <= 0) killZombie(z, 0, 0); }
       if (boss && !boss.dead && dist(boss.x, boss.y, f.x, f.y) < f.r + boss.r) damageBoss(1.5);
       if (!p.car && !p.dead && dist(p.x, p.y, f.x, f.y) < f.r * .8) hurtPlayer(4, f.x, f.y);
     }
@@ -205,7 +205,7 @@ const CHEATS = {
   JESTERMODE:  ['HEALTH + ARMOR MAXED', () => { player.hp = player.maxHp; player.armor = 50 + up.armor*25; }],
   BAYOUBLAST:  ['SPAWN A SPORTS COUPE', () => { const p = player; const c = makeCar(p.x + Math.cos(view.yaw)*42, p.y + Math.sin(view.yaw)*42, view.yaw, 'sports'); cars.push(c); }],
   SEMPERFI:    ['SPAWN A HUMVEE', () => { const p = player; const c = makeCar(p.x + Math.cos(view.yaw)*42, p.y + Math.sin(view.yaw)*42, view.yaw, 'humvee'); cars.push(c); }],
-  QUIETSTORM:  ['HORDE CLEARED · HEAT ZERO', () => { heat = 0; for (const z of zombies) if (dist(z.x, z.y, player.x, player.y) < 900) killZombie(z, 0, 0); }],
+  QUIETSTORM:  ['HORDE CLEARED · HEAT ZERO', () => { heat = 0; for (const z of zombies) if (dist(z.x, z.y, player.x, player.y) < 900){z.killSource='ambient';killZombie(z, 0, 0);} }],
   NEVERHOT:    ['M240 NEVER OVERHEATS', () => { cheatFlags.cool = !cheatFlags.cool; return cheatFlags.cool ? 'M240 NEVER OVERHEATS' : 'M240 HEAT RESTORED'; }],
   GODMODE:     ['INVINCIBLE', () => { cheatFlags.god = !cheatFlags.god; return cheatFlags.god ? 'INVINCIBLE' : 'INVINCIBLE OFF'; }],
   SLOWDEAD:    ['ZOMBIES SLOWED', () => { cheatFlags.slow = !cheatFlags.slow; for (const z of zombies) z.speed *= cheatFlags.slow ? .5 : 2; return cheatFlags.slow ? 'ZOMBIES SLOWED' : 'ZOMBIE SPEED NORMAL'; }],
@@ -312,7 +312,7 @@ function startRampage(r){
   banner = { big: 'RAMPAGE', small: 'Kill ' + r.need + ' zombies in 60 seconds with the ' + WEAPONS[r.weap].name, t: 200, bad: true };
   snd('roar'); heat = 5; spawnHordeAround(r.x, r.y, 16, 200, 520);
 }
-const _kill = killZombie; killZombie = function(z, vx, vy){ const was = z.alive; _kill(z, vx, vy); if (was && !z.alive && rampage) rampage.kills++; };
+const _kill = killZombie; killZombie = function(z, vx, vy){ const was = z.alive; _kill(z, vx, vy); if (was && !z.alive && z.playerKill && rampage) rampage.kills++; };
 function updateRampage(){
   if (!rampage) return;
   const R = rampage; R.t--;
@@ -523,7 +523,11 @@ function ensurePools(){
     part(1.9,2.2,rifle?8:5,0,0,0,paint);part(1.4,2,3,0,-.5,rifle?6:4,blk);
     part(.9,3.2,1.7,0,-2,1,blk);part(.9,3,2,0,-2.2,-1.5,paint);
     const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.32,.32,rifle?10:5,10),blk);barrel.rotation.x=Math.PI/2;barrel.position.set(0,.4,rifle?-8:-5);m.add(barrel);
-    part(1.5,.6,4,0,1.4,-1,blk);part(.5,1,.5,0,1.7,rifle?-12:-7,blk);
+    part(1.5,.6,4,0,1.4,-1,blk);
+    for(let j=0;j<5;j++)part(1.65,.16,.22,0,1.8,-3+j*.55,blk);
+    for(const side of [-1,1]){part(.12,.8,3,side*1.03,.1,-1,paint);for(let j=0;j<3;j++)part(.14,.24,.35,side*1.12,.3,-2+j*.7,blk);}
+    const muzzleBrake=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,1.4,16),paint);muzzleBrake.rotation.x=Math.PI/2;muzzleBrake.position.set(0,.4,rifle?-13:-7.6);m.add(muzzleBrake);
+    part(.5,1,.5,0,1.7,rifle?-12:-7,blk);
     const sight=new THREE.Mesh(new THREE.TorusGeometry(.65,.13,6,16),blk);sight.position.set(0,2,-1);m.add(sight);arms(m);m.userData.finishMaterial=paint;extraWeap[id]=m;
   }
   for (const k in extraWeap){ extraWeap[k].scale.setScalar(k === 'rpg' ? .4 : .55); extraWeap[k].visible = false; vmScene.add(extraWeap[k]); }

@@ -17,9 +17,9 @@ function prepare(c,b,id,key){
  for(let y=Math.floor(b.y/TILE);y<Math.ceil((b.y+b.h)/TILE);y++)for(let x=Math.floor(b.x/TILE);x<Math.ceil((b.x+b.w)/TILE);x++)c.g[y*MW+x]=T_LOT;
  c.venues.push(v);if(!c.buildings.includes(b))c.buildings.push(b);return v;
 }
-function freeLot(c,w,h,predicate){
+function freeLot(c,w,h,predicate,grade=false){
  for(let y=4;y<MH-h-4;y+=2)for(let x=GULF_X+8;x<MW-w-4;x+=2){
-  if(predicate&&!predicate(x,y))continue;const r={x:x*TILE,y:y*TILE,w:w*TILE,h:h*TILE};
+  if(predicate&&!predicate(x,y))continue;const r={x:x*TILE,y:y*TILE,w:w*TILE,h:h*TILE};if(!grade&&window.level29Terrain&&!level29Terrain.lowland(c,r))continue;
   if(c.buildings.some(b=>r.x<b.x+b.w+32&&r.x+r.w>b.x-32&&r.y<b.y+b.h+32&&r.y+r.h>b.y-32))continue;
   if(Object.values(window.level29Downtown.lots).some(l=>r.x<(l.x1+2)*TILE&&r.x+r.w>(l.x0-1)*TILE&&r.y<(l.y1+2)*TILE&&r.y+r.h>(l.y0-1)*TILE))continue;
   let ok=true;for(let yy=y;yy<y+h;yy++)for(let xx=x;xx<x+w;xx++)if(![T_GRASS,T_PARK,T_LOT,T_SAND].includes(c.g[yy*MW+xx]))ok=false;
@@ -46,15 +46,15 @@ genCity=function(){
  const cb={x:105*TILE,y:77*TILE,w:7*TILE,h:6*TILE,H:64,kind:'normal',col:'#62516a'};
  c.casinoVenue=prepare(c,cb,'casino','waterfront-casino');
  c.casinoStations=[0,1,2,3].map(k=>({x:cb.x+36+k*48,y:cb.y+80}));
- const hills=freeLot(c,8,7,(x,y)=>x>85&&y>100);
+ const hills=freeLot(c,8,7,(x,y)=>x>85&&y>100,true);
  c.hollywood=null;if(hills){c.hollywood=prepare(c,{...hills,H:48,kind:'normal',col:'#c9bfa8'},'studio','golden-hills');c.hollywood.name='GOLDEN HILLS · HOLLYWOOD DISTRICT';}
  c.hollywoodSites=c.hollywood?[c.hollywood]:[];
  for(const [i,id]of ['cafe','business','studio'].entries()){
-  const lot=freeLot(c,5,4,(x,y)=>x>85&&y>100);if(!lot)continue;
+  const lot=freeLot(c,5,4,(x,y)=>x>85&&y>100,true);if(!lot)continue;
   const v=prepare(c,{...lot,H:48,kind:'normal',col:'#bfa886'},id,'golden-hills-'+i);
   v.name=['GOLDEN HILLS CAFE','GOLDEN HILLS TALENT AGENCY','GOLDEN HILLS SCREEN TESTS'][i];c.hollywoodSites.push(v);
  }
- c.farm=freeLot(c,8,7,(x,y)=>x>65&&y>90);
+ c.farm=freeLot(c,8,7,(x,y)=>x>65&&y>75)||freeLot(c,7,6,(x,y)=>x>50&&y>55);
  if(c.farm){const r=c.farm;for(let y=r.y/TILE;y<(r.y+r.h)/TILE;y++)for(let x=r.x/TILE;x<(r.x+r.w)/TILE;x++)c.g[y*MW+x]=T_GRASS;}
  // Clear trees on the new lots, and connect entrances without crossing water or another footprint.
  const zones=c.venues.filter(v=>TYPES.some(t=>t.id===v.id)).map(v=>v.b).concat(c.farm?[c.farm]:[]);
@@ -130,7 +130,7 @@ const tick=update;
 update=function(){tick.apply(this,arguments);if(state!=='play'||!city||!player)return;
  for(const d of dancers){poseFigure(d.m,d.x+Math.sin(frame*.05+d.x)*2,d.y,Math.sin(frame*.025+d.y),frame*.12,'wave');d.m.userData.armL.rotation.x=Math.sin(frame*.07)*1.3;}
  for(const a of animals){a.g.position.set(a.x+Math.sin(frame*.008+a.seed)*9,terrainHeight(a.x,a.y),a.y+Math.cos(frame*.006+a.seed)*8);a.g.rotation.y=Math.sin(frame*.003+a.seed)*.5;}
- for(const n of crew){const c=n.c;poseFigure(n.m,c.x-8,c.y,c.a,frame*.02,'stand');n.m.position.y=12+Math.sin(frame*.03)*.5;if(n.kind==='fish')n.m.userData.armR.rotation.x=-1.2;}
+ for(const n of crew){const c=n.c;poseFigure(n.m,c.x-8,c.y,c.a,frame*.02,'stand');n.m.position.y=12+Math.sin(frame/60*1.4+c.x*.015)*.65;n.m.visible=!c.dead&&!c.gone;if(n.kind==='fish')n.m.userData.armR.rotation.x=-1.2;}
 };
 let farmCooldown=0;
 const service=serviceVenue;

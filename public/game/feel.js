@@ -233,7 +233,7 @@
   killZombie = function(z){
     const was = z && z.alive;
     baseKill.apply(this, arguments);
-    if (!was || z.alive || state !== 'play' || !player || player.dead) return;
+    if (!was || z.alive || !z.playerKill || state !== 'play' || !player || player.dead) return;
     progress('kills', 1);
     if (player.car) progress('roadkill', 1);
     if (wx.kind !== 'clear') progress('weather', 1);
