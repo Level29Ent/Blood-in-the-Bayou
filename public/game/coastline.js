@@ -328,7 +328,7 @@ function rebuildMountains(c){
   for(const f of c.features){if(f.kind!=='mountain')continue;
     const seg=Math.min(110,Math.max(40,Math.round(Math.max(f.w,f.h)/14))),geo=new THREE.PlaneGeometry(f.w,f.h,seg,seg);geo.rotateX(-Math.PI/2);
     const pos=geo.attributes.position;
-    for(let i=0;i<pos.count;i++){const x=pos.getX(i)+f.x+f.w/2,z=pos.getZ(i)+f.y+f.h/2;const road=c.curveDist?c.curveDist(x,z)<64:false;
+    for(let i=0;i<pos.count;i++){const x=pos.getX(i)+f.x+f.w/2,z=pos.getZ(i)+f.y+f.h/2;const road=(c.curveDist?c.curveDist(x,z)<64:false)&&!(c.developmentWeight&&c.developmentWeight(x,z)>.5);
       const base=c.heightAt(x,z);let h=road?-3:base;if(!road&&base>2){const m=Math.min(1,base/90)*(c.developmentWeight?1-c.developmentWeight(x,z):1);h+=(fbm(x*.006,z*.006)-.45)*60*m+(noise(x*.05,z*.05)-.5)*6*m;}
       pos.setXYZ(i,x,Math.max(road?-3:0,h),z);}
     geo.computeVertexNormals();const nor=geo.attributes.normal,col=new Float32Array(pos.count*3);let maxH=1;for(let i=0;i<pos.count;i++)maxH=Math.max(maxH,pos.getY(i));
