@@ -583,7 +583,7 @@ function damageBoss(n){
     B.hp = 0; B.dead = true; snd('bossdie'); shake = 24; bossSay(4, true);
     gore(B.x, B.y, 40); decal(B.x, B.y, 'blood', 3);
     cash += 1000 + missionIdx*50;
-    for (const z of zombies) if (z.alive && dist(z.x, z.y, B.x, B.y) < 500) killZombie(z, 0, 0);
+    for (const z of zombies) if (z.alive && dist(z.x, z.y, B.x, B.y) < 500){z.killSource='ambient';killZombie(z, 0, 0);}
   }
 }
 
@@ -630,11 +630,13 @@ function fireWeapon(ox, oy, aim){
 function gore(x, y, n, col){ for (let k=0;k<n;k++) parts.push({ k:'gore', x, y, vx:rnd(-3,3), vy:rnd(-3,3), t:rnd(20,40), c: col || (Math.random()<.5 ? '#5f8a3a' : '#8a1a1a') }); }
 function killZombie(z, vx, vy){
   if (!z.alive) return;
+  z.playerKill=z.killSource!=='ambient'&&z.killSource!=='guard'&&z.killSource!=='remote';
   z.alive = false; snd('zdie'); zombieSay(z, true);
   gore(z.x, z.y, 10); decal(z.x, z.y, Math.random()<.5 ? 'blood' : 'green', z.type==='brute' ? 1.6 : 1);
   parts.push({ k:'corpse', x:z.x, y:z.y, a:z.a, t:600, shirt:z.shirt, military:z.military, r:z.r, vx:(vx||0)*.4, vy:(vy||0)*.4 });
-  cash += z.pts; heat = Math.min(5, heat + .05);
-  if (mission && mission.phase==='active' && mission.info.type==='clear' && dist(z.x, z.y, mission.targets[0].x, mission.targets[0].y) < 420) mission.kills++;
+  if(z.playerKill){cash += z.pts; heat = Math.min(5, heat + .05);}
+  if ((z.playerKill||(z.killSource==='remote'&&typeof mpRole!=='undefined'&&mpRole==='host')) && mission && mission.phase==='active' && mission.info.type==='clear' && dist(z.x, z.y, mission.targets[0].x, mission.targets[0].y) < 420) mission.kills++;
+  if (!z.playerKill)return;
   if (Math.random() < .045) pickups.push({ x:z.x, y:z.y, kind: Math.random()<.6 ? 'health' : 'armor', t:0 });
   else if (Math.random() < .22) pickups.push({ x:z.x, y:z.y, kind:'cash', t:0, amt: 50 + Math.floor(Math.random()*150), expiresAt:Date.now()+30000 });
 }
@@ -646,14 +648,15 @@ function hurtPlayer(n, sx, sy){
   snd('hurt'); decal(p.x, p.y, 'blood', .6);
   if (p.hp <= 0) killPlayer();
 }
-function damageCar(c, n){
+function damageCar(c, n, source='ambient', owner=0){
   if (c.dead) return;
+  c.lastDamager=source;c.lastDamageOwner=source==='remote'?owner:0;
   c.hp -= n * (c.driven && up.tough ? 1 / (1 + up.tough*.6) : 1);
   if (c.hp <= 0 && !c.burnT){ c.burnT = 180; c.hp = 0; }
 }
 function explodeCar(c){
   c.dead = true; c.burnT = 0; sfx('explode'); shake = 22;
-  explosions.push({ x:c.x, y:c.y, r:0, max:110, t:28, dealt:false });
+  explosions.push({ x:c.x, y:c.y, r:0, max:110, t:28, playerOwned:c.lastDamager==='player', owner:c.lastDamageOwner||0, dealt:false });
   decal(c.x, c.y, 'scorch', 1.2);
   for (let k=0;k<26;k++) parts.push({ k:'fire', x:c.x, y:c.y, vx:rnd(-5,5), vy:rnd(-5,5), t:rnd(20,45) });
   if (player.car === c){ exitCar(true); hurtPlayer(45, c.x, c.y); }
@@ -1027,7 +1030,7 @@ function update(){
       if (cd < c.r + z.r - 2){
         const sp = Math.abs(c.v);
         if (sp > 2.2 && !c.ai && !(z.type==='brute' && sp < 4.5)){
-          killZombie(z, Math.cos(c.a)*c.v, Math.sin(c.a)*c.v); sfx('splat'); damageCar(c, z.type==='brute' ? 10 : 2.5); c.v *= z.type==='brute' ? .55 : .93; shake = Math.max(shake, 3);
+          z.killSource=c===p.car?'player':'ambient';z.lastHit=0;killZombie(z, Math.cos(c.a)*c.v, Math.sin(c.a)*c.v); sfx('splat'); damageCar(c, z.type==='brute' ? 10 : 2.5); c.v *= z.type==='brute' ? .55 : .93; shake = Math.max(shake, 3);
           if (z.type==='brute') shake = 9;
           break;
         } else {
@@ -1047,14 +1050,14 @@ function update(){
     for (const z of zombies){
       if (!z.alive || b.hit.has(z)) continue;
       if ((b.x - z.x)**2 + (b.y - z.y)**2 < (z.r + 3)**2){
-        z.hp -= b.dmg; z.flash = 4; b.hit.add(z); z.lastHit = b.owner || 0; z.alert = true; z.stun = z.type==='brute' ? 2 : 6;
+        z.hp -= b.dmg; z.flash = 4; b.hit.add(z); z.lastHit = b.owner || 0; z.killSource=b.owner?'remote':'player'; z.alert = true; z.stun = z.type==='brute' ? 2 : 6;
         moveCircle(z, b.vx*.12, b.vy*.12, z.r*.8); gore(b.x, b.y, 2);
         if (!b.owner) view.hit = 7; if (z.hp <= 0) killZombie(z, b.vx, b.vy); else snd('zhit');
         if (b.pierce-- <= 0){ b.life = 0; break; }
       }
     }
     if (b.life > 0 && boss && !boss.dead && (b.x - boss.x)**2 + (b.y - boss.y)**2 < boss.r**2){ damageBoss(b.dmg); view.hit = 7; b.life = 0; gore(b.x, b.y, 2); if (frame % 3 === 0) snd('bosshit'); }
-    if (b.life > 0) for (const c of cars){ if (c.dead || c === p.car) continue; if ((b.x - c.x)**2 + (b.y - c.y)**2 < (c.r*.8)**2){ damageCar(c, .8); b.life = 0; parts.push({ k:'spark', x:b.x, y:b.y, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); break; } }
+    if (b.life > 0) for (const c of cars){ if (c.dead || c === p.car) continue; if ((b.x - c.x)**2 + (b.y - c.y)**2 < (c.r*.8)**2){ damageCar(c, .8,b.owner?'remote':'player',b.owner); b.life = 0; parts.push({ k:'spark', x:b.x, y:b.y, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); break; } }
   }
   bullets = bullets.filter(b => b.life > 0);
   // boss + spits
@@ -1071,8 +1074,8 @@ function update(){
     e.t--; e.r += (e.max - e.r) * .25;
     if (!e.dealt && e.r > e.max * .6){
       e.dealt = true;
-      for (const z of zombies) if (z.alive && dist(z.x, z.y, e.x, e.y) < e.max) { if (e.wave) { z.stun = 30; } else killZombie(z, z.x - e.x, z.y - e.y); }
-      if (!e.wave) for (const c of cars) if (!c.dead && !c.burnT && dist(c.x, c.y, e.x, e.y) < e.max && c !== p.car) damageCar(c, 60);
+      for (const z of zombies) if (z.alive && dist(z.x, z.y, e.x, e.y) < e.max) { if (e.wave) { z.stun = 30; } else {z.killSource=e.owner?'remote':e.playerOwned?'player':'ambient';z.lastHit=e.owner||0;killZombie(z, z.x - e.x, z.y - e.y);} }
+      if (!e.wave) for (const c of cars) if (!c.dead && !c.burnT && dist(c.x, c.y, e.x, e.y) < e.max && c !== p.car) damageCar(c, 60,e.owner?'remote':e.playerOwned?'player':'ambient',e.owner);
       const tx = p.car ? p.car.x : p.x, ty = p.car ? p.car.y : p.y;
       if (dist(tx, ty, e.x, e.y) < e.max){ if (p.car) damageCar(p.car, e.wave ? 20 : 40); else hurtPlayer(e.wave ? 22 : 35, e.x, e.y); }
     }

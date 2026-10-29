@@ -80,7 +80,7 @@ function end(why,frac){if(!shift)return;const s=shift,def=s.def;let pay=0,full=w
  banner={big:full?'SHIFT COMPLETE':'SHIFT ENDED',small:(why==='done'?'':why+' · ')+'+'+money(pay)+' · '+s.kills+' KILLS'+(s.bonus?' · DUTY BONUS '+money(s.bonus)+' ('+s.duties+')':''),t:240,good:full,bad:!full};sfx(full?'pass':'die');
  subtitle={name:'SECURITY CHIEF',txt:full?'Good shift. Here is your pay: '+money(pay)+'.':'You left us short. Partial pay only: '+money(pay)+'.',t:300,col:'#e0b24a'};
  shift=null;objective=savedObj;if(window.level29Save)window.level29Save.save('SHIFT PAY SAVED');}
-const oldKill=killZombie;killZombie=function(z,vx,vy){const was=z&&z.alive;oldKill(z,vx,vy);if(shift&&was&&dist(z.x,z.y,shift.sf.fort.x+shift.sf.fort.w/2,shift.sf.fort.y+shift.sf.fort.h/2)<900)shift.kills++;};
+const oldKill=killZombie;killZombie=function(z,vx,vy){const was=z&&z.alive;oldKill(z,vx,vy);if(shift&&was&&z.playerKill&&dist(z.x,z.y,shift.sf.fort.x+shift.sf.fort.w/2,shift.sf.fort.y+shift.sf.fort.h/2)<900)shift.kills++;};
 const oldUpd=update;update=function(){oldUpd();if(shift&&player&&(player.dead||state==='dead')){end('YOU WERE DOWN',.4);return;}
  if(!shift||state!=='play'||!player)return;const s=shift,f=s.sf.fort;
  s.t--;if(s.t<=0){end('done');return;}

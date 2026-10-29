@@ -230,15 +230,15 @@ updateCar=function(c,input){if(c.boat&&c.dead)return;if(city&&city.world&&!input
 const prevCarMesh=makeCarMesh;
 makeCarMesh=function(c){if(!c.boat)return prevCarMesh(c);
   const g=new THREE.Group(),L=c.spec.len,W=c.spec.wid,yacht=c.type==='yacht'||c.type==='cabinboat';
-  const paint=new THREE.MeshStandardMaterial({color:c.col,metalness:.25,roughness:.3});
+  const paint=new THREE.MeshPhysicalMaterial({name:'boatPaint',color:c.col,metalness:.35,roughness:.22,clearcoat:1,clearcoatRoughness:.12});
   const hull=new THREE.Shape();hull.moveTo(-L/2,-W/2);hull.lineTo(L*.22,-W/2);hull.quadraticCurveTo(L*.54,-W*.35,L/2,0);hull.quadraticCurveTo(L*.54,W*.35,L*.22,W/2);hull.lineTo(-L/2,W/2);hull.closePath();
-  const hgeo=new THREE.ExtrudeGeometry(hull,{depth:8,bevelEnabled:true,bevelThickness:2,bevelSize:1.8,bevelSegments:2,steps:1,curveSegments:7});hgeo.rotateX(-Math.PI/2);hgeo.translate(0,5,0);g.add(new THREE.Mesh(hgeo,paint));
-  const deck=lam('#e8e1ce'),glass=lam('#324b5c',{emissive:0x091418});
+  const hgeo=new THREE.ExtrudeGeometry(hull,{depth:8,bevelEnabled:true,bevelThickness:2,bevelSize:1.8,bevelSegments:3,steps:1,curveSegments:16});hgeo.rotateX(-Math.PI/2);hgeo.translate(0,5,0);g.add(new THREE.Mesh(hgeo,paint));
+  const deck=new THREE.MeshStandardMaterial({color:'#e8e1ce',roughness:.65,metalness:0}),glass=new THREE.MeshPhysicalMaterial({name:'boatGlass',color:'#b5cfd9',metalness:0,roughness:.08,transmission:.78,thickness:.3,ior:1.45,transparent:true,opacity:1,depthWrite:false});
   addPart(g,L*.7,1,W*.86,-L*.09,9,0,deck);
-  addPart(g,L*.18,7,W*.68,-L*.10,13,0,glass);
+  for(const side of [-1,1])addPart(g,L*.18,7,.5,-L*.10,13,side*W*.34,glass);const screen=addPart(g,.6,7,W*.68,0,13,0,glass);screen.rotation.z=-.15;
   addPart(g,12,3,W*.64,-L*.30,11,0,lam('#b7aa90'));
   addPart(g,7,11,6,-L*.5-2,3,0,lam('#24282e'));
-  if(yacht){addPart(g,L*.37,14,W*.74,-L*.12,19,0,deck);addPart(g,L*.26,10,W*.65,-L*.14,31,0,glass);addPart(g,L*.43,1.6,W*.88,-L*.12,37,0,deck);
+  if(yacht){for(const side of [-1,1])addPart(g,L*.37,14,1.5,-L*.12,19,side*W*.37,deck);addPart(g,L*.37,1.5,W*.74,-L*.12,26,0,deck);for(const side of [-1,1])addPart(g,L*.26,10,.5,-L*.14,31,side*W*.325,glass);addPart(g,L*.43,1.6,W*.88,-L*.12,37,0,deck);
     for(const z of [-W*.37,W*.37])addPart(g,L*.5,1,1,L*.22,17,z,lam('#b8c4c9'));}
   else{addPart(g,22,2,1,2,16,-W*.33,deck);addPart(g,22,2,1,2,16,W*.33,deck);}
   const chrome=new THREE.MeshStandardMaterial({color:'#c3cccd',metalness:.8,roughness:.26}),teak=lam('#967354'),rubber=lam('#252b2e');
@@ -271,7 +271,7 @@ function tower(c){
   const glass=canvasTex(512,512,(ctx,w,h)=>{ctx.fillStyle='#29424f';ctx.fillRect(0,0,w,h);for(let y=0;y<h;y+=32)for(let x=0;x<w;x+=32){ctx.fillStyle=(x/32+y/32)%3?'#476975':'#d5b674';ctx.fillRect(x+2,y+3,28,26);ctx.fillStyle='#1e343f';ctx.fillRect(x+2,y+3,10,26);}});
   const glassMat=h=>{const t=glass.clone();t.needsUpdate=true;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1,Math.max(.2,h/340));return new THREE.MeshStandardMaterial({map:t,roughness:.3,metalness:.45,emissive:0x1b1608,emissiveMap:t,emissiveIntensity:isNight()?1.4:.25});};
   const gm=glassMat(420);
-  const fl=resident.floor,curtain=new THREE.MeshStandardMaterial({color:'#9ec0cb',transparent:true,opacity:.18,roughness:.1,metalness:.3,side:THREE.DoubleSide});
+  const fl=resident.floor,curtain=new THREE.MeshPhysicalMaterial({name:'buildingGlass',color:'#b9d0d6',transmission:.78,thickness:.3,ior:1.45,transparent:true,opacity:1,roughness:.1,metalness:0,depthWrite:false,side:THREE.DoubleSide});
   const s1=box(b.w,fl-48,b.h,gm),s2=box(b.w,44,b.h,curtain),s3=box(b.w,250,b.h,glassMat(250));
   s1.position.set(b.x+b.w/2,48+(fl-48)/2,b.y+b.h/2);s2.position.set(b.x+b.w/2,fl+22,b.y+b.h/2);s3.position.set(b.x+b.w/2,fl+44+125,b.y+b.h/2);g.add(s1,s2,s3);part(g,b.w,3,b.h,b.x+b.w/2,fl+44,b.y+b.h/2,'#e4dccd');
   // Stepped crown with a lit gold lantern, spire, and a two-story podium with colonnade.
@@ -432,7 +432,7 @@ buildCity=function(){
   prevBuild();
   if(!city.world)return;
   waterMats=[];
-  const sea=cityGroup.children[1];if(sea&&sea.material){sea.material=new THREE.MeshPhongMaterial({color:'#36452a',shininess:28,specular:0x5a6648,transparent:true,opacity:.97});sea.position.y=-1.2;waterMats.push(sea);}
+  const sea=cityGroup.children[1];if(sea&&sea.material){sea.material=new THREE.MeshStandardMaterial({color:'#36452a',roughness:.24,metalness:.2,transparent:true,opacity:.97});sea.position.y=-1.2;waterMats.push(sea);}
   marina(city);tower(city);mountains(city);
   resident=city.residence;
   scene.fog.far=Math.max(scene.fog.far,1000);
@@ -655,16 +655,22 @@ function boatWakeTick(){
   if(wakeCity!==city){
     if(wakeGroup){scene.remove(wakeGroup);wakeGroup.children.forEach(m=>{m.geometry.dispose();m.material.dispose();});}
     wakeCity=city;wakeGroup=new THREE.Group();scene.add(wakeGroup);wakeCursor=0;
-    for(let i=0;i<12;i++){
-      const m=new THREE.Mesh(new THREE.RingGeometry(4,6,16).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:'#d2eeeb',transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
+    // Fixed pool: up to six nearby moving boats, no per-frame allocations.
+    for(let i=0;i<72;i++){
+      const m=new THREE.Mesh(new THREE.PlaneGeometry(5,5).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({map:softTex,color:'#d9eeed',transparent:true,opacity:0,depthWrite:false,side:THREE.DoubleSide}));
       m.userData.life=0;m.visible=false;wakeGroup.add(m);
     }
   }
-  for(const m of wakeGroup.children){if(m.userData.life<=0)continue;m.userData.life--;m.visible=m.userData.life>0;m.material.opacity=m.userData.life/90;m.scale.setScalar(1+(45-m.userData.life)*.055);}
-  const c=player.car;
-  if(c&&c.boat&&!c.dead&&Math.abs(c.v)>.5&&frame%5===0){
-    const m=wakeGroup.children[wakeCursor++%12],direction=c.v<0?-1:1;
-    m.position.set(c.x-Math.cos(c.a)*c.spec.len*.45*direction,.6,c.y-Math.sin(c.a)*c.spec.len*.45*direction);m.userData.life=45;m.visible=true;m.scale.setScalar(1);
+  for(const m of wakeGroup.children){if(m.userData.life<=0)continue;m.userData.life--;m.visible=m.userData.life>0;m.material.opacity=m.userData.life/110;m.scale.setScalar(1+(50-m.userData.life)*.045);m.position.x+=m.userData.vx||0;m.position.z+=m.userData.vy||0;}
+  if(frame%5!==0)return;
+  const focus=player.car||player;
+  for(const c of cars.filter(c=>c.boat&&!c.dead&&!c.gone&&Math.abs(c.v)>.5&&dist(c.x,c.y,focus.x,focus.y)<500).slice(0,6)){
+    const direction=c.v<0?-1:1,speed=Math.min(1,Math.abs(c.v)/4);
+    for(const side of [-1,1]){
+      const m=wakeGroup.children[wakeCursor++%72],px=-Math.sin(c.a)*side,py=Math.cos(c.a)*side;
+      m.position.set(c.x-Math.cos(c.a)*c.spec.len*.38*direction+px*c.spec.wid*.4,.65,c.y-Math.sin(c.a)*c.spec.len*.38*direction+py*c.spec.wid*.4);
+      m.userData.life=50;m.userData.vx=px*.35*speed-Math.cos(c.a)*.1*direction;m.userData.vy=py*.35*speed-Math.sin(c.a)*.1*direction;m.visible=true;m.scale.setScalar(1);
+    }
   }
 }
 function updateWorld(){

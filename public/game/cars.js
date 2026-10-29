@@ -46,6 +46,7 @@
     camper:['truck',{roof:28,r:4.4,rf:.26,rr:-.44,br:-.47}]
   };
   for(const [key,[base,patch]]of Object.entries(additions))profiles[key]={...profiles[base],...patch};
+  profiles.slab={...profiles.lowrider,roof:15.8,r:3.8,doors:4};
   function init(){
     if(materials)return;
     treadTexture=canvasTex(128,128,(g,w,h)=>{
@@ -62,9 +63,9 @@
       chrome:new THREE.MeshStandardMaterial({color:'#b4bdc5',metalness:.94,roughness:.22,envMap:env,envMapIntensity:1.1}),
       alloy:new THREE.MeshStandardMaterial({color:'#8e989e',metalness:.87,roughness:.31,envMap:env}),
       leather:new THREE.MeshStandardMaterial({color:'#272a29',roughness:.88}),
-      glass:new THREE.MeshPhysicalMaterial({color:'#314956',metalness:.22,roughness:.075,clearcoat:1,envMap:env,envMapIntensity:1.4,transparent:true,opacity:.87,depthWrite:false,side:THREE.DoubleSide}),
-      windshield:new THREE.MeshPhysicalMaterial({color:'#56717b',metalness:.18,roughness:.075,clearcoat:1,envMap:env,envMapIntensity:1.5,transparent:true,opacity:.62,depthWrite:false,side:THREE.DoubleSide}),
-      darkGlass:new THREE.MeshPhysicalMaterial({color:'#192a33',metalness:.24,roughness:.09,envMap:env,envMapIntensity:1.2,side:THREE.DoubleSide}),
+      glass:new THREE.MeshPhysicalMaterial({color:'#314956',metalness:0,roughness:.075,clearcoat:1,transmission:.78,thickness:.3,ior:1.45,envMap:env,envMapIntensity:.8,transparent:true,opacity:1,depthWrite:false,side:THREE.DoubleSide}),
+      windshield:new THREE.MeshPhysicalMaterial({color:'#56717b',metalness:0,roughness:.075,clearcoat:1,transmission:.82,thickness:.3,ior:1.45,envMap:env,envMapIntensity:.8,transparent:true,opacity:1,depthWrite:false,side:THREE.DoubleSide}),
+      darkGlass:new THREE.MeshPhysicalMaterial({color:'#192a33',metalness:0,roughness:.09,transmission:.55,thickness:.3,ior:1.45,transparent:true,opacity:1,depthWrite:false,envMap:env,envMapIntensity:.7,side:THREE.DoubleSide}),
       seam:new THREE.MeshStandardMaterial({color:'#253035',roughness:.75}),
       brake:new THREE.MeshStandardMaterial({color:'#696b68',metalness:.8,roughness:.46}),
       caliper:new THREE.MeshStandardMaterial({color:'#9c2927',metalness:.3,roughness:.6}),
@@ -254,10 +255,15 @@
     const lip=mesh(spin,new THREE.TorusGeometry(rim,.12,6,32),materials.chrome,0,0,outer);
     const dish=mesh(spin,new THREE.CylinderGeometry(rim*.83,rim*.83,.15,32),materials.brake,0,0,side*width*.38);dish.rotation.x=Math.PI/2;
     const caliper=rb(pivot,1.0,R*.8,.85,x>0?1.6:-1.6,.3,side*width*.46,sports?materials.caliper:materials.trim,.15);
-    const spokes=p.classic?12:p.military?8:sports?5:10;
+    const spokes=p.classic?40:p.military?8:sports?5:10;
     for(let k=0;k<spokes;k++){
       const a=k*Math.PI*2/spokes,sp=rb(spin,rim*.76,p.classic?.13:sports?.36:.23,.23,Math.cos(a)*rim*.43,Math.sin(a)*rim*.43,outer-.04,materials.alloy,.05);sp.rotation.z=a+.12;
       if(sports){const split=rb(spin,rim*.74,.13,.21,Math.cos(a+.10)*rim*.43,Math.sin(a+.10)*rim*.43,outer-.035,materials.chrome,.025);split.rotation.z=a+.24;}
+    }
+    if(p.classic){
+      // Houston wire-wheel dish with crossed wires and a projecting swanga hub.
+      for(let k=0;k<40;k++){const a=k*Math.PI*2/40;beam(spin,[Math.cos(a)*rim*.85,Math.sin(a)*rim*.85,outer],[Math.cos(a+.5)*rim*.23,Math.sin(a+.5)*rim*.23,outer+side*.5],.055,materials.chrome);}
+      const poke=mesh(spin,new THREE.CylinderGeometry(rim*.20,rim*.10,3.5,16),materials.chrome,0,0,outer+side*1.75);poke.rotation.x=Math.PI/2;
     }
     const hub=mesh(spin,new THREE.CylinderGeometry(rim*.22,rim*.22,.30,16),materials.alloy,0,0,outer);hub.rotation.x=Math.PI/2;
     for(let k=0;k<5;k++){
@@ -455,7 +461,7 @@
       for(const l of u.headlights)l.material.emissiveIntensity=night?1.45:.08;
       for(const l of u.reverseLights){l.material.emissive.set(reverse?'#eaf2ec':'#000000');l.material.emissiveIntensity=reverse?1.25:0;}
       // Surface wear grows with damage and resets correctly when a garage/carwash repairs the car.
-      const damage=clamp(1-c.hp/c.maxHp,0,1);u.paint.roughness=u.profile.military?.7:Math.min(.68,.3+damage*.3);u.paint.clearcoat=u.profile.military?.08:.85-damage*.5;
+      const damage=clamp(1-c.hp/c.maxHp,0,1);u.paint.roughness=u.profile.military?.7:Math.min(.68,.22+damage*.4);u.paint.clearcoat=u.profile.military?.08:.85-damage*.5;
     }
   };
   // Free per-instance materials on retirement; geometry and shared trim remain cached.

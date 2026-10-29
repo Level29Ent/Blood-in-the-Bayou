@@ -303,7 +303,7 @@ function updateRide(){
   if(frame%18===0&&zombiesNear(px,py,520)<16){const a=Math.random()*6.28,r=rnd(120,420);spawnZombieAt(px+Math.cos(a)*r,py+Math.sin(a)*r);}
   const firing=fireHeld||mouse.down||keys[' ']||keys.Space;
   if(firing&&--ride.cd<=0){ride.cd=6;let best=null,bd=460;for(const z of zombies){if(!z.alive)continue;const d=d2(z.x,z.y,px,py);if(d<bd){bd=d;best=z;}}
-    if(best){addTracer(px,py,best.x,best.y);killZombie(best,(best.x-px)*.02,(best.y-py)*.02);ride.kills++;}else addTracer(px,py,px+rnd(-200,200),py+rnd(-200,200));
+    if(best){addTracer(px,py,best.x,best.y);best.killSource='player';best.lastHit=0;killZombie(best,(best.x-px)*.02,(best.y-py)*.02);ride.kills++;}else addTracer(px,py,px+rnd(-200,200),py+rnd(-200,200));
     if(frame%12<6)sfx('bang');}
   if(ride.t<=0)endRide();
 }

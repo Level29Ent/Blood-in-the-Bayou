@@ -708,7 +708,7 @@ function render(){
   syncLights(yaw);
   syncViewModel();
   document.getElementById('gl').style.filter = state==='dead' ? 'grayscale(1) contrast(1.1)' : '';
-  renderer.info.reset(); renderer.clear(); renderer.render(scene, camera);
+  renderer.info.reset(); renderer.clear(); if(window.level29Cinematic)level29Cinematic.drawWorld();else renderer.render(scene, camera);
   renderer.clearDepth(); renderer.render(vmScene, vmCam);
   if (view.hit > 0) view.hit--;
   cx.setTransform(DPR, 0, 0, DPR, 0, 0); cx.clearRect(0, 0, SW, SH);

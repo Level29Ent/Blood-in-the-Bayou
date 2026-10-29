@@ -329,7 +329,7 @@ function rebuildMountains(c){
     const seg=Math.min(110,Math.max(40,Math.round(Math.max(f.w,f.h)/14))),geo=new THREE.PlaneGeometry(f.w,f.h,seg,seg);geo.rotateX(-Math.PI/2);
     const pos=geo.attributes.position;
     for(let i=0;i<pos.count;i++){const x=pos.getX(i)+f.x+f.w/2,z=pos.getZ(i)+f.y+f.h/2;const road=c.curveDist?c.curveDist(x,z)<64:false;
-      const base=c.heightAt(x,z);let h=road?-3:base;if(!road&&base>2){const m=Math.min(1,base/90);h+=(fbm(x*.006,z*.006)-.45)*60*m+(noise(x*.05,z*.05)-.5)*6*m;}
+      const base=c.heightAt(x,z);let h=road?-3:base;if(!road&&base>2){const m=Math.min(1,base/90)*(c.developmentWeight?1-c.developmentWeight(x,z):1);h+=(fbm(x*.006,z*.006)-.45)*60*m+(noise(x*.05,z*.05)-.5)*6*m;}
       pos.setXYZ(i,x,Math.max(road?-3:0,h),z);}
     geo.computeVertexNormals();const nor=geo.attributes.normal,col=new Float32Array(pos.count*3);let maxH=1;for(let i=0;i<pos.count;i++)maxH=Math.max(maxH,pos.getY(i));
     for(let i=0;i<pos.count;i++){const h=pos.getY(i),k=h/maxH,slope=1-nor.getY(i),j=(noise(pos.getX(i)*.08,pos.getZ(i)*.08)-.5)*.08;let r,g,b;
@@ -562,7 +562,7 @@ if(typeof makeCarMesh==='function'){
     glassMat=new THREE.MeshStandardMaterial({color:0x1c2630,metalness:.6,roughness:.08,transparent:true,opacity:.82});
   makeCarMesh=function(c){
     const g=baseCarMesh(c);
-    if(c.boat)return g; // Boats have their own hull, deck and helm; never attach car wheels.
+    if(c.boat||g.userData.visualVersion===2)return g; // Boats have their own hull, deck and helm; never attach car wheels.
     try{
       const s=c.spec,L=s.len,W=s.wid,top=g.userData.top,old=g.userData.paint;
       if(old&&old.color){const paint=new THREE.MeshStandardMaterial({color:old.color.clone(),metalness:.55,roughness:.32});

@@ -202,6 +202,10 @@
     clearTimeout(el._t); el._t = setTimeout(() => { el.style.opacity = '0'; }, 1400);
   }
 
+  window.level29Graphics={get quality(){return quality;},setQuality(q){if(!LEVELS.includes(q))return;quality=q;localStorage.setItem(QUALITY_KEY,q);if(ready)applyQuality();toast('GRAPHICS: '+q.toUpperCase());}};
+  const qualityButton=document.createElement('button');qualityButton.type='button';qualityButton.textContent='Graphics: '+quality;
+  qualityButton.addEventListener('click',()=>{window.level29Graphics.setQuality(LEVELS[(LEVELS.indexOf(quality)+1)%LEVELS.length]);qualityButton.textContent='Graphics: '+quality;});
+  document.querySelector('#menu .row')?.appendChild(qualityButton);
   addEventListener('keydown', e => {
     if (e.code !== 'KeyG' || e.repeat || e.target.closest('input,textarea')) return;
     quality = LEVELS[(LEVELS.indexOf(quality) + 1) % LEVELS.length];
