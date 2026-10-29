@@ -40,7 +40,7 @@ genCity=function(){
  for(const [id,type]of [['dealer','showroom'],['club','nightclub'],['dispensary','retail'],['smoke','retail'],['university','classroom'],['airport','terminal']]){
   const l=window.level29Downtown.lots[id];if(!l?.fb)continue;
   const f=l.fb,b={x:f.x0*TILE,y:f.y0*TILE,w:(f.x1-f.x0+1)*TILE,h:(f.y1-f.y0+1)*TILE,H:48,kind:'normal',col:'#c4bca8'};
-  l.venue=prepare(c,b,type,'lot-'+id);l.venue.lotId=id;if(['dispensary','smoke'].includes(id))l.venue.name=l.name;
+  l.venue=prepare(c,b,type,'lot-'+id);l.venue.lotId=id;if(['dispensary','smoke'].includes(id))l.venue.name=l.name;if(id==='smoke'){l.venue.kind='smoke';l.venue.short='SMOKE SHOP';}
  }
 
  // Public coordinates match the existing casino shell; upper hotel remains scenery.
@@ -118,9 +118,7 @@ buildCity=function(){farmGPS=false;farmButton.textContent='FIND FARM';dancers=[]
   cFarmEntrance(r);
   addSign(root,'LEVEL 29 BAYOU FARM',150,14,r.x+r.w/2,base+48,r.y,'#d3c38c');
   for(let x=r.x;x<=r.x+r.w;x+=24)for(const y of [r.y,r.y+r.h]){if(y===r.y+r.h&&Math.abs(x-(r.x+r.w/2))<40)continue;part(2,16,2,x,8,y,'#96774e');part(23,2,2,x,11,y,'#ad9268');}
-  for(let i=0;i<12;i++){const kind=i<4?'cow':i<8?'pig':'chicken',g=new THREE.Group(),color=kind==='cow'?'#d8d1b8':kind==='pig'?'#d29e91':'#b59a61',m=mat(color);const mesh=(w,h,d,x,y,z)=>addPart(g,w,h,d,x,y,z,m);
-   const s=kind==='chicken'?.45:1;mesh(15*s,8*s,8*s,0,9*s,0);mesh(7*s,7*s,6*s,9*s,11*s,0);for(const x of [-5,5])for(const z of [-3,3])mesh(2*s,7*s,2*s,x*s,3.5*s,z*s);if(kind==='cow')for(const x of [-4,3])addPart(g,5,1,8,x,13,0,mat('#4d463d'));
-   root.add(g);animals.push({g,x:r.x+35+(i%4)*40,y:r.y+45+Math.floor(i/4)*45,seed:i});}
+  for(let i=0;i<12;i++){const kind=i<4?'cow':i<8?'pig':'chicken',g=level29FarmModels.create(kind,i);root.add(g);animals.push({g,kind,x:r.x+35+(i%4)*40,y:r.y+82+Math.floor(i/4)*43,seed:i});}
  }
  for(let i=0;i<4;i++){const c=makeCar((122+i*3)*TILE,(58+i*9)*TILE,Math.PI/2,i%2?'skiff':'cabinboat');c.ambientBoat=true;cars.push(c);const m=makeFigure(false);setFigureColors(m,'#b48a66','#c2a36e','#35485d','#352d29');scene.add(m);if(i%2){const rod=addPart(m.userData.armR,.25,22,.25,0,-7,0,new THREE.MeshStandardMaterial({color:'#6e604b'}));rod.rotation.z=.55;}crew.push({m,c,kind:i%2?'fish':'helm'});}
 };

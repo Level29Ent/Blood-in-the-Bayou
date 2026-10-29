@@ -17,7 +17,7 @@ genCity=function(){const c=generate.apply(this,arguments);if(!c.world)return c;
  function priority(b){return b===c.mansion?.B?100:c.venues.find(v=>v.b===b)?.lotId?90:b===c.casinoVenue?.b?90:b.venue==='residence'?80:['bank','hospital','fire','police','grocery','gym','gas'].includes(b.venue)?70:['armory','garage','spray','business'].includes(b.venue)?60:b.venue==='shelter'?0:10;}
  for(const b of order){
   const old={x:b.x,y:b.y,w:b.w,h:b.h};
-  const bad=mountain(c,b)||placed.some(p=>overlap(b,p,32));
+  const bad=mountain(c,b)||placed.some(p=>overlap(b,p,32))||c.airportParcel&&c.venues.find(v=>v.b===b)?.lotId!=='airport'&&overlap(b,c.airportParcel,32);
   if(!bad){placed.push(b);continue;}
   let best=null,score=Infinity;
   for(let y=6*TILE;y+b.h<(MH-4)*TILE;y+=TILE)for(let x=(GULF_X+7)*TILE;x+b.w<(MW-4)*TILE;x+=TILE){

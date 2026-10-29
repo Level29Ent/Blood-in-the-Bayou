@@ -1,6 +1,6 @@
 'use strict';
 (function(){
-const ids=['m240','shotgun','rpg','molotov','bat','smg','carbine'];
+const ids=['m240','shotgun','rpg','molotov','bat','smg','carbine','pistol','marksman'];
 function build(v,g){
  const models=window.level29ArsenalVisuals?.createDisplayModels();if(!models)return;
  const cells=level29SiteLayout.slots(v.b,ids.length),steel=new THREE.MeshStandardMaterial({color:'#434f55',metalness:.65,roughness:.36}),rim=new THREE.MeshStandardMaterial({color:'#c6b075',metalness:.55,roughness:.3});v.weaponDisplays=[];

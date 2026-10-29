@@ -239,7 +239,7 @@ syncGta=function(){
  if(extraWeap)for(const m of Object.values(extraWeap)){m.scale.setScalar(SW<700?.53:.55);if(SW<700){m.position.x-=2.9;m.position.y+=1.6;}}
  for(const m of pkgMeshes){
   const d=player?dist((player.car||player).x,(player.car||player).y,m.position.x,m.position.z):10000;
-  m.visible=state!=='menu'&&!packagesFound.has(m.userData.id)&&d<700;
+  m.visible=state!=='menu'&&!packagesFound.has(m.userData.id)&&d<260;
   m.position.y=city&&city.heightAt?Math.max(0,city.heightAt(m.position.x,m.position.z)):0;
   m.rotation.y=m.userData.heading;
   m.userData.caseBody.position.y=.25+Math.sin(frame*.025+m.position.x)*.15;

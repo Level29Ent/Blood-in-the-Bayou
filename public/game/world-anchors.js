@@ -6,6 +6,8 @@ function clearSite(c,x,y,radius,T,road){
  if((c.features||[]).some(f=>f.kind==='mountain'&&level29SiteLayout.intersects(box,f)))return false;
  if((c.buildings||[]).some(b=>level29SiteLayout.intersects(box,b)))return false;
  if(c.farm&&level29SiteLayout.intersects(box,c.farm))return false;
+ if(c.airportParcel&&level29SiteLayout.intersects(box,c.airportParcel))return false;
+ if(c.recreationParcel&&level29SiteLayout.intersects(box,c.recreationParcel))return false;
  if(road&&!road(x,y))return false;
  const heights=[];for(const [dx,dy]of [[0,0],[-radius,-radius],[radius,-radius],[-radius,radius],[radius,radius]])heights.push(c.heightAt?c.heightAt(x+dx,y+dy):0);
  return Math.max(...heights)<=4&&Math.max(...heights)-Math.min(...heights)<1.5;
@@ -23,5 +25,6 @@ buildWorld=function(){build.apply(this,arguments);if(!city?.world||!world)return
   if(p){item.x=p.x;item.y=p.y;used.push(p);}else item.unavailable=true;
  }
  for(const key of ['jumps','rampages','packages'])world[key]=world[key].filter(o=>!o.unavailable);
+ const packages=[];for(const p of world.packages)if(!packages.some(q=>dist(p.x,p.y,q.x,q.y)<260)&&packages.length<20)packages.push(p);world.packages=packages;
 };
 })();

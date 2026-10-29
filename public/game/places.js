@@ -130,7 +130,8 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
 const oldVenue=buildVenue;buildVenue=function(v){if(!v.extended)return oldVenue(v);const g=new THREE.Group();g.name='level29-'+v.id;v.mesh=g;cityGroup.add(g);v.floorFurniture=[];const q=batch(g),levels=v.id==='hospital'?5:1;
  for(let l=0;l<levels;l++){v.furniture=[];shell(v,g,q,l*56,l);furnish(v,g,q,l*56,l);v.floorFurniture.push(v.furniture);}
  v.furniture=v.floorFurniture[v.floor];q.finish();addSign(g,v.name,Math.min(250,v.b.w),15,v.doorX,levels*56+10,v.doorY,v.col);v.labelH=levels*56+34;addSign(g,'WALK IN · AUTO DOOR',150,8,v.doorX,46,v.doorY+1,v.col);
- const tq=batch(g);if(v.id==='gas'){const b=v.b,zz=b.y+b.h+58;tq.box(b.w+30,5,65,b.x+b.w/2,46,zz,material('#d2c3a1'));for(const x of [b.x+25,b.x+b.w-25]){tq.box(3,46,3,x,23,zz,material('#9b7548'));tq.box(15,22,13,x,11,zz,material('#c7b696'));tq.box(11,7,1,x,16,zz+7,material('#24343d'));tq.box(2,12,2,x+10,13,zz,material('#252d32'));}addSign(g,'LEVEL 29 · FUEL',170,10,b.x+b.w/2,44,zz+33,v.col);}
+ const tq=batch(g);if(v.id==='gas'){const b=v.b,zz=b.y+b.h-22;tq.box(b.w-16,3,32,b.x+b.w/2,42,zz,material('#d2c3a1'));for(const x of [b.x+20,b.x+b.w-20]){tq.box(2,40,2,x,20,zz,material('#9b7548'));tq.box(12,19,10,x,9.5,zz,material('#c7b696'));tq.box(9,5,1,x,14,zz+5.1,material('#24343d'));tq.box(1,10,1,x+7,11,zz,material('#252d32'));v.furniture.push({x:x-9,y:zz-6,w:18,h:12});}addSign(g,'LEVEL 29 · FUEL',Math.min(150,b.w-20),8,b.x+b.w/2,39,b.y+b.h-5,v.col);}
+
  if(v.id==='hospital'){const b=v.b;tq.box(8,35,2,b.x+20,170,v.doorY+2,material('#cf5551'));tq.box(25,8,2,b.x+20,170,v.doorY+2,material('#cf5551'));}
  tq.finish();
 };

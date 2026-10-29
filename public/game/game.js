@@ -984,6 +984,7 @@ function update(){
   pickups = pickups.filter(k => !k.got && (k.kind==='crate'||k.kind==='power'||(k.kind==='cash' ? Date.now() < (k.expiresAt || (k.expiresAt=Date.now()+Math.max(0,1800-k.t)*1000/60)) : k.t < 60*60)));
   // zombies
   const px = p.car ? p.car.x : p.x, py = p.car ? p.car.y : p.y;
+  const localSafe=typeof isPlayerInsideBuilding==='function'&&isPlayerInsideBuilding(p),outdoorRemotes=mpRemotes.filter(r=>!r.dead&&!r.safe&&!(typeof isPlayerInsideBuilding==='function'&&isPlayerInsideBuilding(r)));
   if (frame - lastShotFrame < 3) alertZombies(px, py, 520);
   if (frame - lastShotFrame > 480) heat = Math.max(0, heat - .0025);
   // Nearby-cell separation avoids an all-zombies-against-all-zombies scan.
@@ -996,16 +997,16 @@ function update(){
     if (!z.alive) continue;
     if (z.flash > 0) z.flash--;
     // multiplayer: chase whichever Jester is closest
-    let gxP = px, gyP = py, rem = null, dLocal = Math.hypot(px - z.x, py - z.y), dBest = p.dead ? 1e9 : dLocal;
-    for (const r of mpRemotes){ if (r.dead) continue; const rd = Math.hypot(r.x - z.x, r.y - z.y); if (rd < dBest){ dBest = rd; gxP = r.x; gyP = r.y; rem = r; } }
+    let gxP = px, gyP = py, rem = null, dLocal = Math.hypot(px - z.x, py - z.y), dBest = p.dead||localSafe ? 1e9 : dLocal;
+    for (const r of outdoorRemotes){ const rd = Math.hypot(r.x - z.x, r.y - z.y); if (rd < dBest){ dBest = rd; gxP = r.x; gyP = r.y; rem = r; } }
     const d = Math.min(dBest, dLocal + (p.dead ? 1e9 : 0));
     if (d > 1500){ z.alive = false; continue; }
     if (d < 200) z.alert = true;
     let tx = 0, ty = 0;
     // target survivors too
     let tgt = null;
-    if (survivors.length && survivors[0].hp > 0 && !survivors[0].inCar){ const s = survivors[0], sd = dist(z.x, z.y, s.x, s.y); if (sd < d && sd < 260) tgt = s; }
-    if (z.alert && (!p.dead || rem)){
+    if (survivors.length && survivors[0].hp > 0 && !survivors[0].inCar && !(typeof isPlayerInsideBuilding==='function'&&isPlayerInsideBuilding(survivors[0]))){ const s = survivors[0], sd = dist(z.x, z.y, s.x, s.y); if (sd < d && sd < 260) tgt = s; }
+    if (z.alert && ((!p.dead&&!localSafe) || rem || tgt)){
       const gg = zombieGoal(z, tgt ? tgt.x : gxP, tgt ? tgt.y : gyP), gx = gg.x, gy = gg.y;
       z.a = Math.atan2(gy - z.y, gx - z.x); tx = Math.cos(z.a) * z.speed; ty = Math.sin(z.a) * z.speed;
     } else { if (frame % 120 === 0) z.wander += rnd(-1.5, 1.5); z.a = z.wander; tx = Math.cos(z.a) * .35; ty = Math.sin(z.a) * .35; }
@@ -1022,10 +1023,10 @@ function update(){
     if (z.atkCd > 0) z.atkCd--;
     if (tgt && dist(z.x, z.y, tgt.x, tgt.y) < z.r + 12 && z.atkCd <= 0){ tgt.hp -= z.type==='brute' ? 20 : 8; z.atkCd = 50; snd('hurt'); decal(tgt.x, tgt.y, 'blood', .5); }
     if (rem && !rem.car && !rem.safe && dBest < z.r + 14 && z.atkCd <= 0 && typeof mpHurtRemote === 'function'){ mpHurtRemote(rem, z.type==='brute' ? 13 : z.type==='runner' ? 5 : 6, z.x, z.y); z.atkCd = 60; }
-    if (!p.dead && !p.car && dLocal < z.r + p.r + 4 && z.atkCd <= 0){ hurtPlayer(z.type==='brute' ? 13 : z.type==='runner' ? 5 : 6, z.x, z.y); z.atkCd = 60; }
+    if (!p.dead && !p.car && !localSafe && dLocal < z.r + p.r + 4 && z.atkCd <= 0){ hurtPlayer(z.type==='brute' ? 13 : z.type==='runner' ? 5 : 6, z.x, z.y); z.atkCd = 60; }
     // vs cars
     for (const c of cars){
-      if (c.dead || (c.z || 0) > 8) continue;
+      if (c.dead || (c.z || 0) > 8 || c===p.car&&localSafe) continue;
       const cd = dist(z.x, z.y, c.x, c.y);
       if (cd < c.r + z.r - 2){
         const sp = Math.abs(c.v);
