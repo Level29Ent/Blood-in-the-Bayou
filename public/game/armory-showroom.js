@@ -20,7 +20,7 @@ function build(v,g){
  });
 }
 const renderBase=render;render=function(){
- if(city&&player)for(const v of city.venues||[])if(v.weaponDisplays)for(const d of v.weaponDisplays)d.light.visible=state==='play'&&!player.dead&&insideVenue(v,player);
+ if(city&&player)for(const v of city.venues||[])if(v.weaponDisplays)for(const d of v.weaponDisplays)d.light.visible=state==='play'&&!player.dead&&window.level29Graphics?.quality==='high'&&insideVenue(v,player);
  renderBase.apply(this,arguments);
 };
 window.level29ArmoryShowroom={build};

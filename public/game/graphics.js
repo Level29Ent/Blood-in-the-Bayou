@@ -6,7 +6,9 @@
   const LEVELS = ['high', 'medium', 'low'];
   const touch = matchMedia('(pointer: coarse)').matches;
   let quality = localStorage.getItem(QUALITY_KEY);
-  if (!LEVELS.includes(quality)) quality = touch ? 'medium' : 'high';
+  // Migrate phones off the previous expensive default once; explicit later choices persist.
+  if(touch&&localStorage.getItem('l29_mobile_perf_v2')!=='1'){quality='low';localStorage.setItem(QUALITY_KEY,'low');localStorage.setItem('l29_mobile_perf_v2','1');}
+  if (!LEVELS.includes(quality)) quality = touch ? 'low' : 'medium';
 
   const SHADOW = {
     high:   { size: 2048, extent: 260, every: 1 },
@@ -17,7 +19,7 @@
   const sunDir = new THREE.Vector3();
   const tmp = new THREE.Vector3();
   const seenMats = new WeakSet();
-  let sky = null, ready = false, frameN = 0, vignette = null;
+  let sky = null, ready = false, frameN = 0, vignette = null, scannedCity=null;
 
   function fixTexture(t){
     if (t && t.encoding !== THREE.sRGBEncoding){ t.encoding = THREE.sRGBEncoding; t.needsUpdate = true; return true; }
@@ -182,7 +184,7 @@
     if (renderer && !ready) setup();
     if (ready){
       frameN++;
-      if (frameN % 30 === 1) scanScenes();
+      if(scannedCity!==city){scanScenes();scannedCity=city;}
       updateSky();
       updateShadowCamera();
     }

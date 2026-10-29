@@ -9,7 +9,8 @@ genCity=function(){const c=generate.apply(this,arguments);if(!c.world)return c;
  const footprints=c.buildings.concat(lots,c.farm?[c.farm]:[]);
  const pads=footprints.map(b=>{const base=level29SiteLayout.foundation(c,b);b.baseY=base;return {x:b.x-36,y:b.y-36,w:b.w+72,h:b.h+72,baseY:base};});
  c.foundationPads=pads;
- const influence=(x,y)=>{let weight=0,base=0;for(const b of pads){const w=level29Terrain.padWeight(x,y,b,96);if(w>weight){weight=w;base=b.baseY;}}return {weight,base};};
+ const buckets=new Map(),cell=256;for(const b of pads)for(let y=Math.floor((b.y-96)/cell);y<=Math.floor((b.y+b.h+96)/cell);y++)for(let x=Math.floor((b.x-96)/cell);x<=Math.floor((b.x+b.w+96)/cell);x++){const k=x+','+y;if(!buckets.has(k))buckets.set(k,[]);buckets.get(k).push(b);}
+ const influence=(x,y)=>{let weight=0,base=0;for(const b of buckets.get(Math.floor(x/cell)+','+Math.floor(y/cell))||[]){const w=level29Terrain.padWeight(x,y,b,96);if(w>weight){weight=w;base=b.baseY;}}return {weight,base};};
  c.developmentWeight=(x,y)=>influence(x,y).weight;
  const height=(x,y)=>{const f=desc?.get?desc.get.call(c):raw;const h=f?f(x,y):0;const b=c.residence?.b;
  if(window.level29OpenWorld?.interior==='apartment'&&b&&x>b.x&&x<b.x+b.w&&y>b.y&&y<b.y+b.h)return h;

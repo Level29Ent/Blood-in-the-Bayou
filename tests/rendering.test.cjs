@@ -28,8 +28,9 @@ function pipeline(){
 test('postprocessing follows quality, bounds render targets and restores output encoding',()=>{
  const p=pipeline();p.api.drawWorld();assert.equal(p.api.ssao.enabled,true);assert.equal(p.api.size.width,640);assert.equal(p.ctx.renderer.outputEncoding,p.ctx.THREE.sRGBEncoding);
  p.setQuality('medium');p.api.drawWorld();assert.equal(p.api.size.width,384);assert.equal(p.api.ssao.enabled,true);
- p.setQuality('low');p.api.drawWorld();assert.equal(p.api.ssao.enabled,false);assert.equal(p.api.composer.passes[0].enabled,true);
+ p.setQuality('low');p.api.drawWorld();assert.equal(p.api.ssao,null);assert.equal(p.api.composer,null);assert.equal(p.direct(),1);
 });
 test('a failed composer disposes targets and falls back to direct rendering',()=>{
  const p=pipeline();p.api.drawWorld();const c=p.api.composer;c.fail=true;p.api.drawWorld();assert.equal(c.disposed,true);assert.equal(p.api.failed,true);assert.equal(p.direct(),1);p.api.drawWorld();assert.equal(p.direct(),2);
 });
+test('low quality allocates no composer and can explicitly re-enable effects',()=>{const p=pipeline();p.setQuality('low');p.api.drawWorld();assert.equal(p.api.composer,null);assert.equal(p.direct(),1);p.setQuality('high');p.api.drawWorld();assert.equal(p.api.ssao.enabled,true);});
