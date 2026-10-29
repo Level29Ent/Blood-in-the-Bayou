@@ -1438,6 +1438,8 @@ function drawHUD(){
   if (up.rapid) chips.push('RAPID ×' + up.rapid); if (up.spread) chips.push(up.spread > 1 ? 'WIDE SPREAD' : 'SPREAD'); if (up.armor) chips.push('ARMOR ×' + up.armor);
   if (up.nitro) chips.push('NITRO'); if (up.cool) chips.push('COOLING ×' + up.cool); if (up.ap) chips.push('AP ×' + up.ap); if (up.tough) chips.push('TOUGH RIDES ×' + up.tough);
   if (chips.length){ y += 6; chips.forEach((ch, k) => { if (!small || k < 4) hudText(ch, R, y + k*16, small ? 10 : 12, '#9fdcab', 'right', '600 '); }); }
+  // DOM actions start after the actual status stack (armor, vehicle and upgrade chips included).
+  document.documentElement.style.setProperty('--hud-status-bottom', (y + (chips.length ? Math.min(chips.length, small ? 4 : chips.length) * 16 : 0) + 14) + 'px');
   // mission panel top-left
   if (mission){
     const info = mission.info;
