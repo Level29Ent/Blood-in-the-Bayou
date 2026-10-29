@@ -54,6 +54,11 @@ function paintCurves(g,k,mini){
       const bx0=Math.max(0,Math.floor(c.box[0]/TILE)),by0=Math.max(0,Math.floor(c.box[1]/TILE)),bx1=Math.min(MW-1,Math.ceil(c.box[2]/TILE)),by1=Math.min(MH-1,Math.ceil(c.box[3]/TILE));
       g.save();g.beginPath();g.rect(c.box[0],c.box[1],c.box[2]-c.box[0],c.box[3]-c.box[1]);
       for(let ty=by0;ty<=by1;ty++)for(let tx=bx0;tx<=bx1;tx++){const t=city.get(tx,ty);if(t===T_ROAD||t===T_BRIDGE)g.rect(tx*TILE,ty*TILE,TILE,TILE);}
+      // Clip using a second mask: duplicate rectangles in the even-odd path can reopen holes.
+      g.clip('evenodd');
+      g.beginPath();g.rect(0,0,WORLD,WORLD);
+      for(const b of city.buildings)if(![city.farm,city.recreationParcel,city.airportParcel].filter(Boolean).some(r=>b.x>=r.x&&b.y>=r.y&&b.x+b.w<=r.x+r.w&&b.y+b.h<=r.y+r.h))g.rect(b.x-6,b.y-6,b.w+12,b.h+12);
+      for(const r of [city.farm,city.recreationParcel,city.airportParcel].filter(Boolean))g.rect(r.x,r.y,r.w,r.h);
       g.clip('evenodd');
       path();g.strokeStyle='rgba(30,26,18,.28)';g.lineWidth=TILE*4.4*S;g.stroke();            // soft verge
       path();g.strokeStyle='#cfcfc6';g.lineWidth=TILE*3.35*S;g.stroke();                         // edge lines

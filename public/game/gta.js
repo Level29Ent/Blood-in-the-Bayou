@@ -12,9 +12,11 @@ const WEAPONS = {
   molotov: { name:'MOLOTOV',   key:'4', price:600,  ammo:6,   pack:5,  ammoPrice:200, col:'#ff9a2a' },
   smg:     { name:'BAYOU SMG', key:'6', price:1700, ammo:120, pack:120, ammoPrice:220, col:'#81c5cf' },
   carbine: { name:'RANGER CARBINE', key:'7', price:2800, ammo:60, pack:60, ammoPrice:300, col:'#a6c183' },
+  pistol: {name:'MARSH PISTOL',key:'8',price:1200,ammo:48,pack:48,ammoPrice:180,col:'#92bcca'},
+  marksman: {name:'DELTA MARKSMAN',key:'9',price:4600,ammo:30,pack:30,ammoPrice:400,col:'#bcb894'},
   bat:     { name:'BAT',       key:'5', price:150,  ammo:Infinity, pack:0, col:'#c9a37a' },
 };
-const WORDER = ['m240','shotgun','rpg','molotov','bat','smg','carbine'];
+const WORDER = ['m240','shotgun','rpg','molotov','bat','smg','carbine','pistol','marksman'];
 let arsenal = null, curW = 'm240', wheelOpen = false, wheelSel = 0, wFire = 0, batSwing = 0;
 function resetArsenal(){ arsenal = { m240: Infinity, bat: 0 }; arsenal.bat = undefined; delete arsenal.bat; curW = 'm240'; }
 resetArsenal();
@@ -28,7 +30,11 @@ fireWeapon = function(ox, oy, aim){
   const p = player;
   if (curW === 'm240' || p.car && curW === 'bat') return _fireWeapon(ox, oy, aim);
   if (curW !== 'bat' && arsenal[curW] <= 0){ if (frame % 30 === 0) toast('OUT OF ' + WEAPONS[curW].name + ' AMMO · Q TO SWITCH'); p.fireCd = 20; return; }
-  if(curW==='smg'||curW==='carbine'){
+  if(curW==='pistol'||curW==='marksman'){
+    const long=curW==='marksman',a=aim+rnd(long?-.008:-.035,long?.008:.035),sp=long?30:22;
+    bullets.push({x:ox+Math.cos(a)*22,y:oy+Math.sin(a)*22,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:long?48:26,dmg:(long?10:3.5)*(window.level29Trading?.damage||1)+up.ap*.35,pierce:long?2:0,hit:new Set()});
+    arsenal[curW]--;p.fireCd=long?48:16;p.flash=3;view.kick=long?2.4:1.1;snd('shot');
+  }else if(curW==='smg'||curW==='carbine'){
     const rifle=curW==='carbine',spread=(rifle?.018:.07)*(window.level29Trading?.spread||1),a=aim+rnd(-spread,spread),speed=rifle?24:18;
     bullets.push({x:ox+Math.cos(a)*22,y:oy+Math.sin(a)*22,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life:rifle?38:24,dmg:(rifle?4.8:1.7)*(window.level29Trading?.damage||1)+up.ap*.35,pierce:rifle?1:0,hit:new Set()});
     arsenal[curW]--;p.fireCd=rifle?20:6;p.flash=3;view.kick=rifle?1.8:.65;snd('shot');
@@ -380,11 +386,11 @@ function updatePackages(){
     if (dist(ox, oy, k.x, k.y) < 26){
       packagesFound.add(k.id); const n = packagesFound.size; cash += 500; sfx('cash'); sfx('checkpoint');
       let extra = '';
-      if (n === 10){ giveW('shotgun'); extra = ' · SHOTGUN UNLOCKED'; }
-      if (n === 25){ giveW('molotov', 10); extra = ' · MOLOTOVS UNLOCKED'; }
-      if (n === 40){ giveW('rpg', 8); extra = ' · RPG UNLOCKED'; }
-      if (n === 50){ up.cool += 2; extra = ' · M240 COOLING BOOST'; }
-      banner = { big: 'HIDDEN PACKAGE', small: n + ' of 50 · +$500' + extra, t: 170, good: true };
+      if (n === 5){ giveW('shotgun'); extra = ' · SHOTGUN UNLOCKED'; }
+      if (n === 10){ giveW('molotov', 10); extra = ' · MOLOTOVS UNLOCKED'; }
+      if (n === 15){ giveW('rpg', 8); extra = ' · RPG UNLOCKED'; }
+      if (n === 20){ up.cool += 2; extra = ' · M240 COOLING BOOST'; }
+      banner = { big: 'HIDDEN PACKAGE', small: n + ' found · +$500' + extra, t: 170, good: true };
     }
   }
 }
@@ -458,7 +464,7 @@ drawHUD = function(){
   if (rampage){ const s = Math.ceil(rampage.t / 60); hudText('RAMPAGE  ' + rampage.kills + ' / ' + rampage.r.need, SW/2, small ? 64 : 52, small ? 18 : 24, '#d23aff', 'center', '900 '); hudText('0:' + String(s).padStart(2, '0'), SW/2, small ? 86 : 80, 18, s < 10 && frame % 30 < 15 ? '#ff5a4a' : '#fff', 'center', '800 '); }
   if (world && p && p.car && sprayT > 0 && sprayT < 90){ cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(SW/2 - 120, SH*.62, 240, 30); cx.fillStyle = '#5fb7ff'; cx.fillRect(SW/2 - 116, SH*.62 + 22, 232 * sprayT / 90, 4); hudText("BAYOU SHINE · $250", SW/2, SH*.62 + 3, 16, '#5fb7ff', 'center'); }
   // stats line on the full map
-  if (showMap){ hudText('PACKAGES ' + packagesFound.size + '/' + DISTRICTS.length*10 + '   ·   STUNT JUMPS ' + jumpsDone.size + '/' + DISTRICTS.length*4 + '   ·   RAMPAGES ' + rampagesDone.size + '/' + DISTRICTS.length*3 + '', SW/2, SH - 26, 13, '#f4c355', 'center', '700 '); hudText('$ gun shop   P pay \'n\' spray   R rampage   J stunt jump', SW/2, 14, 12, '#c9d1d4', 'center', '600 '); }
+  if (showMap){ hudText('PACKAGES ' + world.packages.filter(p=>packagesFound.has(p.id)).length + '/' + (world?.packages.length||0) + '   ·   STUNT JUMPS ' + jumpsDone.size + '/' + DISTRICTS.length*4 + '   ·   RAMPAGES ' + rampagesDone.size + '/' + DISTRICTS.length*3 + '', SW/2, SH - 26, 13, '#f4c355', 'center', '700 '); hudText('$ gun shop   P pay \'n\' spray   R rampage   J stunt jump', SW/2, 14, 12, '#c9d1d4', 'center', '600 '); }
   drawWheel();
 };
 const _fpHUD = fpHUD;
@@ -517,8 +523,8 @@ function ensurePools(){
   g = new THREE.Group(); const tube = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 20, 12), olv); tube.rotation.x = Math.PI/2; tube.position.set(0, 1.5, -4); const war = new THREE.Mesh(new THREE.ConeGeometry(2.4, 6, 10), lam('#3a4a2a')); war.rotation.x = -Math.PI/2; war.position.set(0, 1.5, -16.5); const grip = box(1, 3, 1.2, blk); grip.position.set(0, -1.2, -1); g.add(tube, war, grip); arms(g); extraWeap.rpg = g;
   g = new THREE.Group(); const bot = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.6, 6, 10), lam('#6a8a3a', { transparent: true, opacity: .85 })); bot.position.set(1, 0, -6); const neck = new THREE.Mesh(new THREE.CylinderGeometry(.6, .8, 3, 8), lam('#6a8a3a')); neck.position.set(1, 4.4, -6); const rag = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffa020 })); rag.position.set(1, 6.4, -6); const hand = box(3, 3, 3, glove); hand.position.set(1, -2.5, -6); const arm = box(2.6, 2.6, 11, sleeve); arm.rotation.set(.4, -.2, 0); arm.position.set(2.4, -5, 1); g.add(bot, neck, rag, hand, arm); g.userData.rag = rag; extraWeap.molotov = g;
   g = new THREE.Group(); const batG = new THREE.CylinderGeometry(.9, .45, 18, 10); const bat = new THREE.Mesh(batG, lam('#b08850')); bat.position.set(0, 8, 0); const hnd = box(2.6, 3, 3, glove); hnd.position.set(0, -.4, 0); const arm2 = box(2.6, 2.6, 10, sleeve); arm2.rotation.set(.6, 0, 0); arm2.position.set(0, -4, 4); g.add(bat, hnd, arm2); extraWeap.bat = g;
-  for(const id of ['smg','carbine']){
-    const m=new THREE.Group(),paint=new THREE.MeshStandardMaterial({color:'#353c41',roughness:.48,metalness:.55}),rifle=id==='carbine';
+  for(const id of ['smg','carbine','pistol','marksman']){
+    const m=new THREE.Group(),paint=new THREE.MeshStandardMaterial({color:'#353c41',roughness:.48,metalness:.55}),rifle=id==='carbine'||id==='marksman';
     const part=(w,h,d,x,y,z,mat)=>{const o=box(w,h,d,mat);o.position.set(x,y,z);m.add(o);return o;};
     part(1.9,2.2,rifle?8:5,0,0,0,paint);part(1.4,2,3,0,-.5,rifle?6:4,blk);
     part(.9,3.2,1.7,0,-2,1,blk);part(.9,3,2,0,-2.2,-1.5,paint);
@@ -528,7 +534,17 @@ function ensurePools(){
     for(const side of [-1,1]){part(.12,.8,3,side*1.03,.1,-1,paint);for(let j=0;j<3;j++)part(.14,.24,.35,side*1.12,.3,-2+j*.7,blk);}
     const muzzleBrake=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,1.4,16),paint);muzzleBrake.rotation.x=Math.PI/2;muzzleBrake.position.set(0,.4,rifle?-13:-7.6);m.add(muzzleBrake);
     part(.5,1,.5,0,1.7,rifle?-12:-7,blk);
-    const sight=new THREE.Mesh(new THREE.TorusGeometry(.65,.13,6,16),blk);sight.position.set(0,2,-1);m.add(sight);arms(m);m.userData.finishMaterial=paint;extraWeap[id]=m;
+    const sight=new THREE.Mesh(new THREE.TorusGeometry(.65,.13,6,16),blk);sight.position.set(0,2,-1);m.add(sight);if(id==='pistol'){
+      for(const o of [...m.children]){m.remove(o);o.geometry.dispose();}
+      part(1.6,1.2,5,0,.6,-1.4,paint);const handle=part(1.4,3,1.8,0,-1.5,.4,blk);handle.rotation.x=-.18;
+      const muzzle=new THREE.Mesh(new THREE.CylinderGeometry(.24,.24,4.5,14),blk);muzzle.rotation.x=Math.PI/2;muzzle.position.set(0,.65,-1.7);m.add(muzzle);
+      part(1.4,.2,.3,0,1.35,.5,blk);part(.3,.3,.3,0,1.4,-3.5,blk);
+      for(let j=0;j<4;j++)part(1.68,.55,.1,0,.7,-.1+j*.25,blk);
+    }
+    arms(m);
+    if(id==='pistol'){part(1.6,.7,5,0,1,-1.8,paint);part(1.3,1.2,.3,0,-1.6,1,blk);}
+    if(id==='marksman'){const scope=new THREE.Mesh(new THREE.CylinderGeometry(.8,.8,5,16),blk);scope.rotation.x=Math.PI/2;scope.position.set(0,2.6,0);m.add(scope);part(1,1.3,.6,0,1.7,-2,paint);part(1,1.3,.6,0,1.7,2,paint);part(1,.4,5,0,2,-7,paint);}
+    m.userData.finishMaterial=paint;extraWeap[id]=m;
   }
   for (const k in extraWeap){ extraWeap[k].scale.setScalar(k === 'rpg' ? .4 : .55); extraWeap[k].visible = false; vmScene.add(extraWeap[k]); }
 }

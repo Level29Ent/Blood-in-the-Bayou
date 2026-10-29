@@ -39,7 +39,7 @@ genCity=function(){
  const converted=c.venues.filter(v=>v.id==='shelter').sort((a,b)=>{
   const p=c.pier;return p?Math.hypot(a.doorX-p.x1,a.doorY-p.y)-Math.hypot(b.doorX-p.x1,b.doorY-p.y):a.doorX-b.doorX;
  });
- converted.forEach((v,i)=>{const spec=SHOP_TYPES[(i+2)%3];Object.assign(v,spec);});
+ converted.forEach((v,i)=>{const spec=SHOP_TYPES[i%2?1:2];Object.assign(v,spec);});
  // Secondary neighborhood safehouses were still marked solid on the tile grid.
  for(const v of c.venues)if(v.id==='safe'){
   const b=v.b;for(let y=Math.floor(b.y/TILE);y<Math.ceil((b.y+b.h)/TILE);y++)for(let x=Math.floor(b.x/TILE);x<Math.ceil((b.x+b.w)/TILE);x++)c.g[y*MW+x]=T_LOT;
@@ -96,7 +96,7 @@ buildVenue=function(v){
  addSign(g,v.name,Math.min(140,b.w),9,v.doorX,59,v.doorY,v.col);v.labelH=72;
 };
 const service=serviceVenue;
-serviceVenue=function(){const v=nearStation();if(v&&v.id==='shelter'){if(window.level29Trading)level29Trading.open(v);return;}return service.apply(this,arguments);};
+serviceVenue=function(){const v=nearStation();if(v&&(v.id==='shelter'||v.kind==='smoke')){if(window.level29Trading)level29Trading.open(v);return;}return service.apply(this,arguments);};
 const buildSafe=buildVenue;
 buildVenue=function(v){
  buildSafe(v);if(v.id!=='safe'||!v.mesh)return;

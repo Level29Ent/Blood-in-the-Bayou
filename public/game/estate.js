@@ -218,8 +218,8 @@ const oldWorld=buildWorld;
 buildWorld=function(){
  oldWorld();if(!city.world)return;
  const r=mkRng(292903);
- // Five caches per 5x3 land cell: regional spread, stable IDs, reachable ground.
- for(let gy=0;gy<5;gy++)for(let gx=0;gx<3;gx++)for(let n=0;n<4;n++){
+ // One cache per region; preserve stable IDs without littering every street.
+ for(let gy=0;gy<5;gy++)for(let gx=0;gx<3;gx++)for(let n=0;n<1;n++){
   for(let tries=0;tries<120;tries++){
    const x=(GULF_X+7+(MW-GULF_X-10)*(gx+r())/3)*TILE,y=(4+(MH-8)*(gy+r())/5)*TILE;
    if(solidAt(x,y)||blockedCircle(x,y,14)||[T_WATER,T_BRIDGE,T_BLD,T_ROAD].includes(tileAt(x,y)))continue;

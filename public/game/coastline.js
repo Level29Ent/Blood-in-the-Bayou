@@ -64,14 +64,14 @@ function layoutStrip(c,avoid){
   const Wp=c.width*T,Hp=c.height*T;let x0=1e9,y0=1e9,x1=-1,y1=-1;
   for(const f of mt){x0=Math.min(x0,f.x);y0=Math.min(y0,f.y);x1=Math.max(x1,f.x+f.w);y1=Math.max(y1,f.y+f.h);}
   if(!mt.length){x0=Wp*.8;x1=Wp;y0=Hp*.4;y1=Hp*.6;}
-  const side=nearestSide(c,x0,y0,x1,y1),w=12,h=11,W=c.width,H=c.height;
+  const side=nearestSide(c,x0,y0,x1,y1),w=14,h=11,W=c.width,H=c.height;
   const target=side==='L'||side==='R'?(y0+y1)/2/T:(x0+x1)/2/T;
   const cost=(rx,ry)=>{let s=0;for(let y=ry;y<ry+h;y++)for(let x=rx;x<rx+w;x++){const t=c.g[y*W+x];s+=t===T_WATER||t===T_BRIDGE?40:t===T_BLD?8:t===T_ROAD?1:0;}return s;};
   let best=null,bc=1e12;
   const span=side==='L'||side==='R'?H-h-2:W-w-2;
   for(let a=2;a<span;a++){
     const rx=side==='L'?1:side==='R'?W-w-1:a,ry=side==='T'?1:side==='B'?H-h-1:a;
-    const r=tileRect({x0:rx,y0:ry,x1:rx+w-1,y1:ry+h-1});if(avoid.some(o=>rectHit(r,o)))continue;
+    const r=tileRect({x0:rx,y0:ry,x1:rx+w-1,y1:ry+h-1});if(avoid.some(o=>rectHit(r,o))||c.buildings.some(b=>rectHit({x:r.x-T,y:r.y-T,w:r.w+2*T,h:r.h+2*T},b))||c.features.some(f=>f.kind!=='forest'&&rectHit(r,f)))continue;
     const k=cost(rx,ry)+Math.abs(a-target)*.6;if(k<bc){bc=k;best={x0:rx,y0:ry,x1:rx+w-1,y1:ry+h-1};}}
   if(!best)return null;
   const r=tileRect(best);clearArea(c,r,c.mansion?[c.mansion.B]:[]);
@@ -106,14 +106,27 @@ genCity=function(){
   try{
     pier=layoutPier(c);
     const DL=window.level29Downtown&&window.level29Downtown.lots;const old=DL&&DL.airport;
-    strip=layoutStrip(c,pier?[pier.rect]:[]);
+    strip=layoutStrip(c,(pier?[pier.rect]:[]).concat(DL?Object.values(DL).filter(l=>l.id!=='airport').map(tileRect):[]));
     if(strip&&DL){
       if(old)for(let y=old.y0;y<=old.y1;y++)for(let x=old.x0;x<=old.x1;x++)if(!flats.some(f=>inRect((x+.5)*T,(y+.5)*T,f)))c.g[y*c.width+x]=T_GRASS;
-      DL.airport=Object.assign({id:'airport',w:12,h:11,name:'LEVEL 29 AIRSTRIP'},old||{},{x0:strip.x0,y0:strip.y0,x1:strip.x1,y1:strip.y1,fb:strip.fb,door:strip.door,name:'LEVEL 29 AIRSTRIP'});
+      DL.airport=Object.assign({id:'airport',w:14,h:11,name:'LEVEL 29 AIRSTRIP'},old||{},{w:14,h:11,x0:strip.x0,y0:strip.y0,x1:strip.x1,y1:strip.y1,fb:strip.fb,door:strip.door,name:'LEVEL 29 AIRSTRIP'});
+      c.airportParcel=tileRect(strip);c.airportAccess=[];
+      const ax=strip.x0+5,ay=strip.y0+5;
+      for(let y=strip.y0;y<=ay;y++){c.g[y*c.width+ax]=T_ROAD;c.airportAccess.push({x:(ax+.5)*T,y:(y+.5)*T});}
+      for(let x=strip.x0;x<ax;x++){c.g[ay*c.width+x]=T_ROAD;c.airportAccess.push({x:(x+.5)*T,y:(ay+.5)*T});}
+      // Shortest dedicated access spur to the existing network, never across the runway or a building.
+      const start=ay*c.width+strip.x0,q=[start],prev=new Map([[start,-1]]);let end=-1;
+      for(let i=0;i<q.length;i++){const k=q[i],x=k%c.width,y=Math.floor(k/c.width),px=(x+.5)*T,py=(y+.5)*T;
+       if(!inRect(px,py,c.airportParcel)&&[T_ROAD,T_BRIDGE].includes(c.g[k])){end=k;break;}
+       for(const [xx,yy]of [[x-1,y],[x,y-1],[x,y+1],[x+1,y]]){const n=yy*c.width+xx,p={x:(xx+.5)*T,y:(yy+.5)*T};if(xx<1||yy<1||xx>=c.width-1||yy>=c.height-1||prev.has(n)||inRect(p.x,p.y,c.airportParcel)||keptBuilding(c,p.x,p.y)||(c.features||[]).some(f=>f.kind==='mountain'&&inRect(p.x,p.y,f)))continue;prev.set(n,k);q.push(n);}
+      }
+      if(end<0)throw Error('No airport access route');
+      for(let k=end;k!==-1;k=prev.get(k)){c.g[k]=c.g[k]===T_WATER?T_BRIDGE:T_ROAD;c.airportAccess.push({x:(k%c.width+.5)*T,y:(Math.floor(k/c.width)+.5)*T});}
     }
     court=layoutCourt(c,flats.slice());
     if(typeof indexTrees==='function')indexTrees(c);
   }catch(e){console.warn('coastline layout',e);}
+  if(!c.airportParcel)throw Error('An isolated airport parcel is required');
   // Flatten the airstrip, pier and court even though heightAt is assigned later during the build.
   let inner=typeof c.heightAt==='function'?c.heightAt:null;
   const flat=(x,y)=>flats.some(f=>inRect(x,y,f));
