@@ -95,3 +95,12 @@ Native-iPhone GPU performance, visual quality on physical devices and six-player
 - Final zoning reserves a full 32-world-unit tile between all building footprints. Conflicting buildings move to lowland plots with the same dimensions; their walls, door, service station, lot metadata and collision rectangles move together. The current map relocates 14 buildings without removing services. Relocated entrances get new street paths. Any optional filler removal is recorded in zoning diagnostics; essential mission/service buildings are not silently removed.
 - Mountain feature rectangles plus a 32-unit buffer are exclusion zones for **all buildings**, including the Golden Hills annexes and air terminal. The district retains its name but its businesses move off the mountain. No foundation pad is used as permission to put a building on a mountain. The current seven chapter maps have zero mountain-building intersections and zero sub-tile building clearances; four banks and all four armories remain.
 - Physical-iPhone FPS remains unverified; local touch-browser checks validate the cheaper rendering configuration, not a universal frame-rate guarantee.
+
+## Restore road color without restoring expensive effects
+
+The ground canvas is explicitly sRGB and uses a dedicated rough, nonmetallic Standard material with environment reflection intensity zero. Grid and curved asphalt use the same near-black base, while lane markings and bridge surfaces retain their own colors. Day/dusk key and bounce light are reduced to avoid washing out dark albedo; haze starts farther away so nearby streets/buildings keep their contrast. High/Medium's output pass no longer applies a separate desaturating warm tint, making its base palette consistent with direct Low rendering. Transparent glass and performance-first phone defaults are unchanged; no extra pass is introduced on phones.
+
+
+## Fixed performance-first graphics
+
+The graphics selector and G shortcut are removed. Every device uses the fixed Low/direct-rendering policy, ignoring saved High/Medium selections. The compatibility setter cannot re-enable expensive effects. Transparent modeled glass, dark asphalt/color restoration, ACES and adaptive resolution remain; no SSAO/compositor targets, transmission or dynamic shadow maps are re-enabled. Physical-device FPS still varies by hardware.

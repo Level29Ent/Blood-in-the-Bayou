@@ -57,8 +57,8 @@ function paintCurves(g,k,mini){
       g.clip('evenodd');
       path();g.strokeStyle='rgba(30,26,18,.28)';g.lineWidth=TILE*4.4*S;g.stroke();            // soft verge
       path();g.strokeStyle='#cfcfc6';g.lineWidth=TILE*3.35*S;g.stroke();                         // edge lines
-      path();g.strokeStyle='#2c3034';g.lineWidth=TILE*3.05*S;g.stroke();                         // asphalt
-      path();g.strokeStyle='rgba(255,255,255,.04)';g.lineWidth=TILE*2.2*S;g.stroke();
+      path();g.strokeStyle='#11161b';g.lineWidth=TILE*3.05*S;g.stroke();                         // asphalt
+      path();g.strokeStyle='rgba(255,255,255,.015)';g.lineWidth=TILE*2.2*S;g.stroke();
       g.setLineDash([26*S,22*S]);path();g.strokeStyle='#d7b13b';g.lineWidth=3*S;g.stroke();g.setLineDash([]);
       g.restore();
     } else {path();g.strokeStyle='#d9d9d2';g.lineWidth=TILE*2.6*S;g.stroke();}

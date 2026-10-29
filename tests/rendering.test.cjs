@@ -34,3 +34,8 @@ test('a failed composer disposes targets and falls back to direct rendering',()=
  const p=pipeline();p.api.drawWorld();const c=p.api.composer;c.fail=true;p.api.drawWorld();assert.equal(c.disposed,true);assert.equal(p.api.failed,true);assert.equal(p.direct(),1);p.api.drawWorld();assert.equal(p.direct(),2);
 });
 test('low quality allocates no composer and can explicitly re-enable effects',()=>{const p=pipeline();p.setQuality('low');p.api.drawWorld();assert.equal(p.api.composer,null);assert.equal(p.direct(),1);p.setQuality('high');p.api.drawWorld();assert.equal(p.api.ssao.enabled,true);});
+test('ground remains rough nonmetallic asphalt rather than receiving generic reflective conversion',()=>{
+ const THREE=require('../public/game/three.min.js'),p=pipeline();const mat=new THREE.MeshStandardMaterial({name:'worldGround',roughness:1,metalness:0,envMapIntensity:0}),mesh=new THREE.Mesh(new THREE.PlaneGeometry(10,10),mat),root=new THREE.Group();root.add(mesh);p.api.prepare(root);assert.equal(mesh.material,mat);assert.equal(mat.metalness,0);assert.equal(mat.roughness,1);assert.equal(mat.envMapIntensity,0);
+ const code=fs.readFileSync('public/game/fp.js','utf8');assert.match(code,/gt.encoding=THREE.sRGBEncoding/);assert.match(code,/name:'worldGround'.*roughness:1,metalness:0,envMapIntensity:0/);
+});
+test('quality tiers share the same color balance without a desaturating postprocess tint',()=>{const s=fs.readFileSync('public/game/cinematic.js','utf8');assert.match(s,/contrast:\{value:1\},saturation:\{value:1\}/);assert.ok(!s.includes('c*=vec3(1.015,1.0,.985)'));assert.match(fs.readFileSync('public/game/game.js','utf8'),/shade\('#11161b'/);assert.match(fs.readFileSync('public/game/gulf.js','utf8'),/strokeStyle='#11161b'/);});

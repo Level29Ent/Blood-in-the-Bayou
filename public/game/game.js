@@ -289,7 +289,7 @@ function renderGround(){
     const t = city.get(tx, ty), x = tx*TILE, y = ty*TILE, h = hash(tx*31 + ty*17);
     if (t===T_GRASS || t===T_PARK){ g.fillStyle = shade(DG.grass, .92 + h*.16); g.fillRect(x, y, TILE, TILE); g.fillStyle = shade(DG.grass, 1.15); for (let k=0;k<4;k++) g.fillRect(x + hash(tx+k*7+ty)*30, y + hash(ty+k*13+tx)*30, 2, 2); }
     else if (t===T_ROAD || t===T_BRIDGE){
-      g.fillStyle = t===T_BRIDGE ? '#5e6266' : shade('#2b2f33', .92 + h*.12); g.fillRect(x, y, TILE, TILE);
+      g.fillStyle = t===T_BRIDGE ? '#5e6266' : shade('#11161b', .92 + h*.12); g.fillRect(x, y, TILE, TILE);
       if (h > .86){ g.fillStyle = 'rgba(0,0,0,.22)'; g.beginPath(); g.ellipse(x+16, y+16, 6+h*6, 3+h*3, h*3, 0, 7); g.fill(); }
     }
     else if (t===T_WALK){ g.fillStyle = shade(DG.walk, .95 + h*.08); g.fillRect(x, y, TILE, TILE); g.strokeStyle = 'rgba(0,0,0,.14)'; g.lineWidth = 1; g.strokeRect(x+.5, y+.5, TILE-1, TILE-1); }

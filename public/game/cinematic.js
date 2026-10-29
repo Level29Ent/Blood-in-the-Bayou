@@ -41,8 +41,8 @@ function setup(){
  try{
  aoSupported=renderer.capabilities.isWebGL2||(renderer.extensions.has('WEBGL_depth_texture')&&renderer.extensions.has('OES_texture_float'));
  const A=window.BayouPost;composer=new A.EffectComposer(renderer);renderPass=new A.RenderPass(scene,camera);ssao=new A.SSAOPass(scene,camera,256,256);ssao.needsSwap=true;ssao.kernelRadius=7;ssao.minDistance=.001;ssao.maxDistance=.035;
- const shader={uniforms:{tDiffuse:{value:null},contrast:{value:1.035},saturation:{value:.96}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:`uniform sampler2D tDiffuse;uniform float contrast;uniform float saturation;varying vec2 vUv;
- void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;float l=dot(c,vec3(.2126,.7152,.0722));c=mix(vec3(l),c,saturation);c=(c-.18)*contrast+.18;c*=vec3(1.015,1.0,.985);gl_FragColor=LinearTosRGB(vec4(max(c,vec3(0.)),1.));
+ const shader={uniforms:{tDiffuse:{value:null},contrast:{value:1},saturation:{value:1}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:`uniform sampler2D tDiffuse;uniform float contrast;uniform float saturation;varying vec2 vUv;
+ void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;float l=dot(c,vec3(.2126,.7152,.0722));c=mix(vec3(l),c,saturation);c=(c-.18)*contrast+.18;gl_FragColor=LinearTosRGB(vec4(max(c,vec3(0.)),1.));
 }`};
  grade=new A.ShaderPass(shader);grade.material.toneMapped=false;composer.addPass(renderPass);composer.addPass(ssao);composer.addPass(grade);makeEnvironment();
  }catch(e){failed=true;dispose();console.warn('Cinematic pipeline unavailable; using direct renderer',e);}
@@ -59,9 +59,9 @@ function beforeWorld(){
  if(quality()==='low'&&composer)dispose();setup();if(!scene)return;
  if(!composer&&mode!==quality()){mode=quality();prepared=new WeakSet();converted=new WeakMap();ticks=0;scene.traverse(o=>{for(const m of (Array.isArray(o.material)?o.material:[o.material]))if(m?.isMeshPhysicalMaterial&&!['vehiclePaint','boatPaint'].includes(m.name)){m.transmission=0;m.opacity=.27;m.needsUpdate=true;}});}
  if(composer)configure();if(ssao?.ssaoMaterial){const u=ssao.ssaoMaterial.uniforms;u.cameraProjectionMatrix.value.copy(camera.projectionMatrix);u.cameraInverseProjectionMatrix.value.copy(camera.projectionMatrixInverse);u.cameraNear.value=camera.near;u.cameraFar.value=camera.far;}ticks++;if(preparedCity!==(typeof city==='undefined'?null:city)||ticks===1){prepare(scene);prepare(vmScene);preparedCity=typeof city==='undefined'?null:city;}
- if(scene.fog){scene.fog.near=lightMode==='night'?110:300;scene.fog.far=lightMode==='night'?800:1250;}
- // Keep a readable bounce level while allowing a strong key light.
- sun.intensity=lightMode==='day'?1.65:lightMode==='dusk'?1.1:.25;hemi.intensity=lightMode==='night'?.36:.72;
+ if(scene.fog){scene.fog.near=lightMode==='night'?180:600;scene.fog.far=lightMode==='night'?1000:1550;}
+ // One lighting palette for direct rendering and postprocessing; avoid bleaching dark albedo.
+ sun.intensity=lightMode==='day'?1.05:lightMode==='dusk'?.8:.25;hemi.intensity=lightMode==='night'?.36:.55;
  scene.environment=env?.texture||scene.environment;if(vmScene)vmScene.environment=scene.environment;
 }
 function drawWorld(){
