@@ -136,12 +136,16 @@ const mapStyle=document.createElement('style');mapStyle.textContent=`
  #hudMapActions{position:fixed;right:max(18px,env(safe-area-inset-right));top:calc(var(--hud-status-bottom, 200px) + 12px);z-index:25;display:none;flex-direction:column;align-items:flex-end;gap:8px;pointer-events:none}
  #hudMapActions>button{pointer-events:auto;margin:0;box-sizing:border-box}
  #findFarm{min-width:64px;min-height:44px;padding:8px 12px;background:#17271fe8;color:#e2d5a6;border:1px solid #958455;font:700 11px monospace;cursor:pointer}
- #hudMapActions #dailyBadge{position:static;right:auto;top:auto}
+ #hudMapActions #dailyBadge,#hudMapActions #jobBoardButton,#hudMapActions #jobWorkButton{position:static;inset:auto;transform:none}
+ #hudMapActions{flex-wrap:wrap;max-width:calc(100vw - 36px)}
  @media(max-height:499px){#hudMapActions{flex-direction:row;align-items:center}}
 `;document.head.appendChild(mapStyle);document.body.appendChild(mapActions);
 const farmButton=document.createElement('button');farmButton.id='findFarm';farmButton.type='button';farmButton.textContent='MAP';mapActions.appendChild(farmButton);
 // One spaced action stack also prevents the daily-reward button covering MAP on phones.
 const dailyBadge=document.getElementById('dailyBadge');if(dailyBadge)mapActions.appendChild(dailyBadge);
+// Desktop job actions previously kept independent fixed offsets and could cover MAP.
+// Touch job controls already belong to the bottom control grid; do not move those.
+for(const id of ['jobBoardButton','jobWorkButton']){const action=document.getElementById(id);if(action?.parentElement===document.body)mapActions.appendChild(action);}
 function mapActionLabel(){const action=farmGPS?(showMap?'Return to game; keep farm directions':'Cancel farm directions'):'Open map with farm directions';farmButton.title=action;farmButton.setAttribute('aria-label','MAP · '+action);farmButton.setAttribute('aria-expanded',String(!!showMap));}
 farmButton.onclick=()=>{if(farmGPS&&showMap){showMap=false;mapActionLabel();return;}if(!city?.farmEntrance)return toast('FARM UNAVAILABLE IN THIS AREA');farmGPS=!farmGPS;showMap=farmGPS;mapActionLabel();if(farmGPS)toast('FARM GPS · FOLLOW THE GREEN BEAM / F ON THE MAP');};
 const renderBase=render;
