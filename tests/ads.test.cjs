@@ -18,6 +18,21 @@ function enable(window) {
     enabled: true, consentGranted: true, publisherId: 'ca-pub-1234567890123456',
   });
 }
+test('owner publisher is configured without enabling live ads or routing the iOS unit to web ads', () => {
+  const { window, scripts } = setup();
+  assert.equal(window.bayouAdsConfig.publisherId, 'ca-pub-9730543201329278');
+  assert.equal(window.bayouAdsConfig.enabled, false);
+  assert.equal(window.bayouAdsConfig.testMode, true);
+  assert.equal(window.bayouAdsConfig.consentGranted, false);
+  assert.equal(window.bayouAdsConfig.admob.interstitialSlot, '');
+  assert.equal(scripts.length, 0);
+  window.bayouAdsConfig.enabled = true;
+  assert.equal(window.bayouAds.initialize(), false);
+  window.bayouAdsConfig.enabled = false;
+  window.bayouAdsConfig.consentGranted = true;
+  assert.equal(window.bayouAds.initialize(), false);
+  assert.equal(scripts.length, 0);
+});
 test('disabled scaffold makes no requests or placements', () => {
   const { window, scripts } = setup();
   assert.equal(scripts.length, 0);
