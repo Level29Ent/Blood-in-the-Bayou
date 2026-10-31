@@ -155,10 +155,10 @@ Taxi Dispatcher,Cab jobs / gas-station dispatch,dispatcher_greet.mp3,Open servic
 Taxi Dispatcher,Cab jobs / gas-station dispatch,dispatcher_success.mp3,Service / shift succeeds,Fare complete. The next passenger is on your map.
 Taxi Dispatcher,Cab jobs / gas-station dispatch,dispatcher_warning.mp3,Cannot proceed / work instruction,Use your assigned cab and return it at the end of the shift.
 Taxi Dispatcher,Cab jobs / gas-station dispatch,dispatcher_bye.mp3,Exit service,Take care out there. We will be here when you get back.
-Dispensary Clerk,Green Bayou Dispensary,dealer_greet.mp3,Open service / greet player,Welcome to Green Bayou. Take a look at the local goods at the counter.
-Dispensary Clerk,Green Bayou Dispensary,dealer_success.mp3,Service / shift succeeds,Your order is ready.
-Dispensary Clerk,Green Bayou Dispensary,dealer_warning.mp3,Cannot proceed / work instruction,Come back with enough game cash for that order.
-Dispensary Clerk,Green Bayou Dispensary,dealer_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Dispensary Clerk,Elevated Melanin — generic shop-service alternate,dealer_greet.mp3,Open service / greet player,Welcome to Green Bayou. Take a look at the local goods at the counter.
+Dispensary Clerk,Elevated Melanin — generic shop-service alternate,dealer_success.mp3,Service / shift succeeds,Your order is ready.
+Dispensary Clerk,Elevated Melanin — generic shop-service alternate,dealer_warning.mp3,Cannot proceed / work instruction,Come back with enough game cash for that order.
+Dispensary Clerk,Elevated Melanin — generic shop-service alternate,dealer_bye.mp3,Exit service,Take care out there. We will be here when you get back.
 Casino Host,BoomCity casino,casino_greet.mp3,Open service / greet player,Welcome to BoomCity. Walk up to a machine or table to play. We use fictional game cash only.
 Casino Host,BoomCity casino,casino_success.mp3,Service / shift succeeds,Thank you for playing. The next table is open.
 Casino Host,BoomCity casino,casino_warning.mp3,Cannot proceed / work instruction,You need enough game cash for that bet.
@@ -189,3 +189,34 @@ Velvet,Velvet Jester club,velvet_greet.mp3,Approach club performer,Welcome to th
 Velvet,Velvet Jester club,velvet_thanks.mp3,Player tips,Thank you for the tip. Keep that good energy going.
 Velvet,Velvet Jester club,velvet_bye.mp3,Player leaves,Stay safe and come back to see us.
 Ronniebaby — optional new handoff,Mansion penthouse,ronnie_extra_roux.mp3,Jojo roux handoff,Jojo sent you? That roux is right here. Take it back and do not spill it. I am trying to eat tonight.
+Dayshawn,Elevated Melanin,dayshawn_greet.mp3,Open owner panel,Dayshawn. Elevated Melanin. Welcome in. Keep the trouble outside and let us talk business.
+Dayshawn,Elevated Melanin,dayshawn_stock.mp3,Missing Stock contract,"Somebody took my flower, edibles, and concentrates. I marked three sealed shipments. Get my stock back and bring it straight here."
+Dayshawn,Elevated Melanin,dayshawn_rice_route.mp3,First recovery location,Start by the market. The flower crate is marked. Clear the zombies before you collect it.
+Dayshawn,Elevated Melanin,dayshawn_freight.mp3,Second recovery location,Next is the airport freight stop. Find the edible shipment. Keep the case sealed.
+Dayshawn,Elevated Melanin,dayshawn_concentrates.mp3,Third recovery location,Last shipment is by the gas station. Get the concentrate case and bring everything back to Elevated Melanin.
+Dayshawn,Elevated Melanin,dayshawn_rivals.mp3,Four Rivals briefing,"Four zombie bosses across town think they can sell their own product, fucking up my money. University, garage, airport, waterfront. Take those four down, then come see me."
+Dayshawn,Elevated Melanin,dayshawn_boss_next.mp3,"Boss victory, next rival",One down. The next rival is marked. Do not lose focus now.
+Dayshawn,Elevated Melanin,dayshawn_boss_last.mp3,Fourth boss objective,"Last one is on the waterfront. Finish it, then bring yourself back in one piece."
+Dayshawn,Elevated Melanin,dayshawn_complete.mp3,Missing Stock payout,All the sealed stock is back. That is how we keep the business moving. Here is your pay.
+Dayshawn,Elevated Melanin,dayshawn_rivals_complete.mp3,Four Rivals payout,Four bosses down. My money can breathe again. You earned every dollar.
+Dayshawn,Elevated Melanin,dayshawn_busy.mp3,Another activity running,Finish what you started first. Come back when you can give this job your full attention.
+Dayshawn,Elevated Melanin,dayshawn_bye.mp3,Leave owner panel,"Elevated Melanin. Remember the name, and watch your back out there."
+Jojo Contract,Business contract / current map,jojo_contract_rush.mp3,Dinner Rush briefing,"We have a dinner rush and no supplies. Get the rice order from the market, pick up produce at the farm, and bring it all back to Major Cajun."
+Jojo Contract,Business contract / current map,jojo_contract_rush_paid.mp3,Dinner Rush completion,"Kitchen is stocked, customers are fed, and you are getting paid. Good work."
+Alex Contract,Business contract / current map,alex_contract_parts.mp3,Workshop Salvage briefing,Recover the tools at the garage and the freight components at the airport. Bring both back so I can keep the test bench working.
+Alex Contract,Business contract / current map,alex_contract_parts_paid.mp3,Workshop Salvage completion,Tools and parts checked in. The workshop is back in business. Here is your pay.
+Bonnie Contract,Business contract / current map,bonnie_contract_chrome.mp3,Chrome Run briefing,"My chrome wheel shipment is at the garage, and the tuning kit is by the gas station. Bring them back without losing the hardware."
+Bonnie Contract,Business contract / current map,bonnie_contract_chrome_paid.mp3,Chrome Run completion,"That is the chrome I ordered. You keep bringing the right parts, I will keep paying you."
+Felicia Contract,Business contract / current map,felicia_contract_ice.mp3,Cold Chain briefing,My ice supplies are at the grocery and the refrigeration relay is by the hospital. Bring them back before my trailer gets warm.
+Felicia Contract,Business contract / current map,felicia_contract_ice_paid.mp3,Cold Chain completion,"You saved my ice and my business. Take your pay, baby."
+Damion Contract,Business contract / current map,damion_contract_sound.mp3,Show Must Go On briefing,My sound kit is at the studio and my microphone case is at the office. Get the gear back so the audience can hear the punchline.
+Damion Contract,Business contract / current map,damion_contract_sound_paid.mp3,Show Must Go On completion,"We have sound, we have a microphone, and now we have a show. Here is your cut."
+Ronnie Map,Business contract / current map,ronnie_map_dispatch.mp3,New map dispatch,"The city has changed, Jester. Meet me at the marked business, not the old block. Follow the gold beam."
+Ronnie Map,Business contract / current map,ronnie_map_cajun.mp3,Major Cajun field objective,Chief Jojo needs the street outside Major Cajun cleared. Reach the marker and handle that horde.
+Ronnie Map,Business contract / current map,ronnie_map_guns.mp3,AK Gun Plus objective,Alex has equipment at AK Gun Plus. Follow the current shop marker. Do not go looking for the old community office.
+Ronnie Map,Business contract / current map,ronnie_map_melanin.mp3,Elevated Melanin objective,Dayshawn runs Elevated Melanin now. That is the dispensary on your map. Keep moving.
+Ronnie Map,Business contract / current map,ronnie_map_trailer.mp3,Felicia field objective,Felicia is working inside the snowball trailer. The supplies are marked outside. Keep the lane open.
+Ronnie Map,Business contract / current map,ronnie_map_farm.mp3,Farm objective,Use the farm perimeter road. Do not drive through the field. I marked the entrance.
+Ronnie Map,Business contract / current map,ronnie_map_airport.mp3,Airport objective,The airport has its own parcel. Take the access road and keep the runway clear.
+Ronnie Map,Business contract / current map,ronnie_map_extract.mp3,Extraction,"Primary job is done. Follow the new field marker, then hold the extraction point. You are not finished until the team is clear."
+Ronnie Map,Business contract / current map,ronnie_map_pay.mp3,Mission payment,That is another job finished on the new city routes. Come back to the marked dispatch and get ready for the next one.

@@ -379,7 +379,7 @@ Natural conversational voice. Keep instructions clear; do not imitate a real per
 | `dispatcher_warning.mp3` | Cannot proceed / work instruction | Use your assigned cab and return it at the end of the shift. |
 | `dispatcher_bye.mp3` | Exit service | Take care out there. We will be here when you get back. |
 
-## Dispensary Clerk — Green Bayou Dispensary
+## Dispensary Clerk — Elevated Melanin — generic shop-service alternate
 
 Natural conversational voice. Keep instructions clear; do not imitate a real person.
 
@@ -482,3 +482,83 @@ Use the same actor/delivery as the existing Ronniebaby recordings.
 | Filename | Cue (do not read) | Spoken line |
 | --- | --- | --- |
 | `ronnie_extra_roux.mp3` | Jojo roux handoff | Jojo sent you? That roux is right here. Take it back and do not spill it. I am trying to eat tonight. |
+
+## Dayshawn — Elevated Melanin
+
+Natural character delivery; record one dry MP3 per line. Do not imitate another person.
+
+| Filename | Cue (do not read) | Spoken line |
+| --- | --- | --- |
+| `dayshawn_greet.mp3` | Open owner panel | Dayshawn. Elevated Melanin. Welcome in. Keep the trouble outside and let us talk business. |
+| `dayshawn_stock.mp3` | Missing Stock contract | Somebody took my flower, edibles, and concentrates. I marked three sealed shipments. Get my stock back and bring it straight here. |
+| `dayshawn_rice_route.mp3` | First recovery location | Start by the market. The flower crate is marked. Clear the zombies before you collect it. |
+| `dayshawn_freight.mp3` | Second recovery location | Next is the airport freight stop. Find the edible shipment. Keep the case sealed. |
+| `dayshawn_concentrates.mp3` | Third recovery location | Last shipment is by the gas station. Get the concentrate case and bring everything back to Elevated Melanin. |
+| `dayshawn_rivals.mp3` | Four Rivals briefing | Four zombie bosses across town think they can sell their own product, fucking up my money. University, garage, airport, waterfront. Take those four down, then come see me. |
+| `dayshawn_boss_next.mp3` | Boss victory, next rival | One down. The next rival is marked. Do not lose focus now. |
+| `dayshawn_boss_last.mp3` | Fourth boss objective | Last one is on the waterfront. Finish it, then bring yourself back in one piece. |
+| `dayshawn_complete.mp3` | Missing Stock payout | All the sealed stock is back. That is how we keep the business moving. Here is your pay. |
+| `dayshawn_rivals_complete.mp3` | Four Rivals payout | Four bosses down. My money can breathe again. You earned every dollar. |
+| `dayshawn_busy.mp3` | Another activity running | Finish what you started first. Come back when you can give this job your full attention. |
+| `dayshawn_bye.mp3` | Leave owner panel | Elevated Melanin. Remember the name, and watch your back out there. |
+
+## Jojo Contract — Business contract / current map
+
+Natural character delivery; record one dry MP3 per line. Do not imitate another person.
+
+| Filename | Cue (do not read) | Spoken line |
+| --- | --- | --- |
+| `jojo_contract_rush.mp3` | Dinner Rush briefing | We have a dinner rush and no supplies. Get the rice order from the market, pick up produce at the farm, and bring it all back to Major Cajun. |
+| `jojo_contract_rush_paid.mp3` | Dinner Rush completion | Kitchen is stocked, customers are fed, and you are getting paid. Good work. |
+
+## Alex Contract — Business contract / current map
+
+Natural character delivery; record one dry MP3 per line. Do not imitate another person.
+
+| Filename | Cue (do not read) | Spoken line |
+| --- | --- | --- |
+| `alex_contract_parts.mp3` | Workshop Salvage briefing | Recover the tools at the garage and the freight components at the airport. Bring both back so I can keep the test bench working. |
+| `alex_contract_parts_paid.mp3` | Workshop Salvage completion | Tools and parts checked in. The workshop is back in business. Here is your pay. |
+
+## Bonnie Contract — Business contract / current map
+
+Natural character delivery; record one dry MP3 per line. Do not imitate another person.
+
+| Filename | Cue (do not read) | Spoken line |
+| --- | --- | --- |
+| `bonnie_contract_chrome.mp3` | Chrome Run briefing | My chrome wheel shipment is at the garage, and the tuning kit is by the gas station. Bring them back without losing the hardware. |
+| `bonnie_contract_chrome_paid.mp3` | Chrome Run completion | That is the chrome I ordered. You keep bringing the right parts, I will keep paying you. |
+
+## Felicia Contract — Business contract / current map
+
+Natural character delivery; record one dry MP3 per line. Do not imitate another person.
+
+| Filename | Cue (do not read) | Spoken line |
+| --- | --- | --- |
+| `felicia_contract_ice.mp3` | Cold Chain briefing | My ice supplies are at the grocery and the refrigeration relay is by the hospital. Bring them back before my trailer gets warm. |
+| `felicia_contract_ice_paid.mp3` | Cold Chain completion | You saved my ice and my business. Take your pay, baby. |
+
+## Damion Contract — Business contract / current map
+
+Natural character delivery; record one dry MP3 per line. Do not imitate another person.
+
+| Filename | Cue (do not read) | Spoken line |
+| --- | --- | --- |
+| `damion_contract_sound.mp3` | Show Must Go On briefing | My sound kit is at the studio and my microphone case is at the office. Get the gear back so the audience can hear the punchline. |
+| `damion_contract_sound_paid.mp3` | Show Must Go On completion | We have sound, we have a microphone, and now we have a show. Here is your cut. |
+
+## Ronnie Map — Business contract / current map
+
+Natural character delivery; record one dry MP3 per line. Do not imitate another person.
+
+| Filename | Cue (do not read) | Spoken line |
+| --- | --- | --- |
+| `ronnie_map_dispatch.mp3` | New map dispatch | The city has changed, Jester. Meet me at the marked business, not the old block. Follow the gold beam. |
+| `ronnie_map_cajun.mp3` | Major Cajun field objective | Chief Jojo needs the street outside Major Cajun cleared. Reach the marker and handle that horde. |
+| `ronnie_map_guns.mp3` | AK Gun Plus objective | Alex has equipment at AK Gun Plus. Follow the current shop marker. Do not go looking for the old community office. |
+| `ronnie_map_melanin.mp3` | Elevated Melanin objective | Dayshawn runs Elevated Melanin now. That is the dispensary on your map. Keep moving. |
+| `ronnie_map_trailer.mp3` | Felicia field objective | Felicia is working inside the snowball trailer. The supplies are marked outside. Keep the lane open. |
+| `ronnie_map_farm.mp3` | Farm objective | Use the farm perimeter road. Do not drive through the field. I marked the entrance. |
+| `ronnie_map_airport.mp3` | Airport objective | The airport has its own parcel. Take the access road and keep the runway clear. |
+| `ronnie_map_extract.mp3` | Extraction | Primary job is done. Follow the new field marker, then hold the extraction point. You are not finished until the team is clear. |
+| `ronnie_map_pay.mp3` | Mission payment | That is another job finished on the new city routes. Come back to the marked dispatch and get ready for the next one. |
