@@ -125,7 +125,7 @@
       rainSrc.connect(hp); hp.connect(lp); lp.connect(rainGain); rainGain.connect(sfxBus); rainSrc.start();
     }
     const muted = soundMode === 2 || state === 'menu';
-    const target = muted ? 0 : wx.rain * (wx.covered ? .008 : .035) * (typeof rbVoice!=='undefined'&&rbVoice.speaking?.35:1);
+    const target = muted ? 0 : wx.rain * (wx.covered ? .008 : .035) * ((typeof rbVoice!=='undefined'&&rbVoice.speaking||window.level29FeliciaVoice?.speaking)?.35:1);
     rainGain.gain.setTargetAtTime(target, actx.currentTime, .6);
   }
 
