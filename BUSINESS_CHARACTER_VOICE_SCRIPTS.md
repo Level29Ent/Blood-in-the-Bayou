@@ -6,6 +6,8 @@ Stage finished files in `public/game/business-vo/` or send the completed recordi
 
 Cues describe where a line should eventually play; do not read the cue or filename aloud. Jojo’s scene currently uses fixed animation beats: provide a short, energetic take for the six-second gumbo statement and a separate “Not in my house!” clip. Longer takes may require scene retiming when integrated. Damion’s jokes need space for a reaction; his existing browser speech is only a placeholder, not a recorded imitation. General staff roles can share an actor across branches; named characters should have distinct delivery.
 
+> Update: Felicia’s seven base shop lines are now installed from your timestamped recording. All other character and contract recordings still need upload and playback hookup.
+
 ## Felicia — Felicia’s Snowball Trailer
 
 Warm and playful; relaxed Gulf Coast delivery. Natural voice, no impersonation.
