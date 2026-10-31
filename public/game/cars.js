@@ -19,6 +19,9 @@
   };
   // Fifteen additional coachwork profiles, with distinct wheelbase, roofline and equipment.
   const additions={
+    electric:['sedan',{belt:10.6,roof:17.8,rf:.15,rr:-.28,doors:4}],
+    ambulance:['van',{roof:28,rf:.2,rr:-.4,doors:4}],
+    utility:['pickup',{roof:23,r:4.6,doors:2,bed:true}],
     compact:['sedan',{roof:16.3,rr:-.28,doors:2}],
     hatchback:['sedan',{roof:18.5,rf:.15,rr:-.35,br:-.44}],
     wagon:['sedan',{roof:19,rr:-.39,br:-.45,doors:4}],
@@ -403,6 +406,9 @@
       rb(shell,2,13,2,-L*.38,p.belt+3,0,materials.trim,.2);
     }
     if(type==='flatbed')rb(shell,L*.53,1.8,W*1.04,-L*.22,p.belt+1,0,materials.chrome,.2);
+    if(type==='electric')for(const s of [-1,1])rb(shell,.4,1.2,W*.28,L*.47,p.belt-1,s*W*.27,materials.chrome,.1);
+    if(type==='ambulance'){const cross=new THREE.MeshStandardMaterial({color:'#b34436',roughness:.6});for(const s of [-1,1]){rb(shell,8,2,.5,-L*.15,17,s*W*.505,cross,.1);rb(shell,2,8,.5,-L*.15,17,s*W*.505,cross,.1);}rb(shell,8,2,5,L*.1,p.roof+1,0,materials.chrome,.2);}
+    if(type==='utility'){for(const z of [-W*.4,W*.4])rb(shell,L*.45,4,3,-L*.18,p.belt+2,z,materials.chrome,.2);}
     const axles=p.cargo?[p.rear,-.105,p.front]:[p.rear,p.front];
     for(const x of axles)for(const s of [-1,1])wheel(g,x*L,s*(W*.5-.1),p,s,type==='sports');
     // Narrow shadow grounds the tires; soft outer shadow does not look like a floating oval.

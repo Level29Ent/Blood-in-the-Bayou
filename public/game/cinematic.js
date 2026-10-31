@@ -23,6 +23,7 @@ function standard(m){
 function prepare(root){if(!root)return;root.traverse(o=>{
  if(!o.isMesh||prepared.has(o))return;prepared.add(o);
  o.material=Array.isArray(o.material)?o.material.map(standard):standard(o.material);
+ const surfaces=Array.isArray(o.material)?o.material:[o.material];for(const m of surfaces)if(m?.isMeshStandardMaterial&&!m.map)level29SurfaceDetail.apply(m,level29SurfaceDetail.kind(m.color,m.metalness));
  const mats=Array.isArray(o.material)?o.material:[o.material];
  for(const m of mats)if(m?.isMeshPhysicalMaterial&&m.transmission>0&&quality()!=='high'){m.transmission=0;if(!['vehiclePaint','boatPaint'].includes(m.name))m.opacity=.27;m.needsUpdate=true;}
  o.castShadow=mats.some(m=>m?.isMeshStandardMaterial&&!m.transparent&&!(m.transmission>0));o.receiveShadow=mats.some(m=>m?.isMeshStandardMaterial);
