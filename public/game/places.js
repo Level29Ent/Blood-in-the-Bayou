@@ -283,7 +283,7 @@ const oldMissionUpdate=updateMission;updateMission=function(){const m=mission;if
 };
 
 function beginOp(){const m=mission,op=m.info.op;let at={x:player.x,y:player.y},len=0;const stops=[];
- for(const id of op.stops){const v=city.venues.filter(v=>v.id===id).sort((a,b)=>a.doorX-b.doorX||a.doorY-b.doorY)[(m.info.i+stops.length)%city.venues.filter(v=>v.id===id).length];len+=dist(at.x,at.y,v.doorX,v.doorY);at={x:v.doorX,y:v.doorY};stops.push({v,id});}
+ for(const id of op.stops){const named=op.storyStops?.[stops.length],v=city.storySites?.[named]||city.venues.filter(v=>v.id===id).sort((a,b)=>a.doorX-b.doorX||a.doorY-b.doorY)[(m.info.i+stops.length)%city.venues.filter(v=>v.id===id).length];len+=dist(at.x,at.y,v.doorX,v.doorY);at={x:v.doorX,y:v.doorY};stops.push({v,id});}
  const home=city.safe;len+=dist(at.x,at.y,home.x,home.y);m.phase='active';m.opStops=stops;m.si=0;m.holdT=0;m.drop={x:home.x,y:home.y};m.timer=Math.round(len/3.2*1.7)+2400+op.hold*stops.length;m.step='go';m.carry=0;
  const rp=window.level29Save&&level29Save.resume(m.info.i);if(rp&&rp.kind==='op'&&rp.si>0&&rp.si<=stops.length){m.si=rp.si;toast('RESUMED FROM STAGE CHECKPOINT · STOP '+(m.si+1)+' OF '+stops.length);}
  objective=m.si<stops.length?'Go to the '+stops[m.si].v.short+'. Enter and stay at the counter.':'Return to the mansion.';banner={big:op.t.toUpperCase(),small:'MISSION '+(m.info.i+1)+' · '+stops.length+' STOP'+(stops.length>1?'S':'')+' · RETURN TO THE MANSION',t:200};speak('RONNIEBABY',briefing(m.info));sfx('missionstart');if(op.heat)heat=Math.max(heat,op.heat-1);}
@@ -291,9 +291,9 @@ function opTarget(m){if(!m.opStops||m.si>=m.opStops.length)return {...m.drop,col
 function updateOp(m){const op=m.info.op;if(--m.timer<=0)return failMission('THE CLOCK RAN OUT');
  if(m.si>=m.opStops.length){const p=player.car||player;objective='Return to the mansion with '+(m.opStops.length>1?'the packages':'the package')+'.';if(dist(p.x,p.y,m.drop.x,m.drop.y)<65){cash+=(op.loot||0)+m.opStops.length*600;heat=Math.max(0,heat-2);passMission();}return;}
  const s=m.opStops[m.si],v=s.v;if(!insideVenue(v,player)||dist(player.x,player.y,v.stationX,v.stationY)>105){m.holdT=Math.max(0,m.holdT-2);objective='Stop '+(m.si+1)+' of '+m.opStops.length+': go inside the '+v.short+' and stay at the counter.';return;}
- if(m.holdT===0&&!s.alarm){s.alarm=1;heat=Math.max(heat,op.heat||2);spawnHordeAround(v.doorX,v.doorY+30,4+Math.min(10,Math.round(m.info.di*1.5)+m.si*2),230,430);speak(roles[v.id][0],'Pickup is ready. Stay with me for a moment while it is prepared.',v.col);}
+ if(m.holdT===0&&!s.alarm){s.alarm=1;heat=Math.max(heat,op.heat||2);spawnHordeAround(v.doorX,v.doorY+30,4+Math.min(10,Math.round(m.info.di*1.5)+m.si*2),230,430);speak(roles[v.id]?.[0]||v.short,'Pickup is ready. Stay with me for a moment while it is prepared.',v.col);}
  m.holdT++;objective='Preparing pickup '+Math.max(0,Math.ceil((op.hold-m.holdT)/60))+' s. Stay at the counter.';
- if(m.holdT>=op.hold){speak(roles[v.id][0],op.say,v.col);sfx('pickup');m.si++;m.holdT=0;if(window.level29Save)level29Save.partial({idx:m.info.i,kind:'op',si:m.si});toast(m.si<m.opStops.length?'STOP COMPLETE · NEXT: '+m.opStops[m.si].v.short:'ALL STOPS DONE · GET HOME');}}
+ if(m.holdT>=op.hold){speak(roles[v.id]?.[0]||v.short,op.say,v.col);sfx('pickup');m.si++;m.holdT=0;if(window.level29Save)level29Save.partial({idx:m.info.i,kind:'op',si:m.si});toast(m.si<m.opStops.length?'STOP COMPLETE · NEXT: '+m.opStops[m.si].v.short:'ALL STOPS DONE · GET HOME');}}
 const oldNew=newPlayer;newPlayer=function(x,y){let fr=null;const sf=city&&city.safe;if(sf&&sf.front&&x===sf.x&&y===sf.y+30){fr=sf.front;x=fr.x;y=fr.y;}const p=oldNew(x,y);if(fr){p.a=fr.a;p.aim=fr.a;view.yaw=fr.a;view.pitch=0;view.look=0;view.lastPlayer=p;}p.maxHp=Math.max(p.maxHp,saved.maxHp||100);p.hp=p.maxHp;return p;};
 // Security is physical: walls stop everyone, the open resident gate stops only zombies.
 let currentVenue=null,lastFrame=-1;

@@ -28,7 +28,7 @@ const LOTS=[
   {id:'university',w:9,h:6,name:'BAYOU STATE UNIVERSITY'},
   {id:'dealer',w:12,h:10,name:'BONNIE DE VETTE SLAB MOTORS'},
   {id:'club',w:5,h:4,name:'THE VELVET JESTER'},
-  {id:'dispensary',w:3,h:4,name:'GREEN BAYOU DISPENSARY'},
+  {id:'dispensary',w:3,h:4,name:'ELEVATED MELANIN'},
   {id:'smoke',w:3,h:4,name:'CROWN SMOKE SHOP'},
   {id:'truck',w:3,h:3,name:"MAMA 29'S FOOD TRUCK"},
 ];
@@ -343,7 +343,7 @@ function spots(){
     if(id==='university')add({x:(L.fb.x0+L.fb.x1+1)/2*T,y:(L.fb.y0+1.5)*T},'BAYOU STATE UNIVERSITY · CLASS',()=>openPanel(quizPanel()));
     if(id==='dealer')add({x:(L.x0+2)*T,y:(L.y0+1.2)*T},'TALK TO BONNIE DE VETTE',()=>openPanel(bonniePanel));
     if(id==='club')add({x:(L.fb.x0+L.fb.x1+1)/2*T,y:(L.fb.y0+1.5)*T},'DANCE AT THE VELVET JESTER',()=>openPanel(clubPanel));
-    if(id==='dispensary')add(L.door,'GREEN BAYOU DISPENSARY',()=>openPanel(shopPanel('dispensary')));
+    if(id==='dispensary')add(L.door,'ELEVATED MELANIN',()=>openPanel(shopPanel('dispensary')));
     if(id==='smoke')add(L.door,'CROWN SMOKE SHOP',()=>openPanel(shopPanel('smoke')));
     if(id==='truck')add(L.door,"FELICIA'S SNOWBALL TRAILER · WALK INSIDE",()=>window.level29Felicia?.open());}
   const B=window.boomCity;
@@ -526,7 +526,7 @@ const clubPanel={theme:'club',
 
 // ---------------------------------------------------------------- shops
 const SHOPS={
-  dispensary:{t:'Green Bayou Dispensary',eb:'Hemp & wellness · fictional in-game items',items:[['Bayou herbal tea',29,15],['Purple Jester CBD gummies',59,30],['Gold Leaf hemp balm',99,50],['King Cake wellness bar',149,100]]},
+  dispensary:{t:'Elevated Melanin',eb:'Hemp & wellness · fictional in-game items',items:[['Bayou herbal tea',29,15],['Purple Jester CBD gummies',59,30],['Gold Leaf hemp balm',99,50],['King Cake wellness bar',149,100]]},
   smoke:{t:'Crown Smoke Shop',eb:'Cigars · hookah · accessories',items:[['Swisher pack',12,8],['Cohiba cigar',45,20],['Hookah session',80,40],['Level 29 gold grinder',29,0]]},
   truck:{t:"Mama 29's Food Truck",eb:'Fresh off the bayou',items:[['Beignets',9,15],['Sweet tea',4,8],['Jambalaya',16,30],["Shrimp po'boy",18,35],['Seafood gumbo',20,40],['Crawfish etouffee',22,45]]}};
 function shopPanel(id){const S=SHOPS[id];let m='';return{

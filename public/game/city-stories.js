@@ -6,12 +6,13 @@ let save=C.initial();try{const s=JSON.parse(localStorage.getItem(KEY)||'null');i
 if(['cinematic','boss','escort'].includes(save.gumbo))save.gumbo='capture';
 const persist=()=>{try{localStorage.setItem(KEY,JSON.stringify(save));}catch(_){}window.level29Save?.save();};
 let active=null,rental=null,cut=null,sceneParts=null,actorRoot=null,escort=null,gps=null,usedSpeech=false,lastJoke=-1,speechOn=false,speechWait=0,siteCity=null;
-const sites={};const assets={jojo:'characters/jojo.webp',alex:'characters/alex.webp',damion:'characters/damion.webp'};
+const sites={};const assets={jojo:'characters/jojo.webp',alex:'characters/alex.webp',damion:'characters/damion.webp',dayshawn:'characters/dayshawn.webp'};
 const gen=genCity;
 genCity=function(){const c=gen.apply(this,arguments);if(!c.world)return c;
  const downtown=v=>worldZoneAtTile((v.b.x+v.b.w/2)/TILE,(v.b.y+v.b.h/2)/TILE)==='downtown';
  const fish=c.venues.filter(v=>v.kind==='fish').sort((a,b)=>(downtown(b)-downtown(a))||(Math.hypot(a.b.x-2624,a.b.y-1728)-Math.hypot(b.b.x-2624,b.b.y-1728)))[0];
  const gun=c.venues.filter(v=>v.id==='business'||v.kind==='clinic').sort((a,b)=>(downtown(b)-downtown(a))||Math.hypot(a.b.x-2176,a.b.y-1728)-Math.hypot(b.b.x-2176,b.b.y-1728))[0];
+ const dispensary=level29Downtown.lots.dispensary;dispensary.name='ELEVATED MELANIN';Object.assign(dispensary.venue,{name:'ELEVATED MELANIN',short:'DAYSHAWN · OWNER',storyRole:'dayshawn',kind:'dispensary',col:'#bf9e67'});
  const theater=c.venues.find(v=>v.name==='GOLDEN HILLS SCREEN TESTS')||c.venues.find(v=>v.id==='studio');
  if(!fish||!gun||!theater)throw Error('City story venues missing');
  // Reuse existing safe footprints, street orientation and accessible door colliders.
@@ -19,7 +20,7 @@ genCity=function(){const c=gen.apply(this,arguments);if(!c.world)return c;
  Object.assign(gun,{id:'armory',kind:'gunstore',name:'AK GUN PLUS',short:'ALEX · GUNSMITH',letter:'A',col:'#90c5d2',storyRole:'alex',extended:false});gun.b.venue='armory';
  Object.assign(theater,{id:'studio',kind:'theater',name:'BAYOU LAUGH THEATER',short:'DAMION · COMEDY',letter:'D',storyRole:'damion',extended:false});
  for(const v of [fish,theater]){v.stationX=v.b.x+v.b.w/2;v.stationY=v.b.y+v.b.h-24;}
- c.storySites={jojo:fish,alex:gun,damion:theater,felicia:c.venues.find(v=>v.kind==='snowballs')};return c;
+ c.storySites={jojo:fish,alex:gun,damion:theater,dayshawn:dispensary.venue,felicia:c.venues.find(v=>v.kind==='snowballs')};return c;
 };
 const build=buildVenue;
 buildVenue=function(v){
@@ -28,6 +29,7 @@ buildVenue=function(v){
   box(g,b.w,1,b.h,b.x+b.w/2,.5,b.y+b.h/2,'#756653');for(const r of v.colliderWalls)box(g,r.w,44,r.h,r.x+r.w/2,22,r.y+r.h/2,'#c5b797');box(g,v.doorW,6,3,v.doorX,41,v.doorY-1,'#634737');v.door=box(g,1,1,1,v.doorX,0,v.doorY,'#302c26');v.door.visible=false;v.roof=box(g,b.w,2,b.h,b.x+b.w/2,46,b.y+b.h/2,'#40362c');addSign(g,v.name,Math.min(150,b.w),11,v.doorX,54,v.doorY+1,v.col);v.labelH=70;v.furniture=[];
  }else build.apply(this,arguments);if(!v.storyRole||!v.mesh||v.mesh.userData.storyDecor)return;v.mesh.userData.storyDecor=true;
  if(v.storyRole==='jojo')v.storyKitchen=level29StoryScenes.kitchen(v);
+ if(v.storyRole==='dayshawn'){const m=level29StoryScenes.figure('dayshawn');v.mesh.add(m);poseFigure(m,v.b.x+v.b.w/2,v.b.y+18,Math.PI/2,0,'stand');v.storyActor=m;}
  if(v.storyRole==='alex'){const m=level29StoryScenes.figure('alex');v.mesh.add(m);poseFigure(m,v.stationX-18,v.stationY-18,Math.PI/2,0,'stand');v.storyActor=m;}
  if(v.storyRole==='damion')v.storyTheater=level29StoryScenes.theater(v);
 };
@@ -38,7 +40,7 @@ const hud=document.createElement('div');hud.id='storyHUD';hud.style.display='non
 const use=document.createElement('button');use.id='storyUse';use.textContent='HOLD · STORY ACTION';use.style.display='none';document.body.appendChild(use);
 const caption=document.createElement('div');caption.id='sceneCaption';caption.style.display='none';document.body.appendChild(caption);
 const skip=document.createElement('button');skip.id='sceneSkip';skip.textContent='SKIP SCENE → BOSS FIGHT';skip.style.display='none';skip.onclick=()=>finishScene();document.body.appendChild(skip);
-let held=false,hold=0,currentRole='board';
+let held=false,hold=0,currentRole='board',currentContract=null;
 const jokes=["I made reservations for dinner. The zombies made reservations for me.","Houston traffic is so slow, a zombie asked me if my car was a food truck.","Bonnie told me my trade-in had character. Turns out the character was still in the trunk.","Jojo says her gumbo wakes the dead. I told her to stop offering free refills."];
 function stopSpeech(){if(usedSpeech&&window.speechSynthesis)speechSynthesis.cancel();usedSpeech=false;}
 function speak(text){if(!speechOn||soundMode===2||!window.speechSynthesis)return;stopSpeech();const u=new SpeechSynthesisUtterance(text);u.rate=.95;u.volume=.75;speechSynthesis.speak(u);usedSpeech=true;}
@@ -46,12 +48,15 @@ function close(){panel.style.display='none';if(state==='shop')state='play';held=
 function image(role){return assets[role]?'<img src="'+assets[role]+'" alt="'+role+' character reference">':'';}
 function btn(a,text){return '<button data-story="'+a+'">'+text+'</button>';}
 function open(role){if(!player||player.dead||cut)return;currentRole=role;state='shop';mouse.down=false;for(const k in keys)keys[k]=false;document.exitPointerLock?.();
- let h=image(role)+'<h2>'+({jojo:'Chief Jojo · Major Cajun',alex:'Alex · AK Gun Plus',bonnie:'Bonnie De Vette',damion:'Damion · Bayou Laugh Theater',board:'City Stories'}[role])+'</h2>';
- if(role==='board')h+='<p>Meet each owner inside their business. Follow the gold story marker; these side stories do not advance Ronniebaby’s campaign. All prices use earned game cash.</p>'+['jojo','alex','bonnie','damion','felicia'].map(r=>btn('gps:'+r,'MAP · '+({jojo:'MAJOR CAJUN',alex:'AK GUN PLUS',bonnie:'SLAB MOTORS',damion:'LAUGH THEATER',felicia:'FELICIA’S SNOWBALL TRAILER'}[r]))).join('');
+ let h=image(role)+'<h2>'+({jojo:'Chief Jojo · Major Cajun',alex:'Alex · AK Gun Plus',bonnie:'Bonnie De Vette',damion:'Damion · Bayou Laugh Theater',board:'City Stories',dayshawn:'Dayshawn · Elevated Melanin'}[role])+'</h2>';
+ if(role==='board')h+='<p>Meet each owner inside their business. Follow the gold story marker; these side stories do not advance Ronniebaby’s campaign. All prices use earned game cash.</p>'+['jojo','alex','bonnie','damion','felicia','dayshawn'].map(r=>btn('gps:'+r,'MAP · '+({jojo:'MAJOR CAJUN',alex:'AK GUN PLUS',bonnie:'SLAB MOTORS',damion:'LAUGH THEATER',felicia:'FELICIA’S SNOWBALL TRAILER',dayshawn:'ELEVATED MELANIN'}[r]))).join('');
  if(role==='jojo')h+=btn('audio',speechOn?'DISABLE GENERIC DIALOGUE AUDIO':'ENABLE GENERIC DIALOGUE AUDIO')+'<p>“My zombie gumbo will turn this city human again. Bring rice from the farmers market, pork from the farm, shrimp from Natchez, fresh alligator meat, and Ronniebaby’s roux. Then catch me a university zombie. Don’t kill that one!”</p><p>Recipe: '+save.ingredients.join(', ')+'</p>'+btn('gumbo',save.gumbo==='done'?'REPLAY GUMBO STORY':save.gumbo==='intro'?'ACCEPT · ZOMBIE GUMBO':'CONTINUE · '+save.gumbo.toUpperCase());
  if(role==='alex')h+='<p>Field-test my exclusive weapons. Rentals last 30 real seconds, including time in menus. Trials supply a free temporary weapon; no real money is charged.</p>'+Object.entries(C.RENTALS).map(([k,r])=>btn('rent:'+k,r.name+' · $'+r.price+' / 30 SEC')).join('')+btn('stock','STANDARD WEAPONS / AMMO')+btn('waves','FIELD TRIAL · SURVIVE 5 WAVES')+btn('specimens','RESEARCH · CAPTURE 3 FARM ANIMALS + 3 BOSSES');
  if(role==='bonnie')h+='<p>“I need a sedan, a sports car and a Houston slab recovered from marked locations. Bring each one back intact. No buying a substitute.”</p>'+btn('cars','START · THREE VEHICLE RECOVERIES')+btn('sales','OPEN VEHICLE SHOWROOM');
  if(role==='damion')h+='<p>Original fictional comedy material with generic browser speech—not a recording or voice imitation. Enter the room to hear the set after enabling audio. Captions work without speech support.</p>'+btn('audio',speechOn?'DISABLE PERFORMANCE AUDIO':'ENABLE PERFORMANCE AUDIO')+btn('listen','WATCH THE SET');
+ if(role==='dayshawn')h+='<p>“Dayshawn. Elevated Melanin. Somebody took my flower, edibles and concentrates. And four zombie bosses across town think they can sell their own product, fucking up my money. Recover my sealed stock, then deal with those four.”</p>'+btn('dispensary-shop','SHOP · LOCAL GOODS');
+ if(role==='board')h+='<h3>Business Contract Board</h3><p>Meet the owner first. Each contract has distinct marked stops and a return handoff.</p>';
+ for(const [id,c] of Object.entries(level29BusinessContracts.CONTRACTS))if(role===c.owner||role==='board')h+=btn('contract:'+id,c.name+' · $'+c.pay);
  if(active)h+=btn('cancel','ABANDON CURRENT SIDE STORY (NO REWARD)');h+=btn('close','RETURN TO GAME');panel.innerHTML='<div class="sheet">'+h+'</div>';panel.style.display='flex';
 }
 function nearRole(role){const v=role==='bonnie'?level29Downtown.lots.dealer?.venue:city.storySites?.[role];return v&&!player.car&&insideVenue(v,player);}
@@ -60,6 +65,7 @@ function start(kind){if(mpRole)return toast('CITY STORIES ARE SOLO-ONLY · LEAVE
  if(kind==='gumbo'){if(save.gumbo==='done')save={...save,gumbo:'intro',ingredients:[]};if(save.gumbo==='intro')save.gumbo='ingredients';active.phase=save.gumbo;setGumboTarget();}
  if(kind==='waves'){active.phase='travel';active.target=streetPoint(sites.alex.doorX,sites.alex.doorY,220,440);active.label='Reach Alex’s outdoor test range';}
  if(kind==='specimens'){active.phase='samples';active.target=samplePoints()[0];active.label='Humane live capture · cow (1/3) · HOLD at marked animal';}
+ if(kind==='contract'){active.contract=currentContract;active.phase='contract';contractNext();}
  if(kind==='cars'){active.phase='recover';newRecovery();}
  persist();
 }
@@ -78,10 +84,12 @@ function newRecovery(){const a=active,type=['sedan','sports','slab'][a.index],lo
 function rent(id,free=false){if(mpRole)return toast('EXCLUSIVE WEAPONS ARE SOLO-ONLY');const r=C.rent(free?1e9:cash,id,Date.now());if(!r)return toast('NOT ENOUGH IN-GAME CASH');endRental();if(!free){cash=r.balance;window.level29Save?.save();}rental={...r,previous:curW};selectW('m240');close();toast(C.RENTALS[id].name+' ACTIVE · 30 SECONDS');}
 function endRental(){for(const m of Object.values(rentalModels))m.visible=false;if(!rental)return;const w=rental.previous;rental=null;if(hasW(w))selectW(w);}
 function cancel(){document.body.classList.remove('story-cutscene');for(const a of level29CityLife.animals){a.storyCaptured=false;a.g.visible=true;}if(cut){cut=null;state='play';caption.style.display=skip.style.display='none';}stopSpeech();endRental();if(active){for(const z of active.entities||[])if(z.alive){z.alive=false;}if(active.car){active.car.storyRecovery=false;}if(active.kind==='gumbo'&&['escort','cinematic','boss'].includes(save.gumbo))save.gumbo='capture';}active=null;escort?.parent?.remove(escort);escort=null;actorRoot?.parent?.remove(actorRoot);actorRoot=null;hold=0;persist();}
-function success(n,text){cash+=n;toast(text+' · +$'+n);sfx('pass');if(active.kind==='gumbo')save.gumbo='done';if(active.kind==='cars')save.bonnieWins++;if(active.kind==='waves'||active.kind==='specimens')save.alexWins++;cancel();persist();}
+function success(n,text){cash+=n;if(active.kind==='contract'){save.contractWins=save.contractWins||{};save.contractWins[active.contract]=(save.contractWins[active.contract]||0)+1;}toast(text+' · +$'+n);sfx('pass');if(active.kind==='gumbo')save.gumbo='done';if(active.kind==='cars')save.bonnieWins++;if(active.kind==='waves'||active.kind==='specimens')save.alexWins++;cancel();persist();}
 panel.onclick=e=>{const action=e.target.closest('[data-story]')?.dataset.story;if(!action)return;if(action==='close')return close();if(action==='cancel'){cancel();return close();}if(action.startsWith('gps:')){if(active)return toast('FOLLOW YOUR ACTIVE STORY MARKER FIRST');const r=action.split(':')[1],v=r==='bonnie'?level29Downtown.lots.dealer.venue:sites[r];gps={...approach(v),name:v.name};close();showMap=false;toast('FOLLOW THE GOLD STORY MARKER · '+v.name);return;}
  if(action==='audio'){speechOn=!speechOn;if(speechOn)lastJoke=-1;if(!speechOn)stopSpeech();return open(currentRole);}if(action==='listen'){close();return;}
- if(!nearRole(currentRole))return toast('MEET THE OWNER INSIDE THEIR BUSINESS');
+ if(!action.startsWith('contract:')&&!nearRole(currentRole))return toast('MEET THE OWNER INSIDE THEIR BUSINESS');
+ if(action.startsWith('contract:')){const id=action.slice(9),c=level29BusinessContracts.definition(id);if(!c||!nearRole(c.owner))return toast('MEET '+(c?.owner||'THE OWNER').toUpperCase()+' INSIDE FIRST');currentContract=id;return start('contract');}
+ if(action==='dispensary-shop'){close();return level29Downtown.spots().find(s=>s.label.includes('ELEVATED MELANIN'))?.act();}
  if(action==='stock'){close();return openShop();}
  if(action==='sales'){close();return level29Downtown.spots().find(s=>s.label.includes('BONNIE'))?.act();}
  if(action.startsWith('rent:')){if(active)return toast('FINISH YOUR TRIAL BEFORE RENTING');return rent(action.split(':')[1]);}if(action==='gumbo'&&active?.kind==='gumbo'){close();return;}start(action==='gumbo'?'gumbo':action);
@@ -115,10 +123,11 @@ const renderBase=render;render=function(){if(cut){placeCamera();renderer.setRend
  use.style.display=state==='play'&&actionable()?'block':'none';use.textContent=active?'HOLD · '+Math.min(100,Math.floor(hold/60*100))+'%':'TALK · CITY STORY';
 };
 function actionable(){if(!player||player.dead||player.car&&active?.kind!=='cars')return false;
- if(active){const a=active;if(a.item==='roux'&&a.phase==='ingredients'&&!city.penthouse?.active)return false;if(a.phase==='boss'||a.phase==='wave'||a.item==='alligator'&&a.phase==='ingredients'||a.phase==='ingredients'&&a.entities?.some(z=>z.alive))return false;const p=player.car||player;if(!a.target||dist(p.x,p.y,a.target.x,a.target.y)>48)return false;if(a.phase==='capture'||a.phase==='bossCapture')return a.entities[0]?.alive&&a.entities[0].hp<=a.captureHP;return true;}
- return ['jojo','alex','damion','bonnie'].some(nearRole);
+ if(active){const a=active;if(a.item==='roux'&&a.phase==='ingredients'&&!city.penthouse?.active)return false;if(a.phase==='boss'||a.phase==='wave'||a.kind==='contract'&&a.entities?.some(z=>z.alive)||a.item==='alligator'&&a.phase==='ingredients'||a.phase==='ingredients'&&a.entities?.some(z=>z.alive))return false;const p=player.car||player;if(!a.target||dist(p.x,p.y,a.target.x,a.target.y)>48)return false;if(a.phase==='capture'||a.phase==='bossCapture')return a.entities[0]?.alive&&a.entities[0].hp<=a.captureHP;return true;}
+ return ['jojo','alex','damion','bonnie','dayshawn'].some(nearRole);
 }
-function interact(){if(!active){const r=['jojo','alex','damion','bonnie'].find(nearRole);if(r)open(r);return;}const a=active;
+function interact(){if(!active){const r=['jojo','alex','damion','bonnie','dayshawn'].find(nearRole);if(r)open(r);return;}const a=active;
+ if(a.kind==='contract'){const c=level29BusinessContracts.definition(a.contract);if(++a.index>=c.stops.length)return success(c.pay,c.name.toUpperCase()+' COMPLETE');contractNext();return;}
  if(a.kind==='gumbo'){
   if(a.phase==='ingredients'){if(C.ingredient(save,a.item)){sfx('pickup');persist();a.phase=save.gumbo;setGumboTarget();}}
   else if(a.phase==='return'){save.gumbo='capture';a.phase='capture';setGumboTarget();persist();}
@@ -136,7 +145,12 @@ function interact(){if(!active){const r=['jojo','alex','damion','bonnie'].find(n
  }
 }
 function spawnResearchBoss(){const a=active,v=[level29Downtown.lots.university.venue,city.venues.find(v=>v.id==='police'),sites.alex][a.index],at=streetPoint(v.doorX,v.doorY,150,350);a.entities=spawnGroup(at,1,true);if(!a.entities.length)return cancel();const z=a.entities[0];z.hp=z.maxHp=90+a.index*30;z.storyCapturable=true;z.storyScale=2+a.index*.25;a.captureHP=z.hp*.35;a.target=z;a.phase='bossCapture';a.label='Weaken and capture research boss '+(a.index+1)+'/3 · HOLD near it below 35% HP';}
+function contractNext(){const a=active,c=level29BusinessContracts.definition(a.contract),id=c.stops[a.index];let p;
+ if(id==='farm')p={...city.farmEntrance};else{const v=id==='bonnie'?level29Downtown.lots.dealer.venue:sites[id]||city.venues.filter(v=>v.id===id&&!v.storyRole)[(a.index+Math.floor(save.contractWins?.[a.contract]||0))%Math.max(1,city.venues.filter(v=>v.id===id&&!v.storyRole).length)];p=approach(v);}
+ a.target=p;a.label=c.labels[a.index]+' · '+(a.index+1)+'/'+c.stops.length;a.entities=[];a.spawned=false;a.venueMarker=p;
+}
 function updateActive(){const a=active;if(!a)return;for(const z of a.entities||[])if(z.storyCapturable&&z.alive&&z.hp<=a.captureHP){z.stun=5;z.speed=.15;}if(a.localCity!==city||player.dead){cancel();return;}if(a.car?.dead||a.car?.gone&&a.phase==='recover'){toast('RECOVERY LOST · TALK TO BONNIE TO RETRY');cancel();return;}
+ if(a.kind==='contract'){const c=level29BusinessContracts.definition(a.contract),n=c.counts[a.index];if(!a.spawned&&n&&dist(player.x,player.y,a.target.x,a.target.y)<400){a.entities=spawnGroup(a.target,n,c.bosses);if(a.entities.length){a.spawned=true;if(c.bosses){const z=a.entities[0];z.hp=z.maxHp=120+a.index*45;z.storyBoss=true;z.storyScale=2.2+a.index*.2;z.speed=1.1+a.index*.1;}}}if(n&&!a.spawned){hold=0;return;}if(a.spawned&&a.entities.some(z=>z.alive))a.label=c.labels[a.index]+' · '+a.entities.filter(z=>z.alive).length+' THREATS';else a.label=c.labels[a.index]+' · HOLD TO COLLECT / CONFIRM';}
  if(a.kind==='gumbo'){
   if(a.phase==='ingredients'&&a.item==='alligator'){const g=level29Life.gators.find(g=>!g.dead);if(g)a.target=g;}
   if(a.phase==='ingredients'&&!a.spawned&&a.item!=='alligator'&&a.item!=='roux'&&dist(player.x,player.y,a.target.x,a.target.y)<350){a.entities=spawnGroup(a.target,5);a.spawned=true;}
@@ -158,7 +172,7 @@ const oldUpdate=update;update=function(){if(rental&&Date.now()>=rental.expires){
  const inside=sites.damion&&insideVenue(sites.damion,player);if(inside){if(++speechWait>=480||lastJoke<0){speechWait=0;lastJoke=(lastJoke+1)%jokes.length;subtitle={name:'DAMION · LIVE COMEDY',txt:jokes[lastJoke],t:420,col:'#dfc290'};speak(jokes[lastJoke]);}const m=sites.damion.storyTheater?.damion;if(m)m.userData.armR.rotation.x=-.6+Math.sin(frame*.04)*.5;}
  else if(lastJoke>=0){stopSpeech();lastJoke=-1;speechWait=0;}
 };
-const death=killZombie;killZombie=function(z){if(z.storyCapturable&&['guard','ambient'].includes(z.killSource)){z.hp=Math.max(1,z.maxHp*.3);return;}return death.apply(this,arguments);};
+const death=killZombie;killZombie=function(z){if(z.storyBoss&&['guard','ambient'].includes(z.killSource)){z.hp=Math.max(1,z.maxHp*.3);return;}if(z.storyCapturable&&['guard','ambient'].includes(z.killSource)){z.hp=Math.max(1,z.maxHp*.3);return;}return death.apply(this,arguments);};
 const fire=fireWeapon;fireWeapon=function(x,y,a){if(!rental||Date.now()>=rental.expires)return fire.apply(this,arguments);const r=C.RENTALS[rental.id];bullets.push({x:x+Math.cos(a)*24,y:y+Math.sin(a)*24,vx:Math.cos(a)*26,vy:Math.sin(a)*26,life:36,dmg:r.damage,pierce:r.pierce,hit:new Set()});player.fireCd=r.cooldown;player.flash=3;lastShotFrame=frame;snd('shot');};
 const rentalModels={};const syncWeapon=syncViewModel;syncViewModel=function(){syncWeapon.apply(this,arguments);if(!rental||cut)return;
  const id=rental.id;if(!rentalModels[id]){ensurePools();const source=extraWeap[id==='arc'?'carbine':'shotgun'],m=source.clone(true);m.traverse(o=>{if(o.isMesh&&o.material){o.material=o.material.clone();if(o.material.color)o.material.color.set(C.RENTALS[id].color);}});const cell=new THREE.Mesh(new THREE.CylinderGeometry(1.1,1.1,4,12),new THREE.MeshStandardMaterial({color:C.RENTALS[id].color,emissive:C.RENTALS[id].color,emissiveIntensity:.6}));cell.rotation.x=Math.PI/2;cell.position.set(1.6,1.5,-3);m.add(cell);vmScene.add(m);rentalModels[id]=m;}
@@ -166,8 +180,10 @@ const rentalModels={};const syncWeapon=syncViewModel;syncViewModel=function(){sy
  gun.visible=false;for(const m of Object.values(extraWeap))m.visible=false;
 };
 const rentalPanel=drawWeaponPanel;drawWeaponPanel=function(R,w,y){if(!rental)return rentalPanel.apply(this,arguments);hudText(C.RENTALS[rental.id].name,R-w+8,y+4,14,C.RENTALS[rental.id].color);hudText(Math.max(0,Math.ceil((rental.expires-Date.now())/1000))+'s TRIAL',R-8,y+21,11,'#fff','right');return true;};
+let contractProp=null,contractPropScene=null;
+const contractRender=render;render=function(){contractRender.apply(this,arguments);if(!scene)return;if(contractPropScene!==scene){contractPropScene=scene;contractProp=new THREE.Group();contractProp.name='active-business-contract';const crate=new THREE.Mesh(new THREE.BoxGeometry(13,10,11),new THREE.MeshStandardMaterial({color:'#97734c',roughness:.9}));crate.position.y=5;contractProp.add(crate);const seal=new THREE.Mesh(new THREE.BoxGeometry(3,10.3,11.3),new THREE.MeshStandardMaterial({color:'#bdb886'}));seal.position.y=5;contractProp.add(seal);scene.add(contractProp);}contractProp.visible=state==='play'&&active?.kind==='contract'&&!level29BusinessContracts.definition(active.contract)?.bosses;if(contractProp.visible){const p=active.target;contractProp.position.set(p.x,terrainHeight(p.x,p.y),p.y);}};
 const target=missionTarget;missionTarget=function(){if(active?.target)return {...active.target,col:'#eac077',label:active.kind==='gumbo'?'J':active.kind==='cars'?'V':'A'};if(gps)return {...gps,col:'#eac077',label:'S'};return target.apply(this,arguments);};
-const service=serviceVenue;serviceVenue=function(){const role=['jojo','alex','damion'].find(nearRole);if(role)return open(role);return service.apply(this,arguments);};
+const service=serviceVenue;serviceVenue=function(){const role=['jojo','alex','damion','dayshawn'].find(nearRole);if(role)return open(role);return service.apply(this,arguments);};
 const campaignTick=updateMission;updateMission=function(){if(active)return;return campaignTick.apply(this,arguments);};
 const begin=beginMission;beginMission=function(){if(active)return toast('FINISH OR ABANDON YOUR CITY STORY FIRST');return begin.apply(this,arguments);};
 const reset=startGame;startGame=function(){cancel();gps=null;stopSpeech();return reset.apply(this,arguments);};

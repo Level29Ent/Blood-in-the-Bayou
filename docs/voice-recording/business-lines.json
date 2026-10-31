@@ -1034,7 +1034,7 @@
     {
       "id": "dealer",
       "name": "Dispensary Clerk",
-      "place": "Green Bayou Dispensary",
+      "place": "Elevated Melanin — generic shop-service alternate",
       "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
       "lines": [
         {
@@ -1278,6 +1278,217 @@
           "file": "ronnie_extra_roux.mp3",
           "cue": "Jojo roux handoff",
           "text": "Jojo sent you? That roux is right here. Take it back and do not spill it. I am trying to eat tonight."
+        }
+      ]
+    },
+    {
+      "id": "dayshawn",
+      "name": "Dayshawn",
+      "place": "Elevated Melanin",
+      "direction": "Natural character delivery; record one dry MP3 per line. Do not imitate another person.",
+      "lines": [
+        {
+          "file": "dayshawn_greet.mp3",
+          "cue": "Open owner panel",
+          "text": "Dayshawn. Elevated Melanin. Welcome in. Keep the trouble outside and let us talk business."
+        },
+        {
+          "file": "dayshawn_stock.mp3",
+          "cue": "Missing Stock contract",
+          "text": "Somebody took my flower, edibles, and concentrates. I marked three sealed shipments. Get my stock back and bring it straight here."
+        },
+        {
+          "file": "dayshawn_rice_route.mp3",
+          "cue": "First recovery location",
+          "text": "Start by the market. The flower crate is marked. Clear the zombies before you collect it."
+        },
+        {
+          "file": "dayshawn_freight.mp3",
+          "cue": "Second recovery location",
+          "text": "Next is the airport freight stop. Find the edible shipment. Keep the case sealed."
+        },
+        {
+          "file": "dayshawn_concentrates.mp3",
+          "cue": "Third recovery location",
+          "text": "Last shipment is by the gas station. Get the concentrate case and bring everything back to Elevated Melanin."
+        },
+        {
+          "file": "dayshawn_rivals.mp3",
+          "cue": "Four Rivals briefing",
+          "text": "Four zombie bosses across town think they can sell their own product, fucking up my money. University, garage, airport, waterfront. Take those four down, then come see me."
+        },
+        {
+          "file": "dayshawn_boss_next.mp3",
+          "cue": "Boss victory, next rival",
+          "text": "One down. The next rival is marked. Do not lose focus now."
+        },
+        {
+          "file": "dayshawn_boss_last.mp3",
+          "cue": "Fourth boss objective",
+          "text": "Last one is on the waterfront. Finish it, then bring yourself back in one piece."
+        },
+        {
+          "file": "dayshawn_complete.mp3",
+          "cue": "Missing Stock payout",
+          "text": "All the sealed stock is back. That is how we keep the business moving. Here is your pay."
+        },
+        {
+          "file": "dayshawn_rivals_complete.mp3",
+          "cue": "Four Rivals payout",
+          "text": "Four bosses down. My money can breathe again. You earned every dollar."
+        },
+        {
+          "file": "dayshawn_busy.mp3",
+          "cue": "Another activity running",
+          "text": "Finish what you started first. Come back when you can give this job your full attention."
+        },
+        {
+          "file": "dayshawn_bye.mp3",
+          "cue": "Leave owner panel",
+          "text": "Elevated Melanin. Remember the name, and watch your back out there."
+        }
+      ]
+    },
+    {
+      "id": "jojo_contract",
+      "name": "Jojo Contract",
+      "place": "Business contract / current map",
+      "direction": "Natural character delivery; record one dry MP3 per line. Do not imitate another person.",
+      "lines": [
+        {
+          "file": "jojo_contract_rush.mp3",
+          "cue": "Dinner Rush briefing",
+          "text": "We have a dinner rush and no supplies. Get the rice order from the market, pick up produce at the farm, and bring it all back to Major Cajun."
+        },
+        {
+          "file": "jojo_contract_rush_paid.mp3",
+          "cue": "Dinner Rush completion",
+          "text": "Kitchen is stocked, customers are fed, and you are getting paid. Good work."
+        }
+      ]
+    },
+    {
+      "id": "alex_contract",
+      "name": "Alex Contract",
+      "place": "Business contract / current map",
+      "direction": "Natural character delivery; record one dry MP3 per line. Do not imitate another person.",
+      "lines": [
+        {
+          "file": "alex_contract_parts.mp3",
+          "cue": "Workshop Salvage briefing",
+          "text": "Recover the tools at the garage and the freight components at the airport. Bring both back so I can keep the test bench working."
+        },
+        {
+          "file": "alex_contract_parts_paid.mp3",
+          "cue": "Workshop Salvage completion",
+          "text": "Tools and parts checked in. The workshop is back in business. Here is your pay."
+        }
+      ]
+    },
+    {
+      "id": "bonnie_contract",
+      "name": "Bonnie Contract",
+      "place": "Business contract / current map",
+      "direction": "Natural character delivery; record one dry MP3 per line. Do not imitate another person.",
+      "lines": [
+        {
+          "file": "bonnie_contract_chrome.mp3",
+          "cue": "Chrome Run briefing",
+          "text": "My chrome wheel shipment is at the garage, and the tuning kit is by the gas station. Bring them back without losing the hardware."
+        },
+        {
+          "file": "bonnie_contract_chrome_paid.mp3",
+          "cue": "Chrome Run completion",
+          "text": "That is the chrome I ordered. You keep bringing the right parts, I will keep paying you."
+        }
+      ]
+    },
+    {
+      "id": "felicia_contract",
+      "name": "Felicia Contract",
+      "place": "Business contract / current map",
+      "direction": "Natural character delivery; record one dry MP3 per line. Do not imitate another person.",
+      "lines": [
+        {
+          "file": "felicia_contract_ice.mp3",
+          "cue": "Cold Chain briefing",
+          "text": "My ice supplies are at the grocery and the refrigeration relay is by the hospital. Bring them back before my trailer gets warm."
+        },
+        {
+          "file": "felicia_contract_ice_paid.mp3",
+          "cue": "Cold Chain completion",
+          "text": "You saved my ice and my business. Take your pay, baby."
+        }
+      ]
+    },
+    {
+      "id": "damion_contract",
+      "name": "Damion Contract",
+      "place": "Business contract / current map",
+      "direction": "Natural character delivery; record one dry MP3 per line. Do not imitate another person.",
+      "lines": [
+        {
+          "file": "damion_contract_sound.mp3",
+          "cue": "Show Must Go On briefing",
+          "text": "My sound kit is at the studio and my microphone case is at the office. Get the gear back so the audience can hear the punchline."
+        },
+        {
+          "file": "damion_contract_sound_paid.mp3",
+          "cue": "Show Must Go On completion",
+          "text": "We have sound, we have a microphone, and now we have a show. Here is your cut."
+        }
+      ]
+    },
+    {
+      "id": "ronnie_map",
+      "name": "Ronnie Map",
+      "place": "Business contract / current map",
+      "direction": "Natural character delivery; record one dry MP3 per line. Do not imitate another person.",
+      "lines": [
+        {
+          "file": "ronnie_map_dispatch.mp3",
+          "cue": "New map dispatch",
+          "text": "The city has changed, Jester. Meet me at the marked business, not the old block. Follow the gold beam."
+        },
+        {
+          "file": "ronnie_map_cajun.mp3",
+          "cue": "Major Cajun field objective",
+          "text": "Chief Jojo needs the street outside Major Cajun cleared. Reach the marker and handle that horde."
+        },
+        {
+          "file": "ronnie_map_guns.mp3",
+          "cue": "AK Gun Plus objective",
+          "text": "Alex has equipment at AK Gun Plus. Follow the current shop marker. Do not go looking for the old community office."
+        },
+        {
+          "file": "ronnie_map_melanin.mp3",
+          "cue": "Elevated Melanin objective",
+          "text": "Dayshawn runs Elevated Melanin now. That is the dispensary on your map. Keep moving."
+        },
+        {
+          "file": "ronnie_map_trailer.mp3",
+          "cue": "Felicia field objective",
+          "text": "Felicia is working inside the snowball trailer. The supplies are marked outside. Keep the lane open."
+        },
+        {
+          "file": "ronnie_map_farm.mp3",
+          "cue": "Farm objective",
+          "text": "Use the farm perimeter road. Do not drive through the field. I marked the entrance."
+        },
+        {
+          "file": "ronnie_map_airport.mp3",
+          "cue": "Airport objective",
+          "text": "The airport has its own parcel. Take the access road and keep the runway clear."
+        },
+        {
+          "file": "ronnie_map_extract.mp3",
+          "cue": "Extraction",
+          "text": "Primary job is done. Follow the new field marker, then hold the extraction point. You are not finished until the team is clear."
+        },
+        {
+          "file": "ronnie_map_pay.mp3",
+          "cue": "Mission payment",
+          "text": "That is another job finished on the new city routes. Come back to the marked dispatch and get ready for the next one."
         }
       ]
     }
