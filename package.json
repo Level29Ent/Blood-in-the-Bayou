@@ -7,7 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "build:postprocessing": "node scripts/build-postprocessing.cjs"
+    "build:postprocessing": "node scripts/build-postprocessing.cjs",
+    "ios:sync": "pnpm --filter blood-in-the-bayou-ios sync",
+    "ios:archive": "pnpm ios:sync && node scripts/archive-ios.cjs"
   },
   "dependencies": {
     "@base-ui/react": "^1.5.0",

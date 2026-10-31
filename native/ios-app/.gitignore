@@ -1,0 +1,9 @@
+www/
+ios/App/App/public/
+ios/App/CapApp-SPM/symlinks/
+ios/App/CapApp-SPM/.build/
+ios/App/App/capacitor.config.json
+ios/App/App.xcworkspace/xcuserdata/
+ios/App/App.xcodeproj/xcuserdata/
+*.xcuserstate
+DerivedData/
