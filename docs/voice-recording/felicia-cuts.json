@@ -1,11 +1,11 @@
 {
   "source": "New Recording 3.m4a",
   "sourceDurationSeconds": 48.789333,
-  "mapping": "Seven user-supplied ranges in script order. Final repeated 6 interpreted as 7/farewell.",
+  "mapping": "Seven user-supplied ranges in script order; greeting corrected to 02\u201306 per follow-up. Final repeated 6 interpreted as 7/farewell.",
   "clips": [
     {
       "file": "felicia_greet.mp3",
-      "start": 0,
+      "start": 2,
       "end": 6
     },
     {

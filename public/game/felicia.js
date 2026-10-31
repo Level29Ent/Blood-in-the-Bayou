@@ -9,8 +9,8 @@ function open(narrate=true){const v=trailer();if(!v||!player||player.car||player
 function close(farewell=true){panel.style.display='none';if(state==='shop')state='play';if(farewell)level29FeliciaVoice.play('bye');else level29FeliciaVoice.stop();}
 panel.onclick=e=>{const a=e.target.closest('[data-felicia]')?.dataset.felicia;if(a==='close')return close();if(a==='pitch')return level29FeliciaVoice.play('pitch');if(a==='contract'){close(false);return window.level29CityStories?.open('board');}if(a!=='buy')return;const v=trailer();if(!v||!insideVenue(v,player)||player.car)return;const r=purchase(cash,arsenal.snowball||0);if(!r){level29FeliciaVoice.play('poor');return toast('NOT ENOUGH GAME CASH');}cash=r.balance;giveW('snowball',PACK);const oldMuteEquip=muteEquip;muteEquip=true;selectW('snowball');muteEquip=oldMuteEquip;sfx('cash');window.level29Save?.save('SNOWBALLS SAVED');open(false);level29FeliciaVoice.play('buy','equip');};
 let muteEquip=false,lastEquip=-Infinity,lastEmpty=-Infinity;
-const select=selectW;selectW=function(w){const changed=curW!==w;select.apply(this,arguments);if(!muteEquip&&changed&&curW==='snowball'&&performance.now()-lastEquip>30000){lastEquip=performance.now();level29FeliciaVoice.play('equip');}};
-const fire=fireWeapon;fireWeapon=function(){if(curW==='snowball'&&!level29CityStories?.rental&&(arsenal.snowball||0)<=0&&performance.now()-lastEmpty>12000){lastEmpty=performance.now();level29FeliciaVoice.play('empty');}return fire.apply(this,arguments);};
+const select=selectW;selectW=function(w){const changed=curW!==w;select.apply(this,arguments);if(!muteEquip&&changed&&curW==='snowball'&&performance.now()-lastEquip>30000){if(level29FeliciaVoice.play('equip'))lastEquip=performance.now();}};
+const fire=fireWeapon;fireWeapon=function(){if(curW==='snowball'&&!level29CityStories?.rental&&(arsenal.snowball||0)<=0&&performance.now()-lastEmpty>12000){if(level29FeliciaVoice.play('empty'))lastEmpty=performance.now();}return fire.apply(this,arguments);};
 const reset=startGame;startGame=function(){level29FeliciaVoice.stop();return reset.apply(this,arguments);};
 const builder=buildVenue;buildVenue=function(v){if(v.kind!=='snowballs')return builder.apply(this,arguments);if(v.mesh?.parent===cityGroup)return;
  const g=new THREE.Group();g.name='Felicia walk-in trailer';v.mesh=g;cityGroup.add(g);const b=v.b,{box,add,figure}=level29StoryScenes;
@@ -29,6 +29,6 @@ const use=document.getElementById('venueAction');if(use){const prev=use.onclick;
 let balls=[],meshScene=null;const sync=syncGta;syncGta=function(){sync.apply(this,arguments);if(!scene)return;if(meshScene!==scene){meshScene=scene;balls=[];const geo=new THREE.SphereGeometry(2.2,12,8),mat=new THREE.MeshStandardMaterial({color:'#d9f4ff',roughness:.4});for(let i=0;i<12;i++){const m=new THREE.Mesh(geo,mat);m.visible=false;scene.add(m);balls.push(m);}}
  let i=0;for(const b of bullets)if(b.snowball&&b.life>0&&i<balls.length){const m=balls[i++];m.visible=state==='play';m.position.set(b.x,terrainHeight(b.x,b.y)+13+Math.sin((40-b.life)/40*Math.PI)*8,b.y);}for(;i<balls.length;i++)balls[i].visible=false;
 };
-const renderBase=render;render=function(){renderBase.apply(this,arguments);if(panel.style.display==='flex'&&state!=='shop')close(false);if(player&&trailer()&&level29FeliciaVoice.speaking&&dist(player.x,player.y,trailer().doorX,trailer().doorY)>400)level29FeliciaVoice.stop();};
+const renderBase=render;render=function(){renderBase.apply(this,arguments);if(panel.style.display==='flex'&&state!=='shop')close(false);};
 window.level29Felicia={open,close,get venue(){return trailer();},purchase};
 })();
