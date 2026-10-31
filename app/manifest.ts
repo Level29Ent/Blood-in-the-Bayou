@@ -16,9 +16,9 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: '#0b0e10',
     categories: ['games', 'entertainment'],
     icons: [
-      { src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
-      { src: '/icons/icon-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
-      { src: '/icons/maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
+      { src: '/icons/bayou-192.png', sizes: '192x192', type: 'image/png', purpose: 'any' },
+      { src: '/icons/bayou-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+      { src: '/icons/bayou-maskable-512.png', sizes: '512x512', type: 'image/png', purpose: 'maskable' },
     ],
     screenshots: [
       {

@@ -15,10 +15,11 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: 'Level 29', statusBarStyle: 'black-translucent' },
   icons: {
     icon: [
-      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
-      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/icons/bayou-32.png', sizes: '32x32', type: 'image/png' },
+      { url: '/icons/bayou-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/bayou-512.png', sizes: '512x512', type: 'image/png' },
     ],
-    apple: '/apple-icon.png',
+    apple: '/icons/bayou-apple-180.png',
   },
 }
 
