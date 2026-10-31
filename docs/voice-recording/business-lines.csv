@@ -1,0 +1,191 @@
+character,location,filename,cue,spoken_line
+Felicia,Felicia’s Snowball Trailer,felicia_greet.mp3,Player opens trailer service,"Sweet enough for you. Cold enough for the undead. Welcome in, baby!"
+Felicia,Felicia’s Snowball Trailer,felicia_pitch.mp3,Describe weapon snowballs,"These are my packed-ice specials. Six snowballs for one-eighty. Throw them at the zombies, not my trailer!"
+Felicia,Felicia’s Snowball Trailer,felicia_buy.mp3,Purchase succeeds,"Six snowballs, coming right up. Keep your aim steady and make those zombies chill out."
+Felicia,Felicia’s Snowball Trailer,felicia_poor.mp3,Insufficient cash,"Baby, I still have to pay for the ice. Come back when you have one-eighty."
+Felicia,Felicia’s Snowball Trailer,felicia_equip.mp3,Player equips snowballs,"Pick your snowball from the weapon wheel. Aim, then throw. The big ones might need a second helping."
+Felicia,Felicia’s Snowball Trailer,felicia_empty.mp3,Out of snowballs,Out of ice? Come see Felicia. I will get you packed up again.
+Felicia,Felicia’s Snowball Trailer,felicia_bye.mp3,Leave service,"Stay sweet out there, and keep that cold shoulder ready."
+Chief Jojo,Major Cajun,jojo_greet.mp3,Open restaurant panel,"Welcome to Major Cajun. Chief Jojo runs this kitchen, and nobody leaves hungry."
+Chief Jojo,Major Cajun,jojo_brief.mp3,Accept gumbo quest,"My zombie gumbo is going to turn this city human again. First, I need you to bring me a few things."
+Chief Jojo,Major Cajun,jojo_rice.mp3,Rice objective,Get the rice from the farmers market. Clear the zombies off the stalls before you grab it.
+Chief Jojo,Major Cajun,jojo_pork.mp3,Pork objective,"The farm has our pork order. Pick it up at the gate, and leave the animals alone."
+Chief Jojo,Major Cajun,jojo_shrimp.mp3,Shrimp objective,"Get the shrimp from the Natchez steamboat dock. Fresh shrimp, not whatever is crawling on the pier."
+Chief Jojo,Major Cajun,jojo_gator.mp3,Alligator objective,I need fresh alligator meat. You are going to have to hunt that one yourself.
+Chief Jojo,Major Cajun,jojo_roux.mp3,Roux objective,Ronniebaby has my roux upstairs in the mansion. Take the elevator and bring it back.
+Chief Jojo,Major Cajun,jojo_return.mp3,All ingredients obtained,You got everything. Bring those ingredients back to Major Cajun.
+Chief Jojo,Major Cajun,jojo_capture.mp3,Assign university subject,"Now catch me a zombie over at the university. Weaken it, restrain it, and bring it back alive. Do not kill my taste tester!"
+Chief Jojo,Major Cajun,jojo_prepare.mp3,Scene 0–7 seconds,"Rice, pork, shrimp, alligator, and a little of Ronniebaby’s roux. Now we are cooking."
+Chief Jojo,Major Cajun,jojo_stir.mp3,Scene 7–13 seconds,"A little roux, a little patience. You cannot rush good gumbo."
+Chief Jojo,Major Cajun,jojo_serve.mp3,Scene 13–18 seconds,A little ice in the bowl. Hot gumbo on top. Let me get my spoon.
+Chief Jojo,Major Cajun,jojo_best.mp3,Scene 18–24 seconds; record an energetic short take,I have the best gumbo in town! The only reason all these people acting like zombies is because they hungry!
+Chief Jojo,Major Cajun,jojo_reaction.mp3,"Optional alternate, immediately after feeding",Hold on. That is not the reaction I ordered.
+Chief Jojo,Major Cajun,jojo_not_in_house.mp3,"Scene mutation, 32–37 seconds",Not in my house!
+Chief Jojo,Major Cajun,jojo_boss.mp3,Fight handoff,"Take that thing outside! You brought it in here, now finish it!"
+Chief Jojo,Major Cajun,jojo_complete.mp3,Boss defeated,"Well, the gumbo did not cure him. But you saved my kitchen. Dinner is on me."
+Alex,AK Gun Plus,alex_greet.mp3,Open gun-store panel,"Welcome to AK Gun Plus. I am Alex. Need something reliable, or are we testing something unusual?"
+Alex,AK Gun Plus,alex_rent.mp3,Weapon rental prompt,"Arc Broom or Cajun Thunder. You get thirty seconds of use. The clock keeps running in menus, so make it count."
+Alex,AK Gun Plus,alex_buy.mp3,Rental purchased,Your rental is live. Thirty seconds starts now.
+Alex,AK Gun Plus,alex_expired.mp3,Rental expires,Time is up. Your regular weapon is back in your hands.
+Alex,AK Gun Plus,alex_poor.mp3,Insufficient cash,"You are short on game cash. Come back after a job, or take a field trial."
+Alex,AK Gun Plus,alex_waves.mp3,Accept five-wave trial,Five waves. I supply the test weapons. You stay alive and show me what they can do.
+Alex,AK Gun Plus,alex_next_wave.mp3,Wave transition,That wave is clear. New group coming in. Check your weapon!
+Alex,AK Gun Plus,alex_final_wave.mp3,Wave five,Final wave. Brutes in the street. Keep moving!
+Alex,AK Gun Plus,alex_wave_complete.mp3,Five waves survived,Five waves survived. Solid testing. Here is your pay.
+Alex,AK Gun Plus,alex_research.mp3,Accept live-capture research,"I need a cow, a pig, and a chicken collected safely. Then bring me three live zombie boss specimens."
+Alex,AK Gun Plus,alex_capture.mp3,Boss capture instruction,Bring the marked boss below thirty-five percent health. Get close and hold the restraint action. I need it alive.
+Alex,AK Gun Plus,alex_lost.mp3,Subject killed,That specimen is no use to the lab. I have marked a replacement.
+Alex,AK Gun Plus,alex_research_complete.mp3,Return all specimens,"Animals safe, three specimens restrained. Good work. Research pays, and you earned it."
+Bonnie De Vette,Slab Motors,bonnie_greet.mp3,Showroom greeting,Welcome to Slab Motors. Bonnie De Vette here. Come inside and tell me what you are driving.
+Bonnie De Vette,Slab Motors,bonnie_sale.mp3,Vehicle purchase succeeds,That ride is yours. Your vehicle is waiting out front. Keep it clean.
+Bonnie De Vette,Slab Motors,bonnie_blocked.mp3,Delivery bay blocked,Clear my delivery bay first. I cannot put a car on top of another car.
+Bonnie De Vette,Slab Motors,bonnie_recover.mp3,Accept recovery contracts,"I need a sedan, a sports car, and a Houston slab recovered from the city. I marked the exact cars. Bring each one back intact."
+Bonnie De Vette,Slab Motors,bonnie_wrong.mp3,Wrong vehicle returned,"That is not the car I sent you for. Follow the marked vehicle, not a look-alike."
+Bonnie De Vette,Slab Motors,bonnie_damaged.mp3,Returned below condition threshold,That one needs repairs before I take delivery. Bring it back running right.
+Bonnie De Vette,Slab Motors,bonnie_next.mp3,Vehicle accepted; next objective,That is one back where it belongs. The next car is marked on your map.
+Bonnie De Vette,Slab Motors,bonnie_complete.mp3,All three cars delivered,Three rides recovered. That is how you do business with Bonnie. Here is your cut.
+Bonnie De Vette,Slab Motors,bonnie_bye.mp3,Leave dealership,"Drive with some style, and watch my paint."
+Damion,Bayou Laugh Theater,damion_welcome.mp3,Enter theater,"How is everybody doing tonight? I am Damion. If you are still breathing, that counts as a good crowd."
+Damion,Bayou Laugh Theater,damion_joke_01.mp3,Comedy rotation 1,I made reservations for dinner. The zombies made reservations for me.
+Damion,Bayou Laugh Theater,damion_joke_02.mp3,Comedy rotation 2,"Houston traffic is so slow, a zombie asked me if my car was a food truck."
+Damion,Bayou Laugh Theater,damion_joke_03.mp3,Comedy rotation 3,Bonnie told me my trade-in had character. Turns out the character was still in the trunk.
+Damion,Bayou Laugh Theater,damion_joke_04.mp3,Comedy rotation 4,Jojo says her gumbo wakes the dead. I told her to stop offering free refills.
+Damion,Bayou Laugh Theater,damion_thanks.mp3,Leave theater / end set,"You have been a beautiful, mostly human audience. Get home safe, and tip somebody who still has a pulse."
+Safe House Caretaker,Primary safehouse,caretaker_greet.mp3,Open service / greet player,"Welcome home. Rest, save your progress, and get ready for the next run."
+Safe House Caretaker,Primary safehouse,caretaker_success.mp3,Service / shift succeeds,The house is stocked and your checkpoint is saved.
+Safe House Caretaker,Primary safehouse,caretaker_warning.mp3,Cannot proceed / work instruction,Keep the gate clear. Everybody inside is counting on us.
+Safe House Caretaker,Primary safehouse,caretaker_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Mechanic,Garage / service bay,mechanic_greet.mp3,Open service / greet player,Pull into the marked bay. Let me see what you did to that engine.
+Mechanic,Garage / service bay,mechanic_success.mp3,Service / shift succeeds,Repairs complete. You are ready for the road.
+Mechanic,Garage / service bay,mechanic_warning.mp3,Cannot proceed / work instruction,Park the vehicle in the service area before we get started.
+Mechanic,Garage / service bay,mechanic_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Armory Dealer,Ordinary Bayou Arsenal stores,armorer_greet.mp3,Open service / greet player,"Welcome to Bayou Arsenal. Weapons, ammunition, and armor are on the racks."
+Armory Dealer,Ordinary Bayou Arsenal stores,armorer_success.mp3,Service / shift succeeds,Purchased and ready. Check your weapon wheel before you head out.
+Armory Dealer,Ordinary Bayou Arsenal stores,armorer_warning.mp3,Cannot proceed / work instruction,You need more game cash for that order.
+Armory Dealer,Ordinary Bayou Arsenal stores,armorer_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Carwash Attendant,Bayou Shine,wash_greet.mp3,Open service / greet player,Bring your ride into the wash bay. We will clean it up and sort out the damage.
+Carwash Attendant,Bayou Shine,wash_success.mp3,Service / shift succeeds,Fresh finish. Try not to take the scenic route through a horde.
+Carwash Attendant,Bayou Shine,wash_warning.mp3,Cannot proceed / work instruction,Pull the vehicle into the bay first.
+Carwash Attendant,Bayou Shine,wash_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Business Manager,Community businesses / offices,manager_greet.mp3,Open service / greet player,"Welcome to the office. We have contracts, errands, and investments to discuss."
+Business Manager,Community businesses / offices,manager_success.mp3,Service / shift succeeds,The paperwork is done. Your earnings are ready.
+Business Manager,Community businesses / offices,manager_warning.mp3,Cannot proceed / work instruction,Finish your current assignment before taking another contract.
+Business Manager,Community businesses / offices,manager_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Bank Teller,All four bank branches,teller_greet.mp3,Open service / greet player,"Welcome to Level 29 Trust. Deposits, withdrawals, and paid banking work are available here."
+Bank Teller,All four bank branches,teller_success.mp3,Service / shift succeeds,Transaction complete. Your account is updated.
+Bank Teller,All four bank branches,teller_warning.mp3,Cannot proceed / work instruction,That transaction needs more funds. Check your balance and try again.
+Bank Teller,All four bank branches,teller_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Market Clerk,Groceries / fresh markets,grocer_greet.mp3,Open service / greet player,"Fresh food, cold drinks, and market work. What can I get you?"
+Market Clerk,Groceries / fresh markets,grocer_success.mp3,Service / shift succeeds,Your order is ready. Stay safe on the way home.
+Market Clerk,Groceries / fresh markets,grocer_warning.mp3,Cannot proceed / work instruction,"Set your job marker, then return here to clock in."
+Market Clerk,Groceries / fresh markets,grocer_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Fish Market Clerk,Gulf Fresh Fish Markets,fishmonger_greet.mp3,Open service / greet player,"Fresh off the Gulf. Bring me your catch, or pick up some fishing gear."
+Fish Market Clerk,Gulf Fresh Fish Markets,fishmonger_success.mp3,Service / shift succeeds,Catch weighed and sold. Here is your game cash.
+Fish Market Clerk,Gulf Fresh Fish Markets,fishmonger_warning.mp3,Cannot proceed / work instruction,No fish in your cooler yet. Head to the water and bring some back.
+Fish Market Clerk,Gulf Fresh Fish Markets,fishmonger_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Crown Smoke Shop Owner,Crown Smoke Shop,smoke_greet.mp3,Open service / greet player,"Welcome to Crown. Accessories, equipment upgrades, and finishes are available at the counter."
+Crown Smoke Shop Owner,Crown Smoke Shop,smoke_success.mp3,Service / shift succeeds,Your equipment order is ready.
+Crown Smoke Shop Owner,Crown Smoke Shop,smoke_warning.mp3,Cannot proceed / work instruction,You are short on game cash for that upgrade.
+Crown Smoke Shop Owner,Crown Smoke Shop,smoke_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Community Clinic Nurse,Bayou Community Hospital clinics,clinic_greet.mp3,Open service / greet player,Come inside. You are safe here. Let us take a look at you.
+Community Clinic Nurse,Bayou Community Hospital clinics,clinic_success.mp3,Service / shift succeeds,Treatment is complete. Take a moment before you go back outside.
+Community Clinic Nurse,Bayou Community Hospital clinics,clinic_warning.mp3,Cannot proceed / work instruction,We need payment for those supplies. Check your game cash.
+Community Clinic Nurse,Bayou Community Hospital clinics,clinic_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Fitness Coach,Gym,trainer_greet.mp3,Open service / greet player,"Ready to work? Cardio, conditioning, and coaching shifts start here."
+Fitness Coach,Gym,trainer_success.mp3,Service / shift succeeds,Good session. You put in the work.
+Fitness Coach,Gym,trainer_warning.mp3,Cannot proceed / work instruction,Finish your current shift before starting another training assignment.
+Fitness Coach,Gym,trainer_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Desk Sergeant,Police station,sergeant_greet.mp3,Open service / greet player,"Welcome to the station. Armor, cruiser requests, and patrol work are handled at this desk."
+Desk Sergeant,Police station,sergeant_success.mp3,Service / shift succeeds,Your request is cleared. Watch the streets.
+Desk Sergeant,Police station,sergeant_warning.mp3,Cannot proceed / work instruction,No new assignment until you finish the job you already took.
+Desk Sergeant,Police station,sergeant_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Fire Captain,Fire station,fire_greet.mp3,Open service / greet player,Fire and rescue is hiring. Pick a call and follow the marked route.
+Fire Captain,Fire station,fire_success.mp3,Service / shift succeeds,Good response. Your shift pay is ready.
+Fire Captain,Fire station,fire_warning.mp3,Cannot proceed / work instruction,"Back away from the flare-up, then get that fire under control."
+Fire Captain,Fire station,fire_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Station Attendant,Gas & Go,gas_greet.mp3,Open service / greet player,"Fuel, repairs, snacks, and paid station shifts. Pull in and tell me what you need."
+Station Attendant,Gas & Go,gas_success.mp3,Service / shift succeeds,Service complete. You are good to go.
+Station Attendant,Gas & Go,gas_warning.mp3,Cannot proceed / work instruction,Park at the marked pump or service point first.
+Station Attendant,Gas & Go,gas_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Security Chief,Mansion gate booth,security_greet.mp3,Open service / greet player,Need work? Hold your post and keep the horde off these walls.
+Security Chief,Mansion gate booth,security_success.mp3,Service / shift succeeds,Shift complete. You kept the gate secure. Here is your pay.
+Security Chief,Mansion gate booth,security_warning.mp3,Cannot proceed / work instruction,Get back to your assigned post. The gate is not going to guard itself.
+Security Chief,Mansion gate booth,security_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Emergency Nurse,Hospital floor 1,er_greet.mp3,Open service / greet player,"Emergency intake. Tell me where it hurts, and we will get you stabilized."
+Emergency Nurse,Hospital floor 1,er_success.mp3,Service / shift succeeds,You are stable. Follow the elevator signs if you need another department.
+Emergency Nurse,Hospital floor 1,er_warning.mp3,Cannot proceed / work instruction,Stay inside while we finish treatment.
+Emergency Nurse,Hospital floor 1,er_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Pharmacist,Hospital floor 2,pharmacy_greet.mp3,Open service / greet player,Pharmacy and ward supplies. Let me check what you need.
+Pharmacist,Hospital floor 2,pharmacy_success.mp3,Service / shift succeeds,Your supplies are ready. Follow the instructions and take care of yourself.
+Pharmacist,Hospital floor 2,pharmacy_warning.mp3,Cannot proceed / work instruction,Those supplies need payment before they leave the counter.
+Pharmacist,Hospital floor 2,pharmacy_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Surgeon,Hospital floor 3,surgeon_greet.mp3,Open service / greet player,Trauma team is ready. We will get you through this.
+Surgeon,Hospital floor 3,surgeon_success.mp3,Service / shift succeeds,Procedure complete. Recovery is your next stop.
+Surgeon,Hospital floor 3,surgeon_warning.mp3,Cannot proceed / work instruction,Keep the surgical area clear for the medical team.
+Surgeon,Hospital floor 3,surgeon_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Lab Technician,Hospital floor 4,lab_greet.mp3,Open service / greet player,Diagnostics and laboratory. We need clean samples and clear answers.
+Lab Technician,Hospital floor 4,lab_success.mp3,Service / shift succeeds,Your tests are complete. The results are ready.
+Lab Technician,Hospital floor 4,lab_warning.mp3,Cannot proceed / work instruction,Do not mix the samples. Use the marked station.
+Lab Technician,Hospital floor 4,lab_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Recovery Doctor,Hospital floor 5,recovery_greet.mp3,Open service / greet player,Welcome to recovery. Take a breath. You made it inside.
+Recovery Doctor,Hospital floor 5,recovery_success.mp3,Service / shift succeeds,You are cleared to leave. Come back if you need us.
+Recovery Doctor,Hospital floor 5,recovery_warning.mp3,Cannot proceed / work instruction,Rest before you rush back into another fight.
+Recovery Doctor,Hospital floor 5,recovery_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Natchez Captain,Steamboat dock,captain_greet.mp3,Open service / greet player,Welcome aboard the Natchez. We have shrimp to catch and a hold to fill.
+Natchez Captain,Steamboat dock,captain_success.mp3,Service / shift succeeds,Good haul. Here is your pay for the shift.
+Natchez Captain,Steamboat dock,captain_warning.mp3,Cannot proceed / work instruction,Board the marked boat and reach the trawling grounds first.
+Natchez Captain,Steamboat dock,captain_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+University Professor,Bayou State University,professor_greet.mp3,Open service / greet player,Welcome to Bayou State. Let us see what you know about Louisiana.
+University Professor,Bayou State University,professor_success.mp3,Service / shift succeeds,Correct. You have been paying attention.
+University Professor,Bayou State University,professor_warning.mp3,Cannot proceed / work instruction,Not quite. Think it over and try the next question.
+University Professor,Bayou State University,professor_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Terminal Agent,Airport terminal,terminal_greet.mp3,Open service / greet player,Welcome to Level 29 International. Air tours and ground operations check in here.
+Terminal Agent,Airport terminal,terminal_success.mp3,Service / shift succeeds,Your booking is confirmed. Follow the marked boarding point.
+Terminal Agent,Airport terminal,terminal_warning.mp3,Cannot proceed / work instruction,The apron must stay clear. Use the dedicated access road.
+Terminal Agent,Airport terminal,terminal_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Ground Operations Chief,Airport ground crew jobs,ground_greet.mp3,Open service / greet player,"Clock in, check your equipment, and inspect the marked apron stations."
+Ground Operations Chief,Airport ground crew jobs,ground_success.mp3,Service / shift succeeds,Inspection complete. Report to dispatch for your wages.
+Ground Operations Chief,Airport ground crew jobs,ground_warning.mp3,Cannot proceed / work instruction,Keep off the runway and finish the task at the marked station.
+Ground Operations Chief,Airport ground crew jobs,ground_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Farm Coordinator,Farm-hand dispatch,farm_greet.mp3,Open service / greet player,"The farm needs hands. Collect the feed, check the animals, and load the produce."
+Farm Coordinator,Farm-hand dispatch,farm_success.mp3,Service / shift succeeds,Good work. Return the supplied van and clock out.
+Farm Coordinator,Farm-hand dispatch,farm_warning.mp3,Cannot proceed / work instruction,Use the marked farm entrance. Do not cut through the field.
+Farm Coordinator,Farm-hand dispatch,farm_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Taxi Dispatcher,Cab jobs / gas-station dispatch,dispatcher_greet.mp3,Open service / greet player,Dispatch here. Your fare is marked. Get them home in one piece.
+Taxi Dispatcher,Cab jobs / gas-station dispatch,dispatcher_success.mp3,Service / shift succeeds,Fare complete. The next passenger is on your map.
+Taxi Dispatcher,Cab jobs / gas-station dispatch,dispatcher_warning.mp3,Cannot proceed / work instruction,Use your assigned cab and return it at the end of the shift.
+Taxi Dispatcher,Cab jobs / gas-station dispatch,dispatcher_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Dispensary Clerk,Green Bayou Dispensary,dealer_greet.mp3,Open service / greet player,Welcome to Green Bayou. Take a look at the local goods at the counter.
+Dispensary Clerk,Green Bayou Dispensary,dealer_success.mp3,Service / shift succeeds,Your order is ready.
+Dispensary Clerk,Green Bayou Dispensary,dealer_warning.mp3,Cannot proceed / work instruction,Come back with enough game cash for that order.
+Dispensary Clerk,Green Bayou Dispensary,dealer_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Casino Host,BoomCity casino,casino_greet.mp3,Open service / greet player,Welcome to BoomCity. Walk up to a machine or table to play. We use fictional game cash only.
+Casino Host,BoomCity casino,casino_success.mp3,Service / shift succeeds,Thank you for playing. The next table is open.
+Casino Host,BoomCity casino,casino_warning.mp3,Cannot proceed / work instruction,You need enough game cash for that bet.
+Casino Host,BoomCity casino,casino_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+DJ Bayou Boom,Velvet Jester club,dj_greet.mp3,Open service / greet player,Welcome to the Velvet Jester. The floor is open. Show us what you have got.
+DJ Bayou Boom,Velvet Jester club,dj_success.mp3,Service / shift succeeds,That is the rhythm. Give it up for our dancer!
+DJ Bayou Boom,Velvet Jester club,dj_warning.mp3,Cannot proceed / work instruction,Tap play on the music player if your browser is keeping it quiet.
+DJ Bayou Boom,Velvet Jester club,dj_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Cafe Owner,Golden Hills / neighborhood cafes,cafe_greet.mp3,Open service / greet player,Welcome in. A hot meal and a quiet minute can do you some good.
+Cafe Owner,Golden Hills / neighborhood cafes,cafe_success.mp3,Service / shift succeeds,"Fresh meal, coming up."
+Cafe Owner,Golden Hills / neighborhood cafes,cafe_warning.mp3,Cannot proceed / work instruction,Take a seat inside while we get your order ready.
+Cafe Owner,Golden Hills / neighborhood cafes,cafe_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Studio Guide,Golden Hills film studios,studio_greet.mp3,Open service / greet player,Welcome to Golden Hills. Follow the signs for the soundstage tour.
+Studio Guide,Golden Hills film studios,studio_success.mp3,Service / shift succeeds,That wraps the tour. Come back when we are rolling again.
+Studio Guide,Golden Hills film studios,studio_warning.mp3,Cannot proceed / work instruction,Keep the stage entrance clear and stay behind the marked line.
+Studio Guide,Golden Hills film studios,studio_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Talent Agent,Golden Hills talent agency,talent_greet.mp3,Open service / greet player,Have a seat. Let us talk about your next opportunity.
+Talent Agent,Golden Hills talent agency,talent_success.mp3,Service / shift succeeds,Your appointment is finished. We will keep the city working.
+Talent Agent,Golden Hills talent agency,talent_warning.mp3,Cannot proceed / work instruction,Finish your current job before taking on another role.
+Talent Agent,Golden Hills talent agency,talent_bye.mp3,Exit service,Take care out there. We will be here when you get back.
+Sapphire,Velvet Jester club,sapphire_greet.mp3,Approach club performer,Welcome to the Velvet Jester. Enjoy the show!
+Sapphire,Velvet Jester club,sapphire_thanks.mp3,Player tips,Thank you for the tip. Keep that good energy going.
+Sapphire,Velvet Jester club,sapphire_bye.mp3,Player leaves,Stay safe and come back to see us.
+Mardi,Velvet Jester club,mardi_greet.mp3,Approach club performer,Welcome to the Velvet Jester. Enjoy the show!
+Mardi,Velvet Jester club,mardi_thanks.mp3,Player tips,Thank you for the tip. Keep that good energy going.
+Mardi,Velvet Jester club,mardi_bye.mp3,Player leaves,Stay safe and come back to see us.
+Velvet,Velvet Jester club,velvet_greet.mp3,Approach club performer,Welcome to the Velvet Jester. Enjoy the show!
+Velvet,Velvet Jester club,velvet_thanks.mp3,Player tips,Thank you for the tip. Keep that good energy going.
+Velvet,Velvet Jester club,velvet_bye.mp3,Player leaves,Stay safe and come back to see us.
+Ronniebaby — optional new handoff,Mansion penthouse,ronnie_extra_roux.mp3,Jojo roux handoff,Jojo sent you? That roux is right here. Take it back and do not spill it. I am trying to eat tonight.

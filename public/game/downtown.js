@@ -200,7 +200,7 @@ function buildLots(g){
       for(const [c,y] of [[COL.green,30],[COL.gold,34]])box(g,b.w-8,1.2,1.2,b.cx,y,b.cz+b.d/2+.8,lam(c,c));}
     else if(id==='dispensary')genericBuilding(g,L,28,'#e8efe6','#2fae66','#0d2416');
     else if(id==='smoke')genericBuilding(g,L,28,'#2a2420',COL.gold,'#1a120c');
-    else if(id==='truck'){const tx=(L.x0+1.5)*T,tz=(L.y0+1.2)*T;
+    else if(id==='truck'){if(L.venue){buildVenue(L.venue);continue;}const tx=(L.x0+1.5)*T,tz=(L.y0+1.2)*T;
       box(g,70,30,28,tx,19,tz,lam('#f2c14e'));box(g,22,22,26,tx+44,15,tz,lam(COL.purple));
       box(g,36,12,1,tx-4,22,tz+14.2,lam('#1a1424',0x110022));
       sign(g,"MAMA 29'S",56,10,tx-4,34,tz+14.6,'#5b2a86','#f2c14e');
@@ -345,7 +345,7 @@ function spots(){
     if(id==='club')add({x:(L.fb.x0+L.fb.x1+1)/2*T,y:(L.fb.y0+1.5)*T},'DANCE AT THE VELVET JESTER',()=>openPanel(clubPanel));
     if(id==='dispensary')add(L.door,'GREEN BAYOU DISPENSARY',()=>openPanel(shopPanel('dispensary')));
     if(id==='smoke')add(L.door,'CROWN SMOKE SHOP',()=>openPanel(shopPanel('smoke')));
-    if(id==='truck')add(L.door,"ORDER AT MAMA 29'S",()=>openPanel(shopPanel('truck')));}
+    if(id==='truck')add(L.door,"FELICIA'S SNOWBALL TRAILER · WALK INSIDE",()=>window.level29Felicia?.open());}
   const B=window.boomCity;
   if(B&&isWorld(city)){for(const [i,p]of (city.casinoStations||[]).entries())add(p,['PLAY SLOT MACHINE','PLAY BLACKJACK','PLAY POKER','PLAY ROULETTE'][i%4],()=>{tab=['slots','bj','poker','rr'][i%4];openPanel(casinoPanel);});
     add({x:B.CAPTAIN.x+T*1.7,y:B.CAPTAIN.y},'BOARD THE NATCHEZ DECK · NET FISHING',()=>openPanel(fishPanel()));}

@@ -10,6 +10,8 @@ function figure(who){const m=makeFigure(false),u=m.userData;
   for(const z of [-1.5,1.5])for(let i=0;i<4;i++)box(u.body,.5,.5,.5,2.45,11+i*1.3,z,'#272527');
   for(const z of [-3,-1,1,3])box(u.body,.15,4,.15,2.4,7.8,z,'#d5d0cb');
   box(u.body,.2,6,.15,2.65,13,0,'#383333');const spoon=add(u.armR,new THREE.CylinderGeometry(.18,.18,9,8),0,-8,0,'#ae7e43');add(spoon,new THREE.SphereGeometry(1,12,8),0,5,0,'#ae7e43').scale.set(.8,1.2,.35);
+ }else if(who==='felicia'){
+  setFigureColors(m,'#b38a59','#303c53','#293139','#332c29');u.longHair.visible=true;u.longHair.scale.set(1.15,1.15,1.18);u.hair.scale.set(1.1,1.12,1.1);const tips=add(u.body,new THREE.SphereGeometry(1,14,10),-.6,15.7,0,'#b28a54');tips.scale.set(2.8,3.1,2.8);box(u.body,.3,6,5,2.5,12,0,'#946c99');for(const z of [-1.5,1.5])box(u.body,.4,.4,.4,2.5,18.6,z,'#332929');
  }else if(who==='alex'){
   add(u.body,new THREE.SphereGeometry(1,12,10),.65,16.7,0,'#49382d').scale.set(2.1,2.2,2.2);u.hair.position.y=20.9;u.hair.scale.set(1.05,1.12,1.06);box(u.body,1,2,2,2.5,12.8,0,'#626f7c');
  }else{

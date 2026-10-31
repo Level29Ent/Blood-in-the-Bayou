@@ -19,7 +19,7 @@ genCity=function(){const c=gen.apply(this,arguments);if(!c.world)return c;
  Object.assign(gun,{id:'armory',kind:'gunstore',name:'AK GUN PLUS',short:'ALEX · GUNSMITH',letter:'A',col:'#90c5d2',storyRole:'alex',extended:false});gun.b.venue='armory';
  Object.assign(theater,{id:'studio',kind:'theater',name:'BAYOU LAUGH THEATER',short:'DAMION · COMEDY',letter:'D',storyRole:'damion',extended:false});
  for(const v of [fish,theater]){v.stationX=v.b.x+v.b.w/2;v.stationY=v.b.y+v.b.h-24;}
- c.storySites={jojo:fish,alex:gun,damion:theater};return c;
+ c.storySites={jojo:fish,alex:gun,damion:theater,felicia:c.venues.find(v=>v.kind==='snowballs')};return c;
 };
 const build=buildVenue;
 buildVenue=function(v){
@@ -47,7 +47,7 @@ function image(role){return assets[role]?'<img src="'+assets[role]+'" alt="'+rol
 function btn(a,text){return '<button data-story="'+a+'">'+text+'</button>';}
 function open(role){if(!player||player.dead||cut)return;currentRole=role;state='shop';mouse.down=false;for(const k in keys)keys[k]=false;document.exitPointerLock?.();
  let h=image(role)+'<h2>'+({jojo:'Chief Jojo · Major Cajun',alex:'Alex · AK Gun Plus',bonnie:'Bonnie De Vette',damion:'Damion · Bayou Laugh Theater',board:'City Stories'}[role])+'</h2>';
- if(role==='board')h+='<p>Meet each owner inside their business. Follow the gold story marker; these side stories do not advance Ronniebaby’s campaign. All prices use earned game cash.</p>'+['jojo','alex','bonnie','damion'].map(r=>btn('gps:'+r,'MAP · '+({jojo:'MAJOR CAJUN',alex:'AK GUN PLUS',bonnie:'SLAB MOTORS',damion:'LAUGH THEATER'}[r]))).join('');
+ if(role==='board')h+='<p>Meet each owner inside their business. Follow the gold story marker; these side stories do not advance Ronniebaby’s campaign. All prices use earned game cash.</p>'+['jojo','alex','bonnie','damion','felicia'].map(r=>btn('gps:'+r,'MAP · '+({jojo:'MAJOR CAJUN',alex:'AK GUN PLUS',bonnie:'SLAB MOTORS',damion:'LAUGH THEATER',felicia:'FELICIA’S SNOWBALL TRAILER'}[r]))).join('');
  if(role==='jojo')h+=btn('audio',speechOn?'DISABLE GENERIC DIALOGUE AUDIO':'ENABLE GENERIC DIALOGUE AUDIO')+'<p>“My zombie gumbo will turn this city human again. Bring rice from the farmers market, pork from the farm, shrimp from Natchez, fresh alligator meat, and Ronniebaby’s roux. Then catch me a university zombie. Don’t kill that one!”</p><p>Recipe: '+save.ingredients.join(', ')+'</p>'+btn('gumbo',save.gumbo==='done'?'REPLAY GUMBO STORY':save.gumbo==='intro'?'ACCEPT · ZOMBIE GUMBO':'CONTINUE · '+save.gumbo.toUpperCase());
  if(role==='alex')h+='<p>Field-test my exclusive weapons. Rentals last 30 real seconds, including time in menus. Trials supply a free temporary weapon; no real money is charged.</p>'+Object.entries(C.RENTALS).map(([k,r])=>btn('rent:'+k,r.name+' · $'+r.price+' / 30 SEC')).join('')+btn('stock','STANDARD WEAPONS / AMMO')+btn('waves','FIELD TRIAL · SURVIVE 5 WAVES')+btn('specimens','RESEARCH · CAPTURE 3 FARM ANIMALS + 3 BOSSES');
  if(role==='bonnie')h+='<p>“I need a sedan, a sports car and a Houston slab recovered from marked locations. Bring each one back intact. No buying a substitute.”</p>'+btn('cars','START · THREE VEHICLE RECOVERIES')+btn('sales','OPEN VEHICLE SHOWROOM');

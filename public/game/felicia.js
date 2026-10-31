@@ -1,0 +1,30 @@
+'use strict';
+(function(){
+const PRICE=180,PACK=6;
+function purchase(balance,ammo){if(!Number.isFinite(balance)||balance<PRICE||!Number.isFinite(ammo)||ammo<0)return null;return {balance:balance-PRICE,ammo:ammo+PACK};}
+if(typeof module!=='undefined')module.exports={purchase,PRICE,PACK};if(typeof window==='undefined')return;
+const panel=document.createElement('section');panel.id='feliciaPanel';panel.setAttribute('role','dialog');panel.setAttribute('aria-label','Felicia snowball shop');panel.style.cssText='display:none;position:fixed;inset:0;z-index:76;background:#08131ae8;align-items:center;justify-content:center;padding:16px;box-sizing:border-box;color:#f4eadb;font:14px/1.6 monospace';document.body.appendChild(panel);
+function trailer(){return city?.venues?.find(v=>v.kind==='snowballs');}
+function open(){const v=trailer();if(!v||!player||player.car||player.dead||!insideVenue(v,player))return toast('WALK INSIDE FELICIA’S TRAILER TO ORDER');state='shop';mouse.down=false;for(const k in keys)keys[k]=false;document.exitPointerLock?.();panel.innerHTML='<div style="width:min(560px,100%);max-height:90dvh;overflow:auto;padding:24px;background:#202d38;border:1px solid #b98baa;box-sizing:border-box"><img src="characters/felicia.webp" alt="Felicia character reference" style="width:100px;height:120px;object-fit:cover;float:right;margin:0 0 12px 12px"><h2>Felicia’s Snowball Trailer</h2><p>“Sweet enough for you. Cold enough for the undead. Welcome in, baby!”</p><p>WEAPON SNOWBALLS · Six packed ice projectiles for $180 in earned game cash. Aim and FIRE to throw; each hit deals 36 damage. Regular zombies can be killed; tougher enemies may need several hits.</p><p>Cash $'+Math.floor(cash)+' · Snowballs '+(arsenal.snowball||0)+'</p><button data-felicia="buy" '+(cash<PRICE?'disabled':'')+'>BUY 6 · $180</button><button data-felicia="close">BACK TO GAME</button><p>Use key 0, the weapon wheel or touch WEAPON to equip. Snowballs persist with your normal weapon inventory. No real-money charge.</p></div>';panel.querySelectorAll('button').forEach(b=>b.style.cssText='min-height:44px;padding:10px;margin:4px;background:#ad82aa;border:1px solid #e1bfd9;color:#101a25;cursor:pointer');panel.style.display='flex';subtitle={name:'FELICIA',txt:'Sweet enough for you. Cold enough for the undead. Welcome in, baby!',t:300,col:'#e3b6d3'};}
+function close(){panel.style.display='none';if(state==='shop')state='play';}
+panel.onclick=e=>{const a=e.target.closest('[data-felicia]')?.dataset.felicia;if(a==='close')return close();if(a!=='buy')return;const v=trailer();if(!v||!insideVenue(v,player)||player.car)return;const r=purchase(cash,arsenal.snowball||0);if(!r)return toast('NOT ENOUGH GAME CASH');cash=r.balance;giveW('snowball',PACK);selectW('snowball');sfx('cash');window.level29Save?.save('SNOWBALLS SAVED');open();};
+const builder=buildVenue;buildVenue=function(v){if(v.kind!=='snowballs')return builder.apply(this,arguments);if(v.mesh?.parent===cityGroup)return;
+ const g=new THREE.Group();g.name='Felicia walk-in trailer';v.mesh=g;cityGroup.add(g);const b=v.b,{box,add,figure}=level29StoryScenes;
+ box(g,b.w,2,b.h,b.x+b.w/2,1,b.y+b.h/2,'#5c6270');for(const r of v.colliderWalls)box(g,r.w,38,r.h,r.x+r.w/2,19,r.y+r.h/2,'#d7b8d0');box(g,v.doorW,7,3,v.doorX,35,v.doorY-1,'#544a68');v.door=box(g,1,1,1,v.doorX,0,v.doorY,'#344854');v.door.visible=false;v.roof=box(g,b.w+2,2,b.h+2,b.x+b.w/2,40,b.y+b.h/2,'#58627c');v.labelH=62;v.furniture=[];
+ box(g,b.w-24,12,14,b.x+b.w/2,6,b.y+30,'#655267');box(g,b.w-22,1,16,b.x+b.w/2,12.5,b.y+30,'#d5c7d4');v.furniture.push({x:b.x+12,y:b.y+23,w:b.w-24,h:14});
+ const owner=figure('felicia');poseFigure(owner,b.x+b.w/2,b.y+13,Math.PI/2,0,'stand');g.add(owner);v.felicia=owner;
+ for(let i=0;i<5;i++){add(g,new THREE.CylinderGeometry(1.7,1.2,4,12),b.x+20+i*12,15,b.y+30,['#bc3f72','#73a6c0','#b087d1','#bc7c38','#75a788'][i]);add(g,new THREE.SphereGeometry(1.8,12,8),b.x+20+i*12,17,b.y+30,'#d8eef3');}
+ box(g,14,18,15,b.x+17,9,b.y+62,'#a6b8c3');box(g,14,3,15,b.x+17,19,b.y+62,'#dae0dd');v.furniture.push({x:b.x+10,y:b.y+54,w:14,h:16});
+ addSign(g,'FELICIA · SNOWBALLS',Math.min(100,b.w-8),9,v.doorX,49,v.doorY+2,'#e3c2de');addSign(g,'PACKED ICE · 6 / $180',Math.min(80,b.w-12),6,b.x+b.w/2,28,b.y+3,'#ebf5ff');
+ // Decorative wheels remain outside the walk-in floor; no cab or solid shell across the doorway.
+ for(const xx of [b.x+20,b.x+b.w-20])for(const zz of [b.y-1,b.y+b.h+1]){const tire=add(g,new THREE.CylinderGeometry(4,4,2,12),xx,2,zz,'#252a31');tire.rotation.x=Math.PI/2;}
+};
+const service=serviceVenue;serviceVenue=function(){const v=trailer();if(v&&player&&!player.car&&insideVenue(v,player))return open();return service.apply(this,arguments);};
+addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.style.display==='flex'){e.preventDefault();e.stopImmediatePropagation();close();}},true);
+const use=document.getElementById('venueAction');if(use){const prev=use.onclick;use.onclick=e=>{const v=trailer();if(v&&player&&!player.car&&insideVenue(v,player))return open();return prev?.call(use,e);};}
+let balls=[],meshScene=null;const sync=syncGta;syncGta=function(){sync.apply(this,arguments);if(!scene)return;if(meshScene!==scene){meshScene=scene;balls=[];const geo=new THREE.SphereGeometry(2.2,12,8),mat=new THREE.MeshStandardMaterial({color:'#d9f4ff',roughness:.4});for(let i=0;i<12;i++){const m=new THREE.Mesh(geo,mat);m.visible=false;scene.add(m);balls.push(m);}}
+ let i=0;for(const b of bullets)if(b.snowball&&b.life>0&&i<balls.length){const m=balls[i++];m.visible=state==='play';m.position.set(b.x,terrainHeight(b.x,b.y)+13+Math.sin((40-b.life)/40*Math.PI)*8,b.y);}for(;i<balls.length;i++)balls[i].visible=false;
+};
+const renderBase=render;render=function(){renderBase.apply(this,arguments);if(panel.style.display==='flex'&&state!=='shop')close();};
+window.level29Felicia={open,close,get venue(){return trailer();},purchase};
+})();

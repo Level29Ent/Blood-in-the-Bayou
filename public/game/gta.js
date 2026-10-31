@@ -14,9 +14,10 @@ const WEAPONS = {
   carbine: { name:'RANGER CARBINE', key:'7', price:2800, ammo:60, pack:60, ammoPrice:300, col:'#a6c183' },
   pistol: {name:'MARSH PISTOL',key:'8',price:1200,ammo:48,pack:48,ammoPrice:180,col:'#92bcca'},
   marksman: {name:'DELTA MARKSMAN',key:'9',price:4600,ammo:30,pack:30,ammoPrice:400,col:'#bcb894'},
+  snowball: {name:'FELICIA SNOWBALL',key:'0',price:180,ammo:6,pack:6,ammoPrice:180,col:'#a5e5f4'},
   bat:     { name:'BAT',       key:'5', price:150,  ammo:Infinity, pack:0, col:'#c9a37a' },
 };
-const WORDER = ['m240','shotgun','rpg','molotov','bat','smg','carbine','pistol','marksman'];
+const WORDER = ['m240','shotgun','rpg','molotov','bat','smg','carbine','pistol','marksman','snowball'];
 let arsenal = null, curW = 'm240', wheelOpen = false, wheelSel = 0, wFire = 0, batSwing = 0;
 function resetArsenal(){ arsenal = { m240: Infinity, bat: 0 }; arsenal.bat = undefined; delete arsenal.bat; curW = 'm240'; }
 resetArsenal();
@@ -30,7 +31,9 @@ fireWeapon = function(ox, oy, aim){
   const p = player;
   if (curW === 'm240' || p.car && curW === 'bat') return _fireWeapon(ox, oy, aim);
   if (curW !== 'bat' && arsenal[curW] <= 0){ if (frame % 30 === 0) toast('OUT OF ' + WEAPONS[curW].name + ' AMMO · Q TO SWITCH'); p.fireCd = 20; return; }
-  if(curW==='pistol'||curW==='marksman'){
+  if(curW==='snowball'){
+    bullets.push({x:ox+Math.cos(aim)*22,y:oy+Math.sin(aim)*22,vx:Math.cos(aim)*11,vy:Math.sin(aim)*11,life:40,dmg:36,pierce:0,hit:new Set(),snowball:true});arsenal.snowball--;p.fireCd=35;p.flash=0;view.kick=.6;sfx('door');
+  }else if(curW==='pistol'||curW==='marksman'){
     const long=curW==='marksman',a=aim+rnd(long?-.008:-.035,long?.008:.035),sp=long?30:22;
     bullets.push({x:ox+Math.cos(a)*22,y:oy+Math.sin(a)*22,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:long?48:26,dmg:(long?10:3.5)*(window.level29Trading?.damage||1)+up.ap*.35,pierce:long?2:0,hit:new Set()});
     arsenal[curW]--;p.fireCd=long?48:16;p.flash=3;view.kick=long?2.4:1.1;snd('shot');
@@ -445,7 +448,7 @@ addEventListener('keydown', e => {
   if (state !== 'play') return;
   if (k === 'q' && !e.repeat){ openWheel(true); }
   if (wheelOpen){ if (k === 'arrowleft' || k === 'arrowup') wheelSel = (wheelSel + WORDER.length - 1) % WORDER.length; if (k === 'arrowright' || k === 'arrowdown') wheelSel = (wheelSel + 1) % WORDER.length; }
-  if (/^[1-7]$/.test(k)) selectW(WORDER[+k - 1]);
+  const numbered=Object.keys(WEAPONS).find(id=>WEAPONS[id].key===k);if(numbered)selectW(numbered);
   if (k === 't' && !e.repeat){ e.preventDefault(); openCheat(); return; }
   if (k.length === 1 && /[a-z0-9]/.test(k)){ typed = (typed + k).slice(-12).toUpperCase(); for (const c of [...Object.keys(CHEATS), 'KILO3028']) if (typed.endsWith(c)){ applyCheat(c); typed = ''; } }
 }, true);
@@ -546,6 +549,7 @@ function ensurePools(){
     if(id==='marksman'){const scope=new THREE.Mesh(new THREE.CylinderGeometry(.8,.8,5,16),blk);scope.rotation.x=Math.PI/2;scope.position.set(0,2.6,0);m.add(scope);part(1,1.3,.6,0,1.7,-2,paint);part(1,1.3,.6,0,1.7,2,paint);part(1,.4,5,0,2,-7,paint);}
     m.userData.finishMaterial=paint;extraWeap[id]=m;
   }
+  const ice=new THREE.Group();const ball=new THREE.Mesh(new THREE.SphereGeometry(2.3,16,12),new THREE.MeshStandardMaterial({color:'#d3f4ff',roughness:.35}));ball.position.set(1,0,-5);ice.add(ball);arms(ice);extraWeap.snowball=ice;
   for (const k in extraWeap){ extraWeap[k].scale.setScalar(k === 'rpg' ? .4 : .55); extraWeap[k].visible = false; vmScene.add(extraWeap[k]); }
 }
 function syncGta(){
