@@ -1,0 +1,1285 @@
+{
+  "version": 1,
+  "stagedFolder": "public/game/business-vo/",
+  "runtimeStatus": "Recording plan only. Not automatically connected to playback.",
+  "characters": [
+    {
+      "id": "felicia",
+      "name": "Felicia",
+      "place": "Felicia’s Snowball Trailer",
+      "direction": "Warm and playful; relaxed Gulf Coast delivery. Natural voice, no impersonation.",
+      "lines": [
+        {
+          "file": "felicia_greet.mp3",
+          "cue": "Player opens trailer service",
+          "text": "Sweet enough for you. Cold enough for the undead. Welcome in, baby!"
+        },
+        {
+          "file": "felicia_pitch.mp3",
+          "cue": "Describe weapon snowballs",
+          "text": "These are my packed-ice specials. Six snowballs for one-eighty. Throw them at the zombies, not my trailer!"
+        },
+        {
+          "file": "felicia_buy.mp3",
+          "cue": "Purchase succeeds",
+          "text": "Six snowballs, coming right up. Keep your aim steady and make those zombies chill out."
+        },
+        {
+          "file": "felicia_poor.mp3",
+          "cue": "Insufficient cash",
+          "text": "Baby, I still have to pay for the ice. Come back when you have one-eighty."
+        },
+        {
+          "file": "felicia_equip.mp3",
+          "cue": "Player equips snowballs",
+          "text": "Pick your snowball from the weapon wheel. Aim, then throw. The big ones might need a second helping."
+        },
+        {
+          "file": "felicia_empty.mp3",
+          "cue": "Out of snowballs",
+          "text": "Out of ice? Come see Felicia. I will get you packed up again."
+        },
+        {
+          "file": "felicia_bye.mp3",
+          "cue": "Leave service",
+          "text": "Stay sweet out there, and keep that cold shoulder ready."
+        }
+      ]
+    },
+    {
+      "id": "jojo",
+      "name": "Chief Jojo",
+      "place": "Major Cajun",
+      "direction": "Confident, funny chef; practical warmth. Scene cue times are planning targets, not automatic playback.",
+      "lines": [
+        {
+          "file": "jojo_greet.mp3",
+          "cue": "Open restaurant panel",
+          "text": "Welcome to Major Cajun. Chief Jojo runs this kitchen, and nobody leaves hungry."
+        },
+        {
+          "file": "jojo_brief.mp3",
+          "cue": "Accept gumbo quest",
+          "text": "My zombie gumbo is going to turn this city human again. First, I need you to bring me a few things."
+        },
+        {
+          "file": "jojo_rice.mp3",
+          "cue": "Rice objective",
+          "text": "Get the rice from the farmers market. Clear the zombies off the stalls before you grab it."
+        },
+        {
+          "file": "jojo_pork.mp3",
+          "cue": "Pork objective",
+          "text": "The farm has our pork order. Pick it up at the gate, and leave the animals alone."
+        },
+        {
+          "file": "jojo_shrimp.mp3",
+          "cue": "Shrimp objective",
+          "text": "Get the shrimp from the Natchez steamboat dock. Fresh shrimp, not whatever is crawling on the pier."
+        },
+        {
+          "file": "jojo_gator.mp3",
+          "cue": "Alligator objective",
+          "text": "I need fresh alligator meat. You are going to have to hunt that one yourself."
+        },
+        {
+          "file": "jojo_roux.mp3",
+          "cue": "Roux objective",
+          "text": "Ronniebaby has my roux upstairs in the mansion. Take the elevator and bring it back."
+        },
+        {
+          "file": "jojo_return.mp3",
+          "cue": "All ingredients obtained",
+          "text": "You got everything. Bring those ingredients back to Major Cajun."
+        },
+        {
+          "file": "jojo_capture.mp3",
+          "cue": "Assign university subject",
+          "text": "Now catch me a zombie over at the university. Weaken it, restrain it, and bring it back alive. Do not kill my taste tester!"
+        },
+        {
+          "file": "jojo_prepare.mp3",
+          "cue": "Scene 0–7 seconds",
+          "text": "Rice, pork, shrimp, alligator, and a little of Ronniebaby’s roux. Now we are cooking."
+        },
+        {
+          "file": "jojo_stir.mp3",
+          "cue": "Scene 7–13 seconds",
+          "text": "A little roux, a little patience. You cannot rush good gumbo."
+        },
+        {
+          "file": "jojo_serve.mp3",
+          "cue": "Scene 13–18 seconds",
+          "text": "A little ice in the bowl. Hot gumbo on top. Let me get my spoon."
+        },
+        {
+          "file": "jojo_best.mp3",
+          "cue": "Scene 18–24 seconds; record an energetic short take",
+          "text": "I have the best gumbo in town! The only reason all these people acting like zombies is because they hungry!"
+        },
+        {
+          "file": "jojo_reaction.mp3",
+          "cue": "Optional alternate, immediately after feeding",
+          "text": "Hold on. That is not the reaction I ordered."
+        },
+        {
+          "file": "jojo_not_in_house.mp3",
+          "cue": "Scene mutation, 32–37 seconds",
+          "text": "Not in my house!"
+        },
+        {
+          "file": "jojo_boss.mp3",
+          "cue": "Fight handoff",
+          "text": "Take that thing outside! You brought it in here, now finish it!"
+        },
+        {
+          "file": "jojo_complete.mp3",
+          "cue": "Boss defeated",
+          "text": "Well, the gumbo did not cure him. But you saved my kitchen. Dinner is on me."
+        }
+      ]
+    },
+    {
+      "id": "alex",
+      "name": "Alex",
+      "place": "AK Gun Plus",
+      "direction": "Friendly, precise, curious gunsmith; clipped technical directions.",
+      "lines": [
+        {
+          "file": "alex_greet.mp3",
+          "cue": "Open gun-store panel",
+          "text": "Welcome to AK Gun Plus. I am Alex. Need something reliable, or are we testing something unusual?"
+        },
+        {
+          "file": "alex_rent.mp3",
+          "cue": "Weapon rental prompt",
+          "text": "Arc Broom or Cajun Thunder. You get thirty seconds of use. The clock keeps running in menus, so make it count."
+        },
+        {
+          "file": "alex_buy.mp3",
+          "cue": "Rental purchased",
+          "text": "Your rental is live. Thirty seconds starts now."
+        },
+        {
+          "file": "alex_expired.mp3",
+          "cue": "Rental expires",
+          "text": "Time is up. Your regular weapon is back in your hands."
+        },
+        {
+          "file": "alex_poor.mp3",
+          "cue": "Insufficient cash",
+          "text": "You are short on game cash. Come back after a job, or take a field trial."
+        },
+        {
+          "file": "alex_waves.mp3",
+          "cue": "Accept five-wave trial",
+          "text": "Five waves. I supply the test weapons. You stay alive and show me what they can do."
+        },
+        {
+          "file": "alex_next_wave.mp3",
+          "cue": "Wave transition",
+          "text": "That wave is clear. New group coming in. Check your weapon!"
+        },
+        {
+          "file": "alex_final_wave.mp3",
+          "cue": "Wave five",
+          "text": "Final wave. Brutes in the street. Keep moving!"
+        },
+        {
+          "file": "alex_wave_complete.mp3",
+          "cue": "Five waves survived",
+          "text": "Five waves survived. Solid testing. Here is your pay."
+        },
+        {
+          "file": "alex_research.mp3",
+          "cue": "Accept live-capture research",
+          "text": "I need a cow, a pig, and a chicken collected safely. Then bring me three live zombie boss specimens."
+        },
+        {
+          "file": "alex_capture.mp3",
+          "cue": "Boss capture instruction",
+          "text": "Bring the marked boss below thirty-five percent health. Get close and hold the restraint action. I need it alive."
+        },
+        {
+          "file": "alex_lost.mp3",
+          "cue": "Subject killed",
+          "text": "That specimen is no use to the lab. I have marked a replacement."
+        },
+        {
+          "file": "alex_research_complete.mp3",
+          "cue": "Return all specimens",
+          "text": "Animals safe, three specimens restrained. Good work. Research pays, and you earned it."
+        }
+      ]
+    },
+    {
+      "id": "bonnie",
+      "name": "Bonnie De Vette",
+      "place": "Slab Motors",
+      "direction": "Confident dealership owner. Businesslike with a sly sense of humor.",
+      "lines": [
+        {
+          "file": "bonnie_greet.mp3",
+          "cue": "Showroom greeting",
+          "text": "Welcome to Slab Motors. Bonnie De Vette here. Come inside and tell me what you are driving."
+        },
+        {
+          "file": "bonnie_sale.mp3",
+          "cue": "Vehicle purchase succeeds",
+          "text": "That ride is yours. Your vehicle is waiting out front. Keep it clean."
+        },
+        {
+          "file": "bonnie_blocked.mp3",
+          "cue": "Delivery bay blocked",
+          "text": "Clear my delivery bay first. I cannot put a car on top of another car."
+        },
+        {
+          "file": "bonnie_recover.mp3",
+          "cue": "Accept recovery contracts",
+          "text": "I need a sedan, a sports car, and a Houston slab recovered from the city. I marked the exact cars. Bring each one back intact."
+        },
+        {
+          "file": "bonnie_wrong.mp3",
+          "cue": "Wrong vehicle returned",
+          "text": "That is not the car I sent you for. Follow the marked vehicle, not a look-alike."
+        },
+        {
+          "file": "bonnie_damaged.mp3",
+          "cue": "Returned below condition threshold",
+          "text": "That one needs repairs before I take delivery. Bring it back running right."
+        },
+        {
+          "file": "bonnie_next.mp3",
+          "cue": "Vehicle accepted; next objective",
+          "text": "That is one back where it belongs. The next car is marked on your map."
+        },
+        {
+          "file": "bonnie_complete.mp3",
+          "cue": "All three cars delivered",
+          "text": "Three rides recovered. That is how you do business with Bonnie. Here is your cut."
+        },
+        {
+          "file": "bonnie_bye.mp3",
+          "cue": "Leave dealership",
+          "text": "Drive with some style, and watch my paint."
+        }
+      ]
+    },
+    {
+      "id": "damion",
+      "name": "Damion",
+      "place": "Bayou Laugh Theater",
+      "direction": "Conversational stand-up delivery; hold briefly for audience response. Use the performer’s own voice.",
+      "lines": [
+        {
+          "file": "damion_welcome.mp3",
+          "cue": "Enter theater",
+          "text": "How is everybody doing tonight? I am Damion. If you are still breathing, that counts as a good crowd."
+        },
+        {
+          "file": "damion_joke_01.mp3",
+          "cue": "Comedy rotation 1",
+          "text": "I made reservations for dinner. The zombies made reservations for me."
+        },
+        {
+          "file": "damion_joke_02.mp3",
+          "cue": "Comedy rotation 2",
+          "text": "Houston traffic is so slow, a zombie asked me if my car was a food truck."
+        },
+        {
+          "file": "damion_joke_03.mp3",
+          "cue": "Comedy rotation 3",
+          "text": "Bonnie told me my trade-in had character. Turns out the character was still in the trunk."
+        },
+        {
+          "file": "damion_joke_04.mp3",
+          "cue": "Comedy rotation 4",
+          "text": "Jojo says her gumbo wakes the dead. I told her to stop offering free refills."
+        },
+        {
+          "file": "damion_thanks.mp3",
+          "cue": "Leave theater / end set",
+          "text": "You have been a beautiful, mostly human audience. Get home safe, and tip somebody who still has a pulse."
+        }
+      ]
+    },
+    {
+      "id": "caretaker",
+      "name": "Safe House Caretaker",
+      "place": "Primary safehouse",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "caretaker_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome home. Rest, save your progress, and get ready for the next run."
+        },
+        {
+          "file": "caretaker_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "The house is stocked and your checkpoint is saved."
+        },
+        {
+          "file": "caretaker_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Keep the gate clear. Everybody inside is counting on us."
+        },
+        {
+          "file": "caretaker_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "mechanic",
+      "name": "Mechanic",
+      "place": "Garage / service bay",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "mechanic_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Pull into the marked bay. Let me see what you did to that engine."
+        },
+        {
+          "file": "mechanic_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Repairs complete. You are ready for the road."
+        },
+        {
+          "file": "mechanic_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Park the vehicle in the service area before we get started."
+        },
+        {
+          "file": "mechanic_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "armorer",
+      "name": "Armory Dealer",
+      "place": "Ordinary Bayou Arsenal stores",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "armorer_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to Bayou Arsenal. Weapons, ammunition, and armor are on the racks."
+        },
+        {
+          "file": "armorer_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Purchased and ready. Check your weapon wheel before you head out."
+        },
+        {
+          "file": "armorer_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "You need more game cash for that order."
+        },
+        {
+          "file": "armorer_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "wash",
+      "name": "Carwash Attendant",
+      "place": "Bayou Shine",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "wash_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Bring your ride into the wash bay. We will clean it up and sort out the damage."
+        },
+        {
+          "file": "wash_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Fresh finish. Try not to take the scenic route through a horde."
+        },
+        {
+          "file": "wash_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Pull the vehicle into the bay first."
+        },
+        {
+          "file": "wash_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "manager",
+      "name": "Business Manager",
+      "place": "Community businesses / offices",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "manager_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to the office. We have contracts, errands, and investments to discuss."
+        },
+        {
+          "file": "manager_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "The paperwork is done. Your earnings are ready."
+        },
+        {
+          "file": "manager_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Finish your current assignment before taking another contract."
+        },
+        {
+          "file": "manager_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "teller",
+      "name": "Bank Teller",
+      "place": "All four bank branches",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "teller_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to Level 29 Trust. Deposits, withdrawals, and paid banking work are available here."
+        },
+        {
+          "file": "teller_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Transaction complete. Your account is updated."
+        },
+        {
+          "file": "teller_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "That transaction needs more funds. Check your balance and try again."
+        },
+        {
+          "file": "teller_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "grocer",
+      "name": "Market Clerk",
+      "place": "Groceries / fresh markets",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "grocer_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Fresh food, cold drinks, and market work. What can I get you?"
+        },
+        {
+          "file": "grocer_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Your order is ready. Stay safe on the way home."
+        },
+        {
+          "file": "grocer_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Set your job marker, then return here to clock in."
+        },
+        {
+          "file": "grocer_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "fishmonger",
+      "name": "Fish Market Clerk",
+      "place": "Gulf Fresh Fish Markets",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "fishmonger_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Fresh off the Gulf. Bring me your catch, or pick up some fishing gear."
+        },
+        {
+          "file": "fishmonger_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Catch weighed and sold. Here is your game cash."
+        },
+        {
+          "file": "fishmonger_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "No fish in your cooler yet. Head to the water and bring some back."
+        },
+        {
+          "file": "fishmonger_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "smoke",
+      "name": "Crown Smoke Shop Owner",
+      "place": "Crown Smoke Shop",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "smoke_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to Crown. Accessories, equipment upgrades, and finishes are available at the counter."
+        },
+        {
+          "file": "smoke_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Your equipment order is ready."
+        },
+        {
+          "file": "smoke_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "You are short on game cash for that upgrade."
+        },
+        {
+          "file": "smoke_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "clinic",
+      "name": "Community Clinic Nurse",
+      "place": "Bayou Community Hospital clinics",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "clinic_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Come inside. You are safe here. Let us take a look at you."
+        },
+        {
+          "file": "clinic_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Treatment is complete. Take a moment before you go back outside."
+        },
+        {
+          "file": "clinic_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "We need payment for those supplies. Check your game cash."
+        },
+        {
+          "file": "clinic_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "trainer",
+      "name": "Fitness Coach",
+      "place": "Gym",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "trainer_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Ready to work? Cardio, conditioning, and coaching shifts start here."
+        },
+        {
+          "file": "trainer_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Good session. You put in the work."
+        },
+        {
+          "file": "trainer_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Finish your current shift before starting another training assignment."
+        },
+        {
+          "file": "trainer_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "sergeant",
+      "name": "Desk Sergeant",
+      "place": "Police station",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "sergeant_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to the station. Armor, cruiser requests, and patrol work are handled at this desk."
+        },
+        {
+          "file": "sergeant_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Your request is cleared. Watch the streets."
+        },
+        {
+          "file": "sergeant_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "No new assignment until you finish the job you already took."
+        },
+        {
+          "file": "sergeant_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "fire",
+      "name": "Fire Captain",
+      "place": "Fire station",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "fire_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Fire and rescue is hiring. Pick a call and follow the marked route."
+        },
+        {
+          "file": "fire_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Good response. Your shift pay is ready."
+        },
+        {
+          "file": "fire_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Back away from the flare-up, then get that fire under control."
+        },
+        {
+          "file": "fire_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "gas",
+      "name": "Station Attendant",
+      "place": "Gas & Go",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "gas_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Fuel, repairs, snacks, and paid station shifts. Pull in and tell me what you need."
+        },
+        {
+          "file": "gas_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Service complete. You are good to go."
+        },
+        {
+          "file": "gas_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Park at the marked pump or service point first."
+        },
+        {
+          "file": "gas_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "name": "Security Chief",
+      "place": "Mansion gate booth",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "security_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Need work? Hold your post and keep the horde off these walls."
+        },
+        {
+          "file": "security_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Shift complete. You kept the gate secure. Here is your pay."
+        },
+        {
+          "file": "security_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Get back to your assigned post. The gate is not going to guard itself."
+        },
+        {
+          "file": "security_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "er",
+      "name": "Emergency Nurse",
+      "place": "Hospital floor 1",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "er_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Emergency intake. Tell me where it hurts, and we will get you stabilized."
+        },
+        {
+          "file": "er_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "You are stable. Follow the elevator signs if you need another department."
+        },
+        {
+          "file": "er_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Stay inside while we finish treatment."
+        },
+        {
+          "file": "er_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "pharmacy",
+      "name": "Pharmacist",
+      "place": "Hospital floor 2",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "pharmacy_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Pharmacy and ward supplies. Let me check what you need."
+        },
+        {
+          "file": "pharmacy_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Your supplies are ready. Follow the instructions and take care of yourself."
+        },
+        {
+          "file": "pharmacy_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Those supplies need payment before they leave the counter."
+        },
+        {
+          "file": "pharmacy_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "surgeon",
+      "name": "Surgeon",
+      "place": "Hospital floor 3",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "surgeon_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Trauma team is ready. We will get you through this."
+        },
+        {
+          "file": "surgeon_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Procedure complete. Recovery is your next stop."
+        },
+        {
+          "file": "surgeon_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Keep the surgical area clear for the medical team."
+        },
+        {
+          "file": "surgeon_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "lab",
+      "name": "Lab Technician",
+      "place": "Hospital floor 4",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "lab_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Diagnostics and laboratory. We need clean samples and clear answers."
+        },
+        {
+          "file": "lab_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Your tests are complete. The results are ready."
+        },
+        {
+          "file": "lab_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Do not mix the samples. Use the marked station."
+        },
+        {
+          "file": "lab_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "recovery",
+      "name": "Recovery Doctor",
+      "place": "Hospital floor 5",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "recovery_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to recovery. Take a breath. You made it inside."
+        },
+        {
+          "file": "recovery_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "You are cleared to leave. Come back if you need us."
+        },
+        {
+          "file": "recovery_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Rest before you rush back into another fight."
+        },
+        {
+          "file": "recovery_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "captain",
+      "name": "Natchez Captain",
+      "place": "Steamboat dock",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "captain_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome aboard the Natchez. We have shrimp to catch and a hold to fill."
+        },
+        {
+          "file": "captain_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Good haul. Here is your pay for the shift."
+        },
+        {
+          "file": "captain_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Board the marked boat and reach the trawling grounds first."
+        },
+        {
+          "file": "captain_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "professor",
+      "name": "University Professor",
+      "place": "Bayou State University",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "professor_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to Bayou State. Let us see what you know about Louisiana."
+        },
+        {
+          "file": "professor_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Correct. You have been paying attention."
+        },
+        {
+          "file": "professor_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Not quite. Think it over and try the next question."
+        },
+        {
+          "file": "professor_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "terminal",
+      "name": "Terminal Agent",
+      "place": "Airport terminal",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "terminal_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to Level 29 International. Air tours and ground operations check in here."
+        },
+        {
+          "file": "terminal_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Your booking is confirmed. Follow the marked boarding point."
+        },
+        {
+          "file": "terminal_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "The apron must stay clear. Use the dedicated access road."
+        },
+        {
+          "file": "terminal_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "ground",
+      "name": "Ground Operations Chief",
+      "place": "Airport ground crew jobs",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "ground_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Clock in, check your equipment, and inspect the marked apron stations."
+        },
+        {
+          "file": "ground_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Inspection complete. Report to dispatch for your wages."
+        },
+        {
+          "file": "ground_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Keep off the runway and finish the task at the marked station."
+        },
+        {
+          "file": "ground_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "farm",
+      "name": "Farm Coordinator",
+      "place": "Farm-hand dispatch",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "farm_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "The farm needs hands. Collect the feed, check the animals, and load the produce."
+        },
+        {
+          "file": "farm_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Good work. Return the supplied van and clock out."
+        },
+        {
+          "file": "farm_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Use the marked farm entrance. Do not cut through the field."
+        },
+        {
+          "file": "farm_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "dispatcher",
+      "name": "Taxi Dispatcher",
+      "place": "Cab jobs / gas-station dispatch",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "dispatcher_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Dispatch here. Your fare is marked. Get them home in one piece."
+        },
+        {
+          "file": "dispatcher_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Fare complete. The next passenger is on your map."
+        },
+        {
+          "file": "dispatcher_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Use your assigned cab and return it at the end of the shift."
+        },
+        {
+          "file": "dispatcher_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "dealer",
+      "name": "Dispensary Clerk",
+      "place": "Green Bayou Dispensary",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "dealer_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to Green Bayou. Take a look at the local goods at the counter."
+        },
+        {
+          "file": "dealer_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Your order is ready."
+        },
+        {
+          "file": "dealer_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Come back with enough game cash for that order."
+        },
+        {
+          "file": "dealer_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "casino",
+      "name": "Casino Host",
+      "place": "BoomCity casino",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "casino_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to BoomCity. Walk up to a machine or table to play. We use fictional game cash only."
+        },
+        {
+          "file": "casino_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Thank you for playing. The next table is open."
+        },
+        {
+          "file": "casino_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "You need enough game cash for that bet."
+        },
+        {
+          "file": "casino_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "dj",
+      "name": "DJ Bayou Boom",
+      "place": "Velvet Jester club",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "dj_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to the Velvet Jester. The floor is open. Show us what you have got."
+        },
+        {
+          "file": "dj_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "That is the rhythm. Give it up for our dancer!"
+        },
+        {
+          "file": "dj_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Tap play on the music player if your browser is keeping it quiet."
+        },
+        {
+          "file": "dj_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "cafe",
+      "name": "Cafe Owner",
+      "place": "Golden Hills / neighborhood cafes",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "cafe_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome in. A hot meal and a quiet minute can do you some good."
+        },
+        {
+          "file": "cafe_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Fresh meal, coming up."
+        },
+        {
+          "file": "cafe_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Take a seat inside while we get your order ready."
+        },
+        {
+          "file": "cafe_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "studio",
+      "name": "Studio Guide",
+      "place": "Golden Hills film studios",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "studio_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Welcome to Golden Hills. Follow the signs for the soundstage tour."
+        },
+        {
+          "file": "studio_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "That wraps the tour. Come back when we are rolling again."
+        },
+        {
+          "file": "studio_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Keep the stage entrance clear and stay behind the marked line."
+        },
+        {
+          "file": "studio_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "talent",
+      "name": "Talent Agent",
+      "place": "Golden Hills talent agency",
+      "direction": "Natural conversational voice. Keep instructions clear; do not imitate a real person.",
+      "lines": [
+        {
+          "file": "talent_greet.mp3",
+          "cue": "Open service / greet player",
+          "text": "Have a seat. Let us talk about your next opportunity."
+        },
+        {
+          "file": "talent_success.mp3",
+          "cue": "Service / shift succeeds",
+          "text": "Your appointment is finished. We will keep the city working."
+        },
+        {
+          "file": "talent_warning.mp3",
+          "cue": "Cannot proceed / work instruction",
+          "text": "Finish your current job before taking on another role."
+        },
+        {
+          "file": "talent_bye.mp3",
+          "cue": "Exit service",
+          "text": "Take care out there. We will be here when you get back."
+        }
+      ]
+    },
+    {
+      "id": "sapphire",
+      "name": "Sapphire",
+      "place": "Velvet Jester club",
+      "direction": "Confident and upbeat, non-explicit.",
+      "lines": [
+        {
+          "file": "sapphire_greet.mp3",
+          "cue": "Approach club performer",
+          "text": "Welcome to the Velvet Jester. Enjoy the show!"
+        },
+        {
+          "file": "sapphire_thanks.mp3",
+          "cue": "Player tips",
+          "text": "Thank you for the tip. Keep that good energy going."
+        },
+        {
+          "file": "sapphire_bye.mp3",
+          "cue": "Player leaves",
+          "text": "Stay safe and come back to see us."
+        }
+      ]
+    },
+    {
+      "id": "mardi",
+      "name": "Mardi",
+      "place": "Velvet Jester club",
+      "direction": "Confident and upbeat, non-explicit.",
+      "lines": [
+        {
+          "file": "mardi_greet.mp3",
+          "cue": "Approach club performer",
+          "text": "Welcome to the Velvet Jester. Enjoy the show!"
+        },
+        {
+          "file": "mardi_thanks.mp3",
+          "cue": "Player tips",
+          "text": "Thank you for the tip. Keep that good energy going."
+        },
+        {
+          "file": "mardi_bye.mp3",
+          "cue": "Player leaves",
+          "text": "Stay safe and come back to see us."
+        }
+      ]
+    },
+    {
+      "id": "velvet",
+      "name": "Velvet",
+      "place": "Velvet Jester club",
+      "direction": "Confident and upbeat, non-explicit.",
+      "lines": [
+        {
+          "file": "velvet_greet.mp3",
+          "cue": "Approach club performer",
+          "text": "Welcome to the Velvet Jester. Enjoy the show!"
+        },
+        {
+          "file": "velvet_thanks.mp3",
+          "cue": "Player tips",
+          "text": "Thank you for the tip. Keep that good energy going."
+        },
+        {
+          "file": "velvet_bye.mp3",
+          "cue": "Player leaves",
+          "text": "Stay safe and come back to see us."
+        }
+      ]
+    },
+    {
+      "id": "ronnie_extra",
+      "name": "Ronniebaby — optional new handoff",
+      "place": "Mansion penthouse",
+      "direction": "Use the same actor/delivery as the existing Ronniebaby recordings.",
+      "lines": [
+        {
+          "file": "ronnie_extra_roux.mp3",
+          "cue": "Jojo roux handoff",
+          "text": "Jojo sent you? That roux is right here. Take it back and do not spill it. I am trying to eat tonight."
+        }
+      ]
+    }
+  ]
+}

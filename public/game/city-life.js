@@ -37,10 +37,10 @@ genCity=function(){
  const keep=c.venues.find(v=>v.id==='safe'&&c.mansion&&v.b===c.mansion.B)||c.venues.find(v=>v.id==='safe');
  let i=0;for(const v of c.venues)if(v.id==='safe'&&v!==keep){const spec=VENUE_TYPES.find(t=>t.id===(i++%2?'business':'grocery'));Object.assign(v,spec);v.b.venue=v.id;v.floor=0;v.staff=[];v.extended=v.id==='grocery';}
  c.safes=(c.safes||[]).filter(s=>keep&&s.B===keep.b);c.safe=c.safes[0]||c.safe;
- for(const [id,type]of [['dealer','showroom'],['club','nightclub'],['dispensary','retail'],['smoke','retail'],['university','classroom'],['airport','terminal']]){
-  const l=window.level29Downtown.lots[id];if(!l?.fb)continue;
+ for(const [id,type]of [['dealer','showroom'],['club','nightclub'],['dispensary','retail'],['smoke','retail'],['university','classroom'],['airport','terminal'],['truck','retail']]){
+  const l=window.level29Downtown.lots[id];if(id==='truck'&&l){l.fb={x0:l.x0,y0:l.y0,x1:l.x1,y1:l.y1};l.name="FELICIA'S SNOWBALL TRAILER";}if(!l?.fb)continue;
   const f=l.fb,b={x:f.x0*TILE,y:f.y0*TILE,w:(f.x1-f.x0+1)*TILE,h:(f.y1-f.y0+1)*TILE,H:48,kind:'normal',col:'#c4bca8'};
-  l.venue=prepare(c,b,type,'lot-'+id);l.venue.lotId=id;if(['dispensary','smoke'].includes(id))l.venue.name=l.name;if(id==='smoke'){l.venue.kind='smoke';l.venue.short='SMOKE SHOP';}
+  l.venue=prepare(c,b,type,'lot-'+id);l.venue.lotId=id;if(id==='truck'){l.venue.stationX=b.x+b.w/2;l.venue.stationY=b.y+b.h-24;Object.assign(l.venue,{name:l.name,short:'FELICIA · SNOWBALLS',kind:'snowballs',letter:'F',col:'#d8a6c0'});}if(['dispensary','smoke'].includes(id))l.venue.name=l.name;if(id==='smoke'){l.venue.kind='smoke';l.venue.short='SMOKE SHOP';}
  }
 
  // Public coordinates match the existing casino shell; upper hotel remains scenery.
