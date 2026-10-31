@@ -10,6 +10,8 @@ function figure(who){const m=makeFigure(false),u=m.userData;
   for(const z of [-1.5,1.5])for(let i=0;i<4;i++)box(u.body,.5,.5,.5,2.45,11+i*1.3,z,'#272527');
   for(const z of [-3,-1,1,3])box(u.body,.15,4,.15,2.4,7.8,z,'#d5d0cb');
   box(u.body,.2,6,.15,2.65,13,0,'#383333');const spoon=add(u.armR,new THREE.CylinderGeometry(.18,.18,9,8),0,-8,0,'#ae7e43');add(spoon,new THREE.SphereGeometry(1,12,8),0,5,0,'#ae7e43').scale.set(.8,1.2,.35);
+ }else if(who==='sheldon'){
+  setFigureColors(m,'#9c6849','#252a31','#303744','#252320');u.hair.visible=false;const wrap=add(u.body,new THREE.SphereGeometry(2.5,18,12,0,Math.PI*2,0,Math.PI/2),new THREE.MeshStandardMaterial({color:'#d1d4c7',roughness:.5}),0,20.1,0);wrap.scale.y=.55;box(u.body,.8,5,1, -2.5,18,0,'#c6cbbf');add(u.body,new THREE.SphereGeometry(1,12,8),1.3,16.4,0,'#272522').scale.set(1.1,1.6,1.4);const chain=add(u.body,new THREE.TorusGeometry(2.7,.12,6,20),.4,14,0,'#cbb16c');chain.rotation.z=Math.PI/2;box(u.body,.3,2,.5,2.9,11,0,'#cbb16c');box(u.body,.3,.4,1.3,2.9,11.6,0,'#cbb16c');for(const z of [-2.2,2.2])box(u.body,.7,.7,.4,.2,17.6,z,'#cbb16c');box(u.body,.25,4,3,2.5,12,0,'#bc9c36');
  }else if(who==='dayshawn'){
   setFigureColors(m,'#895936','#233e68','#243347','#1c2025');u.hair.scale.set(1.08,.65,1.05);add(u.body,new THREE.SphereGeometry(1,14,10),.7,16.6,0,'#242324').scale.set(2.4,2.2,2.3);box(u.body,.3,4,3.5,2.7,12.5,0,'#d3d7df');for(let i=0;i<6;i++){const mark=box(u.body,.35,.3,2.5,2.8,11+i*.7,0,i%2?'#7894b0':'#d2dfed');mark.rotation.x=.25;}const chain=add(u.body,new THREE.TorusGeometry(2.8,.12,6,20),.4,14,0,'#c1a05d');chain.rotation.z=Math.PI/2;box(u.body,.4,1.4,.8,2.9,11,0,'#c1a05d');
  }else if(who==='felicia'){
@@ -20,6 +22,8 @@ function figure(who){const m=makeFigure(false),u=m.userData;
   for(const z of [-1,1]){const rim=add(u.body,new THREE.TorusGeometry(.8,.12,6,16),2.25,18.7,z,'#b6aa7d');rim.rotation.y=Math.PI/2;}
   box(u.body,.2,.15,1,2.45,18.7,0,'#b6aa7d');box(u.body,.4,.5,3.5,2.45,9.4,0,'#b7ae95');
  }
+ // Small stitched seams, button placket and cuffs give named business actors readable tailoring.
+ for(const z of [-3,3])box(u.body,.18,4,.18,2.35,12,z,'#686e70');for(let n=0;n<3;n++)box(u.body,.3,.3,.3,2.7,11+n*1.3,0,'#d0bf98');
  m.traverse(o=>{o.userData.noBatch=true;});m.userData.identity=who;return m;
 }
 function kitchen(v){const g=new THREE.Group();g.name='Major Cajun kitchen';v.mesh.add(g);const b=v.b,x=b.x+b.w*.3,z=b.y+24;
