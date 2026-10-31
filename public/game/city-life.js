@@ -56,7 +56,10 @@ genCity=function(){
   v.name=['GOLDEN HILLS CAFE','GOLDEN HILLS TALENT AGENCY','GOLDEN HILLS SCREEN TESTS'][i];c.hollywoodSites.push(v);
  }
  c.farm=freeLot(c,8,7,(x,y)=>x>65&&y>75)||freeLot(c,7,6,(x,y)=>x>50&&y>55);
- if(c.farm){const r=c.farm;for(let y=r.y/TILE;y<(r.y+r.h)/TILE;y++)for(let x=r.x/TILE;x<(r.x+r.w)/TILE;x++)c.g[y*MW+x]=T_GRASS;}
+ if(c.farm){const r=c.farm;
+  // Retire legacy decorative court paint/hoops on the agricultural parcel. The separately
+  // reserved playable recreation court is excluded by freeLot and remains untouched.
+  c.retiredFarmCourts=c.features.filter(f=>f.kind==='basketball'&&level29SiteLayout.intersects(r,f));c.features=c.features.filter(f=>!c.retiredFarmCourts.includes(f));for(let y=r.y/TILE;y<(r.y+r.h)/TILE;y++)for(let x=r.x/TILE;x<(r.x+r.w)/TILE;x++)c.g[y*MW+x]=T_GRASS;}
  // Clear trees on the new lots, and connect entrances without crossing water or another footprint.
  const zones=c.venues.filter(v=>TYPES.some(t=>t.id===v.id)).map(v=>v.b).concat(c.farm?[c.farm]:[]);
  c.trees=c.trees.filter(t=>!zones.some(b=>t.x>b.x-24&&t.x<b.x+b.w+24&&t.y>b.y-24&&t.y<b.y+b.h+24));indexTrees(c);
@@ -157,7 +160,7 @@ render=function(){renderBase.apply(this,arguments);mapActions.style.display=stat
 const tick=update;
 update=function(){tick.apply(this,arguments);if(state!=='play'||!city||!player)return;
  for(const d of dancers){poseFigure(d.m,d.x+Math.sin(frame*.05+d.x)*2,d.y,Math.sin(frame*.025+d.y),frame*.12,'wave');d.m.userData.armL.rotation.x=Math.sin(frame*.07)*1.3;}
- for(const a of animals){a.g.position.set(a.x+Math.sin(frame*.008+a.seed)*9,terrainHeight(a.x,a.y),a.y+Math.cos(frame*.006+a.seed)*8);a.g.rotation.y=Math.sin(frame*.003+a.seed)*.5;}
+ for(const a of animals){a.g.position.set(a.x+Math.sin(frame*.008+a.seed)*9,terrainHeight(a.x,a.y),a.y+Math.cos(frame*.006+a.seed)*8);a.g.rotation.y=Math.sin(frame*.003+a.seed)*.5;for(const [i,leg]of (a.g.userData.legs||[]).entries())leg.rotation.z=Math.sin(frame*.045+a.seed+i*Math.PI)*.13;}
  for(const n of crew){const c=n.c;poseFigure(n.m,c.x-8,c.y,c.a,frame*.02,'stand');n.m.position.y=12+Math.sin(frame/60*1.4+c.x*.015)*.65;n.m.visible=!c.dead&&!c.gone;if(n.kind==='fish')n.m.userData.armR.rotation.x=-1.2;}
 };
 let farmCooldown=0;

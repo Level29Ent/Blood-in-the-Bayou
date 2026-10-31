@@ -144,7 +144,8 @@ function bonnieMesh(){
   const crown=new THREE.Mesh(new THREE.TorusGeometry(5.2,.7,6,20),goldM);crown.rotation.x=Math.PI/2;crown.position.set(0,36.5,0);g.add(crown);
   for(let k=0;k<12;k++){const a=k/12*Math.PI*2;if(Math.sin(a)>.75)continue;cyl(g,.8,.6,24,Math.cos(a)*4.6,24,Math.sin(a)*4.6,braid,6);}
   for(const x of [-6,6]){const arm=cyl(g,1.4,1.2,16,x,18,0,skin);arm.rotation.z=x>0?-.2:.2;}
-  return g;}
+  for(const sx of [-1,1]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.6,10,8),lam('#231d19'));eye.position.set(sx*1.6,34.6,4.4);g.add(eye);const earring=new THREE.Mesh(new THREE.TorusGeometry(.8,.2,6,12),goldM);earring.position.set(sx*4.3,32.7,1);g.add(earring);}box(g,2.5,.7,.5,0,31.8,4.5,lam('#94584e'));for(let k=0;k<3;k++)box(g,.5,.7,.5,0,16+k*3,4.4,goldM);
+  g.scale.setScalar(.54);g.name='Bonnie De Vette · human scale';return g;}
 
 function genericBuilding(g,L,height,color,fg,bg){
   const fb=L.fb,w=(fb.x1-fb.x0+1)*T,d=(fb.y1-fb.y0+1)*T,cx=fb.x0*T+w/2,cz=fb.y0*T+d/2;
