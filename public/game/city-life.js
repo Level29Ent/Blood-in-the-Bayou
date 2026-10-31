@@ -85,7 +85,7 @@ buildVenue=function(v){
  for(const r of v.colliderWalls)part(r.w,48,r.h,r.x+r.w/2,24,r.y+r.h/2,mat('#b9b5ad'));
  part(v.doorW,7,3,v.doorX,45,v.doorY,gold);v.door=part(1,1,1,v.doorX,0,v.doorY,dark);v.door.visible=false;
  v.roof=part(b.w,2,b.h,b.x+b.w/2,50,b.y+b.h/2,dark);v.labelH=70;
- addSign(g,v.name,Math.min(220,b.w),11,v.doorX,61,v.doorY,v.col);
+ if(v.id!=='casino')addSign(g,v.name,Math.min(220,b.w),11,v.doorX,61,v.doorY,v.col);
  if(v.id==='casino'){
   for(let i=0;i<6;i++){const x=b.x+20+i*32;part(19,30,12,x,15,b.y+18,dark);part(14,13,1,x,23,b.y+25,mat('#c68c37'));addSign(g,'29 · 7 · 29',15,7,x,24,b.y+26,'#f3d186');v.furniture.push({x:x-10,y:b.y+12,w:20,h:13});}
   for(let i=1;i<4;i++){const x=b.x+36+i*48;part(32,9,22,x,4.5,b.y+58,mat('#31644f'));v.furniture.push({x:x-16,y:b.y+47,w:32,h:22});addSign(g,['','BLACKJACK','POKER','ROULETTE'][i],30,5,x,13,b.y+70,'#eac879');}

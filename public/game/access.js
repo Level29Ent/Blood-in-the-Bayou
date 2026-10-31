@@ -59,7 +59,7 @@ buildVenue=function(v){
   build(v);if(!v.mesh)return;
   const {material}=window.level29World,b=v.b;
   // Exit guidance and trim do not add collision in the service aisle.
-  addSign(v.mesh,'EXIT → STREET',Math.min(70,v.doorW+12),6,v.doorX,35,v.doorY-4,'#9ed5c1');
+  const exit=addSign(v.mesh,'EXIT → STREET',Math.min(55,v.doorW),4,v.doorX,36,v.doorY-4,'#9ed5c1');exit.rotation.y=Math.PI;exit.material.side=THREE.FrontSide;
   addPart(v.mesh,Math.max(8,b.w-8),2,1,b.x+b.w/2,13,b.y+3.5,material('#c6ab77'));
   return;
  }

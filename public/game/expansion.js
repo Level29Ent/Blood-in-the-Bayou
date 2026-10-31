@@ -173,7 +173,7 @@ function addSign(group,text,w,h,x,y,z,col){
   c.textAlign='center';c.textBaseline='middle';c.shadowColor=col;c.shadowBlur=Math.round(size*.18);
   c.fillStyle=col;c.fillText(text,cv.width/2,cv.height/2+2);c.shadowBlur=0;c.fillStyle='rgba(255,255,255,.35)';c.fillText(text,cv.width/2,cv.height/2+2);
   const tex=new THREE.CanvasTexture(cv);tex.anisotropy=8;tex.encoding=THREE.sRGBEncoding;
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));m.position.set(x,y,z);group.add(m);return m;
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));m.position.set(x,y,z);m.name='venue-sign:'+text;group.add(m);return m;
 }
 let sharedVehicleEnv=null;
 function vehicleEnv(){
@@ -299,7 +299,7 @@ function buildVenue(v){
   if(v.vehicle){for(let k=0;k<8;k++)addPart(v.door,v.doorW-2,.3,.2,0,-18+k*5,1,trim);}else{addPart(v.door,1.5,.6,1.5,v.doorW/2-4,0,1,trim);addPart(v.door,v.doorW*.6,15,.3,0,7,1,new THREE.MeshStandardMaterial({color:'#254039',metalness:.4,roughness:.2}));}
   addSign(group,v.name,Math.min(160,b.w),13,b.x+b.w/2,height+10.5,v.doorY-1,v.col);v.labelH=height+32;
   addSign(group,v.vehicle?'DRIVE IN · E OPEN BAY':'WALK IN · AUTO DOOR',Math.min(125,b.w-8),7,v.doorX,46,v.doorY+.3,v.col);
-  addSign(group,v.short,Math.min(100,b.w-15),12,b.x+b.w/2,35,b.y+3,v.col);
+  if(v.id!=='business')addSign(group,v.short,Math.min(100,b.w-15),12,b.x+b.w/2,35,b.y+3,v.col);
   for(const z of [b.y+25,b.y+b.h-25]){
     addPart(group,60,1,5,b.x+b.w/2,48,z,new THREE.MeshBasicMaterial({color:'#e8e8cf'}));
     const pool=new THREE.Mesh(new THREE.PlaneGeometry(110,90).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:'#fff1d4',map:softTex,transparent:true,opacity:.12,depthWrite:false}));pool.position.set(b.x+b.w/2,.7,z);group.add(pool);
@@ -326,7 +326,7 @@ function buildVenue(v){
     furniture(b.x+30,b.y+30,40,9,24,'#805f42');furniture(b.x+b.w-22,b.y+40,25,22,45,'#5a625b');
     addPart(group,14,10,1,b.x+30,18,b.y+32,new THREE.MeshStandardMaterial({color:'#243840',metalness:.2,roughness:.2}));
     furniture(b.x+30,b.y+70,16,9,16,'#3d4548');
-    addSign(group,'OWN · $2,000 / COLLECT INCOME',135,9,b.x+b.w/2,18,b.y+4,v.col);
+    const deskSign=addSign(group,'U · BUSINESS SERVICES',Math.min(65,b.w-20),5,b.x+b.w/2,26,b.y+4,v.col);deskSign.name='business-service-sign';
   }else{
     furniture(b.x+31,b.y+24,47,8,30,'#665d48');addPart(group,43,3,25,b.x+31,9,b.y+24,new THREE.MeshStandardMaterial({color:'#a8b39b',roughness:1}));
     furniture(b.x+b.w-24,b.y+25,30,13,35,'#635b48');furniture(b.x+b.w-25,b.y+76,33,7,37,'#47574b');

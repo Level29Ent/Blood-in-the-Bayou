@@ -74,16 +74,18 @@ function buildCasino(){
   const body=lam('#1b1420'),trim=basic('#f2c14e'),pink=basic('#ff3d8b'),cyan=basic('#3de0ff');
   if(city.casinoVenue)buildVenue(city.casinoVenue);else put(g,geoBox(w,64,d),body,cxp,32,czp);
   put(g,geoBox(w*.46,150,d*.42),lam('#251a2c'),cxp,139,z0+d*.3);
-  for(const y of [64,150])put(g,geoBox(y===64?w+2:w*.46+2,3,y===64?d+2:d*.42+2),y===64?pink:cyan,cxp,y,y===64?czp:z0+d*.3);
+  // Neon trim sits proud of the existing room shell, not coplanar with its wall.
+  for(const y of [64,150])put(g,geoBox(y===64?w+6:w*.46+4,2,y===64?d+6:d*.42+4),y===64?pink:cyan,cxp,y,y===64?czp:z0+d*.3);
   for(let k=0;k<6;k++)put(g,geoBox(w*.46+1,1.5,d*.42+1),k%2?pink:trim,cxp,82+k*11,z0+d*.3);
-  put(g,geoBox(w,3,2),trim,cxp,20,front+.6);put(g,geoBox(w,2,2),pink,cxp,48,front+.6);
-  signPlane(g,'BOOMCITY',w*.9,44,cxp,92,front-d*.58+d*.42/2+d*.01,0,'#ffe27a','#1a0f1f','#ff3d8b');
-  signPlane(g,'BOOMCITY CASINO',w*.82,26,cxp,36,front+1.2,0,'#ffffff','#2a0d22','#ff3d8b');
-  put(g,geoBox(120,3,44),trim,cxp,26,front+22);put(g,geoBox(118,1,42),basic('#fff3c4'),cxp,24.4,front+22);
-  for(const sx of [-54,54])put(g,new THREE.CylinderGeometry(2.4,2.4,26,10),trim,cxp+sx,13,front+42);
+  put(g,geoBox(w,2,2),pink,cxp,48,front+2.5);
+  signPlane(g,'BOOMCITY',w*.43,20,cxp,177,z0+d*.51+2,0,'#ffe27a','#1a0f1f','#ff3d8b');
+  signPlane(g,'BOOMCITY CASINO',w*.78,12,cxp,57,front+4,0,'#ffffff','#2a0d22','#ff3d8b');
+  put(g,geoBox(120,3,40),trim,cxp,45,front+22);put(g,geoBox(118,1,38),basic('#fff3c4'),cxp,43,front+22);
+  for(const sx of [-54,54])put(g,new THREE.CylinderGeometry(2.4,2.4,44,10),trim,cxp+sx,22,front+42);
   // Keep the walk-in doorway clear; no second facade panel across it.
   for(const sx of [-1,1])put(g,geoBox(2,64,2),sx<0?cyan:pink,cxp+sx*(w/2-2),32,front+2);
-  signPlane(g,'SLOTS · BLACKJACK · 24/7',w*.6,14,cxp,6,front+44,0,'#3de0ff','#120a16','#3de0ff');
+  signPlane(g,'SLOTS · BLACKJACK · 24/7',w*.5,7,cxp,41,front+44,0,'#3de0ff','#120a16','#3de0ff');
+  for(const side of [-1,1]){const sideSign=signPlane(g,'BOOMCITY · CASINO',d*.65,14,cxp+side*(w/2+4),30,czp,side*Math.PI/2,'#ffe27a','#21162c','#ff3d8b');sideSign.name='casino-side-sign';}
   if(v?.frontage?.angle){const f=v.frontage,a=f.angle;g.rotation.y=a;g.position.x=f.center.x-Math.cos(a)*f.center.x-Math.sin(a)*f.center.y;g.position.z=f.center.y+Math.sin(a)*f.center.x-Math.cos(a)*f.center.y;}g.position.y=v?.baseY||0;g.name='BoomCity facade';return g;
 }
 function buildDock(){
