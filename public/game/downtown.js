@@ -96,6 +96,8 @@ function textTex(text,fg,bg,w,h){const cv=document.createElement('canvas');cv.wi
   g.fillStyle=fg;g.shadowColor=fg;g.shadowBlur=18;g.textAlign='center';g.textBaseline='middle';g.fillText(text,cv.width/2,cv.height/2+2);
   const t=new THREE.CanvasTexture(cv);return t;}
 function sign(g,text,w,h,x,y,z,fg,bg,rotY){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:textTex(text,fg,bg),side:THREE.DoubleSide}));m.position.set(x,y,z);if(rotY)m.rotation.y=rotY;g.add(m);return m;}
+function priceLabel(g,text,x,y,z){const cv=document.createElement('canvas');cv.width=1024;cv.height=192;const c=cv.getContext('2d');c.fillStyle='#0b141b';c.fillRect(0,0,1024,192);c.strokeStyle='#f4d27a';c.lineWidth=6;c.strokeRect(4,4,1016,184);c.fillStyle='#fff5d9';c.textAlign='center';c.font='bold 54px monospace';let fs=54;while(c.measureText(text).width>980){c.font='bold '+(--fs)+'px monospace';}c.fillText(text,512,118);const map=new THREE.CanvasTexture(cv);map.encoding=THREE.sRGBEncoding;map.minFilter=THREE.LinearFilter;map.generateMipmaps=false;
+ const m=new THREE.Sprite(new THREE.SpriteMaterial({map,color:'#ffffff',opacity:1,transparent:false,fog:false,toneMapped:false,depthWrite:false}));m.name='dealer-opaque-price';m.scale.set(68,12.75,1);m.position.set(x,y,z);g.add(m);return m;}
 let logoTex=null;const getLogo=()=>logoTex||(logoTex=new THREE.TextureLoader().load('logo.png'));
 let bonnieTex=null;const getBonnie=()=>bonnieTex||(bonnieTex=new THREE.TextureLoader().load('bonnie.png'));
 
@@ -191,7 +193,7 @@ function buildLots(g){
       genericBuilding(g,L,48,'#efeae0','#ffffff','#5b2a86');
       const cols=['#6a1fb0','#c21f6a','#1f9e5a','#d9a520'];
       cols.forEach((c,k)=>{const pad=new THREE.Group();pad.position.set((L.x0+1+k*(L.x1-L.x0-1)/3)*T,0,(L.y0+5)*T);g.add(pad);
-        cyl(pad,30,32,3,0,1.5,0,lam('#1a1424'));const rec=L.inventory[k],sample=rec?makeCar(0,0,0,rec.type):null;if(sample)sample.col=c;const car=sample?makeCarMesh(sample):lowriderMesh(c);car.position.set(0,3,0);car.rotation.y=Math.PI/2;pad.add(car);spins.push(car);if(rec)sign(pad,CAR_SPECS[rec.type].name+' · '+money(rec.price),56,9,0,29,26,'#f2c14e','#172229');});
+        cyl(pad,30,32,3,0,1.5,0,lam('#1a1424'));const rec=L.inventory[k],sample=rec?makeCar(0,0,0,rec.type):null;if(sample)sample.col=c;const car=sample?makeCarMesh(sample):lowriderMesh(c);car.position.set(0,3,0);car.rotation.y=Math.PI/2;pad.add(car);spins.push(car);if(rec)priceLabel(pad,CAR_SPECS[rec.type].name+' · '+money(rec.price),0,35,27);});
       const fig=bonnieMesh(),bp=window.level29Frontage?level29Frontage.lotPoint(L,{x:(L.x0+2)*T,y:(L.y0+1.2)*T}):{x:(L.x0+2)*T,y:(L.y0+1.2)*T};fig.position.set(bp.x,L.venue?.baseY||0,bp.y);g.add(fig);dealerFig=fig;
       const bb=new THREE.Mesh(new THREE.PlaneGeometry(56,32),new THREE.MeshBasicMaterial({map:getBonnie(),side:THREE.DoubleSide}));bb.position.set((L.x0+6.6)*T,62,(L.y0+.5)*T);g.add(bb);
       cyl(g,1.5,1.5,46,(L.x0+6.6)*T,23,(L.y0+.5)*T,lam('#333'));

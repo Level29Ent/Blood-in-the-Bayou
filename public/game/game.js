@@ -1000,7 +1000,7 @@ function update(){
     let gxP = px, gyP = py, rem = null, dLocal = Math.hypot(px - z.x, py - z.y), dBest = p.dead||localSafe ? 1e9 : dLocal;
     for (const r of outdoorRemotes){ const rd = Math.hypot(r.x - z.x, r.y - z.y); if (rd < dBest){ dBest = rd; gxP = r.x; gyP = r.y; rem = r; } }
     const d = Math.min(dBest, dLocal + (p.dead ? 1e9 : 0));
-    if (d > 1500){ z.alive = false; continue; }
+    if (d > 1500){ if(z.heavyArmor)continue;z.alive = false; continue; }
     if (d < 200) z.alert = true;
     let tx = 0, ty = 0;
     // target survivors too

@@ -45,6 +45,7 @@ buildVenue=function(v){
  v.mesh.userData.frontageDone=true;const co=Math.cos(f.angle),si=Math.sin(f.angle);v.mesh.rotation.y=f.angle;v.mesh.position.x=f.center.x-co*f.center.x-si*f.center.y;v.mesh.position.z=f.center.y+si*f.center.x-co*f.center.y;
  v.furniture=v.furniture.map(r=>rect(r,f.center,f.angle));if(v.floorFurniture){v.floorFurniture=v.floorFurniture.map(list=>list.map(r=>rect(r,f.center,f.angle)));v.furniture=v.floorFurniture[v.floor||0];}
  if(Number.isFinite(v.workerX)){const p=point({x:v.workerX,y:v.workerY},f.center,f.angle);v.workerX=p.x;v.workerY=p.y;}
+ if(v.elevatorPoint)v.elevatorPoint=point(v.elevatorPoint,f.center,f.angle);if(v.elevatorLanding)v.elevatorLanding=point(v.elevatorLanding,f.center,f.angle);
  clearService(v);
  for(const staff of v.staff||[]){const p=point(staff,f.center,f.angle);staff.x=p.x;staff.y=p.y;}
 };

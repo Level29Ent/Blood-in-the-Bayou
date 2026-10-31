@@ -46,7 +46,7 @@ genCity=function(){
  // Public coordinates match the existing casino shell; upper hotel remains scenery.
  const cb={x:105*TILE,y:77*TILE,w:7*TILE,h:6*TILE,H:64,kind:'normal',col:'#62516a'};
  c.casinoVenue=prepare(c,cb,'casino','waterfront-casino');
- c.casinoStations=[0,1,2,3].map(k=>({x:cb.x+36+k*48,y:cb.y+80}));
+ c.casinoStations=[{x:cb.x+20,y:cb.y+66},...[0,1,2].map(k=>({x:cb.x+40+k*(cb.w-80)/2,y:cb.y+cb.h*.5+33}))];
  const hills=freeLot(c,8,7,(x,y)=>x>85&&y>100,true);
  c.hollywood=null;if(hills){c.hollywood=prepare(c,{...hills,H:48,kind:'normal',col:'#c9bfa8'},'studio','golden-hills');c.hollywood.name='GOLDEN HILLS · HOLLYWOOD DISTRICT';}
  c.hollywoodSites=c.hollywood?[c.hollywood]:[];
@@ -87,9 +87,7 @@ buildVenue=function(v){
  v.roof=part(b.w,2,b.h,b.x+b.w/2,50,b.y+b.h/2,dark);v.labelH=70;
  if(v.id!=='casino')addSign(g,v.name,Math.min(220,b.w),11,v.doorX,61,v.doorY,v.col);
  if(v.id==='casino'){
-  for(let i=0;i<6;i++){const x=b.x+20+i*32;part(19,30,12,x,15,b.y+18,dark);part(14,13,1,x,23,b.y+25,mat('#c68c37'));addSign(g,'29 · 7 · 29',15,7,x,24,b.y+26,'#f3d186');v.furniture.push({x:x-10,y:b.y+12,w:20,h:13});}
-  for(let i=1;i<4;i++){const x=b.x+36+i*48;part(32,9,22,x,4.5,b.y+58,mat('#31644f'));v.furniture.push({x:x-16,y:b.y+47,w:32,h:22});addSign(g,['','BLACKJACK','POKER','ROULETTE'][i],30,5,x,13,b.y+70,'#eac879');}
- }else if(v.id==='nightclub'){
+  level29RetailCasino.casino(v,g); }else if(v.id==='nightclub'){
   part(b.w-30,2,28,b.x+b.w/2,1,b.y+16,dark);part(25,12,8,b.x+b.w/2,8,b.y+18,gold);
   for(let i=0;i<9;i++){const x=b.x+20+(i%3)*Math.max(12,(b.w-40)/3),y=b.y+28+Math.floor(i/3)*Math.max(6,(b.h-38)/3),m=makeFigure(false);setFigureColors(m,['#986d50','#c3946a','#6e4939'][i%3],['#87539b','#d5b568','#4c8491'][i%3],'#28313b','#272322');m.traverse(o=>{if(o.isMesh)o.userData.noBatch=true;});g.add(m);dancers.push({m,x,y});}
  }else if(v.id==='terminal'){

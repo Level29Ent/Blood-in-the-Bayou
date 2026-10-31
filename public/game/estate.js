@@ -4,6 +4,9 @@
 const {batch}=level29World;
 const material=(color,rough=.85,metal=0)=>level29World.material(color,metal,rough);
 const vehicleData=[
+ ['electric','CRESCENT ELECTRIC','sedan',48,24,8.9,150],
+ ['ambulance','PARISH AMBULANCE','van',65,28,7,230],
+ ['utility','LEVEE UTILITY PICKUP','pickup',58,27,6.5,210],
  ['compact','CITY COMPACT','sedan',36,20,6.9,100],
  ['hatchback','SPORT HATCH','sedan',40,21,7.8,110],
  ['wagon','TOURING WAGON','sedan',52,23,7.4,140],
@@ -233,7 +236,7 @@ function decorateVenues(){
  const g=new THREE.Group();g.name='career-interior-detail';cityGroup.add(g);const q=batch(g);
  const steel=material('#a2aaa5',.42,.5),dark=material('#273437'),wood=material('#846340'),paper=material('#e1d8c3'),red=material('#b34432'),green=material('#56765b'),blue=material('#36647b');
  for(const v of city.venues||[]){
-  if(v.frontage?.angle||v.storyRole||v.kind==='snowballs')continue; // Rotated rooms receive local-space detail from interior-details.
+  if(v.frontage?.angle||v.storyRole||v.kind==='snowballs'||v.id==='hospital')continue; // Rotated rooms receive local-space detail from interior-details.
   const b=v.b,levels=v.id==='hospital'?5:1;
   for(let l=0;l<levels;l++){
    const z=(v.baseY||0)+l*56,x=b.x+b.w/2,y=b.y+7;

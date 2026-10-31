@@ -27,7 +27,7 @@ genCity=function(di){
 };
 // Cached high-resolution brick / stucco / glass materials with matching window emission.
 const facades=new Map(),textures=new Map(),materials=new Map();
-function material(color,metal=0,rough=.85){const key=color+metal+rough;if(!materials.has(key))materials.set(key,new THREE.MeshStandardMaterial({color,metalness:metal,roughness:rough}));return materials.get(key);}
+function material(color,metal=0,rough=.85){const key=color+metal+rough;if(!materials.has(key))materials.set(key,level29SurfaceDetail.apply(new THREE.MeshStandardMaterial({color,metalness:metal,roughness:rough}),level29SurfaceDetail.kind(color,metal)));return materials.get(key);}
 function facade(col,type){
  const key=col+':'+type;if(facades.has(key))return facades.get(key);
  const map=canvasTex(512,384,(g,w,h)=>{
@@ -49,7 +49,7 @@ function facade(col,type){
   if(type!=='glass'){g.fillStyle='rgba(246,229,202,.27)';g.fillRect(0,h-27,w,7);g.fillStyle='rgba(40,34,27,.2)';g.fillRect(0,h-20,w,4);}
  },true);
  const emission=canvasTex(512,384,(g)=>{g.fillStyle='#000';g.fillRect(0,0,512,384);for(const x of [58,304]){g.fillStyle=x===58?'#ffe0a5':'#514738';g.fillRect(x,type==='glass'?12:74,type==='glass'?191:150,type==='glass'?338:214);}},true);
- const m=new THREE.MeshStandardMaterial({color:'#fff',map,emissiveMap:emission,emissive:'#000',roughness:type==='glass'?.3:.94,metalness:type==='glass'?.4:0});facades.set(key,m);facadeMats.set('l29:'+key,m);return m;
+ const m=new THREE.MeshStandardMaterial({color:'#fff',map,emissiveMap:emission,emissive:'#000',roughness:type==='glass'?.3:.94,metalness:type==='glass'?.4:0});if(type!=='glass')level29SurfaceDetail.apply(m,type==='brick'?'brick':'plaster',false);facades.set(key,m);facadeMats.set('l29:'+key,m);return m;
 }
 function roofMaterial(){
  if(!textures.has('roof'))textures.set('roof',canvasTex(256,256,g=>{g.fillStyle='#4a4b47';g.fillRect(0,0,256,256);const r=mkRng(82);for(let i=0;i<10000;i++){g.fillStyle=r()>.5?'#53544f':'#40423e';g.fillRect(r()*256,r()*256,1,1);}g.strokeStyle='#414841';g.lineWidth=2;g.strokeRect(4,4,248,248);},true));
