@@ -584,6 +584,7 @@ function syncDynamic(){
       m.scale.setScalar(z.type==='brute' ? 1.6 : z.type==='runner' ? .95 : 1);
       u.eyes.visible = true;
     }
+    m.scale.setScalar(z.storyScale||(z.type==='brute'?1.6:z.type==='runner'?.95:1));
     poseFigure(m, z.x, z.y, z.a, z.anim, 'zombie');
     if (z.type==='runner') u.body.rotation.z = -.35;
     u.shirt.emissive.setRGB(z.flash > 0 ? .9 : 0, z.flash > 0 ? .9 : 0, z.flash > 0 ? .9 : 0);

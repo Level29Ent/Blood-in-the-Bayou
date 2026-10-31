@@ -65,11 +65,12 @@ function put(g,geo,mat,x,y,z){const m=new THREE.Mesh(geo,mat);m.position.set(x,y
 function signTex(text,w,h,fg,bg,glow){const cv=document.createElement('canvas');cv.width=w;cv.height=h;const g=cv.getContext('2d');
   g.fillStyle=bg;g.fillRect(0,0,w,h);g.font="900 "+Math.round(h*.64)+"px 'Barlow Condensed', sans-serif";g.textAlign='center';g.textBaseline='middle';
   g.shadowColor=glow;g.shadowBlur=h*.2;g.fillStyle=fg;g.fillText(text,w/2,h/2+2);g.shadowBlur=0;g.strokeStyle=fg;g.lineWidth=4;g.strokeRect(6,6,w-12,h-12);
-  const t=new THREE.CanvasTexture(cv);return t;}
-function signPlane(g,text,w,h,x,y,z,ry,fg,bg,glow){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:signTex(text,512,Math.round(512*h/w),fg,bg,glow),transparent:true}));m.position.set(x,y,z);m.rotation.y=ry||0;g.add(m);return m;}
+  const t=new THREE.CanvasTexture(cv);t.encoding=THREE.sRGBEncoding;t.minFilter=THREE.LinearMipmapLinearFilter;t.magFilter=THREE.LinearFilter;return t;}
+function signPlane(g,text,w,h,x,y,z,ry,fg,bg,glow){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:signTex(text,1024,Math.max(128,Math.round(1024*h/w)),fg,bg,glow),transparent:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));m.position.set(x,y,z);m.rotation.y=ry||0;g.add(m);return m;}
 
 function buildCasino(){
-  const g=new THREE.Group(),x0=CASINO.x0*T,z0=CASINO.y0*T,w=(CASINO.x1-CASINO.x0+1)*T,d=(CASINO.y1-CASINO.y0+1)*T,cxp=x0+w/2,czp=z0+d/2,front=z0+d;
+  const v=city.casinoVenue,b=v?.frontage?.canonical||v?.b||{x:CASINO.x0*T,y:CASINO.y0*T,w:7*T,h:6*T};
+  const g=new THREE.Group(),x0=b.x,z0=b.y,w=b.w,d=b.h,cxp=x0+w/2,czp=z0+d/2,front=z0+d;
   const body=lam('#1b1420'),trim=basic('#f2c14e'),pink=basic('#ff3d8b'),cyan=basic('#3de0ff');
   if(city.casinoVenue)buildVenue(city.casinoVenue);else put(g,geoBox(w,64,d),body,cxp,32,czp);
   put(g,geoBox(w*.46,150,d*.42),lam('#251a2c'),cxp,139,z0+d*.3);
@@ -80,10 +81,10 @@ function buildCasino(){
   signPlane(g,'BOOMCITY CASINO',w*.82,26,cxp,36,front+1.2,0,'#ffffff','#2a0d22','#ff3d8b');
   put(g,geoBox(120,3,44),trim,cxp,26,front+22);put(g,geoBox(118,1,42),basic('#fff3c4'),cxp,24.4,front+22);
   for(const sx of [-54,54])put(g,new THREE.CylinderGeometry(2.4,2.4,26,10),trim,cxp+sx,13,front+42);
-  put(g,geoBox(56,24,2),basic('#ffcf6a'),cxp,12,front+.8);
-  for(let k=0;k<5;k++)put(g,geoBox(2,64,2),k%2?cyan:pink,x0+1+k*(w-2)/4,32,front+1);
+  // Keep the walk-in doorway clear; no second facade panel across it.
+  for(const sx of [-1,1])put(g,geoBox(2,64,2),sx<0?cyan:pink,cxp+sx*(w/2-2),32,front+2);
   signPlane(g,'SLOTS · BLACKJACK · 24/7',w*.6,14,cxp,6,front+44,0,'#3de0ff','#120a16','#3de0ff');
-  return g;
+  if(v?.frontage?.angle){const f=v.frontage,a=f.angle;g.rotation.y=a;g.position.x=f.center.x-Math.cos(a)*f.center.x-Math.sin(a)*f.center.y;g.position.z=f.center.y+Math.sin(a)*f.center.x-Math.cos(a)*f.center.y;}g.position.y=v?.baseY||0;g.name='BoomCity facade';return g;
 }
 function buildDock(){
   const g=new THREE.Group(),wood=lam('#6d5236');
@@ -285,6 +286,7 @@ addEventListener('keydown',e=>{if(e.target&&e.target.matches&&e.target.matches('
   if(panelKind&&(k==='escape'||k==='o')){e.preventDefault();e.stopImmediatePropagation();closePanel();return;}
   if(panelKind){if(k!=='tab')e.stopImmediatePropagation();return;}
   if(k!=='u'||state!=='play')return;
+  if(window.level29CityStories?.ownsUse())return;
   if(onBoat()){e.preventDefault();e.stopImmediatePropagation();haulKey=true;return;}
   if(!e.repeat&&useAction()){e.preventDefault();e.stopImmediatePropagation();}
 },true);

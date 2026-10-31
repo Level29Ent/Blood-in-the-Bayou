@@ -69,7 +69,7 @@ let shown=false,ready=0;
 
 // Show the reward once per session after the player has actually started playing.
 const prevUpdate=update;update=function(){prevUpdate();if(state==='play'&&player&&!player.dead)ready++;else if(state!=='shop')ready=Math.max(0,ready-1);
- if(!shown&&ready>600&&canClaim()&&!window.level29Jobs?.active&&!window.level29Guard?.shift){const jp=document.getElementById('jobsPanel');if(jp&&jp.style.display==='flex')return;shown=true;open();}};
+ if(!shown&&ready>600&&canClaim()&&!window.level29Jobs?.active&&!window.level29Guard?.shift&&!window.level29CityStories?.active){const jp=document.getElementById('jobsPanel');if(jp&&jp.style.display==='flex')return;shown=true;open();}};
 const prevRender=render;render=function(){prevRender();updateBadge();if(panel.style.display==='flex'&&state!=='shop')panel.style.display='none';};
 window.level29Daily={get data(){return data;},canClaim,open,close,claim,rewards:REWARDS};
 })();

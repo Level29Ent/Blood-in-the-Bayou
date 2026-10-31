@@ -92,7 +92,7 @@ function spawnGators(){
  for(let i=0;i<14;i++){const p=shoreline[Math.floor(Math.random()*shoreline.length)];if(!isWater(p.x,p.y))continue;
   const m=gatorMesh(rnd(.9,1.25));root.add(m);gators.push({m,hx:p.x,hy:p.y,x:p.x,y:p.y,a:rnd(0,6.28),hp:70,cd:0,dead:false,respawn:0,wander:rnd(0,6.28)});}
 }
-function killGator(g,label){g.dead=true;g.respawn=3600;g.m.rotation.z=Math.PI;earn(110+Math.random()*60,label);playSfx('coin');}
+function killGator(g,label){dispatchEvent(new CustomEvent('level29:gator-killed',{detail:{x:g.x,y:g.y,playerOwned:true}}));g.dead=true;g.respawn=3600;g.m.rotation.z=Math.PI;earn(110+Math.random()*60,label);playSfx('coin');}
 function updateGators(){
  if(!player)return;const p=player.car||player,petGator=data.activePet&&petKind()==='gator';
  for(const g of gators){
