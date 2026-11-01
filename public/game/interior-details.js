@@ -3,7 +3,7 @@
 const builder=buildVenue;
 buildVenue=function(v){builder.apply(this,arguments);if(v.id==='hospital'||v.kind==='snowballs'||v.storyRole==='jojo'||v.storyRole==='damion'||!v.mesh||v.mesh.userData.roomClutter)return;v.mesh.userData.roomClutter=true;
  const b=v.b,g=new THREE.Group();g.name='business-interior-props';v.mesh.add(g);const {material,batch}=level29World,q=batch(g),wood=material('#795b43'),steel=material('#839295',.45,.45),cloth=material('#486b63'),paper=material('#e2d9bd'),dark=material('#26363d');
- function fixture(x,y,w,d,kind){const r={x:x-w/2,y:y-d/2,w,h:d};if(Math.abs(x-v.doorX)<w/2+18&&y+d/2>v.doorY-40)return;
+ function fixture(x,y,w,d,kind){const r={x:x-w/2,y:y-d/2,w,h:d};const aisle=v.entranceAisle;if(aisle&&r.x<aisle.x+aisle.w&&r.x+r.w>aisle.x&&r.y<aisle.y+aisle.h&&r.y+r.h>aisle.y)return;if(Math.abs(x-v.doorX)<w/2+18&&y+d/2>v.doorY-40)return;
  if(x-w/2<b.x+6||x+w/2>b.x+b.w-6||y-d/2<b.y+6||y+d/2>b.y+b.h-6||dist(x,y,v.stationX,v.stationY)<42||v.furniture.some(f=>hitRect(x,y,Math.max(w,d)*.65,f)))return;
  v.furniture.push(r);
  if(kind==='desk'){q.box(w,2,d,x,12,y,wood);for(const xx of [-w*.4,w*.4])q.box(2,12,d-2,x+xx,6,y,steel);q.box(10,7,1,x,18,y-3,dark);q.box(4,4,4,x+w*.3,15,y,paper);q.box(7,.5,4,x,13.5,y+3,paper);}

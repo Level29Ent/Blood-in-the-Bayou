@@ -99,7 +99,7 @@ buildVenue=function(v){
  }else if(v.id==='retail'){
   for(const x of [b.x+10,b.x+b.w-10])for(let y=8;y<30;y+=10){part(14,2,b.h-30,x,y,b.y+b.h/2,wood);for(let j=0;j<4;j++)part(3,5,3,x,y+3,b.y+20+j*9,mat(j%2?'#9f9d69':'#6b997e'));}
   part(32,10,12,b.x+b.w/2,5,b.y+16,wood);addSign(g,'ACCESSORIES · LOCAL GOODS',90,7,b.x+b.w/2,32,b.y+4,v.col);
- }else if(v.id==='showroom'){part(40,12,12,b.x+35,6,b.y+12,wood);part(12,8,1,b.x+35,16,b.y+12,dark);addSign(g,'BONNIE · VEHICLE SALES',80,8,b.x+64,34,b.y+4,v.col);}
+ }else if(v.id==='showroom'){addSign(g,'BONNIE DE VETTE · ENTRANCE',Math.min(100,b.w-12),7,v.doorX,38,v.doorY+2,v.col);part(40,12,12,b.x+35,6,b.y+12,wood);part(12,8,1,b.x+35,16,b.y+12,dark);addSign(g,'BONNIE · VEHICLE SALES',80,8,b.x+64,34,b.y+4,v.col);}
  else if(v.id==='studio'){for(let i=0;i<3;i++){part(16,20,8,b.x+20+i*30,10,b.y+20,dark);part(3,28,3,b.x+20+i*30,14,b.y+35,gold);}addSign(g,'SOUNDSTAGE · GOLDEN HILLS',130,10,b.x+b.w/2,34,b.y+4,v.col);}
  else {for(const side of [-1,1]){part(25,10,20,b.x+b.w/2+side*30,5,b.y+24,wood);part(12,7,10,b.x+b.w/2+side*30,3.5,b.y+43,dark);}addSign(g,'COFFEE · FRESH FOOD',100,9,b.x+b.w/2,32,b.y+4,v.col);}
 };
