@@ -262,7 +262,14 @@ function ensureSky(){
   if(!isWorld(city)&&flyer.parent)flyer.parent.remove(flyer);
 }
 let birds=[];
-function birdMesh(){const g=new THREE.Group(),m=lam('#3b2f2a');box(g,7,3,3,0,0,0,m);const l=box(g,2,.6,9,0,0,5,m),r=box(g,2,.6,9,0,0,-5,m);g.userData.w=[l,r];return g;}
+function birdMesh(){
+ const g=new THREE.Group(),m=lam('#6c7374'),dark=lam('#252b29'),pale=lam('#d7d5c9'),a=level29AnimalAnatomy;
+ a.ell(g,6,2.6,2.8,0,0,0,m);a.ell(g,2.4,2.2,2.1,2.8,.8,0,m);
+ const beak=a.tip(g,4.3,.6,0,.35,1.6,.3,lam('#c6a85b'));beak.rotation.z=-Math.PI/2;
+ for(const side of [-1,1]){a.ell(g,.3,.3,.25,3.1,1.1,side*.94,dark);a.ell(g,.13,.13,.1,3.15,1.16,side*1.05,pale);}
+ const wings=[];for(const side of [-1,1]){const w=new THREE.Group();w.position.z=side;g.add(w);a.ell(w,3,.5,8,-.4,0,side*3,m);for(let i=0;i<4;i++)a.ell(w,2,.22,2,-1+i*.5,-.1,side*(5+i*.15),dark);wings.push(w);}
+ a.ell(g,3,.35,2.8,-3.6,-.1,0,dark);g.userData.w=wings;return g;
+}
 function updateBirds(){
   if(!scene||!player)return;
   while(birds.length<10){const a=Math.random()*6.28,r=rnd(250,650);const b={x:player.x+Math.cos(a)*r,y:player.y+Math.sin(a)*r,h:rnd(42,80),a:Math.random()*6.28,v:rnd(1.6,2.6),alive:true,fall:0,mesh:birdMesh()};scene.add(b.mesh);birds.push(b);}

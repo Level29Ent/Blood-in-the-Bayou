@@ -75,16 +75,18 @@ function buildBayou(){
 /* ---------- Alligators ---------- */
 function gatorMesh(scale=1){
  const g=new THREE.Group(),skin=M('#3b4a26',{r:.9,ei:.08}),dark=M('#2a3519',{r:.9}),belly=M('#a49c72'),eye=M('#e8d23a',{ei:.6}),tooth=M('#f2efe2');
- B(g,22,4.6,9,0,2.6,0,skin);B(g,20,1.6,7,0,.8,0,belly);
+ level29AnimalAnatomy.ell(g,22,4.6,9,0,2.6,0,skin);level29AnimalAnatomy.ell(g,20,1.6,7,0,.8,0,belly);
  const head=new THREE.Group();head.position.set(11,2.8,0);g.add(head);
- B(head,8,3.4,7,4,0,0,skin);B(head,9,2.2,4.6,11.5,-.4,0,skin);
- const jaw=new THREE.Group();jaw.position.set(4,-1.4,0);head.add(jaw);B(jaw,15,1.2,4.6,5.5,-.4,0,belly);
- for(const z of [-2.3,2.3]){S(head,1.05,5,2.2,z*.85,eye);S(head,.55,5.6,2.4,z*.85,dark);B(head,8.5,.7,.3,11.5,-1.2,z,tooth);}
+ level29AnimalAnatomy.ell(head,8,3.4,7,4,0,0,skin);level29AnimalAnatomy.ell(head,9,2.2,4.6,11.5,-.4,0,skin);
+ const jaw=new THREE.Group();jaw.position.set(4,-1.4,0);head.add(jaw);level29AnimalAnatomy.ell(jaw,15,1.2,4.6,5.5,-.4,0,belly);
+ for(const z of [-2.3,2.3]){S(head,1.05,5,2.2,z*.85,eye);S(head,.55,5.6,2.4,z*.85,dark);level29AnimalAnatomy.ell(head,8.5,.7,.3,11.5,-1.2,z,tooth);}
  const tail=new THREE.Group();tail.position.set(-11,2.4,0);g.add(tail);
  const tc=add(tail,new THREE.ConeGeometry(4.2,22,6),skin,-11,0,0);tc.rotation.z=Math.PI/2;tc.scale.set(1,1,.7);
- for(let i=0;i<7;i++)B(g,2.2,1.4,1.2,-9+i*3,5.3,i%2?1.5:-1.5,dark);
- for(let i=0;i<4;i++)B(tail,2,1.2,1,-3-i*4,2.4-i*.4,0,dark);
- const legs=[];for(const [x,z] of [[7,5],[7,-5],[-7,5],[-7,-5]]){const l=B(g,2.6,3,2.6,x,.6,z,skin);legs.push(l);}
+ for(let i=0;i<7;i++)level29AnimalAnatomy.ell(g,2.2,1.4,1.2,-9+i*3,5.3,i%2?1.5:-1.5,dark);
+ for(let i=0;i<4;i++)level29AnimalAnatomy.ell(tail,2,1.2,1,-3-i*4,2.4-i*.4,0,dark);
+ const legs=[];for(const [x,z] of [[7,5],[7,-5],[-7,5],[-7,-5]]){const l=level29AnimalAnatomy.ell(g,2.6,3,2.6,x,.6,z,skin);legs.push(l);}
+ for(const side of [-1,1])for(let i=0;i<7;i++)level29AnimalAnatomy.tip(head,7+i*1.1,-1.3,side*2.1,.18,.7,.18,tooth);
+ for(const x of [-9,-5,-1,3,7])for(const z of [-2,0,2])level29AnimalAnatomy.tip(g,x,5.2,z,.65,1.2,.55,dark);
  g.scale.setScalar(scale);g.userData={head,jaw,tail,legs};return g;
 }
 function spawnGators(){
@@ -119,14 +121,16 @@ function updateGators(){
 /* ---------- Birds ---------- */
 const birdGeo={body:new THREE.SphereGeometry(1.6,8,6),wing:new THREE.BoxGeometry(1.8,.25,6).translate(0,0,3),neck:new THREE.CylinderGeometry(.35,.45,6,6),leg:new THREE.CylinderGeometry(.15,.15,6,4)};
 function birdMesh(col,beak='#e0a53a',size=1){
- const g=new THREE.Group(),m=M(col,{ei:.2});add(g,birdGeo.body,m).scale.set(1.8,.9,1);S(g,1,2.6,.8,0,m);B(g,1.4,.4,.5,3.9,.7,0,M(beak));
+ const g=new THREE.Group(),m=M(col,{ei:.2});add(g,birdGeo.body,m).scale.set(1.8,.9,1);S(g,1,2.6,.8,0,m);
  const wl=new THREE.Group(),wr=new THREE.Group();add(wl,birdGeo.wing,m);add(wr,birdGeo.wing,m).rotation.y=Math.PI;wl.position.y=wr.position.y=.5;g.add(wl,wr);
- B(g,2.4,.3,1.6,-3,.2,0,m);g.scale.setScalar(size);g.userData={wl,wr};return g;
+ for(const side of [-1,1])S(g,.15,3.1,1.05,side*.55,M('#191b18'));
+ const bill=level29AnimalAnatomy.tip(g,4,.7,0,.35,1.6,.28,M(beak));bill.rotation.z=-Math.PI/2;
+ level29AnimalAnatomy.ell(g,2.4,.3,1.6,-3,.2,0,m);g.scale.setScalar(size);g.userData={wl,wr};return g;
 }
 function egretMesh(){
  const g=new THREE.Group(),w=M('#f4f2ea',{ei:.25}),y=M('#e3b52e'),k=M('#2b2b2b');
  add(g,birdGeo.body,w,0,10,0).scale.set(2.2,1.1,1.2);const n=add(g,birdGeo.neck,w,3.2,14,0);n.rotation.z=-.5;S(g,1.1,5,17,0,w);B(g,4,.5,.6,7.2,16.8,0,y);
- for(const z of [-.8,.8])add(g,birdGeo.leg,k,0,4,z);return g;
+ for(const z of [-.8,.8]){add(g,birdGeo.leg,k,0,4,z);S(g,.17,5.7,17.4,z*.7,k);for(let i=-1;i<=1;i++)level29AnimalAnatomy.ell(g,2,.15,.15,1,.3,z+i*.3,k);}return g;
 }
 function spawnBirds(){
  const N=Math.floor(WORLD/TILE);
@@ -227,18 +231,19 @@ function petMesh(kind,col){
  const g=new THREE.Group(),c=M(col,{ei:.2}),dk=M('#1b1410'),pink=M('#e79aa2'),legs=[];
  if(kind==='dog'||kind==='cat'||kind==='pig'){
   const big=kind==='dog',pig=kind==='pig',L=big?9:pig?8:7,H=big?4.4:pig?5:3.4;
-  B(g,L,H,H*.9,0,H/2+3.2,0,c);const head=B(g,H,H*.9,H*.85,L/2+H*.35,H+3.6,0,c);
-  if(kind==='dog'){B(g,2.6,1.8,2.2,L/2+H*.9,H+2.8,0,c);B(head,.8,2.8,1.2,-.4,1.8,-1.4,dk);B(head,.8,2.8,1.2,-.4,1.8,1.4,dk);B(g,1.2,1,1,L/2+H*1.35,H+3.2,0,dk);}
-  if(kind==='cat'){for(const z of [-1,1])add(head,new THREE.ConeGeometry(.8,1.8,4),c,0,2,z);const t=B(g,.8,.8,6,-L/2-1,H+5,0,c);t.rotation.x=0;t.rotation.z=.9;t.scale.set(1,1,1);}
-  if(pig){B(g,1.4,1.8,2.2,L/2+H*.8,H+3.2,0,pink);for(const z of [-1.3,1.3])add(head,new THREE.ConeGeometry(.9,1.4,4),c,0,2.4,z).rotation.x=z>0?.5:-.5;}
+  level29AnimalAnatomy.ell(g,L,H,H*.9,0,H/2+3.2,0,c);const head=level29AnimalAnatomy.ell(g,H,H*.9,H*.85,L/2+H*.35,H+3.6,0,c);
+  if(kind==='dog'){level29AnimalAnatomy.ell(g,2.6,1.8,2.2,L/2+H*.9,H+2.8,0,c);level29AnimalAnatomy.ell(head,.8,2.8,1.2,-.4,1.8,-1.4,dk);level29AnimalAnatomy.ell(head,.8,2.8,1.2,-.4,1.8,1.4,dk);level29AnimalAnatomy.ell(g,1.2,1,1,L/2+H*1.35,H+3.2,0,dk);}
+  if(kind==='cat'){for(const z of [-1,1])add(head,new THREE.ConeGeometry(.8,1.8,4),c,0,2,z);const t=level29AnimalAnatomy.ell(g,.8,.8,6,-L/2-1,H+5,0,c);t.rotation.x=0;t.rotation.z=.9;t.scale.set(1,1,1);}
+  if(pig){level29AnimalAnatomy.ell(g,1.4,1.8,2.2,L/2+H*.8,H+3.2,0,pink);for(const z of [-1.3,1.3])add(head,new THREE.ConeGeometry(.9,1.4,4),c,0,2.4,z).rotation.x=z>0?.5:-.5;}
   for(const z of [-1.3,1.3])S(head,.45,H/2+.05,.6,z*(H/4),dk);
-  if(kind==='dog'){const t=B(g,4,.9,.9,-L/2-1.6,H+4.4,0,c);t.rotation.z=.6;g.userData.tail=t;}
-  for(const [x,z] of [[L/2-1.2,1.3],[L/2-1.2,-1.3],[-L/2+1.2,1.3],[-L/2+1.2,-1.3]])legs.push(B(g,1.3,3.4,1.3,x,1.7,z*(H/3.4),c));
+  if(kind==='dog'){const t=level29AnimalAnatomy.ell(g,4,.9,.9,-L/2-1.6,H+4.4,0,c);t.rotation.z=.6;g.userData.tail=t;}
+  for(const [x,z] of [[L/2-1.2,1.3],[L/2-1.2,-1.3],[-L/2+1.2,1.3],[-L/2+1.2,-1.3]])legs.push(level29AnimalAnatomy.ell(g,1.3,3.4,1.3,x,1.7,z*(H/3.4),c));
  }else if(kind==='parrot'){
-  S(g,1.8,0,4,0,c,1,1.5,1);S(g,1.3,.4,6.6,0,c);B(g,1,.8,.6,1.7,6.4,0,M('#f2c33a'));for(const z of [-1.3,1.3]){S(g,.3,1.1,7,z*.6,dk);const w=B(g,1,3.6,.5,-.3,4,z*1.5,M('#2d8bd8',{ei:.2}));legs.push(w);}
-  B(g,.6,4,1.2,-1.8,1.6,0,M('#2fb33a',{ei:.2})).rotation.z=.4;
+  S(g,1.8,0,4,0,c,1,1.5,1);S(g,1.3,.4,6.6,0,c);level29AnimalAnatomy.ell(g,1,.8,.6,1.7,6.4,0,M('#f2c33a'));for(const z of [-1.3,1.3]){S(g,.3,1.1,7,z*.6,dk);const w=level29AnimalAnatomy.ell(g,1,3.6,.5,-.3,4,z*1.5,M('#2d8bd8',{ei:.2}));legs.push(w);}
+  level29AnimalAnatomy.ell(g,.6,4,1.2,-1.8,1.6,0,M('#2fb33a',{ei:.2})).rotation.z=.4;
  }else{const m=gatorMesh(.32);g.add(m);legs.push(...m.userData.legs);g.userData.gtail=m.userData.tail;}
- g.userData.legs=legs;return noShadow(g);
+ if(['dog','cat','pig'].includes(kind))level29AnimalAnatomy.details(g,kind,M);
+ g.userData.legs=legs;g.userData.species=kind;return noShadow(g);
 }
 const PET_COLORS={dog:'#9a6a3a',cat:'#d8893a',parrot:'#d23a32',pig:'#efb0b4',gator:'#3b4a26'};
 let petObj=null,petRef=null;
