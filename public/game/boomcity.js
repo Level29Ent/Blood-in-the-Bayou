@@ -74,9 +74,17 @@ function buildCasino(){
   const body=lam('#1b1420'),trim=basic('#f2c14e'),pink=basic('#ff3d8b'),cyan=basic('#3de0ff');
   if(city.casinoVenue)buildVenue(city.casinoVenue);else put(g,geoBox(w,64,d),body,cxp,32,czp);
   put(g,geoBox(w*.46,150,d*.42),lam('#251a2c'),cxp,139,z0+d*.3);
-  // Neon trim sits proud of the existing room shell, not coplanar with its wall.
-  for(const y of [64,150])put(g,geoBox(y===64?w+6:w*.46+4,2,y===64?d+6:d*.42+4),y===64?pink:cyan,cxp,y,y===64?czp:z0+d*.3);
-  for(let k=0;k<6;k++)put(g,geoBox(w*.46+1,1.5,d*.42+1),k%2?pink:trim,cxp,82+k*11,z0+d*.3);
+  // Exterior bands are thin perimeter rails, never solid plates through the building.
+  function band(width,depth,y,height,material,z){
+    for(const side of [-1,1]){
+      const a=put(g,geoBox(width,height,1.2),material,cxp,y,z+side*depth/2);
+      const b=put(g,geoBox(1.2,height,depth),material,cxp+side*width/2,y,z);
+      a.name=b.name='casino-exterior-band';
+    }
+  }
+  band(w+6,d+6,64,2,pink,czp);
+  band(w*.46+4,d*.42+4,150,2,cyan,z0+d*.3);
+  for(let k=0;k<6;k++)band(w*.46+1,d*.42+1,82+k*11,1.5,k%2?pink:trim,z0+d*.3);
   put(g,geoBox(w,2,2),pink,cxp,48,front+2.5);
   signPlane(g,'BOOMCITY',w*.43,20,cxp,177,z0+d*.51+2,0,'#ffe27a','#1a0f1f','#ff3d8b');
   signPlane(g,'BOOMCITY CASINO',w*.78,12,cxp,57,front+4,0,'#ffffff','#2a0d22','#ff3d8b');
