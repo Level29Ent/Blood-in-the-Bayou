@@ -1537,6 +1537,7 @@ function reportLoopError(where, e){
 function loop(now){
   // Schedule first so a thrown error in one frame can never stop the game permanently.
   requestAnimationFrame(loop);
+  if (window.bayouAdActive) { last = now; accT = 0; return; }
   // Avoid a catch-up spiral on a slow phone: at most three simulation steps per rendered frame.
   accT = Math.min(50, accT + Math.min(50, now - last)); last = now;
   let stepped = false;

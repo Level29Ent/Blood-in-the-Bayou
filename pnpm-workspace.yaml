@@ -1,3 +1,6 @@
+packages:
+  - native/ios-app
+
 pmOnFail: ignore
 
 minimumReleaseAgeExclude:

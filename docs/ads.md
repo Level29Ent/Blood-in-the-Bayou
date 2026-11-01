@@ -1,56 +1,81 @@
-# Google H5 Ads setup (bloodinthebayougame.com)
+# Blood in the Bayou ads: web and iPhone
 
-This is a **disabled placeholder**, not live monetization. The shared script is in
-both the Next layout head and the game iframe head. Only the game document may
-load Google's tag: Google requires the tag, canvas, and adBreak calls in the same
-document. No publisher IDs or ad units have been invented.
+**Not live monetization.** Browser ads remain disabled pending approval/consent
+setup. iOS has a native test-ads integration that still needs Xcode/device checks
+and a new signed App Store build.
 
-## Before enabling
+## Website
 
-1. Complete AdSense H5 Games Ads eligibility/site approval for bloodinthebayougame.com
-   and obtain your AdSense publisher ID. Configure privacy disclosures, a suitable
-   consent-management platform, and Google's required publisher/site files using
-   the exact values supplied in your Google account.
-2. Replace `publisherId` in `public/game/ads.js`; keep `testMode: true` during testing.
-   Set `enabled: true` only after review. Your CMP must set `consentGranted` according
-   to the applicable consent requirements, then call `bayouAds.initialize()` inside
-   the iframe. The boolean is only an integration gate, not a consent platform.
-3. Connect retry and next-level **user actions** to the functions below. They are
-   deliberately not wired to death/mission timers. Implement synchronous pause/mute
-   and exact prior-state restoration, including multiplayer behavior and all audio.
-4. Test ad shown, no-fill, blocked SDK, consent denied, and duplicate clicks. Remove
-   test mode only after Google approval and consent/policy verification.
+The owner's publisher is configured in `public/game/ads.js`:
+`ca-pub-9730543201329278`. The tag, canvas and placement calls stay in the game
+iframe document; the Next layout must not also load Google's SDK.
 
-```js
-// In the game iframe, from a retry/continue button handler:
-const accepted = window.bayouAds.gameOver({ // or .levelComplete(...)
-  pauseAndMute() { /* Save state; synchronously pause gameplay and mute all audio. */ },
-  restore() { /* Restore the saved gameplay and audio state after an actual ad. */ },
-  done(info) { /* Continue retry/next-level flow, even when no ad was available. */ },
-});
-if (!accepted) {
-  // Continue normally: disabled, not ready, consent absent, or another break pending.
-}
-// Update alongside the game's mute control:
-window.bayouAds.setSound(false);
-```
+The supplied screenshot lists **AdMob** as the only active product. It does not
+establish AdSense for Content or H5 Games Ads approval. Using that same Google
+account:
 
-Do not use these empty example callbacks in production. A true return means the
-placement was submitted, not that an ad was shown. Never block gameplay waiting
-for SDK readiness. These triggers use Google's `next` placement for a user-driven
-restart/next-level transition, with distinct reporting names.
+1. [Apply for the AdSense account upgrade](https://support.google.com/adsense/answer/6023158?hl=en)
+   and connect `bloodinthebayougame.com` as Google directs.
+2. [Apply for H5 Games Ads access](https://support.google.com/adsense/answer/1705831?hl=en-GB).
+   Approval is not guaranteed.
+3. Configure privacy disclosures, an appropriate consent-management platform and
+   the exact publisher/site verification files requested in the Google account.
+4. After approval, enable the configuration while retaining test mode. The CMP
+   must set `bayouAdsConfig.consentGranted` according to applicable requirements
+   and call `bayouAds.initialize()` **inside the game iframe**. The boolean is
+   an integration gate, not a consent platform. Do not set it blindly to true.
+5. Verify ads/no fill/SDK blocked/consent denied/duplicate taps/audio restoration,
+   then remove test mode only for an approved live release.
 
-## AdMob (optional Android app, not the website)
+The existing `enabled: false`, `testMode: true`, and `consentGranted: false`
+defaults prevent Google ad requests. Merely deploying this PR does not earn money.
 
-Create/configure your Android app and interstitial ad unit in your own AdMob
-account. Add the Google Mobile Ads SDK to the native host and register its WebView
-with `MobileAds.registerWebView`. Set `admob.interstitialSlot` to the issued ad unit
-ID; retain the AdSense publisher ID too. `rewardedSlot` is reserved for future
-rewarded integration; these triggers do not request rewarded ads or grant rewards.
-There is no native Android host in this repository, and no Google account was
-created or configured by this change. iOS support is not implied.
+## Shared mission placement
+
+`public/game/ad-transitions.js` connects the **Take the Job** user action to an
+interstitial before a subsequent mission. There are no launch, combat, automatic
+death/respawn, or timer-triggered placements. Placements skip multiplayer,
+driving, the first mission, and uncontrolled Spotify playback. A three-minute
+interval limits placements. No ready ad means the mission starts normally.
+
+An actual ad pauses simulation/render work, blocks game input, cancels briefing
+speech, mutes the game's audio and suspends its AudioContext. Dismissal/failure
+restores the prior mute/context state, then starts the selected mission exactly
+once. No-fill continues without pausing. Verified premium ad-free ownership is
+respected. The premium storefront is not made functional by this change.
+
+## Native iPhone app
+
+The owner confirmed the downloadable ZIP is the native host and the repository
+contains the current game. Its maintained source is now `native/ios-app`; build
+commands always copy **current `public/game` files**, not the ZIP's old game.
+
+Owner-supplied public identifiers:
+
+- App: `ca-app-pub-9730543201329278~2335600781`
+- Interstitial: `ca-app-pub-9730543201329278/8884513486`
+
+The app ID is in the native Info.plist, and the live unit is in native config.
+**Test mode is on for all builds** and substitutes Google's iOS test unit
+`ca-app-pub-3940256099942544/4411468910`. It cannot generate revenue.
+The native plugin resolves UMP consent before SDK initialization/loading and
+exposes privacy options. It never passes an iOS ad unit to the H5 web tag.
+
+See [native build and release instructions](../native/ios-app/README.md).
+`pnpm ios:sync` stages the latest game and registers the plugin;
+`pnpm ios:archive` regenerates the downloadable source ZIP. Recipients must
+install dependencies and sync on their Mac before opening Xcode. A website
+update alone cannot update an installed iPhone app. Native compilation, device
+ad delivery, signing and App Store upload remain unverified/unperformed here.
+
+## Android
+
+No Android host is included. Google's H5 AdMob WebView bridge is **Android-only**;
+`admob.interstitialSlot` stays empty. Do not put the supplied iOS unit there.
+Android support would require an Android app, matching ad units and a registered
+Google Mobile Ads WebView. Rewarded placements are not implemented.
 
 References:
 - https://developers.google.com/ad-placement/docs/example
-- https://developers.google.com/ad-placement/apis/adbreak
-- https://support.google.com/adsense/answer/9959170
+- https://developers.google.com/admob/ios/quick-start
+- https://developers.google.com/admob/ios/interstitial

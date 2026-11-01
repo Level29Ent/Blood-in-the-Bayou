@@ -1,9 +1,9 @@
-/* H5 Ads scaffold. No Google requests until explicitly enabled and consent is handled. */
+/* H5 web ads configuration. No Google requests until approval, enablement, and consent. */
 (function () {
   'use strict';
   const config = {
     enabled: false,
-    publisherId: 'ca-pub-REPLACE_WITH_YOUR_PUBLISHER_ID',
+    publisherId: 'ca-pub-9730543201329278', // Website publisher; not the iOS AdMob app ID.
     testMode: true,
     consentGranted: false, // Set only through your consent-management integration.
     sound: 'on',
