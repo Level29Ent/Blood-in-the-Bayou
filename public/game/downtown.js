@@ -140,14 +140,21 @@ function lowriderMesh(color){
   return g;}
 
 function bonnieMesh(){
-  const g=new THREE.Group(),skin=lam('#7a4a2e'),dress=lam('#14231a',0x061a0c),goldM=lam(COL.gold,0x3a2600),braid=lam('#0d0a0a');
-  cyl(g,4.5,7,26,0,13,0,dress);cyl(g,2.4,2.4,6,0,28,0,skin);
-  const head=new THREE.Mesh(new THREE.SphereGeometry(5,14,12),skin);head.position.set(0,34,0);g.add(head);
-  const crown=new THREE.Mesh(new THREE.TorusGeometry(5.2,.7,6,20),goldM);crown.rotation.x=Math.PI/2;crown.position.set(0,36.5,0);g.add(crown);
-  for(let k=0;k<12;k++){const a=k/12*Math.PI*2;if(Math.sin(a)>.75)continue;cyl(g,.8,.6,24,Math.cos(a)*4.6,24,Math.sin(a)*4.6,braid,6);}
-  for(const x of [-6,6]){const arm=cyl(g,1.4,1.2,16,x,18,0,skin);arm.rotation.z=x>0?-.2:.2;}
-  for(const sx of [-1,1]){const eye=new THREE.Mesh(new THREE.SphereGeometry(.6,10,8),lam('#231d19'));eye.position.set(sx*1.6,34.6,4.4);g.add(eye);const earring=new THREE.Mesh(new THREE.TorusGeometry(.8,.2,6,12),goldM);earring.position.set(sx*4.3,32.7,1);g.add(earring);}box(g,2.5,.7,.5,0,31.8,4.5,lam('#94584e'));for(let k=0;k<3;k++)box(g,.5,.7,.5,0,16+k*3,4.4,goldM);
-  g.scale.setScalar(.54);g.name='Bonnie De Vette · human scale';return g;}
+  const g=makeFigure(false),u=g.userData;setFigureColors(g,'#7a4a2e','#14231a','#24352c','#0d0a0a');
+  u.torso.scale.z*=.94;u.longHair.visible=true;u.longHair.scale.set(.95,1.15,1.02);
+  const goldM=lam(COL.gold),braid=u.hair.material;
+  for(let k=0;k<12;k++){
+    const a=k/12*Math.PI*2;if(Math.cos(a)>.45)continue;
+    const loc=new THREE.Mesh(new THREE.CylinderGeometry(.2,.28,7.5,6),braid);
+    loc.position.set(Math.cos(a)*2.05,17.1,Math.sin(a)*2.05);u.body.add(loc);
+  }
+  const crown=new THREE.Mesh(new THREE.TorusGeometry(2.05,.16,6,20),goldM);crown.rotation.x=Math.PI/2;crown.position.set(0,20,0);u.body.add(crown);
+  for(const z of [-2.05,2.05]){const ring=new THREE.Mesh(new THREE.TorusGeometry(.45,.1,6,12),goldM);ring.position.set(.1,17.8,z);u.body.add(ring);}
+  for(let k=0;k<3;k++)box(u.body,.18,.25,.25,2.4,11+k*1.2,0,goldM);
+  g.rotation.y=-Math.PI/2;u.armL.rotation.z=.06;u.armR.rotation.z=-.06;
+  g.name='Bonnie De Vette · human scale';g.userData.identity='bonnie';window.level29People?.identify(g,'bonnie');
+  g.traverse(o=>{o.userData.noBatch=true;});return g;
+}
 
 function genericBuilding(g,L,height,color,fg,bg){
   const fb=L.fb,w=(fb.x1-fb.x0+1)*T,d=(fb.y1-fb.y0+1)*T,cx=fb.x0*T+w/2,cz=fb.y0*T+d/2;
