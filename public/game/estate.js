@@ -180,7 +180,7 @@ function buildPenthouse(){
 function germanShepherd(){
  const g=new THREE.Group();g.name='Ronniebaby German Shepherd';
  const tan=material('#b07a3c',.8),black=material('#1d1a17',.8),dark=material('#5a3a1e',.8),eye=material('#0b0a09',.3);
- const B=(parent,w,h,d,x,y,z,m)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);mesh.position.set(x,y,z);parent.add(mesh);return mesh;};
+ const B=level29AnimalAnatomy.ell;
  B(g,11,4.4,4.2,0,7.4,0,tan);
  B(g,8.6,1.6,4.5,-.6,9.6,0,black);
  B(g,3.4,3.8,4,4.6,8.6,0,tan);
@@ -188,9 +188,10 @@ function germanShepherd(){
  const head=new THREE.Group();head.position.set(6.8,11.6,0);g.add(head);
  B(head,3.4,3,3.2,0,0,0,tan);B(head,1.2,2.4,2.4,-.6,.7,0,black);
  B(head,2.8,1.6,2,2.6,-.6,0,tan);B(head,1.2,1.2,1.4,3.6,-.4,0,black);B(head,.6,.6,.8,4.2,-.1,0,eye);
- for(const z of [1.1,-1.1]){const ear=B(head,.9,2.6,1.1,-.4,2.6,z,black);ear.rotation.x=z>0?-.18:.18;B(head,.4,.4,.4,1.5,.5,z*1.2,eye);}
+ for(const z of [1.1,-1.1]){const ear=level29AnimalAnatomy.tip(head,-.4,2.6,z,.7,3,.65,black);ear.rotation.x=z>0?-.18:.18;B(head,.4,.4,.4,1.5,.5,z*1.2,eye);}
  const tail=new THREE.Group();tail.position.set(-5.4,8.6,0);g.add(tail);
  const t1=B(tail,4.6,1.3,1.3,-2,-.8,0,tan);t1.rotation.z=.55;B(tail,2.2,1.2,1.2,-4.2,-2.4,0,black).rotation.z=.9;
+ for(const z of [-1.1,1.1]){B(head,.12,.12,.12,1.7,.6,z*1.25,material('#e5cf9b'));for(let k=0;k<3;k++)B(g,1.1,.15,.15,4.3,.4,z+(k-1)*.3,dark);}
  g.userData.tail=tail;g.userData.head=head;
  g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
  return g;
