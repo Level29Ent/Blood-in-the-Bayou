@@ -1,5 +1,5 @@
 'use strict';
-// Downtown expansion: airport (3 Level 29 jets + 13s bomber gunner ride), clouds, bird hunting, dispensary,
+// Downtown expansion: airport (3 Level 29 jets + 29s bomber gunner ride), clouds, bird hunting, dispensary,
 // smoke shop, food truck, university + football stadium, Bonnie De Vette's slab dealership, the Velvet Jester
 // club, the BoomCity casino floor (6 jester slots, blackjack, poker, roulette wheel, Level 29 Jackpot),
 // the Natchez deck net fishing, a steamboat safe zone, and a playable confidence course. Load after boomcity.js.
@@ -14,7 +14,7 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 const d2=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
 const isWorld=c=>!!(c&&c.world&&c.width===WORLD_SIZE);
 const COL={purple:'#5b2a86',gold:'#f2c14e',green:'#2fae66'};
-const BOMBER_COST=2900,BOMBER_FRAMES=13*60;
+const BOMBER_COST=2900,BOMBER_FRAMES=29*60;
 const coarse=()=>window.matchMedia&&matchMedia('(pointer: coarse)').matches;
 const addJackpot=n=>{save.jackpot+=n;persist();};
 
@@ -179,7 +179,7 @@ function buildLots(g){
       const towerX=(L.x1+.2)*T,towerZ=(L.y0+1.5)*T;cyl(g,8,10,90,towerX,45,towerZ,lam('#d9d4c4'));cyl(g,16,14,18,towerX,99,towerZ,lam('#2a6a8a',0x062030));
       const p1=planeMesh(false);p1.position.set((L.x0+(L.x1-L.x0+1)*.5)*T,14,(L.y0+2.5)*T);p1.rotation.y=-Math.PI/2;g.add(p1);
       const pb=planeMesh(true);pb.position.set((L.x0+(L.x1-L.x0+1)*.8)*T,16,(L.y0+2.5)*T);pb.rotation.y=-Math.PI/2;g.add(pb);
-      sign(g,'BOMBER RIDE '+money(BOMBER_COST)+' · 13 SEC',120,18,(L.x0+(L.x1-L.x0+1)*.8)*T,8,(L.y0+4.3)*T,'#ff6b6b','#1a0808');
+      sign(g,'BOMBER RIDE '+money(BOMBER_COST)+' · 29 SEC',120,18,(L.x0+(L.x1-L.x0+1)*.8)*T,8,(L.y0+4.3)*T,'#ff6b6b','#1a0808');
       L.planes=[p1,pb];
     }
     else if(id==='stadium'){
@@ -292,7 +292,7 @@ function updateSky(){
 // ---------------------------------------------------------------- steamboat safe zone
 const dockSafe=(x,y)=>{const B=window.boomCity;if(!B||!isWorld(city))return false;return d2(x,y,B.DOCK.x,B.DOCK.y)<600||d2(x,y,B.CAPTAIN.x,B.CAPTAIN.y)<500;};
 function updateSafeZone(){
-  if(!player||!dockSafe(player.x,player.y))return;
+  if(!player||ride||!dockSafe(player.x,player.y))return;
   const push=o=>{if(!o||typeof o.x!=='number')return;const d=d2(o.x,o.y,player.x,player.y);if(d<520){const k=(520-d)/520*4+1;o.x+=(o.x-player.x)/(d||1)*k;o.y+=(o.y-player.y)/(d||1)*k;o.alert=false;if('atkCd' in o)o.atkCd=Math.max(o.atkCd,30);}};
   for(const z of zombies)if(z.alive)push(z);
   try{if(typeof gators!=='undefined'&&Array.isArray(gators))for(const g of gators)push(g);}catch(_){}
@@ -307,28 +307,55 @@ function startBomber(){
   cash-=BOMBER_COST;sfx('cash');save.bomberRuns++;persist();closePanel();
   const L=lots.airport,m=planeMesh(true);scene.add(m);
   ride={t:BOMBER_FRAMES,a:0,cx:(L.x0+6)*T,cy:(L.y0+5)*T,home:{x:player.x,y:player.y},kills:0,cd:0,mesh:m};
-  ride.altitude=level29AircraftFlight.altitude(city,ride.cx,ride.cy,440);
-  ride.mesh.position.set(ride.cx+440,ride.altitude,ride.cy);
+  ride.homeView={yaw:view.yaw,pitch:view.pitch};ride.startYaw=view.yaw;ride.startPitch=view.pitch;view.lastPlayer=player;
+  ride.radius=level29Gunnery.ORBIT_RADIUS;const center=level29Gunnery.orbitCenter(ride.cx,ride.cy,MW*T,MH*T,ride.radius);ride.cx=center.x;ride.cy=center.y;
+  ride.remainingMs=level29Gunnery.DURATION_SECONDS*1000;ride.lastUpdate=performance.now();
+  ride.altitude=level29AircraftFlight.altitude(city,ride.cx,ride.cy,ride.radius);
+  ride.mesh.position.set(ride.cx+ride.radius,ride.altitude,ride.cy);
   toast('GUNNER SEAT · HOLD FIRE ON THE .50 CAL');
 }
 function updateRide(){
   if(!ride)return;
   if(state==='shop'){try{if(typeof closeShop==='function')closeShop();}catch(_){}try{closePanel();}catch(_){}document.querySelectorAll('.panel,.overlay,#shop').forEach(e=>{if(e.style)e.style.display='none';});state='play';}
+  const now=performance.now(),elapsed=Math.max(0,now-ride.lastUpdate);ride.lastUpdate=now;
   if(state!=='play')return;
-  const R=440;ride.a+=.011;ride.t--;
+  ride.remainingMs=Math.max(0,ride.remainingMs-elapsed);ride.t=Math.ceil(ride.remainingMs*.06);
+  const R=ride.radius;ride.a+=elapsed*.000318;
   const px=ride.cx+Math.cos(ride.a)*R,py=ride.cy+Math.sin(ride.a)*R;
   player.x=px;player.y=py;if('vx' in player){player.vx=0;player.vy=0;}
   ride.mesh.position.set(px,ride.altitude,py);ride.mesh.rotation.set(0,-(ride.a+Math.PI/2),0);ride.mesh.rotateX(.35);
   if(frame%18===0&&zombiesNear(px,py,520)<16){const a=Math.random()*6.28,r=rnd(120,420);spawnZombieAt(px+Math.cos(a)*r,py+Math.sin(a)*r);}
-  const firing=fireHeld||mouse.down||keys[' ']||keys.Space;
-  if(firing&&--ride.cd<=0){ride.cd=6;let best=null,bd=460;for(const z of zombies){if(!z.alive)continue;const d=d2(z.x,z.y,px,py);if(d<bd){bd=d;best=z;}}
-    if(best){addTracer(px,py,best.x,best.y);best.killSource='player';best.lastHit=0;killZombie(best,(best.x-px)*.02,(best.y-py)*.02);ride.kills++;}else addTracer(px,py,px+rnd(-200,200),py+rnd(-200,200));
-    if(frame%12<6)sfx('bang');}
+  const firing=fireHeld||mouse.down||keys[' ']||keys.Space||gp.fire||touch.shoot;
+  if(firing&&--ride.cd<=0){ride.cd=6;fireBomber();sfx('bang');}
   if(ride.t<=0)endRide();
 }
-function addTracer(x1,y1,x2,y2){const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x1,(ride?.altitude||150)-5,y1),new THREE.Vector3(x2,(city.heightAt?city.heightAt(x2,y2):0)+4,y2)]);const l=new THREE.Line(geo,new THREE.LineBasicMaterial({color:'#ffd36b'}));scene.add(l);tracers.push({l,t:6});}
-function updateTracers(){tracers=tracers.filter(t=>{if(--t.t<=0){scene.remove(t.l);t.l.geometry.dispose();return false;}return true;});}
-function endRide(){const r=ride;ride=null;fireHeld=false;scene.remove(r.mesh);player.x=r.home.x;player.y=r.home.y;player.vx=player.vy=0;mouse.down=false;keys[' ']=keys.Space=false;snapCamera();const bounty=r.kills*15;cash+=bounty;
+function fireBomber(){
+  level29AircraftCamera.pose(ride);
+  const origin=camera.position.clone(),direction=new THREE.Vector3();camera.getWorldDirection(direction);
+  const ray=new THREE.Raycaster(origin,direction,0,level29Gunnery.MAX_RANGE),candidates=[];
+  const visible=o=>{for(let p=o;p;p=p.parent)if(!p.visible)return false;return true;};
+  // Only rendered, alive zombies can be hit. Do not award kills for offscreen,
+  // culled or hidden NPCs; exact mesh intersections must lie on the center ray.
+  const cull=isNight()?470:600,fog=scene.fog?.far||level29Gunnery.MAX_RANGE;
+  for(const z of zombies){const m=zPool?.map.get(z);if(!z.alive||!m||!m.parent||!visible(m)||d2(z.x,z.y,player.x,player.y)>cull)continue;
+    m.updateWorldMatrix(true,true);const hit=ray.intersectObject(m,true).find(h=>visible(h.object));
+    if(hit&&hit.distance<fog*.9)candidates.push({target:z,visible:true,alive:true,distance:hit.distance});
+  }
+  const obstacles=[],box=(x,y,z,w,h,d)=>obstacles.push({min:{x,y,z},max:{x:x+w,y:y+h,z:z+d}});
+  for(const b of city.buildings){const v=city.venues.find(v=>v.b===b),h=b===city.residence?.b?1050:v?.id==='hospital'?300:v?Math.max(52,b.H||52):Math.max(30,(b.H||42)*2.4);box(b.x,b.baseY||0,b.y,b.w,h,b.h);}
+  for(const t of city.trees||[])box(t.x-8,0,t.y-8,16,t.H||55,16);
+  for(const r of city.rocks||[])box(r.x-r.r,0,r.y-r.r,r.r*2,r.r*2,r.r*2);
+  for(const c of cars)if(!c.dead)box(c.x-c.spec.len/2,city.heightAt?.(c.x,c.y)||0,c.y-c.spec.wid/2,c.spec.len,c.boat?30:18,c.spec.wid);
+  const shot=level29Gunnery.firstHit(origin,direction,candidates,obstacles,(x,z)=>city.heightAt?city.heightAt(x,z):0);
+  const muzzle=origin.clone().add(new THREE.Vector3(.8,-.7,-2).applyQuaternion(camera.quaternion));
+  addTracer(muzzle,shot.point);
+  if(shot.target){const z=shot.target;z.killSource='player';z.lastHit=0;z.hp-=level29Gunnery.DAMAGE;z.flash=4;z.alert=true;
+    if(z.hp<=0){killZombie(z,direction.x*8,direction.z*8);if(!z.alive)ride.kills++;}
+  }
+}
+function addTracer(origin,point){const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(origin.x,origin.y,origin.z),new THREE.Vector3(point.x,point.y,point.z)]);const l=new THREE.Line(geo,new THREE.LineBasicMaterial({color:'#ffd36b'}));scene.add(l);tracers.push({l,t:6});}
+function updateTracers(){tracers=tracers.filter(t=>{if(--t.t<=0){scene.remove(t.l);t.l.geometry.dispose();t.l.material.dispose();return false;}return true;});}
+function endRide(){const r=ride;ride=null;fireHeld=false;scene.remove(r.mesh);player.x=r.home.x;player.y=r.home.y;player.vx=player.vy=0;mouse.down=false;keys[' ']=keys.Space=false;view.yaw=r.homeView.yaw;view.pitch=r.homeView.pitch;snapCamera();const bounty=r.kills*15;cash+=bounty;
   toast('LANDED · '+r.kills+' ZOMBIES FROM THE SKY · BOUNTY '+money(bounty));sfx('cash');}
 
 // ---------------------------------------------------------------- obstacle course
@@ -554,8 +581,8 @@ function shopPanel(id){const S=SHOPS[id];let m='';return{
 
 // ---------------------------------------------------------------- airport, Bonnie, university, stadium, fishing
 const airportPanel={render(){return '<div class="eb">Level 29 International</div><h2>Airport terminal</h2>'+wallet()+
-  '<div class="grid"><div class="card"><b>Jester One</b><p>Purple and gold jet with the Level 29 logo on the tail. Always flying over the city.</p></div><div class="card"><b>Jester Two</b><p>Parked on the apron for display.</p></div><div class="card"><b>B-29 Jester Bomber</b><p>Ride the .50 cal gunner seat for 13 seconds and shoot zombies from the sky. $15 bounty per kill.</p><button class="g" data-a="bomb" '+(cash<BOMBER_COST?'disabled':'')+'>Fly · '+money(BOMBER_COST)+'</button></div></div>'+
-  '<p style="color:#a89fb0">Hold the mouse button, Space, or the FIRE button to shoot. You can\'t be hurt while you\'re in the air.</p>';},act(a){if(a==='bomb')startBomber();}};
+  '<div class="grid"><div class="card"><b>Jester One</b><p>Purple and gold jet with the Level 29 logo on the tail. Always flying over the city.</p></div><div class="card"><b>Jester Two</b><p>Parked on the apron for display.</p></div><div class="card"><b>B-29 Jester Bomber</b><p>Ride the .50 cal gunner seat for 29 seconds and shoot zombies from the sky. $15 bounty per kill.</p><button class="g" data-a="bomb" '+(cash<BOMBER_COST?'disabled':'')+'>Fly · '+money(BOMBER_COST)+'</button></div></div>'+
+  '<p style="color:#a89fb0">Move the mouse, drag the view, or use the right stick to aim the center crosshair. Hold the mouse button, Space, FIRE, or RT to shoot. Hits require a visible zombie under the crosshair; buildings block shots. You can\'t be hurt while you\'re in the air.</p>';},act(a){if(a==='bomb')startBomber();}};
 const bonniePanel={render(){const L=lots.dealer;return '<div class="eb">Owner · in-game cash</div><h2>Bonnie De Vette</h2><button data-a=story>RECOVERY MISSIONS · TALK TO BONNIE</button>'+wallet()+'<p>Welcome to Slab Motors. Choose your ride; I will deliver it to the front lot.</p><div class="grid">'+(L?.inventory||[]).map((r,i)=>'<div class="card"><b>'+CAR_SPECS[r.type].name+'</b><p>'+money(r.price)+'</p><button data-a="vehicle" data-v="'+i+'" '+(cash<r.price?'disabled':'')+'>PURCHASE</button></div>').join('')+'</div><p>Owned vehicles are stored in your local garage.</p>'+((window.level29OpenWorld?.save.dealerGarage)||[]).map((r,i)=>'<button data-a=recall data-v='+i+'>DELIVER OWNED '+CAR_SPECS[r.type].name+'</button>').join('');},act(a,v){
  if(!lots.dealer?.venue||!insideVenue(lots.dealer.venue,player))return;
  if(a==='story'){closePanel();return window.level29CityStories?.open('bonnie');}
