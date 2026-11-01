@@ -3,9 +3,12 @@
 function intersects(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;}
 function contains(r,x,y,pad=0){return x>=r.x-pad&&x<=r.x+r.w+pad&&y>=r.y-pad&&y<=r.y+r.h+pad;}
 function slots(b,count){
- const columns=Math.min(4,Math.max(1,Math.floor((b.w-28)/30))),rows=Math.ceil(count/columns),depth=Math.min(64,b.h*.48),out=[];
- for(let i=0;i<count;i++){const row=Math.floor(i/columns),col=i%columns,n=Math.min(columns,count-row*columns),w=(b.w-28)/n,h=depth/rows;
- out.push({x:b.x+14+w*(col+.5),y:b.y+14+h*(row+.5),w:Math.min(26,w-6),d:Math.min(20,h-6),top:14});}
+ // Side-wall galleries leave a wide central aisle from the entrance to the dealer.
+ const perSide=Math.ceil(count/2),depth=Math.min(18,(b.h-36)/perSide-6),out=[];
+ for(let i=0;i<count;i++){
+  const side=i%2?-1:1,row=Math.floor(i/2),spacing=(b.h-40)/perSide;
+  out.push({x:b.x+b.w/2+side*(b.w/2-22),y:b.y+20+spacing*(row+.5),w:24,d:Math.max(8,depth),top:8});
+ }
  return out;
 }
 function foundation(c,b){const at=c.heightAt||(()=>0),x=b.x+b.w/2;const h=at(x,b.y+b.h+20);return Number.isFinite(h)?Math.max(0,h):0;}

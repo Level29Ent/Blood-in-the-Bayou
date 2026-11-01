@@ -58,9 +58,9 @@ function plate(g,tex,w,h,x,y,z){
 // Combine static parts by material. A detailed package draws in a handful of calls, not dozens.
 function bake(g){
  g.updateMatrixWorld(true);const buckets=new Map(),old=[];
- g.traverse(o=>{if(!o.isMesh||o.userData.keep)return;old.push(o);const mat=o.material;if(!buckets.has(mat))buckets.set(mat,[]);const a=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();a.applyMatrix4(o.matrixWorld);buckets.get(mat).push(a);});
+ g.traverse(o=>{if(!o.isMesh||o.userData.keep)return;old.push(o);const mat=o.material,key=mat.uuid+'|'+!!o.userData.firstPersonOnly;if(!buckets.has(key))buckets.set(key,{mat,geos:[],firstPersonOnly:!!o.userData.firstPersonOnly});const a=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();a.applyMatrix4(o.matrixWorld);buckets.get(key).geos.push(a);});
  for(const o of old)o.parent.remove(o);
- for(const [mat,geos]of buckets){
+ for(const {mat,geos,firstPersonOnly}of buckets.values()){
   const result=new THREE.BufferGeometry();
   for(const attr of ['position','normal','uv']){
    if(!geos.every(a=>a.attributes[attr]))continue;
@@ -68,12 +68,13 @@ function bake(g){
    for(const a of geos){data.set(a.attributes[attr].array,off);off+=a.attributes[attr].array.length;}
    result.setAttribute(attr,new THREE.BufferAttribute(data,size));
   }
-  result.computeBoundingSphere();g.add(new THREE.Mesh(result,mat));for(const a of geos)a.dispose();
+  result.computeBoundingSphere();const merged=new THREE.Mesh(result,mat);merged.userData.firstPersonOnly=firstPersonOnly;g.add(merged);for(const a of geos)a.dispose();
  }
  const retired=new Set(old.map(o=>o.geometry));for(const geo of retired)geo.dispose();
  return g;
 }
 function arms(g,one=false){
+ const existing=new Set(g.children);
  const cuff=finish('cuff','#232b29',.96);
  const sleeve=(a,b)=>{
   const start=new THREE.Vector3(...a),end=new THREE.Vector3(...b),v=end.clone().sub(start);
@@ -89,6 +90,7 @@ function arms(g,one=false){
  hand(.6,-2.3,2.5,-.12);
  sleeve([.7,-3.2,3.1],[2.8,-5.4,10.3]);
  if(!one){hand(-.1,-1.7,-6,-.12);sleeve([-.1,-2.7,-4.8],[-1.6,-4.9,3.4]);}
+ for(const child of g.children)if(!existing.has(child))child.traverse(o=>{o.userData.firstPersonOnly=true;});
 }
 function screws(g,x,y,z,count=3){
  for(let k=0;k<count;k++){cy(g,.11,.11,.06,edge,x,y,z+k*.8,'x',8);rb(g,.07,.13,.025,dark,x+.04,y,z+k*.8,.01);}
@@ -250,6 +252,11 @@ const oldView=syncViewModel;
 syncViewModel=function(){oldView();if(gun&&installed){gun.scale.setScalar(SW<700?.53:.55);if(SW<700){gun.position.x-=2.9;gun.position.y+=1.6;}}};
 window.level29ArsenalVisuals={version:1,createDisplayModels(){
  ensurePools();const models={m240:gun,...extraWeap},out={};
- for(const [id,source]of Object.entries(models)){const clone=source.clone(true);clone.visible=true;clone.traverse(o=>{if(o.isMesh){o.userData.noBatch=true;if(o.material?.transparent&&o.material?.blending===THREE.AdditiveBlending)o.visible=false;}});out[id]=clone;}return out;
+ for(const [id,source]of Object.entries(models)){
+  const clone=source.clone(true),remove=[];clone.visible=true;
+  clone.traverse(o=>{if(o.userData.firstPersonOnly||o.isMesh&&o.material?.transparent&&o.material?.blending===THREE.AdditiveBlending)remove.push(o);else if(o.isMesh)o.userData.noBatch=true;});
+  for(const o of remove)o.parent?.remove(o);
+  out[id]=clone;
+ }return out;
 },createCacheMesh(){const m=supplyCase();m.traverse(o=>{o.userData.noBatch=true;});return m;},get packages(){return pkgMeshes;},get weapons(){return {m240:gun,...extraWeap};}};
 })();
