@@ -190,9 +190,19 @@ function amenities(group){
  const q=batch(group),concrete=material('#a7a99b'),iron=material('#343f3c',.4),wood=material('#8b6242'),white=material('#e4dec8'),green=material('#467958');
  for(const f of city.features){const x=f.x,z=f.y,w=f.w,d=f.h;
   if(f.kind==='cemetery'){
-   q.box(w,1,d,x+w/2,.55,z+d/2,material('#8b8472'));
-   const cols=Math.max(1,Math.min(5,Math.floor((w-30)/36))),rows=Math.max(1,Math.min(4,Math.floor((d-30)/52)));for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){const xx=x+24+col*(w-48)/Math.max(1,cols-1),zz=z+28+row*(d-70)/Math.max(1,rows-1);q.box(25,19,38,xx,10,zz,white);q.box(29,3,42,xx,21,zz,concrete);q.box(13,5,1,xx,13,zz+19.6,iron);q.box(1,8,1,xx,27,zz,white);q.box(5,1,1,xx,28.5,zz,white);}
-   addSign(group,'LEVEL 29 · OLD TOWN CEMETERY',Math.min(190,w-24),12,x+w/2,24,z+d-6, '#d5c7a4');
+   const plot=new THREE.Group();plot.name='dedicated-cemetery';plot.position.y=city.heightAt?city.heightAt(x+w/2,z+d/2):0;group.add(plot);
+   const cq=batch(plot),stone=material('#8b8472');
+   cq.box(w,1,d,x+w/2,.55,z+d/2,stone);
+   // Low perimeter fence with a clear entrance; all graves remain inside this plot.
+   for(const xx of [x+2,x+w-2])cq.box(1.5,10,d-4,xx,5,z+d/2,iron);
+   cq.box(w-4,10,1.5,x+w/2,5,z+2,iron);
+   for(const side of [-1,1])cq.box((w-40)/2,10,1.5,x+w/2+side*(w+40)/4,5,z+d-2,iron);
+   const cols=Math.max(1,Math.min(5,Math.floor((w-30)/36))),rows=Math.max(1,Math.min(4,Math.floor((d-60)/52)));
+   for(let row=0;row<rows;row++)for(let col=0;col<cols;col++){
+    const xx=x+24+col*(w-48)/Math.max(1,cols-1),zz=z+28+row*(d-90)/Math.max(1,rows-1);
+    cq.box(25,19,38,xx,10,zz,white);cq.box(29,3,42,xx,21,zz,concrete);cq.box(13,5,1,xx,13,zz+19.6,iron);cq.box(1,8,1,xx,27,zz,white);cq.box(5,1,1,xx,28.5,zz,white);
+   }
+   addSign(plot,'LEVEL 29 · OLD TOWN CEMETERY',Math.min(190,w-24),12,x+w/2,24,z+d-6,'#d5c7a4');cq.finish();
   }
   if(f.kind==='market'){
    q.box(w,1,d,x+w/2,.55,z+d/2,material('#8b826c'));

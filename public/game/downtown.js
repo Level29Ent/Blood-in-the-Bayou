@@ -288,11 +288,13 @@ try{const prevHurt=hurtPlayer;hurtPlayer=function(){if(ride||(player&&dockSafe(p
 // ---------------------------------------------------------------- bomber gunner ride
 let ride=null,fireHeld=false,tracers=[];
 function startBomber(){
-  if(ride)return;if(!lots.airport)return toast('NO AIRPORT ON THIS MAP');if(player.car)return toast('STEP OUT OF YOUR VEHICLE FIRST');
+  if(mpRole)return toast('BOMBER RIDE IS AVAILABLE IN SOLO PLAY');if(ride)return;if(!lots.airport)return toast('NO AIRPORT ON THIS MAP');if(player.car)return toast('STEP OUT OF YOUR VEHICLE FIRST');
   if(cash<BOMBER_COST)return toast('THE BOMBER RIDE COSTS '+money(BOMBER_COST));
   cash-=BOMBER_COST;sfx('cash');save.bomberRuns++;persist();closePanel();
   const L=lots.airport,m=planeMesh(true);scene.add(m);
   ride={t:BOMBER_FRAMES,a:0,cx:(L.x0+6)*T,cy:(L.y0+5)*T,home:{x:player.x,y:player.y},kills:0,cd:0,mesh:m};
+  ride.altitude=level29AircraftFlight.altitude(city,ride.cx,ride.cy,440);
+  ride.mesh.position.set(ride.cx+440,ride.altitude,ride.cy);
   toast('GUNNER SEAT · HOLD FIRE ON THE .50 CAL');
 }
 function updateRide(){
@@ -302,7 +304,7 @@ function updateRide(){
   const R=440;ride.a+=.011;ride.t--;
   const px=ride.cx+Math.cos(ride.a)*R,py=ride.cy+Math.sin(ride.a)*R;
   player.x=px;player.y=py;if('vx' in player){player.vx=0;player.vy=0;}
-  ride.mesh.position.set(px,150,py);ride.mesh.rotation.set(0,-(ride.a+Math.PI/2),0);ride.mesh.rotateX(.35);
+  ride.mesh.position.set(px,ride.altitude,py);ride.mesh.rotation.set(0,-(ride.a+Math.PI/2),0);ride.mesh.rotateX(.35);
   if(frame%18===0&&zombiesNear(px,py,520)<16){const a=Math.random()*6.28,r=rnd(120,420);spawnZombieAt(px+Math.cos(a)*r,py+Math.sin(a)*r);}
   const firing=fireHeld||mouse.down||keys[' ']||keys.Space;
   if(firing&&--ride.cd<=0){ride.cd=6;let best=null,bd=460;for(const z of zombies){if(!z.alive)continue;const d=d2(z.x,z.y,px,py);if(d<bd){bd=d;best=z;}}
@@ -310,9 +312,9 @@ function updateRide(){
     if(frame%12<6)sfx('bang');}
   if(ride.t<=0)endRide();
 }
-function addTracer(x1,y1,x2,y2){const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x1,145,y1),new THREE.Vector3(x2,4,y2)]);const l=new THREE.Line(geo,new THREE.LineBasicMaterial({color:'#ffd36b'}));scene.add(l);tracers.push({l,t:6});}
+function addTracer(x1,y1,x2,y2){const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x1,(ride?.altitude||150)-5,y1),new THREE.Vector3(x2,(city.heightAt?city.heightAt(x2,y2):0)+4,y2)]);const l=new THREE.Line(geo,new THREE.LineBasicMaterial({color:'#ffd36b'}));scene.add(l);tracers.push({l,t:6});}
 function updateTracers(){tracers=tracers.filter(t=>{if(--t.t<=0){scene.remove(t.l);t.l.geometry.dispose();return false;}return true;});}
-function endRide(){const r=ride;ride=null;fireHeld=false;scene.remove(r.mesh);player.x=r.home.x;player.y=r.home.y;const bounty=r.kills*15;cash+=bounty;
+function endRide(){const r=ride;ride=null;fireHeld=false;scene.remove(r.mesh);player.x=r.home.x;player.y=r.home.y;player.vx=player.vy=0;mouse.down=false;keys[' ']=keys.Space=false;snapCamera();const bounty=r.kills*15;cash+=bounty;
   toast('LANDED · '+r.kills+' ZOMBIES FROM THE SKY · BOUNTY '+money(bounty));sfx('cash');}
 
 // ---------------------------------------------------------------- obstacle course
