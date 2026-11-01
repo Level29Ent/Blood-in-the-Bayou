@@ -17,7 +17,7 @@ let saved={bank:0,cardio:0,conditioning:0,owned:[],income:0,at:Date.now()};
 try{Object.assign(saved,JSON.parse(localStorage.getItem('level29.places.v1')||'{}'));}catch(_){}
 function persist(){try{localStorage.setItem('level29.places.v1',JSON.stringify(saved));}catch(_){}}
 function speak(name,txt,col){subtitle={name,txt,t:Math.max(240,txt.length*4),col};}
-const smithPortrait=new Image();smithPortrait.src='characters/captain-smith.jpg';
+const smithPortrait=new Image();smithPortrait.src='characters/captain-smith.jpg?v=2';
 const portrait=new Image();portrait.crossOrigin='anonymous';portrait.src='ronnie.png';
 const faces=new Map();
 function face(name,col){if(faces.has(name))return faces.get(name);const c=document.createElement('canvas');c.width=c.height=80;const g=c.getContext('2d');g.fillStyle='#24313a';g.fillRect(0,0,80,80);g.fillStyle=col||'#74968a';g.fillRect(9,52,62,28);g.fillStyle='#b88767';g.beginPath();g.ellipse(40,32,17,22,0,0,7);g.fill();g.fillStyle='#27251f';g.fillRect(22,11,36,12);g.fillStyle='#222';g.fillRect(30,30,4,3);g.fillRect(46,30,4,3);g.fillStyle='#704a39';g.fillRect(36,43,9,2);faces.set(name,c);return c;}
@@ -209,7 +209,7 @@ const moneyText=n=>'$'+Math.floor(n).toLocaleString();
 function close(){panel.style.display='none';if(state==='shop')state='play';for(const k in keys)keys[k]=false;mouse.down=false;active=null;}
 function row(title,desc,label,act,disabled=false){return '<div class="item"><div><b>'+title+'</b><span>'+desc+'</span></div><button data-place="'+act+'" '+(disabled?'disabled':'')+'>'+label+'</button></div>';}
 function show(v){active=v;state='shop';mouse.down=false;for(const k in keys)keys[k]=false;if(player.car)player.car.v=0;
- let h='',id=v.id;if(id==='police')h+='<img src="characters/captain-smith.jpg" alt="Captain Smith" style="width:100px;height:132px;object-fit:cover;float:right;margin:0 0 12px 14px"><p>Captain Smith · Station Commander</p>';
+ let h='',id=v.id;if(id==='police')h+='<img src="characters/captain-smith.jpg?v=2" alt="Captain Smith" style="width:100px;height:132px;object-fit:cover;float:right;margin:0 0 12px 14px"><p>Captain Smith · Station Commander</p>';
  if(id==='grocery'||id==='gas'){h+=row('Hot meal','Restore 50 health.','BUY · $60','food');h+=row('Energy drink','Move faster for 90 seconds.','BUY · $90','drink');}
  if(id==='bank'){h+=row('Deposit $1,000','Banked balance: '+moneyText(saved.bank)+'. Your account stays safe in the vault.','DEPOSIT','deposit',cash<1000);h+=row('Withdraw $1,000','Move banked money into your wallet.','WITHDRAW','withdraw',saved.bank<1000);}
  if(id==='gas'){h+=row('Repair nearby vehicle','Restore the closest vehicle parked outside.','REPAIR · $150','repair');h+=row('Station investment','Own this station for $8,000. Earn $220 per minute.','INVEST / COLLECT','invest');}
