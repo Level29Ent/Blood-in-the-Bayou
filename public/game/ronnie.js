@@ -220,40 +220,38 @@ function makeRonnie(){
   setFigureColors(g, skinCol, '#ffffff', '#111113', '#120d0a');
   u.shirt.map = patchTex(); u.shirt.needsUpdate = true;
   u.eyes = null;
-  if (u.face) u.face.visible = false;
+  if (u.face) u.face.visible = true;
   // sleeves: patchwork arms + hands
-  const sleeve = u.shirt, handM = lam(skinCol);
-  for (const arm of [u.armL, u.armR]){ arm.children[0].material = sleeve; const h = box(2.2, 1.6, 2.2, handM); h.position.y = -7.6; arm.add(h); }
+  const sleeve = u.shirt;
+  for (const arm of [u.armL, u.armR]) arm.children[0].material = sleeve;
   // oversized jacket: slightly wider torso + hem
-  u.torso.scale.set(1.12, 1.08, 1.08);
+  u.torso.scale.multiply(new THREE.Vector3(1.05, 1.02, 1.04));
   const hem = box(5.4, 1.4, 8.2, sleeve); hem.position.y = 7.9; u.body.add(hem);
-  // face: eyes, mustache + chin hair
+  // Preserve the shared human face; shaped facial hair must not hide its eyes/mouth.
   const dark = lam('#0d0a08');
-  for (const z of [-1.05, 1.05]){ const e = box(.3, .55, .8, dark); e.position.set(2.24, 18.5, z); u.body.add(e); }
-  const stache = box(.35, .45, 2.2, dark); stache.position.set(2.25, 17.1, 0); u.body.add(stache);
-  const chin = box(.5, 1.1, 1.6, dark); chin.position.set(2.1, 15.9, 0); u.body.add(chin);
+  const stache=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),dark);stache.scale.set(.18,.13,.72);stache.position.set(2.15,17.45,0);u.body.add(stache);
+  const chin=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),dark);chin.scale.set(.35,.55,.72);chin.position.set(1.62,16.2,0);u.body.add(chin);
   // long twisted locs
   u.hair.scale.set(1.08, 1.2, 1.08); u.hair.position.y = 20.5;
   const locM = [lam('#120d0a'), lam('#1d1510'), lam('#0a0806')], rng = mkRng(1129);
   const locs = new THREE.Group();
-  const N = 34;
+  const N = 34,locGeometry=new THREE.CylinderGeometry(.24,.32,1,6);
   for (let k = 0; k < N; k++){
     const ang = (k / N) * Math.PI * 2, cx0 = Math.cos(ang), sz0 = Math.sin(ang);
     const front = cx0 > .55; // face side (+x)
     if (front && Math.abs(sz0) < .5) continue; // keep most of the face visible
     const len = front ? 5.5 + rng() * 2.5 : 8 + rng() * 4;
-    const loc = new THREE.Mesh(new THREE.BoxGeometry(.55, len, .55), locM[k % 3]);
+    const loc = new THREE.Mesh(locGeometry, locM[k % 3]);loc.scale.y=len;
     const rx = 2.35 * Math.sign(cx0) * Math.min(1, Math.abs(cx0) * 1.4), rz = 2.35 * Math.sign(sz0) * Math.min(1, Math.abs(sz0) * 1.4);
     loc.position.set(rx * (front ? 1.02 : 1), 20.6 - len / 2, rz);
     loc.rotation.set(sz0 * .18 + (rng() - .5) * .12, 0, -cx0 * .12 + (rng() - .5) * .1);
-    // twist bands for texture
-    for (let t = 1; t < len / 1.3; t++){ const band = box(.7, .22, .7, locM[(k + 1) % 3]); band.position.y = len / 2 - t * 1.3; loc.add(band); }
     locs.add(loc);
   }
   // a few locs falling over the front of the face, like the photo
-  for (const z of [-1.75, 1.6]){ const loc = new THREE.Mesh(new THREE.BoxGeometry(.5, 7, .5), locM[0]); loc.position.set(2.45, 17, z); loc.rotation.x = z * .05; locs.add(loc); }
+  for (const z of [-1.75, 1.6]){ const loc = new THREE.Mesh(new THREE.CylinderGeometry(.22,.28,7,6), locM[0]); loc.position.set(2.45, 17, z); loc.rotation.x = z * .05; locs.add(loc); }
   u.body.add(locs);
   g.scale.setScalar(1.08);
+  window.level29People?.identify(g,'ronnie');
   // gold ground ring so he is easy to spot
   const ring = new THREE.Mesh(new THREE.RingGeometry(14, 17, 40), new THREE.MeshBasicMaterial({ color: 0xf4c355, transparent: true, opacity: .55, side: THREE.DoubleSide, depthWrite: false }));
   ring.rotation.x = -Math.PI / 2; ring.position.y = .5; g.add(ring); u.ring = ring;

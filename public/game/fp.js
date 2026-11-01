@@ -110,13 +110,14 @@ function figParts(){
   const sph = (r, w, h) => new THREE.SphereGeometry(r, w || 14, h || 10);
   const hairCap = new THREE.SphereGeometry(2.42, 18, 10, 0, Math.PI * 2, 0, Math.PI * .46);
   hairCap.scale(1.04, 1.06, 1.04); hairCap.translate(0, -2.2, 0);
-  const longHair = new THREE.SphereGeometry(2.4, 16, 10, Math.PI * .5, Math.PI, 0, Math.PI * .8);
+  const longHair = new THREE.SphereGeometry(2.4, 16, 10, -Math.PI * .5, Math.PI, 0, Math.PI * .8);
   longHair.scale(1, 1.75, 1.05);
   FIG = {
     leg: cyl(1.6, 1.22, 7.4, 12), knee: sph(1.32, 10, 8), shoe: new THREE.BoxGeometry(4.3, 1.3, 2.7), toe: cyl(1.35, 1.35, 2.7, 10),
     hips: cyl(1, .95, 2.4, 14), belt: cyl(1, 1, .75, 14), buckle: new THREE.BoxGeometry(.3, .6, .9),
     torso: cyl(1, .84, 7.2, 16), shoulder: sph(1.48, 12, 8), neck: cyl(.92, 1, 1.8, 10),
-    head: sph(1, 20, 14), ear: sph(1, 8, 6), nose: new THREE.BoxGeometry(.75, .95, .6), jaw: sph(1, 14, 8),
+    head: sph(1, 20, 14), ear: sph(1, 8, 6), nose: sph(1,12,8), jaw: sph(1, 14, 8),
+    humanEye: sph(1,12,8), iris: sph(1,10,8), lip: sph(1,12,6), cheek: sph(1,12,8),
     eyeW: new THREE.BoxGeometry(.18, .5, .72), pupil: new THREE.BoxGeometry(.14, .38, .36), brow: new THREE.BoxGeometry(.18, .22, .95), mouth: new THREE.BoxGeometry(.16, .2, 1.05),
     sleeve: cyl(1.3, 1.12, 3.8, 12), elbow: sph(1.08, 10, 8), forearm: cyl(1.02, .84, 3.6, 10), hand: sph(.95, 10, 8),
     hairCap, longHair, zEye: new THREE.BoxGeometry(.4, .8, .9),
@@ -148,8 +149,8 @@ function makeFigure(zombie){
   for (const z of [-3.6, 3.6]) add(body, P.shoulder, shirt, 0, 15, z, 1.1, .85, 1);
   add(body, P.neck, skin, .1, 16.4, 0);
 
-  const head = add(body, P.head, skin, .05, 18.3, 0, 2.2, 2.45, 2.12);
-  add(body, P.jaw, skin, .45, 17.25, 0, 1.65, 1.15, 1.75);
+  const head = add(body, P.head, skin, .05, 18.3, 0, zombie?2.2:2.05, zombie?2.45:2.35, zombie?2.12:1.95);
+  const jaw = add(body, P.jaw, skin, .45, 17.05, 0, 1.55, 1.05, 1.6);
   const hair = add(body, P.hairCap, lam('#3a2a1a'), 0, 20.4, 0);
   hair.position.y = 20.4;
   const longHair = add(body, P.longHair, hair.material, -.35, 17.6, 0); longHair.visible = false;
@@ -158,13 +159,18 @@ function makeFigure(zombie){
   if (!zombie){
     face = new THREE.Group(); body.add(face);
     for (const z of [-2.12, 2.12]) add(face, P.ear, skin, -.1, 18.2, z, .45, .75, .3);
-    add(face, P.nose, skin, 2.3, 17.95, 0);
+    // Nose bridge/tip, cheek planes and lips sit on the face, not inside the skull.
+    add(face, P.nose, skin, 2.03, 18.25, 0, .38, .74, .32);
+    add(face, P.nose, skin, 2.38, 17.95, 0, .42, .3, .4);
+    for(const side of [-1,1])add(face,P.cheek,skin,1.64,17.8,side*1.12,.5,.5,.52);
     for (const z of [-.82, .82]){
-      add(face, P.eyeW, P.whiteMat, 2.04, 18.65, z);
-      add(face, P.pupil, P.pupilMat, 2.13, 18.62, z * 1.02);
-      const brow = add(face, P.brow, hair.material, 1.92, 19.3, z); brow.rotation.x = z > 0 ? .12 : -.12;
+      add(face, P.humanEye, P.whiteMat, 1.98, 18.65, z, .23, .23, .42);
+      add(face, P.iris, P.pupilMat, 2.19, 18.65, z, .08, .17, .18);
+      add(face, P.humanEye, skin, 1.99, 18.89, z, .18, .08, .43);
+      const brow = add(face, P.brow, hair.material, 1.92, 19.13, z); brow.rotation.x = z > 0 ? .12 : -.12;
     }
-    add(face, P.mouth, P.mouthMat, 2.05, 16.95, 0);
+    add(face, P.lip, P.mouthMat, 1.98, 17.15, 0, .15, .11, .57);
+    add(face, P.lip, P.mouthMat, 1.99, 16.98, 0, .16, .12, .5);
   }
 
   const armL = new THREE.Group(), armR = new THREE.Group();
@@ -181,7 +187,7 @@ function makeFigure(zombie){
   if (zombie){ eyes = new THREE.Group(); for (const z of [-.95, .95]){ const e = new THREE.Mesh(P.zEye, MAT.eye); e.position.set(2.05, 18.6, z); eyes.add(e); } body.add(eyes); }
   const helmet = new THREE.Mesh(new THREE.SphereGeometry(3, 16, 8, 0, Math.PI*2, 0, Math.PI/2), lam('#4b5320')); helmet.position.y = 19.6; helmet.scale.set(1, .8, 1); helmet.visible = false; body.add(helmet);
   g.traverse(o => { if (o.isMesh){ o.castShadow = true; o.receiveShadow = false; } });
-  g.userData = { body, legL, legR, armL, armR, torso, head, hair, longHair, face, eyes, helmet, skin, shirt, pants };
+  g.userData = { body, legL, legR, armL, armR, torso, head, jaw, hair, longHair, face, eyes, helmet, skin, shirt, pants };
   return g;
 }
 function setFigureColors(m, skin, shirt, pants, hairCol){
