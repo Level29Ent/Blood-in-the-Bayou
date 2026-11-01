@@ -28,15 +28,15 @@ test('flight considers hospital floors and the residence tower along the orbit',
  assert.equal(altitude(c,0,0,440),492);c.residence={b};assert.equal(altitude(c,0,0,440),1242);
 });
 test('gunner camera shares plane altitude instead of walking terrain offsets and restores walking afterward',()=>{
- let walk=0,fired=0;const ride={a:0,mesh:{position:new THREE.Vector3(100,480,200)}};
- const ctx={window:{level29Downtown:{ride}},camera:new THREE.PerspectiveCamera(),city:{heightAt:()=>300},placeCamera(){walk++;return 7;},fireWeapon(){fired++;}};
+ let walk=0,fired=0;const ride={a:0,startYaw:0,startPitch:0,mesh:{position:new THREE.Vector3(100,480,200)}};
+ const ctx={window:{level29Downtown:{ride}},level29Gunnery:require('../public/game/aircraft-gunnery.js'),view:{yaw:0,pitch:0},syncViewModel(){},camera:new THREE.PerspectiveCamera(),city:{heightAt:()=>300},placeCamera(){walk++;return 7;},fireWeapon(){fired++;}};
  vm.createContext(ctx);vm.runInContext(fs.readFileSync('public/game/aircraft-camera.js','utf8'),ctx);
- ctx.placeCamera();assert.equal(walk,0);assert.equal(ctx.camera.position.y,470);assert.equal(ctx.camera.position.x,100);ctx.fireWeapon();assert.equal(fired,0);
+ ctx.level29AircraftCamera=ctx.window.level29AircraftCamera;ctx.placeCamera();assert.equal(walk,0);assert.equal(ctx.camera.position.y,470);assert.equal(ctx.camera.position.x,100);ctx.fireWeapon();assert.equal(fired,0);
  ctx.window.level29Downtown.ride=null;assert.equal(ctx.placeCamera(),7);assert.equal(walk,1);ctx.fireWeapon();assert.equal(fired,1);
 });
 test('ride mesh and tracers use the computed altitude and landing clears velocity and held fire',()=>{
  const s=fs.readFileSync('public/game/downtown.js','utf8');const ctx={THREE,ride:{altitude:480},city:{heightAt:()=>300},scene:new THREE.Group(),tracers:[]};vm.createContext(ctx);
- vm.runInContext(s.slice(s.indexOf('function addTracer('),s.indexOf('function updateTracers(')),ctx);ctx.addTracer(1,2,3,4);
+ vm.runInContext(s.slice(s.indexOf('function addTracer('),s.indexOf('function updateTracers(')),ctx);ctx.addTracer({x:1,y:475,z:2},{x:3,y:304,z:4});
  const position=ctx.tracers[0].l.geometry.attributes.position;assert.equal(position.getY(0),475);assert.equal(position.getY(1),304);
  assert.match(s,/position.set\(px,ride.altitude,py\)/);
 });
