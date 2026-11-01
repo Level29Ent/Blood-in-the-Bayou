@@ -9,7 +9,14 @@ function nearest(c,v,T,W,H,roads,water){
  }
  return best;
 }
-if(typeof module!=='undefined')module.exports={point,rect,nearest};if(typeof window==='undefined')return;
+function displayFront(v){
+ if(v.lotId!=='dealer')return null;
+ const b=v.b;
+ // The slab display court is authored on +Y. Keep the showroom opening there,
+ // not on whichever street happens to be closest to the rear/side of the lot.
+ return {angle:0,x:b.x+b.w/2,y:b.y+b.h,dx:0,dy:1,distance:0,displayCourt:true};
+}
+if(typeof module!=='undefined')module.exports={point,rect,nearest,displayFront};if(typeof window==='undefined')return;
 function lotPoint(l,p){const f=l?.venue?.frontage;if(!f||!f.angle)return p;const b=l.venue.b,cb=f.canonical;return point({x:cb.x+(p.x-b.x)/b.w*cb.w,y:cb.y+(p.y-b.y)/b.h*cb.h},f.center,f.angle);}
 window.level29Frontage={point,rect,nearest,lotPoint};
 const gen=genCity;
@@ -17,10 +24,11 @@ genCity=function(){const c=gen.apply(this,arguments);if(!c.world)return c;
  for(const v of c.venues){
   // Mansion lift/fortress and exterior activity shells retain their authored accessible entrance.
   if(v.b===c.mansion?.B)continue;
-  const selected=nearest(c,v,TILE,MW,MH,[T_ROAD,T_BRIDGE],T_WATER);if(!selected)throw Error('No unobstructed street frontage for '+v.id);
+  const selected=displayFront(v)||nearest(c,v,TILE,MW,MH,[T_ROAD,T_BRIDGE],T_WATER);if(!selected)throw Error('No unobstructed street frontage for '+v.id);
   const b=v.b,center={x:b.x+b.w/2,y:b.y+b.h/2},angle=selected.angle,swap=Math.abs(Math.sin(angle))>.5;
   const cb={...b,x:center.x-(swap?b.h:b.w)/2,y:center.y-(swap?b.w:b.h)/2,w:swap?b.h:b.w,h:swap?b.w:b.h};
   v.frontage={...selected,center,canonical:cb};v.doorX=selected.x;v.doorY=selected.y;
+  if(selected.displayCourt)v.entranceAisle={x:v.doorX-v.doorW/2-8,y:v.doorY-42,w:v.doorW+16,h:42};
   const s=point({x:cb.x+(v.stationX-b.x)/b.w*cb.w,y:cb.y+(v.stationY-b.y)/b.h*cb.h},center,angle);v.stationX=s.x;v.stationY=s.y;
   const walls=[{x:cb.x,y:cb.y,w:cb.w,h:3},{x:cb.x,y:cb.y,w:3,h:cb.h},{x:cb.x+cb.w-3,y:cb.y,w:3,h:cb.h},{x:cb.x,y:cb.y+cb.h-3,w:(cb.w-v.doorW)/2,h:3},{x:center.x+v.doorW/2,y:cb.y+cb.h-3,w:(cb.w-v.doorW)/2,h:3}];
   v.colliderWalls=walls.map(r=>rect(r,center,angle));v.colliderDoor=rect({x:center.x-v.doorW/2,y:cb.y+cb.h-3,w:v.doorW,h:3},center,angle);
