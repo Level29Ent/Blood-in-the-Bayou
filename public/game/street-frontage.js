@@ -23,7 +23,7 @@ const gen=genCity;
 genCity=function(){const c=gen.apply(this,arguments);if(!c.world)return c;
  for(const v of c.venues){
   // Mansion lift/fortress and exterior activity shells retain their authored accessible entrance.
-  if(v.b===c.mansion?.B)continue;
+  if(v.b===c.mansion?.B||v.id==='mall')continue;
   const selected=displayFront(v)||nearest(c,v,TILE,MW,MH,[T_ROAD,T_BRIDGE],T_WATER);if(!selected)throw Error('No unobstructed street frontage for '+v.id);
   const b=v.b,center={x:b.x+b.w/2,y:b.y+b.h/2},angle=selected.angle,swap=Math.abs(Math.sin(angle))>.5;
   const cb={...b,x:center.x-(swap?b.h:b.w)/2,y:center.y-(swap?b.w:b.h)/2,w:swap?b.h:b.w,h:swap?b.w:b.h};

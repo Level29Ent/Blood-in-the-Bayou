@@ -15,12 +15,7 @@ function saveVenues(){try{localStorage.setItem(expansionSaveKey,JSON.stringify(v
 function smooth01(t){t=clamp(t,0,1);return t*t*(3-2*t);}
 function rawTerrain(id,x,y){
   if(id==='forest') return 7+5*Math.sin(x/290)*Math.cos(y/250)+3*Math.sin((x+y)/170);
-  if(id==='mountain'){
-    const peak=(cx,cy,r,h)=>h*Math.exp(-((x-cx)**2+(y-cy)**2)/(r*r));
-    const rim=Math.max(0,Math.max(Math.abs(x-WORLD/2),Math.abs(y-WORLD/2))-WORLD*.36)/(WORLD*.14);
-    return 16 + peak(1780,1530,500,820)+peak(780,1750,470,560)+peak(2050,600,420,640)+peak(480,1000,380,330)+peak(1250,2250,360,420)
-      + 260*rim*rim + 22*Math.sin(x/180)*Math.sin(y/230);
-  }
+  if(id==='mountain')return 0; // Former mountain chapter is level landscaped ground.
   return 0;
 }
 function generateBiome(di){
