@@ -12,11 +12,12 @@ const specs=[
  {id:'fire',name:'LEVEL 29 FIRE & RESCUE',short:'FIRE STATION',letter:'R',col:'#ed9465'}
 ];
 VENUE_TYPES.push(...specs);
-const roles={fire:['FIRE CAPTAIN','#bd5033','#373d3f'],bank:['BANK TELLER','#3d5366','#263542'],grocery:['MARKET CLERK','#638b51','#343e30'],gym:['FITNESS COACH','#b64f35','#252b31'],hospital:['MEDICAL TEAM','#b5d3d5','#657f89'],police:['DESK SERGEANT','#31496d','#23344c'],gas:['STATION ATTENDANT','#b27339','#333b45']};
+const roles={fire:['FIRE CAPTAIN','#bd5033','#373d3f'],bank:['BANK TELLER','#3d5366','#263542'],grocery:['MARKET CLERK','#638b51','#343e30'],gym:['FITNESS COACH','#b64f35','#252b31'],hospital:['MEDICAL TEAM','#b5d3d5','#657f89'],police:['CAPTAIN SMITH','#171b22','#212936'],gas:['STATION ATTENDANT','#b27339','#333b45']};
 let saved={bank:0,cardio:0,conditioning:0,owned:[],income:0,at:Date.now()};
 try{Object.assign(saved,JSON.parse(localStorage.getItem('level29.places.v1')||'{}'));}catch(_){}
 function persist(){try{localStorage.setItem('level29.places.v1',JSON.stringify(saved));}catch(_){}}
 function speak(name,txt,col){subtitle={name,txt,t:Math.max(240,txt.length*4),col};}
+const smithPortrait=new Image();smithPortrait.src='characters/captain-smith.jpg';
 const portrait=new Image();portrait.crossOrigin='anonymous';portrait.src='ronnie.png';
 const faces=new Map();
 function face(name,col){if(faces.has(name))return faces.get(name);const c=document.createElement('canvas');c.width=c.height=80;const g=c.getContext('2d');g.fillStyle='#24313a';g.fillRect(0,0,80,80);g.fillStyle=col||'#74968a';g.fillRect(9,52,62,28);g.fillStyle='#b88767';g.beginPath();g.ellipse(40,32,17,22,0,0,7);g.fill();g.fillStyle='#27251f';g.fillRect(22,11,36,12);g.fillStyle='#222';g.fillRect(30,30,4,3);g.fillRect(46,30,4,3);g.fillStyle='#704a39';g.fillRect(36,43,9,2);faces.set(name,c);return c;}
@@ -28,7 +29,7 @@ window.drawCharacterCaption=function(s){
  if(stereoUp&&lines.length>5){lines.length=5;lines[4]+='…';}
  const h=Math.max(sz+20,36+lines.length*(font+6)),y=mobile&&SH>=600?(stereoUp?(expanded?426:230):134):Math.max(110,SH-(mobile?190:135)-h),x=(SW-w)/2;
  cx.fillStyle='rgba(8,14,19,.94)';cx.fillRect(x,y,w,h);cx.fillStyle=s.col||'#e5bd63';cx.fillRect(x,y,3,h);
- const im=/RONNIEBABY/.test(s.name)&&portrait.complete&&portrait.naturalWidth?portrait:face(s.name,s.col);cx.drawImage(im,x+12,y+10,sz,sz);
+ const im=/CAPTAIN SMITH/i.test(s.name)&&smithPortrait.complete&&smithPortrait.naturalWidth?smithPortrait:/RONNIEBABY/.test(s.name)&&portrait.complete&&portrait.naturalWidth?portrait:face(s.name,s.col);cx.drawImage(im,x+12,y+10,sz,sz);
  cx.textAlign='left';cx.textBaseline='top';cx.fillStyle=s.col||'#e5bd63';cx.font="800 "+(mobile?13:16)+"px 'Barlow Condensed'";cx.fillText(s.name,tx,y+10,max);
  cx.font="500 "+font+"px 'IBM Plex Mono'";cx.fillStyle='#f6f2e6';lines.forEach((l,i)=>cx.fillText(l,tx,y+33+i*(font+6)));cx.restore();
 };
@@ -70,7 +71,7 @@ const oldBlocked=blockedCircle;blockedCircle=function(x,y,r){if(city&&city.world
  const h=city.hospital;if(h&&h.floor>0&&inside(player.x,player.y,h.b)&&moverCtx===player&&!inside(x,y,{x:h.b.x+4,y:h.b.y+4,w:h.b.w-8,h:h.b.h-8}))return true;}
  return oldBlocked(x,y,r);};
 const oldHeight=terrainHeight;terrainHeight=function(x,y){const h=city&&city.hospital;if(h&&h.floor>0&&inside(x,y,h.b))return (h.baseY||0)+h.floor*56;return oldHeight(x,y);};
-function staff(v,g,x,y,z,role){const m=makeFigure(false),job=roles[v.id];setFigureColors(m,'#b17c59',job[1],job[2],'#252320');poseFigure(m,x,y,Math.PI/2,0,'stand');m.position.y=z;g.add(m);const label=new THREE.Sprite(new THREE.SpriteMaterial({map:signTex(role||job[0],'#17232b',v.col,512,72)}));label.scale.set(52,7,1);label.position.y=28;m.add(label);v.staff.push({m,x,y,z,role:role||job[0],floor:Math.round(z/56)});v.furniture.push({x:x-5,y:y-5,w:10,h:10});return m;}
+function staff(v,g,x,y,z,role){const m=v.id==='police'?level29CaptainSmith.create():makeFigure(false),job=roles[v.id];if(v.id!=='police')setFigureColors(m,'#b17c59',job[1],job[2],'#252320');poseFigure(m,x,y,Math.PI/2,0,'stand');m.position.y=z;g.add(m);const label=new THREE.Sprite(new THREE.SpriteMaterial({map:signTex(role||job[0],'#17232b',v.col,512,72)}));label.scale.set(52,7,1);label.position.y=28;m.add(label);v.staff.push({m,x,y,z,role:role||job[0],floor:Math.round(z/56)});v.furniture.push({x:x-5,y:y-5,w:10,h:10});return m;}
 const wallStyle={fire:['#af725e','brick'],bank:['#b8a58b','brick'],grocery:['#d6cca4','stucco'],gym:['#9c6e56','brick'],police:['#8f9aa8','brick'],hospital:['#e6e2d6','stucco'],gas:['#d7c8a5','stucco']};
 function fw(g,w,h,d,x,y,z,mat){const geo=new THREE.BoxGeometry(w,h,d),uv=geo.attributes.uv,rx=Math.max(1,Math.round(Math.max(w,d)/95)),ry=Math.max(1,Math.round(h/52));for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*rx,uv.getY(i)*ry);const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);g.add(m);return m;}
 function shell(v,g,q,base,level){const b=v.b,st=wallStyle[v.id],fm=facade(st[0],st[1]),trim=material('#425560',.35),floor=v.id==='hospital'?level29SurfaceDetail.apply(new THREE.MeshStandardMaterial({color:level%2?'#6c7f7d':'#7d8279',roughness:.78}),'tile'):material(level%2?'#6c7f7d':'#7d8279'),cap=material('#cfc9b8');
@@ -107,7 +108,7 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
   for(const y of [b.y+40,b.y+95]){item(b.x+90,y,26,8,45,steel);q.box(45,2,3,b.x+90,base+24,y,steel);for(const x of [b.x+70,b.x+110])q.box(4,14,14,x,base+24,y,dark);}
   sign('CARDIO · STRENGTH · CONDITIONING',b.x+b.w/2,b.y+4,180);staff(v,g,b.x+b.w*.66,b.y+b.h*.4,base);
  }else if(v.id==='police'){
-  item(b.x+b.w/2,b.y+65,b.w-65,14,24,dark);sign('DESK SERGEANT · U',b.x+b.w/2,b.y+4,155);staff(v,g,b.x+b.w/2,b.y+35,base);
+  item(b.x+b.w/2,b.y+65,b.w-65,14,24,dark);sign('CAPTAIN SMITH · U',b.x+b.w/2,b.y+4,155);staff(v,g,b.x+b.w/2,b.y+35,base);
   for(const x of [b.x+40,b.x+b.w-40]){item(x,b.y+120,35,25,22,steel);q.box(26,1,1,x,base+27,b.y+132,white);}
   sign('EVIDENCE',b.x+42,b.y+103,60);sign('EQUIPMENT',b.x+b.w-42,b.y+103,64);
   for(let k=0;k<5;k++)q.box(2,39,2,b.x+b.w*.68+k*8,base+20,b.y+b.h-45,steel);
@@ -202,13 +203,13 @@ const oldBuild=buildCity;buildCity=function(){oldBuild();if(!city.world)return;c
 const oldNear=nearStation;nearStation=function(){if(player&&city){for(const v of city.venues||[]){if(!v.extended||!insideVenue(v,player))continue;const st=v.staff.filter(s=>s.floor===v.floor);if(st.some(s=>dist(player.x,player.y,s.x,s.y)<48)||dist(player.x,player.y,v.stationX,v.stationY)<50||v.id==='hospital'&&dist(player.x,player.y,v.elevatorPoint.x,v.elevatorPoint.y)<38)return v;}
  for(const v of city.venues||[]){if(v.worker&&insideVenue(v,player)&&dist(player.x,player.y,v.workerX,v.workerY)<38)return v;}}
  return oldNear();};
-const greetings={fire:'Fire and rescue is hiring. Open the jobs board for paid fire calls and rescue work.',safe:'Welcome home. The perimeter is guarded. Rest here and save your progress.',garage:'Pull your vehicle into the marked bay and I will get it running again.',armory:'You need gear? Take a look at the weapons and body armor.',spray:'Bring your ride into the wash bay for repairs and a fresh coat.',business:'Welcome to the office. Buy this business or collect your income.',bank:'Welcome to Level 29 Trust. Deposit cash for safekeeping or withdraw it whenever you need it.',grocery:'Fresh food and cold drinks. What can I get you?',gym:'Ready to work? Cardio improves your movement. Conditioning builds your maximum health.',hospital:'You are safe here. We have reception, X-ray imaging, a morgue, patient wards and recovery. Use the elevator to visit all five floors.',police:'Welcome to the station. Settle your heat, collect armor or requisition a cruiser.',gas:'Fuel, snacks, repairs and station income. What do you need?'};
+const greetings={fire:'Fire and rescue is hiring. Open the jobs board for paid fire calls and rescue work.',safe:'Welcome home. The perimeter is guarded. Rest here and save your progress.',garage:'Pull your vehicle into the marked bay and I will get it running again.',armory:'You need gear? Take a look at the weapons and body armor.',spray:'Bring your ride into the wash bay for repairs and a fresh coat.',business:'Welcome to the office. Buy this business or collect your income.',bank:'Welcome to Level 29 Trust. Deposit cash for safekeeping or withdraw it whenever you need it.',grocery:'Fresh food and cold drinks. What can I get you?',gym:'Ready to work? Cardio improves your movement. Conditioning builds your maximum health.',hospital:'You are safe here. We have reception, X-ray imaging, a morgue, patient wards and recovery. Use the elevator to visit all five floors.',police:'Captain Smith here. Welcome to the station. Settle your heat, collect armor or requisition a cruiser.',gas:'Fuel, snacks, repairs and station income. What do you need?'};
 const panel=document.createElement('div');panel.id='placePanel';document.body.appendChild(panel);let active=null,robbery=null,robCooldown={};
 const moneyText=n=>'$'+Math.floor(n).toLocaleString();
 function close(){panel.style.display='none';if(state==='shop')state='play';for(const k in keys)keys[k]=false;mouse.down=false;active=null;}
 function row(title,desc,label,act,disabled=false){return '<div class="item"><div><b>'+title+'</b><span>'+desc+'</span></div><button data-place="'+act+'" '+(disabled?'disabled':'')+'>'+label+'</button></div>';}
 function show(v){active=v;state='shop';mouse.down=false;for(const k in keys)keys[k]=false;if(player.car)player.car.v=0;
- let h='',id=v.id;
+ let h='',id=v.id;if(id==='police')h+='<img src="characters/captain-smith.jpg" alt="Captain Smith" style="width:100px;height:132px;object-fit:cover;float:right;margin:0 0 12px 14px"><p>Captain Smith · Station Commander</p>';
  if(id==='grocery'||id==='gas'){h+=row('Hot meal','Restore 50 health.','BUY · $60','food');h+=row('Energy drink','Move faster for 90 seconds.','BUY · $90','drink');}
  if(id==='bank'){h+=row('Deposit $1,000','Banked balance: '+moneyText(saved.bank)+'. Your account stays safe in the vault.','DEPOSIT','deposit',cash<1000);h+=row('Withdraw $1,000','Move banked money into your wallet.','WITHDRAW','withdraw',saved.bank<1000);}
  if(id==='gas'){h+=row('Repair nearby vehicle','Restore the closest vehicle parked outside.','REPAIR · $150','repair');h+=row('Station investment','Own this station for $8,000. Earn $220 per minute.','INVEST / COLLECT','invest');}

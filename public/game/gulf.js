@@ -3,7 +3,7 @@
 // the Level 29 Tower (apartments + garage + vehicle customization), a store for upgrades / customization, and performance fixes.
 // Load after world.js.
 (function(){
-const ZONE_NAMES={gulf:'THE BAYOU',quarter:'FRENCH QUARTER',marina:'MARINA DISTRICT',hollywood:'HOLLYWOOD HILLS',downtown:'DOWNTOWN HOUSTON',base:'CAMP LEJEUNE',forest:'PINE FOREST',mountain:'SUMMIT RANGE'};
+const ZONE_NAMES={gulf:'THE BAYOU',quarter:'FRENCH QUARTER',marina:'MARINA DISTRICT',hollywood:'HOLLYWOOD HILLS',downtown:'DOWNTOWN HOUSTON',base:'CAMP LEJEUNE',forest:'PINE FOREST',mountain:'LEVEL 29 GARDENS'};
 const CHAPTER_SAFE=['3,0','5,0','6,5','7,0','8,2','7,4','5,7'];
 const SAVE_KEY='level29.openworld.v1';
 let save={apartment:false,garage:[],custom:{},owned:{},fishCaught:0,caches:[]};
@@ -183,10 +183,12 @@ function buildOpenWorld(c){
     {x:(GULF_X-14)*TILE,y:44*TILE,a:Math.PI,type:'yacht'});
   c.caches=[{id:'harbor-locker',x:(GULF_X+5)*TILE,y:35*TILE,amt:4500},{id:'pine-cache',x:112*TILE,y:81*TILE,amt:8500},
     {id:'summit-cache',x:83*TILE,y:113*TILE,amt:15000}];
-  const mtn=c.features.filter(f=>f.kind==='mountain'),forestF=c.features.filter(f=>f.kind==='forest');
+  c.formerMountains=c.features.filter(f=>f.kind==='mountain').map(f=>({...f}));
+  for(const f of c.features)if(f.kind==='mountain')f.kind='garden';
+  c.rocks=c.rocks.filter(r=>!c.formerMountains.some(f=>r.x>=f.x&&r.x<=f.x+f.w&&r.y>=f.y&&r.y<=f.y+f.h));
+  const forestF=c.features.filter(f=>f.kind==='forest');
   c.heightAt=(x,y)=>{
     if(interior==='apartment'&&c.residence&&x>c.residence.b.x-20&&x<c.residence.b.x+c.residence.b.w+20&&y>c.residence.b.y-20&&y<c.residence.b.y+c.residence.b.h+20)return c.residence.floor;
-    for(const f of mtn){const u=(x-f.x)/f.w,v=(y-f.y)/f.h;if(u>0&&u<1&&v>0&&v<1){const cd=c.curveDist(x,y),valley=cd>190?1:cd<70?0:Math.pow((cd-70)/120,1.4);return valley*Math.pow(Math.sin(u*Math.PI)*Math.sin(v*Math.PI),1.6)*(220+85*Math.sin(f.x+f.y));}}
     for(const f of forestF)if(x>f.x&&x<f.x+f.w&&y>f.y&&y<f.y+f.h)return Math.max(0,3*Math.sin(x/95)*Math.sin(y/130));return 0;
   };
   indexTrees(c);

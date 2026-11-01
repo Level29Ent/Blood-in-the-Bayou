@@ -8,7 +8,7 @@ const CAREERS={
   {id:'fire-rescue',name:'Rescue Detail',pay:6200,mins:6,rank:0,hard:1,desc:'Three fires and a trapped resident guarded by a horde. A failed call costs 20 percent of your pay.',kind:'rescue',count:3,hold:440},
   {id:'fire-major',name:'Major Incident',pay:11000,mins:7,rank:1,hard:1,desc:'Eight fires back to back with zombie ambushes. Three failed calls end the shift.',kind:'fire',count:8,hold:480},
   {id:'fire-chem',name:'Chemical Fire',pay:15500,mins:8,rank:2,hard:2,desc:'Six fierce chemical fires with fast flare-ups and brutes in the smoke.',kind:'fire',count:6,hold:560}]},
- police:{name:'Police',boss:'DESK SERGEANT',col:'#98b7f0',ranks:['CADET','OFFICER','CORPORAL','SERGEANT','CAPTAIN'],jobs:[
+ police:{name:'Police',boss:'CAPTAIN SMITH',col:'#98b7f0',ranks:['CADET','OFFICER','CORPORAL','SERGEANT','CAPTAIN'],jobs:[
   {id:'police-patrol',name:'Cruiser Patrol',pay:3400,mins:5,rank:0,hard:1,desc:'Five checkpoints in your cruiser. Zombies ambush every stop and you must stay stopped for three seconds. A 60-second limit applies to each checkpoint.',kind:'patrol',count:5},
   {id:'police-clear',name:'Horde Response',pay:5800,mins:6,rank:0,hard:1,desc:'Clear three large zombie groups with runners and brutes within 90 seconds each. Failed calls reduce your pay.',kind:'clear',count:3},
   {id:'police-evidence',name:'Evidence Courier',pay:8200,mins:6,rank:1,hard:1,desc:'Recover three sealed cases under heavy ambush, then return to the station.',kind:'evidence',count:3},

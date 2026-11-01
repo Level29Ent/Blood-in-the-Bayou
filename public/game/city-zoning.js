@@ -14,14 +14,14 @@ genCity=function(){const c=generate.apply(this,arguments);if(!c.world)return c;
  const lots=Object.values(level29Downtown.lots),placed=[],movements=[],removed=[];
  // Fixed waterfront/civic lots and the mansion are reserved before ordinary frontage.
  const order=c.buildings.slice().sort((a,b)=>priority(b)-priority(a));
- function priority(b){return b===c.mansion?.B?100:c.venues.find(v=>v.b===b)?.lotId?90:b===c.casinoVenue?.b?90:b.venue==='residence'?80:['bank','hospital','fire','police','grocery','gym','gas'].includes(b.venue)?70:['armory','garage','spray','business'].includes(b.venue)?60:b.venue==='shelter'?0:10;}
+ function priority(b){if(b===c.mall?.b)return 95;return b===c.mansion?.B?100:c.venues.find(v=>v.b===b)?.lotId?90:b===c.casinoVenue?.b?90:b.venue==='residence'?80:['bank','hospital','fire','police','grocery','gym','gas'].includes(b.venue)?70:['armory','garage','spray','business'].includes(b.venue)?60:b.venue==='shelter'?0:10;}
  for(const b of order){
   const old={x:b.x,y:b.y,w:b.w,h:b.h};
-  const bad=c.natchezParcel&&overlap(b,c.natchezParcel,24)||mountain(c,b)||placed.some(p=>overlap(b,p,32))||c.airportParcel&&c.venues.find(v=>v.b===b)?.lotId!=='airport'&&overlap(b,c.airportParcel,32);
+  const bad=c.mallParcel&&b!==c.mall?.b&&overlap(b,c.mallParcel,24)||c.natchezParcel&&overlap(b,c.natchezParcel,24)||mountain(c,b)||placed.some(p=>overlap(b,p,32))||c.airportParcel&&c.venues.find(v=>v.b===b)?.lotId!=='airport'&&overlap(b,c.airportParcel,32);
   if(!bad){placed.push(b);continue;}
   let best=null,score=Infinity;
   for(let y=6*TILE;y+b.h<(MH-4)*TILE;y+=TILE)for(let x=(GULF_X+7)*TILE;x+b.w<(MW-4)*TILE;x+=TILE){
-   const r={x,y,w:b.w,h:b.h};if(!valid(c,r,placed,TILE,MW,MH,[T_WATER,T_ROAD,T_BRIDGE])||c.natchezParcel&&overlap(r,c.natchezParcel,32))continue;
+   const r={x,y,w:b.w,h:b.h};if(c.mallParcel&&b!==c.mall?.b&&overlap(r,c.mallParcel,24))continue;if(!valid(c,r,placed,TILE,MW,MH,[T_WATER,T_ROAD,T_BRIDGE])||c.natchezParcel&&overlap(r,c.natchezParcel,32))continue;
    if(c.basketballReservation&&overlap(r,c.basketballReservation,32)||(c.features||[]).some(f=>['market','basketball','training','skatepark'].includes(f.kind)&&overlap(r,f,16)))continue;
    if(c.farm&&overlap(r,c.farm,64)||lots.some(l=>l.venue?.b!==b&&overlap(r,{x:l.x0*TILE,y:l.y0*TILE,w:(l.x1-l.x0+1)*TILE,h:(l.y1-l.y0+1)*TILE},32)))continue;
    const s=Math.abs(x-old.x)+Math.abs(y-old.y);if(s<score){best=r;score=s;}

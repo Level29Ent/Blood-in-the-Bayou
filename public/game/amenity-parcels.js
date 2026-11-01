@@ -3,7 +3,7 @@
 function overlap(a,b,pad=0){return a.x<b.x+b.w+pad&&a.x+a.w>b.x-pad&&a.y<b.y+b.h+pad&&a.y+a.h>b.y-pad;}
 function reserve(c,T,W,H,blockedTiles,park){
  c.amenityMoves=[];const cemeteries=c.features.filter(f=>f.kind==='cemetery');
- for(const f of cemeteries){const forbidden=c.buildings.concat(c.features.filter(o=>o!==f&&o.kind!=='forest'),c.activityParcels||[],[c.farm,c.recreationParcel,c.airportParcel,c.natchezParcel].filter(Boolean));
+ for(const f of cemeteries){const forbidden=c.buildings.concat(c.features.filter(o=>o!==f&&o.kind!=='forest'),c.activityParcels||[],[c.farm,c.recreationParcel,c.airportParcel,c.natchezParcel,c.mallParcel].filter(Boolean));
   // The whole cemetery, including its entrance sign, needs its own parcel.
   let onBlocked=false;for(let y=Math.floor(f.y/T);y<Math.ceil((f.y+f.h)/T);y++)for(let x=Math.floor(f.x/T);x<Math.ceil((f.x+f.w)/T);x++)if(blockedTiles.includes(c.g[y*W+x]))onBlocked=true;
   if(!onBlocked&&!forbidden.some(r=>overlap(f,r,32)))continue;
