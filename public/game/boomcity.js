@@ -43,6 +43,8 @@ genCity=function(di){
   const h0=c.heightAt;if(typeof h0==='function')c.heightAt=(x,y)=>hits({x,y})?0:h0(x,y);
   if(typeof indexTrees==='function')indexTrees(c);
   c.parked.push({x:DOCK.x,y:DOCK.y,a:Math.PI/2,type:'steamboat'});
+  // Reserve the whole pier, not just its posts. Later zoning must not fill it.
+  c.natchezParcel={x:PIER.x0*T-8,y:PIER.y0*T-8,w:(PIER.x1-PIER.x0+1)*T+16,h:(PIER.y1-PIER.y0+1)*T+16};
   c.boom=true;return c;
 };
 
@@ -97,13 +99,18 @@ function buildCasino(){
   if(v?.frontage?.angle){const f=v.frontage,a=f.angle;g.rotation.y=a;g.position.x=f.center.x-Math.cos(a)*f.center.x-Math.sin(a)*f.center.y;g.position.z=f.center.y+Math.sin(a)*f.center.x-Math.cos(a)*f.center.y;}g.position.y=v?.baseY||0;g.name='BoomCity facade';return g;
 }
 function buildDock(){
-  const g=new THREE.Group(),wood=lam('#6d5236');
+  const g=new THREE.Group(),wood=lam('#6d5236');g.name='Natchez pier';
+  const width=(PIER.x1-PIER.x0+1)*T,depth=(PIER.y1-PIER.y0+1)*T;
+  put(g,geoBox(width,3,depth),wood,(PIER.x0*T)+width/2,.5,(PIER.y0*T)+depth/2);
+  for(let x=PIER.x0*T+8;x<(PIER.x1+1)*T;x+=8)put(g,geoBox(.5,.15,depth),lam('#493629'),x,2.1,PIER.y0*T+depth/2);
+
   for(let x=PIER.x0;x<=PIER.x1+1;x++)for(const y of [PIER.y0,PIER.y1+1])put(g,new THREE.CylinderGeometry(2.6,2.6,16,8),wood,x*T,4,y*T);
   put(g,geoBox(4,30,4),wood,CAPTAIN.x-22,15,CAPTAIN.y-30);
   signPlane(g,'NATCHEZ SHRIMP CO.',80,18,CAPTAIN.x-22,34,CAPTAIN.y-27.5,0,'#ffd36b','#122028','#ffd36b');
-  put(g,new THREE.CylinderGeometry(5,6,18,10),lam('#2d3f5a'),CAPTAIN.x,9,CAPTAIN.y);
-  put(g,new THREE.SphereGeometry(5,12,10),lam('#c99b73'),CAPTAIN.x,22,CAPTAIN.y);
-  put(g,new THREE.CylinderGeometry(6.5,6.5,2,12),lam('#f4efe2'),CAPTAIN.x,26.5,CAPTAIN.y);
+  const captain=makeFigure(false);setFigureColors(captain,'#c99b73','#d7d9cf','#263c54');
+  poseFigure(captain,CAPTAIN.x,CAPTAIN.y,Math.PI,0,'stand');captain.position.y=2;
+  captain.name='Natchez captain';captain.traverse(o=>{o.userData.noBatch=true;});g.add(captain);
+  const hat=new THREE.Mesh(new THREE.CylinderGeometry(3.4,3.6,1.3,12),lam('#f4efe2'));hat.position.set(0,21.5,0);captain.add(hat);
   return g;
 }
 const prevBuild=buildCity;

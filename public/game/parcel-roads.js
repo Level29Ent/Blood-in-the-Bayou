@@ -13,7 +13,7 @@ function route(points,reserved,T,W,H,water){
 if(typeof module!=='undefined')module.exports={route};if(typeof window==='undefined')return;
 const gen=genCity;
 genCity=function(){const c=gen.apply(this,arguments);if(!c.world)return c;
- const reserved=c.buildings.concat(c.features.filter(f=>f.kind==='cemetery'),[c.farm,c.recreationParcel,c.airportParcel].filter(Boolean)),water=(x,y)=>c.g[Math.floor(y/TILE)*MW+Math.floor(x/TILE)]===T_WATER;c.roadDetours=[];
+ const reserved=c.buildings.concat(c.features.filter(f=>f.kind==='cemetery'),[c.farm,c.recreationParcel,c.airportParcel,c.natchezParcel].filter(Boolean)),water=(x,y)=>c.g[Math.floor(y/TILE)*MW+Math.floor(x/TILE)]===T_WATER;c.roadDetours=[];
  for(const curve of c.curves||[]){if(!curve.pts.some(p=>reserved.some(b=>level29SiteLayout.contains(b,p.x,p.y,TILE*2.25))))continue;
  const next=route(curve.pts,reserved,TILE,MW,MH,water);if(!next)throw Error('No safe scenic-road route for '+curve.id);
  curve.pts=next;c.roadDetours.push(curve.id);const xs=next.map(p=>p.x),ys=next.map(p=>p.y);curve.box=[Math.min(...xs)-260,Math.min(...ys)-260,Math.max(...xs)+260,Math.max(...ys)+260];
