@@ -1414,6 +1414,7 @@ function drawHUD(){
   const p = player, small = SW < 700 || SH < 500;
   // top right: cash + health + armor + heat skulls + weapon
   const R = SW - 18;
+  if(!window.level29UnifiedHUD){
   hudText(money(cash), R, 14, small ? 26 : 34, '#7fe08a', 'right');
   const bw = small ? 140 : 190, bx = R - bw;
   let y = small ? 46 : 56;
@@ -1440,6 +1441,7 @@ function drawHUD(){
   if (chips.length){ y += 6; chips.forEach((ch, k) => { if (!small || k < 4) hudText(ch, R, y + k*16, small ? 10 : 12, '#9fdcab', 'right', '600 '); }); }
   // DOM actions start after the actual status stack (armor, vehicle and upgrade chips included).
   document.documentElement.style.setProperty('--hud-status-bottom', (y + (chips.length ? Math.min(chips.length, small ? 4 : chips.length) * 16 : 0) + 14) + 'px');
+  }
   // mission panel top-left
   if (mission){
     const info = mission.info;

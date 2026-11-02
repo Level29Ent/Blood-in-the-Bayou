@@ -264,25 +264,25 @@
   css.textContent = `
   #dailyBtn{position:fixed;right:18px;top:252px;z-index:25;display:none;background:#111c24e8;color:#e5bd63;border:1px solid #b2945688;padding:11px 14px;font:700 12px 'IBM Plex Mono',monospace;min-height:44px;cursor:pointer}
   #dailyBtn.done{color:#7ee08a;border-color:#7ee08a88}
-  #dailyPanel{position:fixed;inset:302px 18px auto auto!important;height:auto!important;max-height:calc(100dvh - 320px);overflow-y:auto;z-index:26;display:none;width:290px;max-width:calc(100vw - 24px);background:#0d151cf2;border:1px solid #b2945688;color:#d8dde2;font:500 12px 'IBM Plex Mono',monospace;padding:14px 16px;box-shadow:0 10px 30px #0008}
-  #dailyPanel h3{margin:0 0 2px;font:900 22px 'Barlow Condensed',Impact,sans-serif;letter-spacing:.04em;color:#e5bd63}
-  #dailyPanel .sub{color:#8a97a3;margin-bottom:12px;font-size:11px}
-  #dailyPanel .ch{margin:0 0 12px}
-  #dailyPanel .row{display:flex;justify-content:space-between;gap:8px;margin-bottom:5px}
-  #dailyPanel .pay{color:#7ee08a;white-space:nowrap}
-  #dailyPanel .bar{height:5px;background:#ffffff14}
-  #dailyPanel .bar i{display:block;height:100%;background:#8e44c9}
-  #dailyPanel .ch.done .bar i{background:#7ee08a}
-  #dailyPanel .ch.done .txt{color:#7ee08a;text-decoration:line-through}
-  #dailyPanel .num{color:#8a97a3;font-size:11px;margin-top:4px}
-  #dailyPanel .foot{border-top:1px solid #ffffff1a;padding-top:10px;display:flex;justify-content:space-between;color:#8a97a3;font-size:11px}
-  #dailyPanel button{margin-top:10px;width:100%;min-height:40px;background:transparent;border:1px solid #b2945688;color:#e5bd63;font:700 12px 'IBM Plex Mono',monospace;cursor:pointer}
-  @media(max-width:699px){#dailyBtn{right:12px;top:350px;padding:9px}#dailyPanel{inset:400px 12px auto auto!important;max-height:calc(100dvh - 412px)}}`;
+  #dailyChallengesPanel{position:fixed;inset:302px 18px auto auto!important;height:auto!important;max-height:calc(100dvh - 320px);overflow-y:auto;z-index:26;display:none;width:290px;max-width:calc(100vw - 24px);background:#0d151cf2;border:1px solid #b2945688;color:#d8dde2;font:500 12px 'IBM Plex Mono',monospace;padding:14px 16px;box-shadow:0 10px 30px #0008}
+  #dailyChallengesPanel h3{margin:0 0 2px;font:900 22px 'Barlow Condensed',Impact,sans-serif;letter-spacing:.04em;color:#e5bd63}
+  #dailyChallengesPanel .sub{color:#8a97a3;margin-bottom:12px;font-size:11px}
+  #dailyChallengesPanel .ch{margin:0 0 12px}
+  #dailyChallengesPanel .row{display:flex;justify-content:space-between;gap:8px;margin-bottom:5px}
+  #dailyChallengesPanel .pay{color:#7ee08a;white-space:nowrap}
+  #dailyChallengesPanel .bar{height:5px;background:#ffffff14}
+  #dailyChallengesPanel .bar i{display:block;height:100%;background:#8e44c9}
+  #dailyChallengesPanel .ch.done .bar i{background:#7ee08a}
+  #dailyChallengesPanel .ch.done .txt{color:#7ee08a;text-decoration:line-through}
+  #dailyChallengesPanel .num{color:#8a97a3;font-size:11px;margin-top:4px}
+  #dailyChallengesPanel .foot{border-top:1px solid #ffffff1a;padding-top:10px;display:flex;justify-content:space-between;color:#8a97a3;font-size:11px}
+  #dailyChallengesPanel button{margin-top:10px;width:100%;min-height:40px;background:transparent;border:1px solid #b2945688;color:#e5bd63;font:700 12px 'IBM Plex Mono',monospace;cursor:pointer}
+  @media(max-width:699px){#dailyBtn{right:12px;top:350px;padding:9px}#dailyChallengesPanel{inset:400px 12px auto auto!important;max-height:calc(100dvh - 412px)}}`;
   document.head.appendChild(css);
   const btn = document.createElement('button');
-  btn.id = 'dailyBtn'; btn.type = 'button'; btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', 'dailyPanel');
+  btn.id = 'dailyBtn'; btn.type = 'button'; btn.setAttribute('aria-expanded', 'false'); btn.setAttribute('aria-controls', 'dailyChallengesPanel');
   const panel = document.createElement('div');
-  panel.id = 'dailyPanel'; panel.setAttribute('role', 'region'); panel.setAttribute('aria-label', 'Daily challenges');
+  panel.id = 'dailyChallengesPanel'; panel.setAttribute('role', 'region'); panel.setAttribute('aria-label', 'Daily challenges');
   document.body.append(btn, panel);
   uiReady = true;
   const toggle = open => { panel.style.display = open ? 'block' : 'none'; btn.setAttribute('aria-expanded', String(open)); if (open) render_(); };

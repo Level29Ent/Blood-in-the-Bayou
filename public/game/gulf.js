@@ -445,6 +445,7 @@ buildCity=function(){
   scene.fog.far=Math.max(scene.fog.far,1000);
   const skip=[cityGroup.children[0],cityGroup.children[1]];const wd=cityGroup.getObjectByName('level29-world-detail');if(wd&&wd.userData.wheel)skip.push(wd.userData.wheel);
   for(const o of cityGroup.children)if(o.name==='level29-mountains')skip.push(o);
+  for(const v of city.venues||[])if(v.roof){v.roof.userData.noBatch=true;skip.push(v.roof);}
   for(const v of city.venues||[])for(const o of [v.door,v.worker,...(v.brushes||[])])if(o)skip.push(o);
   const t0=performance.now();const out=batchStatic(cityGroup,skip);city.batchInfo={ms:Math.round(performance.now()-t0),meshes:out.userData.count};
 };
