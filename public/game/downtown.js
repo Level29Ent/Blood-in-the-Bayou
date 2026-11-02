@@ -301,15 +301,15 @@ try{const prevHurt=hurtPlayer;hurtPlayer=function(){if(ride||(player&&dockSafe(p
 
 // ---------------------------------------------------------------- bomber gunner ride
 let ride=null,fireHeld=false,tracers=[];
-function startBomber(){
+function startBomber(missionFlight=false){
   if(mpRole)return toast('BOMBER RIDE IS AVAILABLE IN SOLO PLAY');if(ride)return;if(!lots.airport)return toast('NO AIRPORT ON THIS MAP');if(player.car)return toast('STEP OUT OF YOUR VEHICLE FIRST');
-  if(cash<BOMBER_COST)return toast('THE BOMBER RIDE COSTS '+money(BOMBER_COST));
-  cash-=BOMBER_COST;sfx('cash');save.bomberRuns++;persist();closePanel();
+  if(!missionFlight&&cash<BOMBER_COST)return toast('THE BOMBER RIDE COSTS '+money(BOMBER_COST));
+  if(!missionFlight)cash-=BOMBER_COST;sfx('cash');save.bomberRuns++;persist();closePanel();
   const L=lots.airport,m=planeMesh(true);scene.add(m);
   ride={t:BOMBER_FRAMES,a:0,cx:(L.x0+6)*T,cy:(L.y0+5)*T,home:{x:player.x,y:player.y},kills:0,cd:0,mesh:m};
   ride.homeView={yaw:view.yaw,pitch:view.pitch};ride.startYaw=view.yaw;ride.startPitch=view.pitch;view.lastPlayer=player;
   ride.radius=level29Gunnery.ORBIT_RADIUS;const center=level29Gunnery.orbitCenter(ride.cx,ride.cy,MW*T,MH*T,ride.radius);ride.cx=center.x;ride.cy=center.y;
-  ride.remainingMs=level29Gunnery.DURATION_SECONDS*1000;ride.lastUpdate=performance.now();
+  ride.remainingMs=(missionFlight?60:level29Gunnery.DURATION_SECONDS)*1000;ride.t=Math.ceil(ride.remainingMs*.06);ride.lastUpdate=performance.now();
   ride.altitude=level29AircraftFlight.altitude(city,ride.cx,ride.cy,ride.radius);
   ride.mesh.position.set(ride.cx+ride.radius,ride.altitude,ride.cy);
   toast('GUNNER SEAT · HOLD FIRE ON THE .50 CAL');
@@ -635,5 +635,5 @@ drawFullMap=function(){prevFullMap.apply(this,arguments);if(!isWorld(city))retur
   for(const id in lots){const L=lots[id],x=(L.x0+L.x1+1)/2*T,y=(L.y0+L.y1+1)/2*T;cx.font="800 12px 'Barlow Condensed'";cx.textAlign='center';cx.textBaseline='middle';const w=cx.measureText(L.name).width+10;
     cx.fillStyle='rgba(8,10,12,.8)';cx.fillRect(X+x*sc-w/2,Y+y*sc-8,w,16);cx.fillStyle=COL.gold;cx.fillText(L.name,X+x*sc,Y+y*sc);}}catch(_){}};
 
-window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
+window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
 })();
