@@ -393,14 +393,14 @@ function buildCity(){
     cityGroup.add(tr, lf);
   }
   // street lamps + light pools + street signs at intersections
-  const lamps = [];
+  const lamps = [];city.lightPoleSolids=[];
   for (let i=0;i<ROADS.length;i++) for (let j=0;j<ROADS.length;j++){
     const t = city.get(ROADS[i]+1, ROADS[j]+1); if (t!==T_ROAD && t!==T_BRIDGE) continue;
     const lx = ROADS[i]*TILE - 8, lz = ROADS[j]*TILE - 8;
     if (city.get(ROADS[i]-1, ROADS[j]-1)===T_WALK) lamps.push([lx, lz]);
     const sx = (ROADS[i]+3)*TILE + 8, sz = (ROADS[j]+3)*TILE + 8;
     if (city.get(ROADS[i]+3, ROADS[j]+3)===T_WALK){
-      const pole = new THREE.Mesh(new THREE.CylinderGeometry(.8, .8, 40, 6), MAT.pole); pole.position.set(sx, 20, sz); cityGroup.add(pole);
+      city.lightPoleSolids.push({x:sx-1.5,y:sz-1.5,w:3,h:3});const pole = new THREE.Mesh(new THREE.CylinderGeometry(.8, .8, 40, 6), MAT.pole); pole.position.set(sx, 20, sz); cityGroup.add(pole);
       const a = new THREE.Mesh(new THREE.PlaneGeometry(36, 7), new THREE.MeshLambertMaterial({ map: signTexFor(D.v[i]), side: THREE.DoubleSide })); a.position.set(sx, 38, sz); a.rotation.y = Math.PI/2; cityGroup.add(a);
       const b = new THREE.Mesh(new THREE.PlaneGeometry(36, 7), new THREE.MeshLambertMaterial({ map: signTexFor(D.h[j]), side: THREE.DoubleSide })); b.position.set(sx, 31, sz); cityGroup.add(b);
     }
@@ -408,7 +408,7 @@ function buildCity(){
   const lp = new THREE.InstancedMesh(new THREE.CylinderGeometry(.9, 1.2, 52, 6).translate(0, 26, 0), MAT.pole, lamps.length);
   const lh = new THREE.InstancedMesh(new THREE.BoxGeometry(10, 2, 4), MAT.lamp, lamps.length);
   const pools = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI/2), MAT.pool, lamps.length);
-  lamps.forEach(([x, z], i) => { dummy.rotation.set(0, Math.PI/4, 0); dummy.scale.set(1, 1, 1); dummy.position.set(x, 0, z); dummy.updateMatrix(); lp.setMatrixAt(i, dummy.matrix);
+  lamps.forEach(([x, z], i) => { city.lightPoleSolids.push({x:x-1.5,y:z-1.5,w:3,h:3}); dummy.rotation.set(0, Math.PI/4, 0); dummy.scale.set(1, 1, 1); dummy.position.set(x, 0, z); dummy.updateMatrix(); lp.setMatrixAt(i, dummy.matrix);
     dummy.position.set(x + 5, 52, z + 5); dummy.updateMatrix(); lh.setMatrixAt(i, dummy.matrix);
     dummy.rotation.set(0, 0, 0); dummy.position.set(x + 12, .7, z + 12); dummy.scale.set(170, 1, 170); dummy.updateMatrix(); pools.setMatrixAt(i, dummy.matrix); });
   cityGroup.add(lp, lh, pools); lampPools = pools;
