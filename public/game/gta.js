@@ -258,6 +258,7 @@ function spawnTraffic(){
     // right-hand: on vertical roads, east lane (side 2) heads south (+y), west lane north; horizontal: south lane (side 2) heads west
     const a = vert ? (side === 2 ? Math.PI/2 : -Math.PI/2) : (side === 2 ? Math.PI : 0);
     const c = makeCar(x, y, a, D.cars[Math.floor(rng() * D.cars.length)]);
+    if(!level29TrafficClearance.sweep(c,city,tileAt,[T_ROAD,T_BRIDGE],120))continue;
     c.ai = { input: { thr: 1, steer: 0, brake: false, boost: false }, cruise: c.spec.max * rnd(.38, .5), lane, vert, side, turnCd: 0, target: a, stuck: 0 };
     cars.push(c); return;
   }
@@ -278,7 +279,7 @@ function updateTraffic(){
     }
     // obstacles ahead: player, zombies (they plough slowly), other cars, buildings/water
     const fx = c.x + Math.cos(c.a) * (c.spec.len * .5 + 40), fy = c.y + Math.sin(c.a) * (c.spec.len * .5 + 40);
-    let block = solidAt(fx, fy) || tileAt(fx, fy) === T_WATER;
+    let block = !level29TrafficClearance.sweep(c,city,tileAt,[T_ROAD,T_BRIDGE],Math.max(55,c.v*c.v/ .35));
     if (!block) for (const o of cars){ if (o === c || o.dead) continue; if (dist(o.x, o.y, fx, fy) < o.r + 14){ block = true; break; } }
     const ped = !p.dead && !p.car && dist(p.x, p.y, fx, fy) < 34;
     let thr = Math.abs(c.v) < ai.cruise ? 1 : 0;

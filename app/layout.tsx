@@ -41,8 +41,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
-        {/* Disabled placeholder configuration; Google loads only inside the game document. */}
-        <script src="/game/ads.js" />
+        {/* Site-level AdSense tag requested by the owner. H5 game ads remain
+            separately consent/approval gated inside the game document. */}
+        <script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9730543201329278"
+          crossOrigin="anonymous"
+        />
       </head>
       <body className="antialiased">
         {children}
