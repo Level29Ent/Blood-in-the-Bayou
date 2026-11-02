@@ -65,3 +65,27 @@ smaller buttons, physical-phone FPS and native Xcode checks still need playtests
 The existing Next.js security advisory remains unresolved. Installed iPhone
 apps require a new signed build. This work includes the prior mall/pause/weather
 revision so it does not regress enclosed stores, original HUD or 29 Cuisine.
+
+## Neon / fascia follow-up
+
+The screenshot exposed a placement error: the original raised-name baseline was
+53, inside the standard 52–55 roof slab. The sign now fits below the actual roof
+underside on a bounded fascia (standard extended shell fallback 52), and sits
+4.8 units outward from the door plane. The mall retains its 103-high upper
+fascia; inner retail names stay within their requested 7-high shop headers.
+Repeated custom exterior banners on the same facade are suppressed too.
+
+Business and mall-shop lettering now uses a cyan-white emissive 3D core plus
+one transparent additive halo made from the same font contours. No point lights
+or full-screen bloom pass is added. The halo is depth-tested so it cannot glow
+through occluding walls, and geometry/glow textures are cached per business name.
+This is self-illuminated signage, not simulated light spill onto pavements.
+
+236 regressions pass, including roof-clearance at four shell heights, bounded
+mall signs, emissive core and depth-tested halo settings and texture reuse. A
+local actual-script DOM/Three scene harness builds all 56 generated businesses,
+checks finite letter bounds, neon/halo presence and world-space mounting in each
+venue's outward frontage direction. It does not render WebGL or validate the
+halo's appearance. Production build, TypeScript no-emit and refreshed native
+archive pass; the packaged sign code and versioned entry match the source.
+The pre-existing Next.js security upgrade warning remains unresolved.
