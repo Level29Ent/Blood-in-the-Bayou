@@ -711,7 +711,7 @@ function updateCar(c, input){
   if (brake) c.v *= .9;
   c.v *= .996;
   const sp = Math.abs(c.v);
-  c.steerSmooth = (c.steerSmooth || 0) + (clamp(steer,-1,1) - (c.steerSmooth || 0)) * .16;
+  c.steerSmooth = (c.steerSmooth || 0) + (clamp(steer,-1,1) - (c.steerSmooth || 0)) * (c.driven&&!c.boat?.22:.16);
   const turn = c.steerSmooth * .043 * clamp(c.v / 2.8, -1, 1) / (1 + sp * .075);
   c.a += turn;
   const grip = brake ? .7 : s.grip;
@@ -946,7 +946,7 @@ function update(){
       p.a = view.yaw;
       if (ml > 1){ mx /= ml; my /= ml; }
       if (ml > .05) p.anim += .25 * Math.min(1, ml);
-      p.vx = p.vx * .7 + mx * spd * .3; p.vy = p.vy * .7 + my * spd * .3;
+      p.vx = level29GameplayMath.velocity(p.vx,mx*spd); p.vy = level29GameplayMath.velocity(p.vy,my*spd);
       moveCircle(p, p.vx, p.vy, p.r);
       if (tileAt(p.x, p.y)===T_WATER) hurtPlayer(1, p.x, p.y);
     }
@@ -1046,14 +1046,14 @@ function update(){
   if (frame % 80 === 0 && Math.random() < .6){ const near = zombies.filter(z => dist(z.x, z.y, px, py) < 500); if (near.length){ const z = near[Math.floor(Math.random()*near.length)]; if (!(Math.random() < .6 && zombieSay(z))) snd('groan', z.type==='brute' ? 70 : z.type==='runner' ? 150 : 105); } }
   // bullets
   for (const b of bullets){
-    b.x += b.vx; b.y += b.vy; b.life--;
-    if (solidAt(b.x, b.y) && tileAt(b.x, b.y)===T_BLD){ b.life = 0; parts.push({ k:'spark', x:b.x - b.vx*.5, y:b.y - b.vy*.5, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); continue; }
+    const previousX=b.x,previousY=b.y;b.x += b.vx; b.y += b.vy; b.life--;
+    if (level29GameplayMath.blockedSegment(previousX,previousY,b.x,b.y,(x,y)=>solidAt(x,y)&&tileAt(x,y)===T_BLD)){ b.life = 0; parts.push({ k:'spark', x:b.x - b.vx*.5, y:b.y - b.vy*.5, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); continue; }
     for (const z of zombies){
       if (!z.alive || b.hit.has(z)) continue;
-      if ((b.x - z.x)**2 + (b.y - z.y)**2 < (z.r + 3)**2){
+      if (level29GameplayMath.segmentDistance2(z.x,z.y,previousX,previousY,b.x,b.y) < (z.r + 3)**2){
         z.hp -= b.dmg; z.flash = 4; b.hit.add(z); z.lastHit = b.owner || 0; z.killSource=b.owner?'remote':'player'; z.alert = true; z.stun = z.type==='brute' ? 2 : 6;
         moveCircle(z, b.vx*.12, b.vy*.12, z.r*.8); gore(b.x, b.y, 2);
-        if (!b.owner) view.hit = 7; if (z.hp <= 0) killZombie(z, b.vx, b.vy); else snd('zhit');
+        if (!b.owner){view.hit = 7;window.level29GameFeel?.hit(z.hp<=0);} if (z.hp <= 0) killZombie(z, b.vx, b.vy); else snd('zhit');
         if (b.pierce-- <= 0){ b.life = 0; break; }
       }
     }
