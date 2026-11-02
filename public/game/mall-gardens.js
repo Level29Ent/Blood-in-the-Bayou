@@ -12,7 +12,7 @@ function findSite(c,T,W,H,blocked){
   }if(best)return best;
  }return null;
 }
-function layout(b){const shops=[];const names=[['BAYOU FASHION','TECH & GIFTS'],['HOME & LIVING','29 CUISINE'],['LUXURY COLLECTION','EXECUTIVE TALENT']];for(let floor=0;floor<3;floor++)for(let side=0;side<2;side++){const w=100,d=Math.min(125,b.h-110),x=side?b.x+b.w-w-5:b.x+5,y=b.y+64;shops.push({name:names[floor][side],floor,x:x+w/2,y:y+d/2+24,room:{x,y,w,h:d},doorX:x+w/2,doorY:y+d});}return {lift:{x:b.x+b.w/2,y:b.y+28},landing:{x:b.x+b.w/2,y:b.y+35},southLift:{x:b.x+b.w/2,y:b.y+b.h-24},shops};}
+function layout(b){const shops=[];const names=[['BAYOU FASHION','TECH & GIFTS'],['HOME & LIVING','29 CUISINE'],['LUXURY COLLECTION','EXECUTIVE TALENT']];for(let floor=0;floor<3;floor++)for(let side=0;side<2;side++){const w=100,d=Math.min(125,b.h-110),x=side?b.x+b.w-w-5:b.x+5,y=b.y+64;shops.push({name:names[floor][side],floor,x:x+w/2,y:y+d/2+24,room:{x,y,w,h:d},doorX:x+w/2,doorY:y+d});}for(const [side,name]of [[0,'GREENTOWN PLANT STORE'],[1,'FISH AQUARIUM STORE']]){const w=100,d=125,x=side?b.x+b.w-w-5:b.x+5,y=b.y+b.h-165;shops.push({name,floor:0,x:x+w/2,y:y+d/2+24,room:{x,y,w,h:d},doorX:x+w/2,doorY:y+d});}return {lift:{x:b.x+b.w/2,y:b.y+28},landing:{x:b.x+b.w/2,y:b.y+35},southLift:{x:b.x+b.w/2,y:b.y+b.h-24},shops};}
 if(typeof module!=='undefined')module.exports={findSite,overlap,layout};if(typeof window==='undefined')return;
 VENUE_TYPES.push({id:'mall',name:'GREENTOWN MALL',short:'MALL · 3 LEVELS',letter:'M',col:'#e9c27a'});
 const gen=genCity;genCity=function(){const c=gen.apply(this,arguments);if(!c.world)return c;
@@ -53,6 +53,8 @@ function buildMall(v){const b=v.b,g=new THREE.Group();g.name='Greentown Mall · 
    part(door,8,2,shop.doorX,base+46,shop.doorY,cream);
    part(r.w-4,1,r.h-4,r.x+r.w/2,base+1,r.y+r.h/2,tile);
    const counterY=r.y+28;part(r.w-24,12,16,shop.doorX,base+6,counterY,wood);v.floorFurniture[floor].push({x:r.x+12,y:counterY-8,w:r.w-24,h:16});
+   if(shop.name==='GREENTOWN PLANT STORE'){for(let n=0;n<4;n++){const x=shop.x-18+n*12,z=shop.y;const pot=new THREE.Mesh(new THREE.CylinderGeometry(2.2,1.6,3.5,10),wood);pot.position.set(x,base+16,z);g.add(pot);const stem=new THREE.Mesh(new THREE.CylinderGeometry(.2,.25,7,6),gold);stem.position.set(x,base+21,z);g.add(stem);for(const side of [-1,1]){const leaf=new THREE.Mesh(new THREE.SphereGeometry(1,10,6),new THREE.MeshStandardMaterial({color:'#477847'}));leaf.scale.set(3,.5,1.5);leaf.rotation.z=side*.4;leaf.position.set(x+side*2,base+23,z);g.add(leaf);}}}
+   if(shop.name==='FISH AQUARIUM STORE'){for(const dx of [-17,17]){part(26,2,18,shop.x+dx,base+15,shop.y,gold);const tank=new THREE.Mesh(new THREE.BoxGeometry(24,15,16),new THREE.MeshStandardMaterial({color:'#85c5d0',transparent:true,opacity:.22,depthWrite:false}));tank.position.set(shop.x+dx,base+23,shop.y);g.add(tank);part(22,1,14,shop.x+dx,base+16,shop.y,cream);for(let n=0;n<3;n++){const fish=new THREE.Mesh(new THREE.SphereGeometry(1,10,6),new THREE.MeshStandardMaterial({color:n%2?'#df9e53':'#6397b2'}));fish.scale.set(2,.8,.6);fish.position.set(shop.x+dx-6+n*5,base+21+(n%2)*3,shop.y+(n-1)*3);g.add(fish);}}}
    addSign(g,shop.name,r.w-8,7,shop.doorX,base+36,shop.doorY+2,'#ead39b');
    for(let k=0;k<4;k++)part(8,5,8,r.x+19+k*20,base+15,counterY,dark);
    if(shop.name==='29 CUISINE'){addSign(g,'U · BURGER MEAL $60 · +50 HEALTH',90,5,shop.doorX,base+25,shop.doorY+2,'#e4b578');for(const dx of [-25,25]){part(20,1,18,shop.doorX+dx,base+10,r.y+65,gold);part(2,10,2,shop.doorX+dx,base+5,r.y+65,dark);}}
