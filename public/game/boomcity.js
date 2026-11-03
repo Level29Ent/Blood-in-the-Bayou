@@ -12,7 +12,7 @@ const CAPTAIN={x:119*T,y:81.5*T};
 const DOCK={x:123.3*T,y:81.5*T};
 const inBay=(x,y)=>x>=BAY.x0*T&&x<(BAY.x1+1)*T&&y>=BAY.y0*T&&y<(BAY.y1+1)*T;
 const inPlaza=(x,y)=>x>=PLAZA.x0*T&&x<(PLAZA.x1+1)*T&&y>=PLAZA.y0*T&&y<(PLAZA.y1+1)*T;
-const isEastCity=c=>!!(c&&c.world&&c.width===WORLD_SIZE);
+const isEastCity=c=>!!(c&&c.world&&(c.coreWidth||c.width)===WORLD_SIZE);
 
 const SAVE_KEY='level29.boomcity.v1';
 let save={shifts:0,lbs:0,earned:0,best:{},won:0,lost:0,biggest:0};
