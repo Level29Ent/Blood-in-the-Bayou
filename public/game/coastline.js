@@ -64,7 +64,7 @@ function layoutStrip(c,avoid){
   const Wp=c.width*T,Hp=c.height*T;let x0=1e9,y0=1e9,x1=-1,y1=-1;
   for(const f of mt){x0=Math.min(x0,f.x);y0=Math.min(y0,f.y);x1=Math.max(x1,f.x+f.w);y1=Math.max(y1,f.y+f.h);}
   if(!mt.length){x0=Wp*.8;x1=Wp;y0=Hp*.4;y1=Hp*.6;}
-  const side=nearestSide(c,x0,y0,x1,y1),w=14,h=11,W=c.width,H=c.height;
+  const side=nearestSide(c,x0,y0,x1,y1),w=21,h=11,W=c.width,H=c.height;
   const target=side==='L'||side==='R'?(y0+y1)/2/T:(x0+x1)/2/T;
   const cost=(rx,ry)=>{let s=0;for(let y=ry;y<ry+h;y++)for(let x=rx;x<rx+w;x++){const t=c.g[y*W+x];s+=t===T_WATER||t===T_BRIDGE?40:t===T_BLD?8:t===T_ROAD?1:0;}return s;};
   let best=null,bc=1e12;
@@ -109,7 +109,7 @@ genCity=function(){
     strip=layoutStrip(c,(pier?[pier.rect]:[]).concat(DL?Object.values(DL).filter(l=>l.id!=='airport').map(tileRect):[]));
     if(strip&&DL){
       if(old)for(let y=old.y0;y<=old.y1;y++)for(let x=old.x0;x<=old.x1;x++)if(!flats.some(f=>inRect((x+.5)*T,(y+.5)*T,f)))c.g[y*c.width+x]=T_GRASS;
-      DL.airport=Object.assign({id:'airport',w:14,h:11,name:'LEVEL 29 AIRSTRIP'},old||{},{w:14,h:11,x0:strip.x0,y0:strip.y0,x1:strip.x1,y1:strip.y1,fb:strip.fb,door:strip.door,name:'LEVEL 29 AIRSTRIP'});
+      DL.airport=Object.assign({id:'airport',w:21,h:11,name:'LEVEL 29 AIRSTRIP'},old||{},{w:21,h:11,x0:strip.x0,y0:strip.y0,x1:strip.x1,y1:strip.y1,fb:strip.fb,door:strip.door,name:'LEVEL 29 AIRSTRIP'});
       c.airportParcel=tileRect(strip);c.airportAccess=[];
       const ax=strip.x0+5,ay=strip.y0+5;
       for(let y=strip.y0;y<=ay;y++){c.g[y*c.width+ax]=T_ROAD;c.airportAccess.push({x:(ax+.5)*T,y:(y+.5)*T});}

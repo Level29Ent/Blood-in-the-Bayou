@@ -77,12 +77,10 @@ function buildMall(v){const b=v.b,g=new THREE.Group();g.name='Greentown Mall · 
    const span=(r.w-door)/2;for(const side of [-1,1])wall(span,2,shop.doorX+side*(r.w+door)/4,shop.doorY);
    part(door,8,2,shop.doorX,base+46,shop.doorY,cream);
    part(r.w-4,1,r.h-4,r.x+r.w/2,base+1,r.y+r.h/2,tile);
-   const counterY=shop.dir===1?r.y+12:r.y+r.h-12;part(r.w-24,12,16,shop.doorX,base+6,counterY,wood);v.floorFurniture[floor].push({x:r.x+12,y:counterY-8,w:r.w-24,h:16});
-   if(shop.name==='GREENTOWN PLANT STORE'){for(let n=0;n<4;n++){const x=shop.x-18+n*12,z=counterY;const pot=new THREE.Mesh(new THREE.CylinderGeometry(2.2,1.6,3.5,10),wood);pot.position.set(x,base+16,z);g.add(pot);const stem=new THREE.Mesh(new THREE.CylinderGeometry(.2,.25,7,6),gold);stem.position.set(x,base+21,z);g.add(stem);for(const side of [-1,1]){const leaf=new THREE.Mesh(new THREE.SphereGeometry(1,10,6),new THREE.MeshStandardMaterial({color:'#477847'}));leaf.scale.set(3,.5,1.5);leaf.rotation.z=side*.4;leaf.position.set(x+side*2,base+23,z);g.add(leaf);}}}
-   if(shop.name==='FISH AQUARIUM STORE'){for(const dx of [-17,17]){part(26,2,18,shop.x+dx,base+15,counterY,gold);const tank=new THREE.Mesh(new THREE.BoxGeometry(24,15,16),new THREE.MeshStandardMaterial({color:'#85c5d0',transparent:true,opacity:.22,depthWrite:false}));tank.position.set(shop.x+dx,base+23,counterY);g.add(tank);part(22,1,14,shop.x+dx,base+16,counterY,cream);for(let n=0;n<3;n++){const fish=new THREE.Mesh(new THREE.SphereGeometry(1,10,6),new THREE.MeshStandardMaterial({color:n%2?'#df9e53':'#6397b2'}));fish.scale.set(2,.8,.6);fish.position.set(shop.x+dx-6+n*5,base+21+(n%2)*3,counterY+(n-1)*3);g.add(fish);}}}
+   const counterY=shop.dir===1?r.y+12:r.y+r.h-12;part(r.w-24,10,16,shop.doorX,base+5,counterY,wood);v.floorFurniture[floor].push({x:r.x+12,y:counterY-8,w:r.w-24,h:16});
    const label=addSign(g,shop.name,r.w-8,7,shop.doorX,base+36,shop.doorY+shop.dir*2,'#ead39b');if(label&&shop.dir===-1)label.rotation.y=Math.PI;
    window.level29MallDisplays?.build(shop,g,base,part,{wood,gold,dark,cream});
-   for(let k=0;k<4;k++)part(8,5,8,r.x+19+k*20,base+15,counterY,dark);
+
    if(shop.name==='29 CUISINE'){addSign(g,'U · BURGER MEAL $60 · +50 HEALTH',90,5,shop.doorX,base+25,shop.doorY+2,'#e4b578');}
   }
   for(const side of [-1,1]){const x=b.x+b.w/2+side*42,z=b.y+b.h-43;part(28,6,12,x,base+3,z,wood);part(28,8,2,x,base+8,z-5,cream);v.floorFurniture[floor].push({x:x-14,y:z-6,w:28,h:12});}

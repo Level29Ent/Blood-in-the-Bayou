@@ -101,7 +101,7 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
   staff(v,g,b.x+b.w/2,b.y+22,base);for(const [label,x]of [['DRINKS',b.x+38],['FOOD',b.x+b.w-38]])sign(label,x,b.y+5,55);
  }else if(v.id==='bank'){
   item(b.x+b.w/2,b.y+65,b.w-70,14,20,wood);sign('TELLER · ACCOUNTS / VAULT',b.x+b.w/2,b.y+4,180);staff(v,g,b.x+b.w/2,b.y+42,base);
-  item(b.x+35,b.y+130,38,36,30,steel);sign('VAULT',b.x+35,b.y+112,40);for(let k=0;k<3;k++){q.box(8,3,9,b.x+25+k*9,base+21,b.y+147,green);}
+  v.furniture.push({x:b.x+14,y:b.y+114,w:42,h:38});sign('VAULT',b.x+35,b.y+112,40);for(let k=0;k<3;k++){q.box(8,3,9,b.x+25+k*9,base+21,b.y+147,green);}
   for(const x of [b.x+b.w-35,b.x+b.w-65])item(x,b.y+b.h-50,20,9,22,dark);
  }else if(v.id==='gym'){
   for(const x of [b.x+35,b.x+b.w-35])for(const y of [b.y+60,b.y+120]){item(x,y,28,3,40,dark);q.box(3,19,3,x+12,base+11,y-16,steel);q.box(28,2,3,x,base+21,y-16,steel);}
@@ -111,7 +111,7 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
   item(b.x+b.w/2,b.y+65,b.w-65,14,24,dark);sign('CAPTAIN SMITH · U',b.x+b.w/2,b.y+4,155);staff(v,g,b.x+b.w/2,b.y+35,base);
   for(const x of [b.x+40,b.x+b.w-40]){item(x,b.y+120,35,25,22,steel);q.box(26,1,1,x,base+27,b.y+132,white);}
   sign('EVIDENCE',b.x+42,b.y+103,60);sign('EQUIPMENT',b.x+b.w-42,b.y+103,64);
-  for(let k=0;k<5;k++)q.box(2,39,2,b.x+b.w*.68+k*8,base+20,b.y+b.h-45,steel);
+
  }else if(v.id==='fire'){
   item(b.x+b.w/2,b.y+58,84,13,22,dark);sign('FIRE CAPTAIN · PAID RESCUE JOBS',b.x+b.w/2,b.y+4,190);staff(v,g,b.x+b.w/2,b.y+30,base);
   for(let k=0;k<4;k++){const x=b.x+36+k*26;item(x,b.y+112,20,36,18,steel);q.box(13,18,2,x,base+22,b.y+122,material('#bd5033'));}
