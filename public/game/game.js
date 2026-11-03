@@ -440,6 +440,7 @@ function missionTarget(){
   if (t==='deliver') return m.step==='pickup' ? { x:m.targets[0].x, y:m.targets[0].y, col:'#f4c355', label:'C' } : { x:m.drop.x, y:m.drop.y, col:'#3cc86e', label:'D' };
   if (t==='race') return m.cks[m.ckIdx] ? { x:m.cks[m.ckIdx].x, y:m.cks[m.ckIdx].y, col:'#ff9b2a', label:String(m.ckIdx+1) } : null;
   if (t==='defend') return { x:m.targets[0].x, y:m.targets[0].y, col:'#ff5a4a', label:'H', zone:220 };
+  if (t==='boss' && m.drop) return { x:m.drop.x, y:m.drop.y, col:'#f4c355', label:'C' };
   if (t==='boss') return boss && !boss.dead ? { x:boss.x, y:boss.y, col:'#ff3a3a', label:'☠' } : { x:m.targets[0].x, y:m.targets[0].y, col:'#ff3a3a', label:'☠' };
   return null;
 }
