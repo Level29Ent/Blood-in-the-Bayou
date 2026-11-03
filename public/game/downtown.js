@@ -275,12 +275,14 @@ function birdMesh(){
  const wings=[];for(const side of [-1,1]){const w=new THREE.Group();w.position.z=side;g.add(w);a.ell(w,3,.5,8,-.4,0,side*3,m);for(let i=0;i<4;i++)a.ell(w,2,.22,2,-1+i*.5,-.1,side*(5+i*.15),dark);wings.push(w);}
  a.ell(g,3,.35,2.8,-3.6,-.1,0,dark);g.userData.w=wings;return g;
 }
+function hitBird(b){if(!birds.includes(b)||!b.alive)return false;b.alive=false;cash+=29;save.birds++;persist();sfx('cash');toast('BIRD DOWN · +$29 · '+save.birds+' BAGGED');return true;}
 function updateBirds(){
   if(!scene||!player)return;
   while(birds.length<10){const a=Math.random()*6.28,r=rnd(250,650);const b={x:player.x+Math.cos(a)*r,y:player.y+Math.sin(a)*r,h:rnd(42,80),a:Math.random()*6.28,v:rnd(1.6,2.6),alive:true,fall:0,mesh:birdMesh()};scene.add(b.mesh);birds.push(b);}
   for(const b of birds){
     if(b.alive){b.a+=rnd(-.03,.03);b.x+=Math.cos(b.a)*b.v;b.y+=Math.sin(b.a)*b.v;const fl=Math.sin(frame*.4+b.x)*.7;b.mesh.userData.w[0].rotation.x=fl;b.mesh.userData.w[1].rotation.x=-fl;
-      for(const bl of bullets){if(d2(bl.x,bl.y,b.x,b.y)<20){b.alive=false;bl.life=0;cash+=29;save.birds++;persist();sfx('cash');toast('BIRD DOWN · +$29 · '+save.birds+' BAGGED');break;}}}
+      // Hits are resolved from the camera ray on an actual firearm shot (bird-aim.js).
+    }
     else{b.h-=2.4;b.fall++;b.mesh.rotation.z+=.3;}
     b.mesh.position.set(b.x,b.h,b.y);b.mesh.rotation.y=-b.a;
   }
@@ -640,5 +642,5 @@ drawFullMap=function(){prevFullMap.apply(this,arguments);if(!isWorld(city))retur
   for(const id in lots){const L=lots[id],x=(L.x0+L.x1+1)/2*T,y=(L.y0+L.y1+1)/2*T;cx.font="800 12px 'Barlow Condensed'";cx.textAlign='center';cx.textBaseline='middle';const w=cx.measureText(L.name).width+10;
     cx.fillStyle='rgba(8,10,12,.8)';cx.fillRect(X+x*sc-w/2,Y+y*sc-8,w,16);cx.fillStyle=COL.gold;cx.fillText(L.name,X+x*sc,Y+y*sc);}}catch(_){}};
 
-window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
+window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},get birdTargets(){return birds;},hitBird,startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
 })();

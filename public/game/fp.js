@@ -495,7 +495,7 @@ function buildViewModel(){
 
 // ---------- Input: look ----------
 function turnView(dx, dy){
-  if (state!=='play' || !player || player.dead) return;
+  if (state!=='play' || !player || player.dead || typeof wheelOpen!=='undefined'&&wheelOpen) return;
   if (player.car){ view.look = clamp(view.look + dx, -2.4, 2.4); view.lookIdle = 0; }
   else view.yaw += dx;
   view.pitch = clamp(view.pitch - dy, -.75, .6);
