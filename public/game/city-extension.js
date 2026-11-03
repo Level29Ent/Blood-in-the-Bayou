@@ -33,7 +33,7 @@ const gen=genCity;genCity=function(){const c=gen.apply(this,arguments);if(!c.wor
  for(let y=129;y<=old+8;y++)for(let x=41;x<=43;x++)if(!c.buildings.some(b=>x*TILE>b.x-16&&x*TILE<b.x+b.w+16&&y*TILE>b.y-16&&y*TILE<b.y+b.h+16))c.g[y*MW+x]=T_ROAD;
  c.trees=c.trees.filter(t=>![T_ROAD,T_BRIDGE].includes(c.get(Math.floor(t.x/TILE),Math.floor(t.y/TILE))));indexTrees(c);return c;
 };
-function build(){const c=city;if(!c?.neighborhood)return;const root=new THREE.Group();root.name='Decatur Bayou neighborhood and outer highway';cityGroup.add(root);const D=level29InteriorModels,M=D.material,brick=M('#bfa88d','brick'),roof=M('#4a5055','metal'),wood=M('#805d42'),glass=M('#456d80','metal',.3),paint=M('#e6d6b4','plaster'),q=level29World.batch(root);const box=(w,h,d,x,y,z,m)=>q.box(w,h,d,x,y,z,m);
+function build(){const c=city;if(!c?.neighborhood)return;const root=new THREE.Group();root.name='Decatur Bayou neighborhood and outer highway';cityGroup.add(root);const D=level29InteriorModels,M=D.material,brick=M('#bfa88d','brick'),roof=M('#4a5055','metal'),wood=M('#805d42'),glass=M('#456d80','metal',.3),paint=M('#e6d6b4','plaster'),q=level29World.batch(root);const box=(w,h,d,x,y,z,m)=>q.box(w,h,d,x,y+(city.interstateSurface?.(x,z)||0),z,m);
  for(const h of c.neighborhood.homes){const cx=h.x+h.w/2,cz=h.y+h.h/2;box(h.w,h.H,h.h,cx,h.H/2,cz,brick);box(h.w+6,3,h.h+6,cx,h.H+1.5,cz,roof);
   if(!h.apartment){const tri=new THREE.Mesh(new THREE.ConeGeometry(h.w*.6,20,4),roof);tri.rotation.y=Math.PI/4;tri.scale.z=h.h/h.w;tri.position.set(cx,h.H+12,cz);root.add(tri);}
   for(let y=15;y<h.H;y+=30)for(const dx of [-h.w*.3,h.w*.3]){box(19,16,1,cx+dx,y,h.y+h.h+.7,glass);box(1,16,1.2,cx+dx,y,h.y+h.h+1,paint);}
@@ -42,7 +42,7 @@ function build(){const c=city;if(!c?.neighborhood)return;const root=new THREE.Gr
  const B=c.highway.bounds,metal=M('#a8b5b7','metal',.7),white=M('#e7dfbb');
  for(const y of [B.top,B.bottom])for(let x=B.left+100;x<B.right-100;x+=96){box(35,.2,1,x,1.2,y,white);for(const side of [-1,1]){const z=y+side*82;box(92,2,1,x,7,z,metal);if(x%288<96){box(1,42,1,x,21,z,metal);box(7,1,4,x,43,z,white);}}}
  for(const x of [B.left,B.right])for(let y=B.top+100;y<B.bottom-100;y+=96){box(1,.2,35,x,1.2,y,white);for(const side of [-1,1])box(1,2,92,x+side*82,7,y,metal);}
- for(const link of c.highway.links){const p=link.path[Math.min(3,link.path.length-1)];addSign(root,link.name,140,9,p.x,35,p.y,'#e8e7ce');}
+ for(const link of c.interstateExits?[]:c.highway.links){const p=link.path[Math.min(3,link.path.length-1)];addSign(root,link.name,140,9,p.x,35,p.y,'#e8e7ce');}
  addSign(root,'DECATUR ST · BAYOU RESIDENTIAL · 6 BLOCKS',210,12,58*TILE,40,(c.coreWidth+6)*TILE,'#e8d4a1');
  for(const [i,title]of ['LEVEL 29 ENT.','BLOOD IN THE BAYOU','VIRAL'].entries()){const x=B.right-100,z=1800+i*640;box(3,60,3,x,30,z,metal);addSign(root,title,140,34,x,75,z,'#d8bb6a');}
  q.finish();if(window.level29BatchStatic)level29BatchStatic(root,[]);
