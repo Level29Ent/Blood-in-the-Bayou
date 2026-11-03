@@ -1,11 +1,14 @@
 'use strict';
 (function(){
 function points(m,survivors,boss){if(!m)return [];if(m.phase==='start')return m.start?[{...m.start,label:'MEET CONTACT'}]:[];if(m.phase!=='active')return [];
+ const e=m.extra;if(e&&!e.done){const p=e.stage==='field'?e.field:e.extraction;return p?[{...p,label:e.stage==='field'?'FIELD OBJECTIVE':'EXTRACTION ZONE'}]:[];}
  const type=m.info.type;let ps=[];
+ if(type==='op'&&m.opStops){return (m.opStops.slice(m.si||0).length?m.opStops.slice(m.si||0).map((s,i)=>({x:s.v.stationX,y:s.v.stationY,label:'PICKUP STOP '+((m.si||0)+i+1)})):m.drop?[{...m.drop,label:'RETURN TO MANSION'}]:[]);}
+ if(type==='rob'){const p=m.step==='escape'?m.drop:m.robVenue&&{x:m.robVenue.stationX,y:m.robVenue.stationY};return p?[{...p,label:m.step==='escape'?'RETURN TO MANSION':'ROBBERY COUNTER'}]:[];}
  if(type==='rescue'){if(m.step==='reach')ps=survivors.filter(s=>!s.dead).map(s=>({...s,label:'RESCUE SURVIVOR'}));else if(m.drop)ps=[{...m.drop,label:'SAFE EXTRACTION'}];}
  else if(type==='race')ps=(m.cks||[]).slice(m.ckIdx||0).map((p,i)=>({...p,label:'CHECKPOINT '+((m.ckIdx||0)+i+1)}));
  else if(type==='deliver')ps=m.step==='drop'?[{...m.drop,label:'DELIVER RESOURCES'}]:(m.targets||[]).map(p=>({...p,label:'COLLECT RESOURCE'}));
- else if(type==='boss')ps=[{...(boss&&!boss.dead?boss:m.targets?.[0]),label:'BOSS TARGET'}];
+ else if(type==='boss')ps=m.drop?[{...m.drop,label:'COLLECT BOSS EVIDENCE'}]:[{...(boss&&!boss.dead?boss:m.targets?.[0]),label:'BOSS TARGET'}];
  else ps=(m.targets||[]).map((p,i)=>({...p,label:'OBJECTIVE '+(i+1)}));
  return ps.filter(p=>Number.isFinite(p.x)&&Number.isFinite(p.y));}
 if(typeof module!=='undefined')module.exports={points};if(typeof window==='undefined')return;
