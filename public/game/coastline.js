@@ -4,7 +4,7 @@
 (function(){
 'use strict';
 const T=TILE;
-const isWorld=c=>!!(c&&c.world&&c.width===WORLD_SIZE);
+const isWorld=c=>!!(c&&c.world&&(c.coreWidth||c.width)===WORLD_SIZE);
 const d2=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
 const money=n=>'$'+Math.floor(n).toLocaleString();
 const inRect=(x,y,r,m)=>{m=m||0;return x>r.x-m&&x<r.x+r.w+m&&y>r.y-m&&y<r.y+r.h+m;};
