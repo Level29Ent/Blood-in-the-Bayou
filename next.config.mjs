@@ -1,5 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+<<<<<<< HEAD
+=======
+  
+>>>>>>> main
   typescript: {
     ignoreBuildErrors: true,
   },

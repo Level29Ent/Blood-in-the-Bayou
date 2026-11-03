@@ -15,11 +15,18 @@ export const metadata: Metadata = {
   appleWebApp: { capable: true, title: 'Level 29', statusBarStyle: 'black-translucent' },
   icons: {
     icon: [
+<<<<<<< HEAD
       { url: '/icons/bayou-32.png', sizes: '32x32', type: 'image/png' },
       { url: '/icons/bayou-192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icons/bayou-512.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: '/icons/bayou-apple-180.png',
+=======
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: '/apple-icon.png',
+>>>>>>> main
   },
 }
 
@@ -40,6 +47,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+<<<<<<< HEAD
       <head>
         {/* Site-level AdSense tag requested by the owner. H5 game ads remain
             separately consent/approval gated inside the game document. */}
@@ -49,6 +57,8 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
       </head>
+=======
+>>>>>>> main
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && (

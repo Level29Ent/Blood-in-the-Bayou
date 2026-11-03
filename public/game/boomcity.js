@@ -3,7 +3,11 @@
 // and the BoomCity waterfront casino (slots + blackjack). Load after every other world file.
 (function(){
 const T=TILE;
+<<<<<<< HEAD
 const BAY={x0:118,x1:135,y0:54,y1:114};          // tiles turned into open Gulf water
+=======
+const BAY={x0:118,x1:135,y0:62,y1:100};          // tiles turned into open Gulf water
+>>>>>>> main
 const PLAZA={x0:104,x1:114,y0:76,y1:86};          // waterfront block that hosts BoomCity
 const CASINO={x0:105,x1:111,y0:77,y1:82};         // casino footprint (solid)
 const PIER={x0:118,x1:120,y0:80,y1:82};
@@ -43,8 +47,11 @@ genCity=function(di){
   const h0=c.heightAt;if(typeof h0==='function')c.heightAt=(x,y)=>hits({x,y})?0:h0(x,y);
   if(typeof indexTrees==='function')indexTrees(c);
   c.parked.push({x:DOCK.x,y:DOCK.y,a:Math.PI/2,type:'steamboat'});
+<<<<<<< HEAD
   // Reserve the whole pier, not just its posts. Later zoning must not fill it.
   c.natchezParcel={x:PIER.x0*T-8,y:PIER.y0*T-8,w:(PIER.x1-PIER.x0+1)*T+16,h:(PIER.y1-PIER.y0+1)*T+16};
+=======
+>>>>>>> main
   c.boom=true;return c;
 };
 
@@ -67,6 +74,7 @@ function put(g,geo,mat,x,y,z){const m=new THREE.Mesh(geo,mat);m.position.set(x,y
 function signTex(text,w,h,fg,bg,glow){const cv=document.createElement('canvas');cv.width=w;cv.height=h;const g=cv.getContext('2d');
   g.fillStyle=bg;g.fillRect(0,0,w,h);g.font="900 "+Math.round(h*.64)+"px 'Barlow Condensed', sans-serif";g.textAlign='center';g.textBaseline='middle';
   g.shadowColor=glow;g.shadowBlur=h*.2;g.fillStyle=fg;g.fillText(text,w/2,h/2+2);g.shadowBlur=0;g.strokeStyle=fg;g.lineWidth=4;g.strokeRect(6,6,w-12,h-12);
+<<<<<<< HEAD
   const t=new THREE.CanvasTexture(cv);t.encoding=THREE.sRGBEncoding;t.minFilter=THREE.LinearMipmapLinearFilter;t.magFilter=THREE.LinearFilter;return t;}
 function signPlane(g,text,w,h,x,y,z,ry,fg,bg,glow){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:signTex(text,1024,Math.max(128,Math.round(1024*h/w)),fg,bg,glow),transparent:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));m.position.set(x,y,z);m.rotation.y=ry||0;g.add(m);return m;}
 
@@ -111,6 +119,36 @@ function buildDock(){
   poseFigure(captain,CAPTAIN.x,CAPTAIN.y,Math.PI,0,'stand');captain.position.y=2;
   captain.name='Natchez captain';captain.traverse(o=>{o.userData.noBatch=true;});g.add(captain);
   const hat=new THREE.Mesh(new THREE.CylinderGeometry(3.4,3.6,1.3,12),lam('#f4efe2'));hat.position.set(0,21.5,0);captain.add(hat);
+=======
+  const t=new THREE.CanvasTexture(cv);return t;}
+function signPlane(g,text,w,h,x,y,z,ry,fg,bg,glow){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:signTex(text,512,Math.round(512*h/w),fg,bg,glow),transparent:true}));m.position.set(x,y,z);m.rotation.y=ry||0;g.add(m);return m;}
+
+function buildCasino(){
+  const g=new THREE.Group(),x0=CASINO.x0*T,z0=CASINO.y0*T,w=(CASINO.x1-CASINO.x0+1)*T,d=(CASINO.y1-CASINO.y0+1)*T,cxp=x0+w/2,czp=z0+d/2,front=z0+d;
+  const body=lam('#1b1420'),trim=basic('#f2c14e'),pink=basic('#ff3d8b'),cyan=basic('#3de0ff');
+  put(g,geoBox(w,64,d),body,cxp,32,czp);
+  put(g,geoBox(w*.46,150,d*.42),lam('#251a2c'),cxp,75,z0+d*.3);
+  for(const y of [64,150])put(g,geoBox(y===64?w+2:w*.46+2,3,y===64?d+2:d*.42+2),y===64?pink:cyan,cxp,y,y===64?czp:z0+d*.3);
+  for(let k=0;k<6;k++)put(g,geoBox(w*.46+1,1.5,d*.42+1),k%2?pink:trim,cxp,82+k*11,z0+d*.3);
+  put(g,geoBox(w,3,2),trim,cxp,20,front+.6);put(g,geoBox(w,2,2),pink,cxp,48,front+.6);
+  signPlane(g,'BOOMCITY',w*.9,44,cxp,92,front-d*.58+d*.42/2+d*.01,0,'#ffe27a','#1a0f1f','#ff3d8b');
+  signPlane(g,'BOOMCITY CASINO',w*.82,26,cxp,36,front+1.2,0,'#ffffff','#2a0d22','#ff3d8b');
+  put(g,geoBox(120,3,44),trim,cxp,26,front+22);put(g,geoBox(118,1,42),basic('#fff3c4'),cxp,24.4,front+22);
+  for(const sx of [-54,54])put(g,new THREE.CylinderGeometry(2.4,2.4,26,10),trim,cxp+sx,13,front+42);
+  put(g,geoBox(56,24,2),basic('#ffcf6a'),cxp,12,front+.8);
+  for(let k=0;k<5;k++)put(g,geoBox(2,64,2),k%2?cyan:pink,x0+1+k*(w-2)/4,32,front+1);
+  signPlane(g,'SLOTS · BLACKJACK · 24/7',w*.6,14,cxp,6,front+44,0,'#3de0ff','#120a16','#3de0ff');
+  return g;
+}
+function buildDock(){
+  const g=new THREE.Group(),wood=lam('#6d5236');
+  for(let x=PIER.x0;x<=PIER.x1+1;x++)for(const y of [PIER.y0,PIER.y1+1])put(g,new THREE.CylinderGeometry(2.6,2.6,16,8),wood,x*T,4,y*T);
+  put(g,geoBox(4,30,4),wood,CAPTAIN.x-22,15,CAPTAIN.y-30);
+  signPlane(g,'NATCHEZ SHRIMP CO.',80,18,CAPTAIN.x-22,34,CAPTAIN.y-27.5,0,'#ffd36b','#122028','#ffd36b');
+  put(g,new THREE.CylinderGeometry(5,6,18,10),lam('#2d3f5a'),CAPTAIN.x,9,CAPTAIN.y);
+  put(g,new THREE.SphereGeometry(5,12,10),lam('#c99b73'),CAPTAIN.x,22,CAPTAIN.y);
+  put(g,new THREE.CylinderGeometry(6.5,6.5,2,12),lam('#f4efe2'),CAPTAIN.x,26.5,CAPTAIN.y);
+>>>>>>> main
   return g;
 }
 const prevBuild=buildCity;
@@ -298,12 +336,19 @@ panel.addEventListener('pointerdown',e=>e.stopPropagation());
 // ---------------------------------------------------------------- input
 const nearDoor=()=>isEastCity(city)&&city.boom&&player&&!player.car&&dist(player.x,player.y,DOOR.x,DOOR.y)<80;
 const nearCaptain=()=>isEastCity(city)&&city.boom&&player&&!player.car&&dist(player.x,player.y,CAPTAIN.x,CAPTAIN.y)<90;
+<<<<<<< HEAD
 function useAction(){if(nearDoor()){toast('WALK INSIDE · APPROACH A SLOT OR TABLE');return true;}if(nearCaptain()){openPanel('shrimp');return true;}return false;}
+=======
+function useAction(){if(nearDoor()){openPanel('casino');return true;}if(nearCaptain()){openPanel('shrimp');return true;}return false;}
+>>>>>>> main
 addEventListener('keydown',e=>{if(e.target&&e.target.matches&&e.target.matches('input,textarea,select'))return;const k=e.key.toLowerCase();
   if(panelKind&&(k==='escape'||k==='o')){e.preventDefault();e.stopImmediatePropagation();closePanel();return;}
   if(panelKind){if(k!=='tab')e.stopImmediatePropagation();return;}
   if(k!=='u'||state!=='play')return;
+<<<<<<< HEAD
   if(window.level29CityStories?.ownsUse())return;
+=======
+>>>>>>> main
   if(onBoat()){e.preventDefault();e.stopImmediatePropagation();haulKey=true;return;}
   if(!e.repeat&&useAction()){e.preventDefault();e.stopImmediatePropagation();}
 },true);

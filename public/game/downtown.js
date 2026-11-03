@@ -1,5 +1,9 @@
 'use strict';
+<<<<<<< HEAD
 // Downtown expansion: airport (3 Level 29 jets + 29s bomber gunner ride), clouds, bird hunting, dispensary,
+=======
+// Downtown expansion: airport (3 Level 29 jets + 13s bomber gunner ride), clouds, bird hunting, dispensary,
+>>>>>>> main
 // smoke shop, food truck, university + football stadium, Bonnie De Vette's slab dealership, the Velvet Jester
 // club, the BoomCity casino floor (6 jester slots, blackjack, poker, roulette wheel, Level 29 Jackpot),
 // the Natchez deck net fishing, a steamboat safe zone, and a playable confidence course. Load after boomcity.js.
@@ -14,7 +18,11 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 const d2=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
 const isWorld=c=>!!(c&&c.world&&c.width===WORLD_SIZE);
 const COL={purple:'#5b2a86',gold:'#f2c14e',green:'#2fae66'};
+<<<<<<< HEAD
 const BOMBER_COST=2900,BOMBER_FRAMES=29*60;
+=======
+const BOMBER_COST=2900,BOMBER_FRAMES=13*60;
+>>>>>>> main
 const coarse=()=>window.matchMedia&&matchMedia('(pointer: coarse)').matches;
 const addJackpot=n=>{save.jackpot+=n;persist();};
 
@@ -26,9 +34,15 @@ const LOTS=[
   {id:'airport',w:12,h:11,name:'LEVEL 29 INTERNATIONAL'},
   {id:'stadium',w:10,h:8,name:'JESTER STADIUM'},
   {id:'university',w:9,h:6,name:'BAYOU STATE UNIVERSITY'},
+<<<<<<< HEAD
   {id:'dealer',w:12,h:10,name:'BONNIE DE VETTE SLAB MOTORS'},
   {id:'club',w:5,h:4,name:'THE VELVET JESTER'},
   {id:'dispensary',w:3,h:4,name:'ELEVATED MELANIN'},
+=======
+  {id:'dealer',w:8,h:7,name:'BONNIE DE VETTE SLAB MOTORS'},
+  {id:'club',w:5,h:4,name:'THE VELVET JESTER'},
+  {id:'dispensary',w:3,h:4,name:'GREEN BAYOU DISPENSARY'},
+>>>>>>> main
   {id:'smoke',w:3,h:4,name:'CROWN SMOKE SHOP'},
   {id:'truck',w:3,h:3,name:"MAMA 29'S FOOD TRUCK"},
 ];
@@ -58,12 +72,20 @@ genCity=function(di){
   const c=prevGen.apply(this,arguments);lots={};if(!isWorld(c))return c;
   const W=c.width,set=(x,y,t)=>{if(x>=0&&y>=0&&x<W&&y<c.height)c.g[y*W+x]=t;};
   const taken=[];
+<<<<<<< HEAD
   for(const L of [...LOTS].sort((a,b)=>(a.id==='dealer'?-1:b.id==='dealer'?1:0))){let w=L.w,h=L.h,r=null;while(!r&&w>=3&&h>=3){r=findLot(c,w,h,taken);if(!r){w--;if(h>w)h--;}}if(!r)continue;taken.push(r);lots[L.id]=Object.assign({},L,r);}
+=======
+  for(const L of LOTS){let w=L.w,h=L.h,r=null;while(!r&&w>=3&&h>=3){r=findLot(c,w,h,taken);if(!r){w--;if(h>w)h--;}}if(!r)continue;taken.push(r);lots[L.id]=Object.assign({},L,r);}
+>>>>>>> main
   for(const id in lots){const L=lots[id];
     for(let y=L.y0;y<=L.y1;y++)for(let x=L.x0;x<=L.x1;x++)set(x,y,T_PLAZA);
     let fb=null;
     if(id==='airport')fb={x0:L.x0,y0:L.y0,x1:L.x0+3,y1:L.y0+3};
+<<<<<<< HEAD
     else if(id==='dealer')fb={x0:L.x0,y0:L.y0,x1:Math.min(L.x1,L.x0+5),y1:L.y0+2};
+=======
+    else if(id==='dealer')fb={x0:L.x0,y0:L.y0,x1:L.x0+3,y1:L.y0+1};
+>>>>>>> main
     else if(id!=='truck')fb={x0:L.x0,y0:L.y0,x1:L.x1,y1:L.y1-2};
     L.fb=fb;
     if(fb)for(let y=fb.y0;y<=fb.y1;y++)for(let x=fb.x0;x<=fb.x1;x++)set(x,y,T_BLD);
@@ -82,7 +104,11 @@ genCity=function(di){
   const h0=c.heightAt;if(typeof h0==='function')c.heightAt=(x,y)=>hits(x,y,0)?0:h0(x,y);
   if(typeof indexTrees==='function')indexTrees(c);
   const D=lots.dealer;
+<<<<<<< HEAD
   if(D)D.inventory=['lowrider','slab','sedan','suv'].filter(type=>CAR_SPECS[type]).map((type,k)=>({type,price:4500+k*2000,x:(D.x0+1+k*1.9)*T,y:(D.y0+5.4)*T}));
+=======
+  if(D){[['lowrider',0],['slab',1],['lowrider',2],['slab',3]].forEach(([type,k])=>c.parked.push({x:(D.x0+1+k*1.9)*T,y:(D.y0+5.4)*T,a:-Math.PI/2,type}));}
+>>>>>>> main
   return c;
 };
 
@@ -96,12 +122,16 @@ function textTex(text,fg,bg,w,h){const cv=document.createElement('canvas');cv.wi
   g.fillStyle=fg;g.shadowColor=fg;g.shadowBlur=18;g.textAlign='center';g.textBaseline='middle';g.fillText(text,cv.width/2,cv.height/2+2);
   const t=new THREE.CanvasTexture(cv);return t;}
 function sign(g,text,w,h,x,y,z,fg,bg,rotY){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:textTex(text,fg,bg),side:THREE.DoubleSide}));m.position.set(x,y,z);if(rotY)m.rotation.y=rotY;g.add(m);return m;}
+<<<<<<< HEAD
 function priceLabel(g,text,x,y,z){const cv=document.createElement('canvas');cv.width=1024;cv.height=192;const c=cv.getContext('2d');c.fillStyle='#0b141b';c.fillRect(0,0,1024,192);c.strokeStyle='#f4d27a';c.lineWidth=6;c.strokeRect(4,4,1016,184);c.fillStyle='#fff5d9';c.textAlign='center';c.font='bold 54px monospace';let fs=54;while(c.measureText(text).width>980){c.font='bold '+(--fs)+'px monospace';}c.fillText(text,512,118);const map=new THREE.CanvasTexture(cv);map.encoding=THREE.sRGBEncoding;map.minFilter=THREE.LinearFilter;map.generateMipmaps=false;
  const m=new THREE.Sprite(new THREE.SpriteMaterial({map,color:'#ffffff',opacity:1,transparent:false,fog:false,toneMapped:false,depthWrite:false}));m.name='dealer-opaque-price';m.scale.set(68,12.75,1);m.position.set(x,y,z);g.add(m);return m;}
+=======
+>>>>>>> main
 let logoTex=null;const getLogo=()=>logoTex||(logoTex=new THREE.TextureLoader().load('logo.png'));
 let bonnieTex=null;const getBonnie=()=>bonnieTex||(bonnieTex=new THREE.TextureLoader().load('bonnie.png'));
 
 function planeMesh(bomber){
+<<<<<<< HEAD
   const g=new THREE.Group(),s=bomber?1.25:1,body=lam(bomber?'#69716e':'#dadfdc'),metal=lam('#78868e'),dark=lam('#202b36'),rubber=lam('#202326');
   // Lathed tapered fuselage, aligned nose-forward along +X.
   const profile=[[-45,.2],[-38,2],[-24,5],[-5,6.8],[22,6.3],[33,4.8],[41,2.2],[44,.2]];
@@ -125,6 +155,19 @@ function planeMesh(bomber){
     cyl(g,.7,.7,6,x*s,-8*s,z*s,metal,8);
     const tire=cyl(g,2.7,2.7,2,x*s,-11*s,z*s,rubber,12);tire.rotation.x=Math.PI/2;
   }
+=======
+  const g=new THREE.Group(),body=lam(COL.purple),gold=lam(COL.gold),green=lam(COL.green),s=bomber?1.25:1;
+  const f=cyl(g,7*s,5*s,80*s,0,0,0,body);f.rotation.z=Math.PI/2;
+  const nose=new THREE.Mesh(new THREE.SphereGeometry(7*s,12,10),gold);nose.position.set(40*s,0,0);g.add(nose);
+  box(g,80*s,2,14.4*s,0,0,0,gold);
+  box(g,22*s,1.6,112*s,4*s,-1,0,body);box(g,8*s,2,6,4*s,-1,56*s,green);box(g,8*s,2,6,4*s,-1,-56*s,green);
+  box(g,12*s,1.2,36*s,-36*s,1,0,body);
+  box(g,16*s,22*s,1.6,-34*s,12*s,0,body);
+  const logo=new THREE.MeshBasicMaterial({map:getLogo(),transparent:true,side:THREE.DoubleSide});
+  for(const z of [1,-1]){const p=new THREE.Mesh(new THREE.PlaneGeometry(14*s,14*s),logo);p.position.set(-34*s,13*s,z*1.0);g.add(p);}
+  const eng=bomber?[-38,-18,18,38]:[-24,24];for(const z of eng){const e=cyl(g,3.4*s,3.4*s,14*s,8*s,-4*s,z*s,green);e.rotation.z=Math.PI/2;}
+  if(bomber){const tur=new THREE.Mesh(new THREE.SphereGeometry(6,10,8),gold);tur.position.set(-6,7*s,0);g.add(tur);const gun=cyl(g,.8,.8,18,4,9*s,0,lam('#222'));gun.rotation.z=Math.PI/2;}
+>>>>>>> main
   return g;}
 
 function lowriderMesh(color){
@@ -140,6 +183,7 @@ function lowriderMesh(color){
   return g;}
 
 function bonnieMesh(){
+<<<<<<< HEAD
   const g=makeFigure(false),u=g.userData;setFigureColors(g,'#7a4a2e','#14231a','#24352c','#0d0a0a');
   u.torso.scale.z*=.94;u.longHair.visible=true;u.longHair.scale.set(.95,1.15,1.02);
   const goldM=lam(COL.gold),braid=u.hair.material;
@@ -159,6 +203,18 @@ function bonnieMesh(){
 function genericBuilding(g,L,height,color,fg,bg){
   const fb=L.fb,w=(fb.x1-fb.x0+1)*T,d=(fb.y1-fb.y0+1)*T,cx=fb.x0*T+w/2,cz=fb.y0*T+d/2;
   if(L.venue){buildVenue(L.venue);return {cx,cz,w,d};}
+=======
+  const g=new THREE.Group(),skin=lam('#7a4a2e'),dress=lam('#14231a',0x061a0c),goldM=lam(COL.gold,0x3a2600),braid=lam('#0d0a0a');
+  cyl(g,4.5,7,26,0,13,0,dress);cyl(g,2.4,2.4,6,0,28,0,skin);
+  const head=new THREE.Mesh(new THREE.SphereGeometry(5,14,12),skin);head.position.set(0,34,0);g.add(head);
+  const crown=new THREE.Mesh(new THREE.TorusGeometry(5.2,.7,6,20),goldM);crown.rotation.x=Math.PI/2;crown.position.set(0,36.5,0);g.add(crown);
+  for(let k=0;k<12;k++){const a=k/12*Math.PI*2;if(Math.sin(a)>.75)continue;cyl(g,.8,.6,24,Math.cos(a)*4.6,24,Math.sin(a)*4.6,braid,6);}
+  for(const x of [-6,6]){const arm=cyl(g,1.4,1.2,16,x,18,0,skin);arm.rotation.z=x>0?-.2:.2;}
+  return g;}
+
+function genericBuilding(g,L,height,color,fg,bg){
+  const fb=L.fb,w=(fb.x1-fb.x0+1)*T,d=(fb.y1-fb.y0+1)*T,cx=fb.x0*T+w/2,cz=fb.y0*T+d/2;
+>>>>>>> main
   box(g,w-6,height,d-6,cx,height/2,cz,lam(color));
   box(g,w,3,d,cx,height+1.5,cz,lam(bg||'#1a1a1a'));
   sign(g,L.name,Math.min(w-10,260),Math.min(36,height*.35),cx,height*.72,fb.y0*T+d-2.5,fg,bg);
@@ -174,11 +230,16 @@ function buildLots(g){
       const run=new THREE.Mesh(new THREE.PlaneGeometry(w-T,2.6*T),lam('#2b2b30'));run.rotation.x=-Math.PI/2;run.position.set(L.x0*T+w/2+T/2,.8,(L.y1-1.5)*T);g.add(run);
       for(let k=0;k<12;k++)box(g,T*.6,.3,3,L.x0*T+T*1.4+k*(w-2*T)/12,1,(L.y1-1.5)*T,lam('#f4f1e6'));
       const fb=L.fb,hw=(fb.x1-fb.x0+1)*T,hd=(fb.y1-fb.y0+1)*T;
+<<<<<<< HEAD
       if(L.venue)buildVenue(L.venue);else{const hang=cyl(g,hd/2,hd/2,hw-6,fb.x0*T+hw/2,0,fb.y0*T+hd/2,lam('#8d8c96'),20);hang.rotation.z=Math.PI/2;hang.scale.set(1,1,.9);}
+=======
+      const hang=cyl(g,hd/2,hd/2,hw-6,fb.x0*T+hw/2,0,fb.y0*T+hd/2,lam('#8d8c96'),20);hang.rotation.z=Math.PI/2;hang.scale.set(1,1,.9);
+>>>>>>> main
       sign(g,'LEVEL 29 INTERNATIONAL',hw-14,26,fb.x0*T+hw/2,hd*.42,fb.y0*T+hd-2,COL.gold,'#24103a');
       const towerX=(L.x1+.2)*T,towerZ=(L.y0+1.5)*T;cyl(g,8,10,90,towerX,45,towerZ,lam('#d9d4c4'));cyl(g,16,14,18,towerX,99,towerZ,lam('#2a6a8a',0x062030));
       const p1=planeMesh(false);p1.position.set((L.x0+(L.x1-L.x0+1)*.5)*T,14,(L.y0+2.5)*T);p1.rotation.y=-Math.PI/2;g.add(p1);
       const pb=planeMesh(true);pb.position.set((L.x0+(L.x1-L.x0+1)*.8)*T,16,(L.y0+2.5)*T);pb.rotation.y=-Math.PI/2;g.add(pb);
+<<<<<<< HEAD
       sign(g,'BOMBER RIDE '+money(BOMBER_COST)+' · 29 SEC',120,18,(L.x0+(L.x1-L.x0+1)*.8)*T,8,(L.y0+4.3)*T,'#ff6b6b','#1a0808');
       const additions=[];for(const [i,label]of ['LEVEL 29 · BAYOU AIR','LEVEL 29 · GULF EXPRESS'].entries()){
        const p=planeMesh(false);p.name=label;p.position.set((L.x0+7+i*5)*T,14,(L.y0+6)*T);p.rotation.y=-Math.PI/2;
@@ -186,6 +247,10 @@ function buildLots(g){
        const stripe=new THREE.Mesh(new THREE.BoxGeometry(48,.8,13.8),lam(i?'#d4ab50':'#5b4096'));stripe.position.set(-6,-1,0);p.add(stripe);g.add(p);additions.push(p);
        box(g,110,.2,115,p.position.x,.9,p.position.z,lam('#333b40'));sign(g,label,100,5,p.position.x,7,p.position.z+57,'#e4c071','#24374a');
       }L.planes=[p1,pb,...additions];
+=======
+      sign(g,'BOMBER RIDE '+money(BOMBER_COST)+' · 13 SEC',120,18,(L.x0+(L.x1-L.x0+1)*.8)*T,8,(L.y0+4.3)*T,'#ff6b6b','#1a0808');
+      L.planes=[p1,pb];
+>>>>>>> main
     }
     else if(id==='stadium'){
       const fb=L.fb,w=(fb.x1-fb.x0+1)*T,d=(fb.y1-fb.y0+1)*T,cx=fb.x0*T+w/2,cz=fb.y0*T+d/2,wall=lam('#3a1f5c'),seat=lam('#c9a33a');
@@ -202,11 +267,19 @@ function buildLots(g){
       const dome=new THREE.Mesh(new THREE.SphereGeometry(22,16,10,0,Math.PI*2,0,Math.PI/2),lam(COL.gold,0x221800));dome.position.set(b.cx,64,b.cz);g.add(dome);
     }
     else if(id==='dealer'){
+<<<<<<< HEAD
       genericBuilding(g,L,48,'#efeae0','#ffffff','#5b2a86');
       const cols=['#6a1fb0','#c21f6a','#1f9e5a','#d9a520'];
       cols.forEach((c,k)=>{const pad=new THREE.Group();pad.position.set((L.x0+1+k*(L.x1-L.x0-1)/3)*T,0,(L.y0+5)*T);g.add(pad);
         cyl(pad,30,32,3,0,1.5,0,lam('#1a1424'));const rec=L.inventory[k],sample=rec?makeCar(0,0,0,rec.type):null;if(sample)sample.col=c;const car=sample?makeCarMesh(sample):lowriderMesh(c);car.position.set(0,3,0);car.rotation.y=Math.PI/2;pad.add(car);spins.push(car);if(rec)priceLabel(pad,CAR_SPECS[rec.type].name+' · '+money(rec.price),0,35,27);});
       const fig=bonnieMesh(),bp=window.level29Frontage?level29Frontage.lotPoint(L,{x:(L.x0+2)*T,y:(L.y0+1.2)*T}):{x:(L.x0+2)*T,y:(L.y0+1.2)*T};fig.position.set(bp.x,L.venue?.baseY||0,bp.y);g.add(fig);dealerFig=fig;
+=======
+      genericBuilding(g,L,34,'#efeae0','#ffffff','#5b2a86');
+      const cols=['#6a1fb0','#c21f6a','#1f9e5a','#d9a520'];
+      cols.forEach((c,k)=>{const pad=new THREE.Group();pad.position.set((L.x0+1+k*1.9)*T,0,(L.y0+3.3)*T);g.add(pad);
+        cyl(pad,30,32,3,0,1.5,0,lam('#1a1424'));const car=lowriderMesh(c);car.position.y=3;car.rotation.y=Math.PI/2;pad.add(car);spins.push(car);});
+      const fig=bonnieMesh();fig.position.set((L.x0+5)*T,0,(L.y0+1.2)*T);g.add(fig);dealerFig=fig;
+>>>>>>> main
       const bb=new THREE.Mesh(new THREE.PlaneGeometry(56,32),new THREE.MeshBasicMaterial({map:getBonnie(),side:THREE.DoubleSide}));bb.position.set((L.x0+6.6)*T,62,(L.y0+.5)*T);g.add(bb);
       cyl(g,1.5,1.5,46,(L.x0+6.6)*T,23,(L.y0+.5)*T,lam('#333'));
       sign(g,'BONNIE DE VETTE · OWNER',56,9,(L.x0+6.6)*T,41,(L.y0+.5)*T+.4,COL.gold,'#14231a');
@@ -215,7 +288,11 @@ function buildLots(g){
       for(const [c,y] of [[COL.green,30],[COL.gold,34]])box(g,b.w-8,1.2,1.2,b.cx,y,b.cz+b.d/2+.8,lam(c,c));}
     else if(id==='dispensary')genericBuilding(g,L,28,'#e8efe6','#2fae66','#0d2416');
     else if(id==='smoke')genericBuilding(g,L,28,'#2a2420',COL.gold,'#1a120c');
+<<<<<<< HEAD
     else if(id==='truck'){if(L.venue){buildVenue(L.venue);continue;}const tx=(L.x0+1.5)*T,tz=(L.y0+1.2)*T;
+=======
+    else if(id==='truck'){const tx=(L.x0+1.5)*T,tz=(L.y0+1.2)*T;
+>>>>>>> main
       box(g,70,30,28,tx,19,tz,lam('#f2c14e'));box(g,22,22,26,tx+44,15,tz,lam(COL.purple));
       box(g,36,12,1,tx-4,22,tz+14.2,lam('#1a1424',0x110022));
       sign(g,"MAMA 29'S",56,10,tx-4,34,tz+14.6,'#5b2a86','#f2c14e');
@@ -230,6 +307,7 @@ function buildCourse(g){
   const pts=[
     {x:f.x+W/2,y:f.y+H+40,type:'start'},
     {x:f.x+20,y:f.y+H-24,type:'gate',name:'SPRINT GATE'},
+<<<<<<< HEAD
     {x:f.x+20,y:f.y+30,type:'hold',hold:90,name:'HURDLE DRILL'},
     {x:f.x+W/2,y:f.y+28,type:'rope',taps:8,name:'ROPE CLIMB'},
     {x:f.x+W-20,y:f.y+30,type:'hold',hold:120,name:'LOW CRAWL'},
@@ -247,6 +325,16 @@ function buildCourse(g){
     else if(p.name==='LOW CRAWL'){for(const x of [-20,20])box(g,2,12,35,p.x+x,6,p.y,steel);for(let z=-15;z<=15;z+=6)box(g,40,.5,1,p.x,12,p.y+z,rope);}
     else for(const x of [-22,22])box(g,2,24,2,p.x+x,12,p.y,steel);
   }
+=======
+    {x:f.x+20,y:f.y+30,type:'gate',name:'HURDLE LANE'},
+    {x:f.x+W/2,y:f.y+28,type:'rope',taps:8,name:'ROPE CLIMB'},
+    {x:f.x+W-20,y:f.y+30,type:'gate',name:'LOW CRAWL'},
+    {x:f.x+W-20,y:f.y+H/2,type:'wall',taps:6,name:'WALL OVER'},
+    {x:f.x+W/2,y:f.y+H/2,type:'gate',name:'BALANCE BEAM'},
+    {x:f.x+W/2,y:f.y+H+40,type:'finish',name:'FINISH'},
+  ];
+  const rings=pts.map((p,i)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(15,1.6,8,24),new THREE.MeshBasicMaterial({color:i===0?COL.green:COL.purple}));m.position.set(p.x,16,p.y);g.add(m);return m;});
+>>>>>>> main
   course={f,pts,rings};
 }
 
@@ -260,13 +348,18 @@ function ensureSky(){
   if(!scene)return;
   if(!clouds.length){const m=new THREE.MeshLambertMaterial({color:'#ffffff',transparent:true,opacity:.82});
     for(let i=0;i<26;i++){const c=new THREE.Group();const n=3+Math.floor(Math.random()*3);for(let k=0;k<n;k++){const s=new THREE.Mesh(new THREE.SphereGeometry(rnd(26,46),10,8),m);s.position.set(k*34-n*17,rnd(-6,8),rnd(-14,14));s.scale.y=.6;c.add(s);}
+<<<<<<< HEAD
       c.name='weather-cloud';c.userData.v=rnd(.15,.45);c.position.set(player.x+rnd(-1300,1300),rnd(300,420),player.y+rnd(-1300,1300));clouds.push(c);}}
+=======
+      c.userData.v=rnd(.15,.45);c.position.set(player.x+rnd(-1300,1300),rnd(300,420),player.y+rnd(-1300,1300));clouds.push(c);}}
+>>>>>>> main
   for(const c of clouds)if(!c.parent)scene.add(c);
   if(!flyer){flyer=planeMesh(false);flyer.userData.a=0;}
   if(isWorld(city)&&!flyer.parent)scene.add(flyer);
   if(!isWorld(city)&&flyer.parent)flyer.parent.remove(flyer);
 }
 let birds=[];
+<<<<<<< HEAD
 function birdMesh(){
  const g=new THREE.Group(),m=lam('#6c7374'),dark=lam('#252b29'),pale=lam('#d7d5c9'),a=level29AnimalAnatomy;
  a.ell(g,6,2.6,2.8,0,0,0,m);a.ell(g,2.4,2.2,2.1,2.8,.8,0,m);
@@ -276,13 +369,20 @@ function birdMesh(){
  a.ell(g,3,.35,2.8,-3.6,-.1,0,dark);g.userData.w=wings;return g;
 }
 function hitBird(b){if(!birds.includes(b)||!b.alive)return false;b.alive=false;cash+=29;save.birds++;persist();sfx('cash');toast('BIRD DOWN · +$29 · '+save.birds+' BAGGED');return true;}
+=======
+function birdMesh(){const g=new THREE.Group(),m=lam('#3b2f2a');box(g,7,3,3,0,0,0,m);const l=box(g,2,.6,9,0,0,5,m),r=box(g,2,.6,9,0,0,-5,m);g.userData.w=[l,r];return g;}
+>>>>>>> main
 function updateBirds(){
   if(!scene||!player)return;
   while(birds.length<10){const a=Math.random()*6.28,r=rnd(250,650);const b={x:player.x+Math.cos(a)*r,y:player.y+Math.sin(a)*r,h:rnd(42,80),a:Math.random()*6.28,v:rnd(1.6,2.6),alive:true,fall:0,mesh:birdMesh()};scene.add(b.mesh);birds.push(b);}
   for(const b of birds){
     if(b.alive){b.a+=rnd(-.03,.03);b.x+=Math.cos(b.a)*b.v;b.y+=Math.sin(b.a)*b.v;const fl=Math.sin(frame*.4+b.x)*.7;b.mesh.userData.w[0].rotation.x=fl;b.mesh.userData.w[1].rotation.x=-fl;
+<<<<<<< HEAD
       // Hits are resolved from the camera ray on an actual firearm shot (bird-aim.js).
     }
+=======
+      for(const bl of bullets){if(d2(bl.x,bl.y,b.x,b.y)<20){b.alive=false;bl.life=0;cash+=29;save.birds++;persist();sfx('cash');toast('BIRD DOWN · +$29 · '+save.birds+' BAGGED');break;}}}
+>>>>>>> main
     else{b.h-=2.4;b.fall++;b.mesh.rotation.z+=.3;}
     b.mesh.position.set(b.x,b.h,b.y);b.mesh.rotation.y=-b.a;
   }
@@ -299,7 +399,11 @@ function updateSky(){
 // ---------------------------------------------------------------- steamboat safe zone
 const dockSafe=(x,y)=>{const B=window.boomCity;if(!B||!isWorld(city))return false;return d2(x,y,B.DOCK.x,B.DOCK.y)<600||d2(x,y,B.CAPTAIN.x,B.CAPTAIN.y)<500;};
 function updateSafeZone(){
+<<<<<<< HEAD
   if(!player||ride||!dockSafe(player.x,player.y))return;
+=======
+  if(!player||!dockSafe(player.x,player.y))return;
+>>>>>>> main
   const push=o=>{if(!o||typeof o.x!=='number')return;const d=d2(o.x,o.y,player.x,player.y);if(d<520){const k=(520-d)/520*4+1;o.x+=(o.x-player.x)/(d||1)*k;o.y+=(o.y-player.y)/(d||1)*k;o.alert=false;if('atkCd' in o)o.atkCd=Math.max(o.atkCd,30);}};
   for(const z of zombies)if(z.alive)push(z);
   try{if(typeof gators!=='undefined'&&Array.isArray(gators))for(const g of gators)push(g);}catch(_){}
@@ -308,6 +412,7 @@ try{const prevHurt=hurtPlayer;hurtPlayer=function(){if(ride||(player&&dockSafe(p
 
 // ---------------------------------------------------------------- bomber gunner ride
 let ride=null,fireHeld=false,tracers=[];
+<<<<<<< HEAD
 function startBomber(missionFlight=false){
   if(mpRole)return toast('BOMBER RIDE IS AVAILABLE IN SOLO PLAY');if(ride)return;if(!lots.airport)return toast('NO AIRPORT ON THIS MAP');if(player.car)return toast('STEP OUT OF YOUR VEHICLE FIRST');
   if(!missionFlight&&cash<BOMBER_COST)return toast('THE BOMBER RIDE COSTS '+money(BOMBER_COST));
@@ -319,11 +424,20 @@ function startBomber(missionFlight=false){
   ride.remainingMs=(missionFlight?60:level29Gunnery.DURATION_SECONDS)*1000;ride.t=Math.ceil(ride.remainingMs*.06);ride.lastUpdate=performance.now();
   ride.altitude=level29AircraftFlight.altitude(city,ride.cx,ride.cy,ride.radius);
   ride.mesh.position.set(ride.cx+ride.radius,ride.altitude,ride.cy);
+=======
+function startBomber(){
+  if(ride)return;if(!lots.airport)return toast('NO AIRPORT ON THIS MAP');if(player.car)return toast('STEP OUT OF YOUR VEHICLE FIRST');
+  if(cash<BOMBER_COST)return toast('THE BOMBER RIDE COSTS '+money(BOMBER_COST));
+  cash-=BOMBER_COST;sfx('cash');save.bomberRuns++;persist();closePanel();
+  const L=lots.airport,m=planeMesh(true);scene.add(m);
+  ride={t:BOMBER_FRAMES,a:0,cx:(L.x0+6)*T,cy:(L.y0+5)*T,home:{x:player.x,y:player.y},kills:0,cd:0,mesh:m};
+>>>>>>> main
   toast('GUNNER SEAT · HOLD FIRE ON THE .50 CAL');
 }
 function updateRide(){
   if(!ride)return;
   if(state==='shop'){try{if(typeof closeShop==='function')closeShop();}catch(_){}try{closePanel();}catch(_){}document.querySelectorAll('.panel,.overlay,#shop').forEach(e=>{if(e.style)e.style.display='none';});state='play';}
+<<<<<<< HEAD
   const now=performance.now(),elapsed=Math.max(0,now-ride.lastUpdate);ride.lastUpdate=now;
   if(state!=='play')return;
   ride.remainingMs=Math.max(0,ride.remainingMs-elapsed);ride.t=Math.ceil(ride.remainingMs*.06);
@@ -363,25 +477,53 @@ function fireBomber(){
 function addTracer(origin,point){const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(origin.x,origin.y,origin.z),new THREE.Vector3(point.x,point.y,point.z)]);const l=new THREE.Line(geo,new THREE.LineBasicMaterial({color:'#ffd36b'}));scene.add(l);tracers.push({l,t:6});}
 function updateTracers(){tracers=tracers.filter(t=>{if(--t.t<=0){scene.remove(t.l);t.l.geometry.dispose();t.l.material.dispose();return false;}return true;});}
 function endRide(){const r=ride;ride=null;fireHeld=false;scene.remove(r.mesh);player.x=r.home.x;player.y=r.home.y;player.vx=player.vy=0;mouse.down=false;keys[' ']=keys.Space=false;view.yaw=r.homeView.yaw;view.pitch=r.homeView.pitch;snapCamera();const bounty=r.kills*15;cash+=bounty;
+=======
+  if(state!=='play')return;
+  const R=440;ride.a+=.011;ride.t--;
+  const px=ride.cx+Math.cos(ride.a)*R,py=ride.cy+Math.sin(ride.a)*R;
+  player.x=px;player.y=py;if('vx' in player){player.vx=0;player.vy=0;}
+  ride.mesh.position.set(px,150,py);ride.mesh.rotation.set(0,-(ride.a+Math.PI/2),0);ride.mesh.rotateX(.35);
+  if(frame%18===0&&zombiesNear(px,py,520)<16){const a=Math.random()*6.28,r=rnd(120,420);spawnZombieAt(px+Math.cos(a)*r,py+Math.sin(a)*r);}
+  const firing=fireHeld||mouse.down||keys[' ']||keys.Space;
+  if(firing&&--ride.cd<=0){ride.cd=6;let best=null,bd=460;for(const z of zombies){if(!z.alive)continue;const d=d2(z.x,z.y,px,py);if(d<bd){bd=d;best=z;}}
+    if(best){addTracer(px,py,best.x,best.y);killZombie(best,(best.x-px)*.02,(best.y-py)*.02);ride.kills++;}else addTracer(px,py,px+rnd(-200,200),py+rnd(-200,200));
+    if(frame%12<6)sfx('bang');}
+  if(ride.t<=0)endRide();
+}
+function addTracer(x1,y1,x2,y2){const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x1,145,y1),new THREE.Vector3(x2,4,y2)]);const l=new THREE.Line(geo,new THREE.LineBasicMaterial({color:'#ffd36b'}));scene.add(l);tracers.push({l,t:6});}
+function updateTracers(){tracers=tracers.filter(t=>{if(--t.t<=0){scene.remove(t.l);t.l.geometry.dispose();return false;}return true;});}
+function endRide(){const r=ride;ride=null;fireHeld=false;scene.remove(r.mesh);player.x=r.home.x;player.y=r.home.y;const bounty=r.kills*15;cash+=bounty;
+>>>>>>> main
   toast('LANDED · '+r.kills+' ZOMBIES FROM THE SKY · BOUNTY '+money(bounty));sfx('cash');}
 
 // ---------------------------------------------------------------- obstacle course
 let run=null;
+<<<<<<< HEAD
 function startCourse(){if(run)return;if(player.car)return toast('THE COURSE IS ON FOOT');run={i:1,t0:frame,taps:0,hold:0};setRing();toast('GO! RUN THROUGH THE GOLD RINGS');}
+=======
+function startCourse(){if(run)return;if(player.car)return toast('THE COURSE IS ON FOOT');run={i:1,t0:frame,taps:0};setRing();toast('GO! RUN THROUGH THE GOLD RINGS');}
+>>>>>>> main
 function setRing(){if(!course)return;course.rings.forEach((m,i)=>m.material.color.set(run&&i===run.i?COL.gold:i===0||i===course.pts.length-1?COL.green:COL.purple));}
 function updateCourse(){
   if(!run||!course)return;const p=course.pts[run.i];
   if(player.car||player.dead||frame-run.t0>150*60){run=null;setRing();return toast('COURSE FAILED · TRY AGAIN AT THE START');}
+<<<<<<< HEAD
   if(p.type==='hold'||p.type==='balance'){
     const close=d2(player.x,player.y,p.x,p.y)<(p.type==='balance'?26:30),balanced=p.type!=='balance'||Math.abs(player.x-p.x)<7;
     run.hold=close&&balanced?(run.hold||0)+1:0;
     if(run.hold>=p.hold){run.i++;run.hold=0;sfx('cash');setRing();toast('DRILL CLEARED · '+course.pts[run.i].name);}
   }
+=======
+>>>>>>> main
   if((p.type==='gate'||p.type==='finish')&&d2(player.x,player.y,p.x,p.y)<34){
     if(p.type==='finish')return finishCourse();run.i++;run.taps=0;sfx('cash');setRing();toast((course.pts[run.i].name||'NEXT'));}
   course.rings[run.i]&&(course.rings[run.i].rotation.y+=.05);
 }
+<<<<<<< HEAD
 function climbTap(){if(!run||!course||state!=='play'||player.car||player.dead)return;const p=course.pts[run.i];if(!p.taps||d2(player.x,player.y,p.x,p.y)>46||frame-(run.lastTap??-100)<10)return;run.lastTap=frame;run.taps++;if(run.taps>=p.taps){run.i++;run.taps=0;sfx('cash');setRing();toast(p.name+' CLEARED');}}
+=======
+function climbTap(){const p=course.pts[run.i];run.taps++;if(run.taps>=p.taps){run.i++;run.taps=0;sfx('cash');setRing();toast(p.name+' CLEARED');}}
+>>>>>>> main
 function finishCourse(){const secs=(frame-run.t0)/60;run=null;setRing();
   const medal=secs<45?'GOLD':secs<65?'SILVER':'BRONZE',pay={GOLD:1500,SILVER:900,BRONZE:400}[medal];
   const record=!save.courseBest||secs<save.courseBest;if(record){save.courseBest=secs;persist();}
@@ -389,6 +531,7 @@ function finishCourse(){const secs=(frame-run.t0)/60;run=null;setRing();
 
 // ---------------------------------------------------------------- interaction spots
 function spots(){
+<<<<<<< HEAD
   const out=[];const add=(p,label,act)=>{if(p){const l=Object.values(lots).find(l=>l.venue&&p.x>=l.venue.b.x&&p.x<=l.venue.b.x+l.venue.b.w&&p.y>=l.venue.b.y&&p.y<=l.venue.b.y+l.venue.b.h);const casino=city.casinoVenue,f=casino?.frontage;const q=l&&window.level29Frontage?level29Frontage.lotPoint(l,p):f&&window.level29Frontage&&p.x>=casino.b.x&&p.x<=casino.b.x+casino.b.w&&p.y>=casino.b.y&&p.y<=casino.b.y+casino.b.h?level29Frontage.lotPoint({venue:casino},p):p;out.push({x:q.x,y:q.y,label,act});}};
   for(const id in lots){const L=lots[id];
     if(id==='airport'){add({x:(L.fb.x0+L.fb.x1+1)/2*T,y:(L.fb.y0+1.2)*T},'AIRPORT TERMINAL',()=>openPanel(airportPanel));add({x:(L.x0+(L.x1-L.x0+1)*.8)*T,y:(L.y0+4.6)*T},'BOMBER GUNNER RIDE · '+money(BOMBER_COST),()=>openPanel(airportPanel));}
@@ -401,12 +544,30 @@ function spots(){
     if(id==='truck')add(L.door,"FELICIA'S SNOWBALL TRAILER · WALK INSIDE",()=>window.level29Felicia?.open());}
   const B=window.boomCity;
   if(B&&isWorld(city)){for(const [i,p]of (city.casinoStations||[]).entries())add(p,['PLAY SLOT MACHINE','PLAY BLACKJACK','PLAY POKER','PLAY ROULETTE'][i%4],()=>{tab=['slots','bj','poker','rr'][i%4];openPanel(casinoPanel);});
+=======
+  const out=[];const add=(p,label,act)=>{if(p)out.push({x:p.x,y:p.y,label,act});};
+  for(const id in lots){const L=lots[id];
+    if(id==='airport'){add(L.door,'AIRPORT TERMINAL',()=>openPanel(airportPanel));add({x:(L.x0+(L.x1-L.x0+1)*.8)*T,y:(L.y0+4.6)*T},'BOMBER GUNNER RIDE · '+money(BOMBER_COST),()=>openPanel(airportPanel));}
+    if(id==='stadium')add(L.door,'JESTER STADIUM · KICK FIELD GOALS',()=>openPanel(kickPanel()));
+    if(id==='university')add(L.door,'BAYOU STATE UNIVERSITY · CLASS',()=>openPanel(quizPanel()));
+    if(id==='dealer')add({x:(L.x0+5)*T,y:(L.y0+1.9)*T},'TALK TO BONNIE DE VETTE',()=>openPanel(bonniePanel));
+    if(id==='club')add(L.door,'ENTER THE VELVET JESTER',()=>openPanel(clubPanel));
+    if(id==='dispensary')add(L.door,'GREEN BAYOU DISPENSARY',()=>openPanel(shopPanel('dispensary')));
+    if(id==='smoke')add(L.door,'CROWN SMOKE SHOP',()=>openPanel(shopPanel('smoke')));
+    if(id==='truck')add(L.door,"ORDER AT MAMA 29'S",()=>openPanel(shopPanel('truck')));}
+  const B=window.boomCity;
+  if(B&&isWorld(city)){add(B.DOOR,'ENTER BOOMCITY CASINO',()=>openPanel(casinoPanel));
+>>>>>>> main
     add({x:B.CAPTAIN.x+T*1.7,y:B.CAPTAIN.y},'BOARD THE NATCHEZ DECK · NET FISHING',()=>openPanel(fishPanel()));}
   if(course){if(!run)add(course.pts[0],'START CONFIDENCE COURSE'+(save.courseBest?' · BEST '+save.courseBest.toFixed(1)+'s':''),startCourse);
     else{const p=course.pts[run.i];if(p.taps)add(p,p.name+' · TAP '+run.taps+' / '+p.taps,climbTap);}}
   return out;}
 let curSpot=null;
+<<<<<<< HEAD
 function nearestSpot(){if(!player||player.car||player.dead||ride)return null;let best=null,bd=42;for(const s of spots()){const d=d2(s.x,s.y,player.x,player.y);if(d<bd){bd=d;best=s;}}return best;}
+=======
+function nearestSpot(){if(!player||player.car||player.dead||ride)return null;let best=null,bd=64;for(const s of spots()){const d=d2(s.x,s.y,player.x,player.y);if(d<bd){bd=d;best=s;}}return best;}
+>>>>>>> main
 
 const prevEnter=enterExit;
 enterExit=function(){if(state==='play'){const s=nearestSpot();if(s){s.act();return;}}return prevEnter.apply(this,arguments);};
@@ -579,7 +740,11 @@ const clubPanel={theme:'club',
 
 // ---------------------------------------------------------------- shops
 const SHOPS={
+<<<<<<< HEAD
   dispensary:{t:'Elevated Melanin',eb:'Hemp & wellness · fictional in-game items',items:[['Bayou herbal tea',29,15],['Purple Jester CBD gummies',59,30],['Gold Leaf hemp balm',99,50],['King Cake wellness bar',149,100]]},
+=======
+  dispensary:{t:'Green Bayou Dispensary',eb:'Hemp & wellness · fictional in-game items',items:[['Bayou herbal tea',29,15],['Purple Jester CBD gummies',59,30],['Gold Leaf hemp balm',99,50],['King Cake wellness bar',149,100]]},
+>>>>>>> main
   smoke:{t:'Crown Smoke Shop',eb:'Cigars · hookah · accessories',items:[['Swisher pack',12,8],['Cohiba cigar',45,20],['Hookah session',80,40],['Level 29 gold grinder',29,0]]},
   truck:{t:"Mama 29's Food Truck",eb:'Fresh off the bayou',items:[['Beignets',9,15],['Sweet tea',4,8],['Jambalaya',16,30],["Shrimp po'boy",18,35],['Seafood gumbo',20,40],['Crawfish etouffee',22,45]]}};
 function shopPanel(id){const S=SHOPS[id];let m='';return{
@@ -588,6 +753,7 @@ function shopPanel(id){const S=SHOPS[id];let m='';return{
 
 // ---------------------------------------------------------------- airport, Bonnie, university, stadium, fishing
 const airportPanel={render(){return '<div class="eb">Level 29 International</div><h2>Airport terminal</h2>'+wallet()+
+<<<<<<< HEAD
   '<div class="grid"><div class="card"><b>Jester One</b><p>Purple and gold jet with the Level 29 logo on the tail. Always flying over the city.</p></div><div class="card"><b>Jester Two</b><p>Parked on the apron for display.</p></div><div class="card"><b>B-29 Jester Bomber</b><p>Ride the .50 cal gunner seat for 29 seconds and shoot zombies from the sky. $15 bounty per kill.</p><button class="g" data-a="bomb" '+(cash<BOMBER_COST?'disabled':'')+'>Fly · '+money(BOMBER_COST)+'</button></div></div>'+
   '<p style="color:#a89fb0">Move the mouse, drag the view, or use the right stick to aim the center crosshair. Hold the mouse button, Space, FIRE, or RT to shoot. Hits require a visible zombie under the crosshair; buildings block shots. You can\'t be hurt while you\'re in the air.</p>';},act(a){if(a==='bomb')startBomber();}};
 const bonniePanel={render(){const L=lots.dealer;return '<div class="eb">Owner · in-game cash</div><h2>Bonnie De Vette</h2><button data-a=story>RECOVERY MISSIONS · TALK TO BONNIE</button>'+wallet()+'<p>Welcome to Slab Motors. Choose your ride; I will deliver it to the front lot.</p><div class="grid">'+(L?.inventory||[]).map((r,i)=>'<div class="card"><b>'+CAR_SPECS[r.type].name+'</b><p>'+money(r.price)+'</p><button data-a="vehicle" data-v="'+i+'" '+(cash<r.price?'disabled':'')+'>PURCHASE</button></div>').join('')+'</div><p>Owned vehicles are stored in your local garage.</p>'+((window.level29OpenWorld?.save.dealerGarage)||[]).map((r,i)=>'<button data-a=recall data-v='+i+'>DELIVER OWNED '+CAR_SPECS[r.type].name+'</button>').join('');},act(a,v){
@@ -599,6 +765,12 @@ const bonniePanel={render(){const L=lots.dealer;return '<div class="eb">Owner ·
  const c=makeCar(x,y,0,r.type);c.dealerOwned=true;cars.push(c);cash-=r.price;
  const own=window.level29OpenWorld?.save;if(own){own.dealerGarage=own.dealerGarage||[];c.dealerSlot=own.dealerGarage.length;own.dealerGarage.push({type:r.type,col:c.col});persistOpenWorld();}if(window.level29Save)level29Save.save();toast('PURCHASED · YOUR VEHICLE IS OUT FRONT');sfx('cash');
 }};
+=======
+  '<div class="grid"><div class="card"><b>Jester One</b><p>Purple and gold jet with the Level 29 logo on the tail. Always flying over the city.</p></div><div class="card"><b>Jester Two</b><p>Parked on the apron for display.</p></div><div class="card"><b>B-29 Jester Bomber</b><p>Ride the .50 cal gunner seat for 13 seconds and shoot zombies from the sky. $15 bounty per kill.</p><button class="g" data-a="bomb" '+(cash<BOMBER_COST?'disabled':'')+'>Fly · '+money(BOMBER_COST)+'</button></div></div>'+
+  '<p style="color:#a89fb0">Hold the mouse button, Space, or the FIRE button to shoot. You can\'t be hurt while you\'re in the air.</p>';},act(a){if(a==='bomb')startBomber();}};
+const bonniePanel={render(){return '<div class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:14px"><img src="bonnie.png" alt="Bonnie De Vette" style="width:42%;max-width:280px;border-radius:10px;border:2px solid #f2c14e;object-fit:cover"><div><div class="eb">Owner</div><h2>Bonnie De Vette</h2>'+
+  '<p>"Welcome to Slab Motors, baby. Everything on my lot is candy paint and swangas, Houston style, poking out like they supposed to."</p><p>"Hop in any slab or lowrider parked out front for a test drive. Bring it back with all its rims."</p><p style="color:#a89fb0">Walk up to a car in the front row and press E (or tap ENTER) to drive.</p></div></div>';},act(){}};
+>>>>>>> main
 const QUIZ=[['What is the state capital of Louisiana?',['Baton Rouge','New Orleans','Shreveport'],0],['What river runs through New Orleans?',['Mississippi','Red River','Missouri'],0],['Mardi Gras colors are purple, green and...',['Gold','Red','Blue'],0],['What is a beignet?',['A fried pastry','A boat','A dance'],0],['Louisiana counties are called...',['Parishes','Boroughs','Wards'],0],['Which is a classic Cajun dish?',['Jambalaya','Pierogi','Pho'],0],['What animal is the Louisiana state reptile?',['Alligator','Turtle','Snake'],0],['The French Quarter is in which city?',['New Orleans','Lafayette','Houma'],0]];
 function quizPanel(){const qs=QUIZ.slice().sort(()=>Math.random()-.5).slice(0,5).map(([q,o,a])=>{const ord=o.map((t,i)=>[t,i===a]).sort(()=>Math.random()-.5);return{q,o:ord};});let i=0,right=0,m='';
   return{render(){if(i>=qs.length)return '<div class="eb">Bayou State University</div><h2>Class dismissed</h2><p>'+right+' / '+qs.length+' correct · earned '+money(right*290)+'</p>';
@@ -634,7 +806,11 @@ drawHUD=function(){const r=prevHUD.apply(this,arguments);try{
   if(curSpot&&!coarse()){const t='E · '+curSpot.label;cx.font="800 18px 'Barlow Condensed'";const w=cx.measureText(t).width+28;cx.fillStyle='rgba(20,10,34,.85)';cx.fillRect(SW/2-w/2,SH-128,w,34);cx.strokeStyle=COL.gold;cx.strokeRect(SW/2-w/2,SH-128,w,34);cx.fillStyle='#fff';cx.fillText(t,SW/2,SH-111);}
   if(ride){cx.fillStyle='rgba(120,10,20,.12)';cx.fillRect(0,0,SW,SH);cx.strokeStyle='#ffd36b';cx.lineWidth=2;cx.beginPath();cx.arc(SW/2,SH/2,34,0,6.283);cx.moveTo(SW/2-50,SH/2);cx.lineTo(SW/2+50,SH/2);cx.moveTo(SW/2,SH/2-50);cx.lineTo(SW/2,SH/2+50);cx.stroke();
     cx.font="800 26px 'Barlow Condensed'";cx.fillStyle='#ffd36b';cx.fillText('B-29 GUNNER · '+(ride.t/60).toFixed(1)+'s · KILLS '+ride.kills,SW/2,70);}
+<<<<<<< HEAD
   if(run&&course){cx.font="800 24px 'Barlow Condensed'";cx.fillStyle=COL.gold;const p=course.pts[run.i];cx.fillText('COURSE '+((frame-run.t0)/60).toFixed(1)+'s · '+(p.name||'')+(p.hold?' · HOLD '+Math.round((run.hold||0)/p.hold*100)+'%':'')+' ('+run.i+'/'+(course.pts.length-1)+')',SW/2,70);}
+=======
+  if(run&&course){cx.font="800 24px 'Barlow Condensed'";cx.fillStyle=COL.gold;const p=course.pts[run.i];cx.fillText('COURSE '+((frame-run.t0)/60).toFixed(1)+'s · '+(p.name||'')+' ('+run.i+'/'+(course.pts.length-1)+')',SW/2,70);}
+>>>>>>> main
   cx.restore();}catch(_){}return r;};
 const prevFullMap=drawFullMap;
 drawFullMap=function(){prevFullMap.apply(this,arguments);if(!isWorld(city))return;try{
@@ -642,5 +818,9 @@ drawFullMap=function(){prevFullMap.apply(this,arguments);if(!isWorld(city))retur
   for(const id in lots){const L=lots[id],x=(L.x0+L.x1+1)/2*T,y=(L.y0+L.y1+1)/2*T;cx.font="800 12px 'Barlow Condensed'";cx.textAlign='center';cx.textBaseline='middle';const w=cx.measureText(L.name).width+10;
     cx.fillStyle='rgba(8,10,12,.8)';cx.fillRect(X+x*sc-w/2,Y+y*sc-8,w,16);cx.fillStyle=COL.gold;cx.fillText(L.name,X+x*sc,Y+y*sc);}}catch(_){}};
 
+<<<<<<< HEAD
 window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},get birdTargets(){return birds;},hitBird,startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
+=======
+window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
+>>>>>>> main
 })();
