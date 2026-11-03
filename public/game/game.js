@@ -1381,7 +1381,7 @@ function drawPickup(k){
   const b = Math.sin(frame * .1 + k.x) * 2;
   cx.save(); cx.translate(k.x, k.y + b);
   cx.fillStyle = 'rgba(0,0,0,.3)'; cx.beginPath(); cx.ellipse(2, 10 - b, 10, 4, 0, 0, 7); cx.fill();
-  if (k.kind==='health'){ cx.fillStyle = '#fff'; cx.fillRect(-9, -9, 18, 18); cx.fillStyle = '#d02020'; cx.fillRect(-2, -6, 4, 12); cx.fillRect(-6, -2, 12, 4); }
+  if (k.kind==='health'){ cx.fillStyle = '#ee2525'; cx.fillRect(-3, -10, 6, 20); cx.fillRect(-10, -3, 20, 6); }
   if (k.kind==='armor'){ cx.fillStyle = '#2a5ad0'; cx.beginPath(); cx.moveTo(0, -10); cx.lineTo(9, -6); cx.lineTo(7, 6); cx.lineTo(0, 10); cx.lineTo(-7, 6); cx.lineTo(-9, -6); cx.closePath(); cx.fill(); cx.strokeStyle = '#fff'; cx.lineWidth = 1.5; cx.stroke(); }
   if (k.kind==='cash'){ cx.fillStyle = '#2f8a3a'; cx.fillRect(-10, -6, 20, 12); cx.fillStyle = '#9fe0a0'; cx.font = "800 11px 'Barlow Condensed'"; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText('$', 0, 1); }
   if (k.kind==='crate'){ cx.fillStyle = '#4b5320'; cx.fillRect(-13, -13, 26, 26); cx.fillStyle = '#f4c355'; cx.fillRect(-13, -3, 26, 6); cx.strokeStyle = '#2f3416'; cx.lineWidth = 2; cx.strokeRect(-13, -13, 26, 26); }

@@ -299,7 +299,14 @@ function syncCars(){
 }
 
 // ---------- Pickups ----------
-function makePickup(){ const g = new THREE.Group(); const m = box(8, 8, 8, lam('#fff')); m.position.y = 0; g.add(m); g.userData.m = m; return g; }
+function makePickup(){
+ const g=new THREE.Group(),m=box(8,8,8,lam('#fff'));g.add(m);g.userData.m=m;
+ const cross=new THREE.Group(),red=new THREE.MeshStandardMaterial({color:'#ee2525',emissive:'#b81717',emissiveIntensity:.55,roughness:.45});
+ cross.name='health-red-cross';cross.visible=false;
+ // A single extruded plus silhouette, with no overlapping coplanar bar faces.
+ const shape=new THREE.Shape();shape.moveTo(-2,7);for(const [x,y]of [[2,7],[2,2],[7,2],[7,-2],[2,-2],[2,-7],[-2,-7],[-2,-2],[-7,-2],[-7,2],[-2,2]])shape.lineTo(x,y);shape.closePath();
+ const geometry=new THREE.ExtrudeGeometry(shape,{depth:4,bevelEnabled:false,steps:1});geometry.translate(0,0,-2);cross.add(new THREE.Mesh(geometry,red));g.add(cross);g.userData.healthCross=cross;return g;
+}
 const PICK = { health:['#f2f2f2', 0x501010], armor:['#2a5ad0', 0x0a1a50], cash:['#2f8a3a', 0x0a3010], crate:['#4b5320', 0], power:['#f4c355', 0x6a4a00] };
 
 // ---------- City build ----------
@@ -635,7 +642,7 @@ function syncDynamic(){
   kPool.begin();
   for (const k of pickups){
     const [m, fresh] = kPool.get(k), mm = m.userData.m, P = PICK[k.kind] || PICK.cash;
-    if (fresh){ if(m.userData.cashStack){m.userData.cashStack.visible=k.kind==='cash';mm.visible=k.kind!=='cash';} mm.material.color.set(P[0]); mm.material.emissive.setHex(P[1]); mm.scale.setScalar(k.kind==='crate' ? 2.2 : k.kind==='power' ? 1.6 : 1); }
+    if (fresh){ if(m.userData.healthCross)m.userData.healthCross.visible=k.kind==='health'; mm.visible=k.kind!=='health'&&!(m.userData.cashStack&&k.kind==='cash');if(m.userData.cashStack)m.userData.cashStack.visible=k.kind==='cash'; mm.material.color.set(P[0]); mm.material.emissive.setHex(P[1]); mm.scale.setScalar(k.kind==='crate' ? 2.2 : k.kind==='power' ? 1.6 : 1); }
     m.position.set(k.x, (k.kind==='cash' ? 2.3 : k.kind==='crate' ? 9 : 8) + Math.sin(frame * .08 + k.x) * 1.5, k.y); m.rotation.y = k.kind==='cash' ? k.x*.017 : frame * .03;
   }
   kPool.end();
