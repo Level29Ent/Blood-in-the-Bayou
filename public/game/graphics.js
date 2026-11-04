@@ -6,11 +6,11 @@
   const LEVELS = ['high', 'medium', 'low'];
   const touch = matchMedia('(pointer: coarse)').matches;
   let quality = localStorage.getItem(QUALITY_KEY);
-  if (!LEVELS.includes(quality)) quality = touch ? 'medium' : 'high';
+  if (!LEVELS.includes(quality)) quality = 'low';
 
   const SHADOW = {
-    high:   { size: 2048, extent: 260, every: 1 },
-    medium: { size: 1024, extent: 200, every: 2 },
+    high:   { size: 2048, extent: 260, every: 3 },
+    medium: { size: 1024, extent: 200, every: 6 },
     low:    null,
   };
 
@@ -202,6 +202,7 @@
     clearTimeout(el._t); el._t = setTimeout(() => { el.style.opacity = '0'; }, 1400);
   }
 
+  window.level29Graphics={get quality(){return quality;},setQuality(q){if(!LEVELS.includes(q))return;quality=q;try{localStorage.setItem(QUALITY_KEY,q);}catch(_){}if(ready)applyQuality();}};
   addEventListener('keydown', e => {
     if (e.code !== 'KeyG' || e.repeat || e.target.closest('input,textarea')) return;
     quality = LEVELS[(LEVELS.indexOf(quality) + 1) % LEVELS.length];
