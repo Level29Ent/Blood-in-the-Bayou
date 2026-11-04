@@ -46,6 +46,8 @@ missionTarget = function(){ const t = _missionTarget(); if (t && mission && miss
 // ---------- Briefings ----------
 const BRIEF_TYPES = ['rescue', 'clear', 'deliver', 'race', 'defend', 'boss'];
 const RB_TEXT = {
+ "rb_intro":"Oh man, what’s happenin’? You got here just in time. Look, the city f***in’ falling apart... and I need you.",
+ "rb_hey_0":"Oh man, what’s happenin’? You got here just in time.",
  "rb_rescue_0": "Look, man. One of ours is pinned down out there. Go find him and bring him back to the safehouse in one piece.",
  "rb_rescue_1": "Got a survivor hidin' from the horde. Get there before the dead do, and then get 'em back home.",
  "rb_clear_0": "This whole block crawlin' with 'em, bruh. Go kill them motherf***ers. Every last one of 'em.",
@@ -76,20 +78,16 @@ function briefing(info){
 }
 // ---------- Ronniebaby voice (rbvo/*.mp3, plain <audio> so it works everywhere) ----------
 const rbVoice = new Audio(); rbVoice.preload = 'auto';
-let rbQueue = [];
-function rbSay(key, ...more){
-  if (typeof soundMode !== 'undefined' && soundMode === 2) return;
-  if (state !== 'play' && state !== 'talk') return;
-  rbQueue = more;
-  try { rbVoice.pause(); rbVoice.muted = false; rbVoice.src = 'rbvo/' + key + '.mp3'; rbVoice.volume = 1; rbVoice.play().catch(() => {}); } catch(e){}
-  rbVoice.speaking = true;
-}
+const rbPlayback=level29Dialogue.createDialogue(rbVoice,{
+ allowed:()=>soundMode!==2&&['play','talk'].includes(state)&&player&&!player.dead,
+ caption:key=>{if(RB_TEXT[key])subtitle={name:state==='talk'?'RONNIEBABY':'RONNIEBABY · PHONE',txt:RB_TEXT[key],t:Math.max(240,(rbVoice.duration||4)*60),col:'#e5bd63'};}
+});
+function rbSay(key,...more){return rbPlayback.play(key,...more);}
 // Phones only let a media element play from code after a tap has started it once, so unlock the voice player silently on the first touch or key press.
 let rbVoiceUnlocked = false;
 function rbVoiceUnlock(){ if (rbVoiceUnlocked) return; rbVoiceUnlocked = true; try { if (rbVoice.speaking) return; rbVoice.muted = true; rbVoice.volume = 0; rbVoice.src = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA='; const p = rbVoice.play(); const done = () => { if (!rbVoice.speaking){ rbVoice.pause(); rbVoice.currentTime = 0; } rbVoice.muted = false; }; if (p && p.then) p.then(done).catch(() => { rbVoiceUnlocked = false; rbVoice.muted = false; }); else done(); } catch (_){ rbVoiceUnlocked = false; rbVoice.muted = false; } }
 for (const ev of ['touchend', 'pointerup', 'click', 'keydown']) addEventListener(ev, rbVoiceUnlock, true);
-rbVoice.addEventListener('ended', () => { rbVoice.speaking = false; if (rbQueue.length){ const [k, ...rest] = rbQueue; setTimeout(() => { if (state === 'talk') rbSay(k, ...rest); }, 250); } });
-function rbStopVoice(){ rbQueue = []; try { rbVoice.pause(); } catch(e){} rbVoice.speaking = false; }
+function rbStopVoice(){rbPlayback.cancel();if(subtitle?.name?.startsWith('RONNIEBABY'))subtitle=null;}
 function rewardFor(info){ return 500 + info.i * 120 + (info.isBoss ? 2500 : 0); }
 
 // ---------- Dialog UI ----------
@@ -137,12 +135,11 @@ function buyUpg(id){
   toast('UPGRADE · ' + u.name.toUpperCase() + (u.max > 1 ? ' ' + u.lvl() + '/' + u.max : ''));
   renderRonnie();
 }
-function closeRonnie(){ rbEl.style.display = 'none'; if (state === 'talk') state = 'play'; for (const k in keys) keys[k] = false; }
+function closeRonnie(){ rbStopVoice();rbEl.style.display = 'none'; if (state === 'talk') state = 'play'; for (const k in keys) keys[k] = false; }
 function rbAct(a){
   if (a === 'upg'){ rbTab = 'upg'; renderRonnie(); return; }
   if (a === 'take'){
     closeRonnie(); ronnie.active = false;
-    subtitle = { name: 'RONNIEBABY', txt: RB_TEXT['rb_take_' + (mission.info.i % 4)], t: 200 };
     rbSay('rb_take_' + (mission.info.i % 4));
     beginMission(); return;
   }
@@ -167,15 +164,14 @@ const _passM = passMission;
 passMission = function(){
   const info = mission && mission.info;
   _passM();
-  const lines = [0,1,2,3].map(n => RB_TEXT['rb_pass_' + n]);
-  setTimeout(() => { if (state === 'play') subtitle = { name: 'RONNIEBABY · PHONE', txt: info && info.isBoss ? RB_TEXT.rb_passboss : lines[(info ? info.i : 0) % lines.length], t: 260 }; sfx('tune'); setTimeout(() => rbSay(info && info.isBoss ? 'rb_passboss' : 'rb_pass_' + ((info ? info.i : 0) % 4)), 500); }, 2600);
+  const expected=mission;rbPlayback.schedule(info&&info.isBoss?'rb_passboss':'rb_pass_'+((info?info.i:0)%4),2600,()=>state==='play'&&mission===expected);
 };
 const _startG = startGame;
 startGame = function(i){
-  ronnie.greeted = false;
+  rbStopVoice();ronnie.greeted = false;
   _startG(i);
   up.vital = 0; player.maxHp = 100;
-  setTimeout(() => { if (state === 'play') subtitle = { name: 'RONNIEBABY · PHONE', txt: 'Oh man, what\u2019s happenin\u2019? You got here just in time. Look, the city f***in\u2019 falling apart... and I need you.', t: 480 }; rbSay('rb_intro'); }, 1800);
+  const expected=mission;rbPlayback.schedule('rb_intro',1800,()=>state==='play'&&mission===expected);
 };
 
 // ---------- Input while talking ----------
@@ -224,40 +220,38 @@ function makeRonnie(){
   setFigureColors(g, skinCol, '#ffffff', '#111113', '#120d0a');
   u.shirt.map = patchTex(); u.shirt.needsUpdate = true;
   u.eyes = null;
-  if (u.face) u.face.visible = false;
+  if (u.face) u.face.visible = true;
   // sleeves: patchwork arms + hands
-  const sleeve = u.shirt, handM = lam(skinCol);
-  for (const arm of [u.armL, u.armR]){ arm.children[0].material = sleeve; const h = box(2.2, 1.6, 2.2, handM); h.position.y = -7.6; arm.add(h); }
+  const sleeve = u.shirt;
+  for (const arm of [u.armL, u.armR]) arm.children[0].material = sleeve;
   // oversized jacket: slightly wider torso + hem
-  u.torso.scale.set(1.12, 1.08, 1.08);
+  u.torso.scale.multiply(new THREE.Vector3(1.05, 1.02, 1.04));
   const hem = box(5.4, 1.4, 8.2, sleeve); hem.position.y = 7.9; u.body.add(hem);
-  // face: eyes, mustache + chin hair
+  // Preserve the shared human face; shaped facial hair must not hide its eyes/mouth.
   const dark = lam('#0d0a08');
-  for (const z of [-1.05, 1.05]){ const e = box(.3, .55, .8, dark); e.position.set(2.24, 18.5, z); u.body.add(e); }
-  const stache = box(.35, .45, 2.2, dark); stache.position.set(2.25, 17.1, 0); u.body.add(stache);
-  const chin = box(.5, 1.1, 1.6, dark); chin.position.set(2.1, 15.9, 0); u.body.add(chin);
+  const stache=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),dark);stache.scale.set(.18,.13,.72);stache.position.set(2.15,17.45,0);u.body.add(stache);
+  const chin=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),dark);chin.scale.set(.35,.55,.72);chin.position.set(1.62,16.2,0);u.body.add(chin);
   // long twisted locs
   u.hair.scale.set(1.08, 1.2, 1.08); u.hair.position.y = 20.5;
   const locM = [lam('#120d0a'), lam('#1d1510'), lam('#0a0806')], rng = mkRng(1129);
   const locs = new THREE.Group();
-  const N = 34;
+  const N = 34,locGeometry=new THREE.CylinderGeometry(.24,.32,1,6);
   for (let k = 0; k < N; k++){
     const ang = (k / N) * Math.PI * 2, cx0 = Math.cos(ang), sz0 = Math.sin(ang);
     const front = cx0 > .55; // face side (+x)
     if (front && Math.abs(sz0) < .5) continue; // keep most of the face visible
     const len = front ? 5.5 + rng() * 2.5 : 8 + rng() * 4;
-    const loc = new THREE.Mesh(new THREE.BoxGeometry(.55, len, .55), locM[k % 3]);
+    const loc = new THREE.Mesh(locGeometry, locM[k % 3]);loc.scale.y=len;
     const rx = 2.35 * Math.sign(cx0) * Math.min(1, Math.abs(cx0) * 1.4), rz = 2.35 * Math.sign(sz0) * Math.min(1, Math.abs(sz0) * 1.4);
     loc.position.set(rx * (front ? 1.02 : 1), 20.6 - len / 2, rz);
     loc.rotation.set(sz0 * .18 + (rng() - .5) * .12, 0, -cx0 * .12 + (rng() - .5) * .1);
-    // twist bands for texture
-    for (let t = 1; t < len / 1.3; t++){ const band = box(.7, .22, .7, locM[(k + 1) % 3]); band.position.y = len / 2 - t * 1.3; loc.add(band); }
     locs.add(loc);
   }
   // a few locs falling over the front of the face, like the photo
-  for (const z of [-1.75, 1.6]){ const loc = new THREE.Mesh(new THREE.BoxGeometry(.5, 7, .5), locM[0]); loc.position.set(2.45, 17, z); loc.rotation.x = z * .05; locs.add(loc); }
+  for (const z of [-1.75, 1.6]){ const loc = new THREE.Mesh(new THREE.CylinderGeometry(.22,.28,7,6), locM[0]); loc.position.set(2.45, 17, z); loc.rotation.x = z * .05; locs.add(loc); }
   u.body.add(locs);
   g.scale.setScalar(1.08);
+  window.level29People?.identify(g,'ronnie');
   // gold ground ring so he is easy to spot
   const ring = new THREE.Mesh(new THREE.RingGeometry(14, 17, 40), new THREE.MeshBasicMaterial({ color: 0xf4c355, transparent: true, opacity: .55, side: THREE.DoubleSide, depthWrite: false }));
   ring.rotation.x = -Math.PI / 2; ring.position.y = .5; g.add(ring); u.ring = ring;
@@ -291,3 +285,6 @@ fpHUD = function(small){
   hudText(d < 160 ? ('ontouchstart' in window ? 'WALK UP TO TALK' : 'WALK UP TO TALK · MISSION + UPGRADES') : Math.round(d / 10) + ' M · MISSION ' + (missionIdx + 1), pr.x, pr.y + 2, 11, '#f6f3e6', 'center', '700 ');
   cx.globalAlpha = 1;
 };
+
+const rbUpdateBase=update;update=function(){rbUpdateBase.apply(this,arguments);if((!['play','talk'].includes(state)||player?.dead||soundMode===2)&&rbVoice.speaking)rbStopVoice();};
+addEventListener('pagehide',rbStopVoice);

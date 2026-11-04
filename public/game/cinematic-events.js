@@ -1,0 +1,14 @@
+'use strict';
+(function(){
+function slowState(){return {remaining:0,cooldown:0};}
+function requestSlow(s){if(s.cooldown>0||s.remaining>0)return false;s.remaining=2;s.cooldown=12;return true;}
+function slowTick(s,dt){s.remaining=Math.max(0,s.remaining-dt);s.cooldown=Math.max(0,s.cooldown-dt);return s.remaining>0?.4:1;}
+if(typeof module!=='undefined')module.exports={slowState,requestSlow,slowTick};if(typeof window==='undefined')return;
+const title=document.createElement('div');title.id='cinematicTitle';title.style.cssText='display:none;position:fixed;inset:0;z-index:36;pointer-events:none;background:linear-gradient(#000b 0 12%,transparent 12% 78%,#000b 78%);align-items:center;justify-content:center;color:#e4c67c;text-shadow:0 3px 8px #000;font:900 clamp(28px,5vw,64px) Barlow Condensed,sans-serif;letter-spacing:.08em;text-align:center';document.body.appendChild(title);let until=0;const slow=slowState();let clock=performance.now(),lastVenue=null,lastCity=null,fog=null;
+function show(text){title.textContent=text;title.style.display='flex';until=performance.now()+1700;try{sfx('missionstart');}catch(_){}}
+const begin=beginMission;beginMission=function(){const r=begin.apply(this,arguments);if(mission?.phase==='active')show('BLOOD IN THE BAYOU · CHAPTER '+(Math.floor(mission.info.i/30)+1)+'\n'+mission.info.title.toUpperCase());return r;};
+addEventListener('keydown',e=>{if(state==='play'&&!mpRole&&!player?.dead&&e.key.toLowerCase()==='v'&&!e.repeat&&!e.target.closest?.('input,textarea,select')){if(requestSlow(slow))toast('CINEMATIC FOCUS · 2 SECONDS');}},true);
+const tick=update;update=function(){tick.apply(this,arguments);const now=performance.now(),dt=Math.min(.1,(now-clock)/1000);clock=now;if(state==='play'){window.level29TimeScale=mpRole?1:slowTick(slow,dt);}else window.level29TimeScale=1;if(now>until)title.style.display='none';if(!city||!player)return;if(lastCity!==city){lastCity=city;lastVenue=null;}const v=city.venues.find(v=>insideVenue(v,player.car||player));if(v!==lastVenue){lastVenue=v;if(v&&state==='play')show(v.name);}if(state==='play'&&!mpRole&&player.car&&Math.abs(player.car.v)>5&&Math.abs(player.car.visualSteer||0)>.85&&slow.cooldown<=0)requestSlow(slow);};
+const renderBase=render;render=function(){renderBase.apply(this,arguments);if(window.level29BayouEffects){if(fog)fog.visible=false;return;}if(!scene||!city||!player||window.level29Graphics?.quality==='low')return;if(fog?.parent!==scene){const points=[];for(let i=0;i<90;i++)points.push((GULF_X+3+Math.sin(i*12.3)*4)*TILE,2+(i%4)*2,(40+i)*TILE);const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(points,3));fog=new THREE.Points(geo,new THREE.PointsMaterial({color:'#b6c5bc',size:35,transparent:true,opacity:.06,depthWrite:false}));fog.name='Bayou ground mist';scene.add(fog);}fog.visible=state==='play'&&(isDusk()||isNight());fog.position.x=Math.sin(frame*.002)*6;};
+window.level29CinematicEvents={show,slow};
+})();

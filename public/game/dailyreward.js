@@ -50,9 +50,10 @@ function renderPanel(msg){
  const head=claimable?(nextIndex()===0&&data.last&&data.last!==yesterday()&&data.streak>0?'Your streak was reset. Start a new 7-day run.':'Claim today\'s reward to keep your streak going.'):'Come back tomorrow to continue your streak.';
  panel.innerHTML='<div class="sbox"><div class="eyebrow">LEVEL 29 · LOG-IN BONUS</div><h2>Daily Reward</h2><p class="cash">WALLET '+money(cash)+'</p><p>'+(msg||head)+' Streak: <b>'+data.streak+'</b> / 7 · Total claimed: '+money(data.total)+'</p><div id="dailyGrid">'+cells+'</div>'
   +(claimable?'<button id="dailyClaim" class="close" data-daily="claim">CLAIM '+money(REWARDS[nextIndex()].cash)+(REWARDS[nextIndex()].armor||REWARDS[nextIndex()].hp?' + BONUS':'')+'</button>':'')
+  +'<button class="close" data-daily="spin" style="width:100%;margin-top:8px">FREE DAILY SPIN</button>'
   +'<button class="close" data-daily="close" style="width:100%;margin-top:8px">'+(claimable?'LATER · ESC':'RETURN TO THE CITY · ESC')+'</button></div>';
 }
-function updateBadge(){badge.style.display=(state==='play'&&canClaim()&&!showMap&&panel.style.display!=='flex')?'block':'none';}
+function updateBadge(){badge.textContent=canClaim()?'DAILY + SPIN':'DAILY SPIN';badge.style.display=(state==='play'&&!showMap&&panel.style.display!=='flex')?'block':'none';}
 function open(){if(!player||player.dead||!['play','shop'].includes(state))return;if(window.level29Jobs&&document.getElementById('jobsPanel').style.display==='flex')level29Jobs.close();
  if(window.level29Places&&level29Places.panel&&level29Places.panel.style.display!=='none')level29Places.close();
  state='shop';for(const k in keys)keys[k]=false;mouse.down=false;renderPanel();panel.style.display='flex';setTimeout(()=>document.getElementById('dailyClaim')?.focus(),30);}
@@ -63,13 +64,13 @@ function claim(){if(!canClaim())return;const i=nextIndex(),r=REWARDS[i];
  sfx('cash');banner={big:'DAILY REWARD',small:'DAY '+(i+1)+' · +'+money(r.cash)+(r.note&&(r.hp||r.armor)?' · '+r.note.toUpperCase():''),t:200,good:true};
  try{window.level29Save?.save('DAILY REWARD SAVED');}catch(_){}
  renderPanel('Reward claimed: '+money(r.cash)+(r.note?' · '+r.note:'')+'.');}
-panel.addEventListener('click',e=>{const b=e.target.closest('[data-daily]');if(!b)return;if(b.dataset.daily==='claim')claim();else close();});
+panel.addEventListener('click',e=>{const b=e.target.closest('[data-daily]');if(!b)return;if(b.dataset.daily==='claim')claim();else if(b.dataset.daily==='spin'){close();window.level29DailySpin?.open();}else close();});
 addEventListener('keydown',e=>{if(panel.style.display!=='flex')return;if(e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();}},true);
 let shown=false,ready=0;
 
 // Show the reward once per session after the player has actually started playing.
 const prevUpdate=update;update=function(){prevUpdate();if(state==='play'&&player&&!player.dead)ready++;else if(state!=='shop')ready=Math.max(0,ready-1);
- if(!shown&&ready>600&&canClaim()){const jp=document.getElementById('jobsPanel');if(jp&&jp.style.display==='flex')return;shown=true;open();}};
+ if(!shown&&ready>600&&canClaim()&&!window.level29Jobs?.active&&!window.level29Guard?.shift&&!window.level29CityStories?.active){const jp=document.getElementById('jobsPanel');if(jp&&jp.style.display==='flex')return;shown=true;open();}};
 const prevRender=render;render=function(){prevRender();updateBadge();if(panel.style.display==='flex'&&state!=='shop')panel.style.display='none';};
 window.level29Daily={get data(){return data;},canClaim,open,close,claim,rewards:REWARDS};
 })();
