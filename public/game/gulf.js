@@ -3,11 +3,7 @@
 // the Level 29 Tower (apartments + garage + vehicle customization), a store for upgrades / customization, and performance fixes.
 // Load after world.js.
 (function(){
-<<<<<<< HEAD
 const ZONE_NAMES={gulf:'THE BAYOU',quarter:'FRENCH QUARTER',marina:'MARINA DISTRICT',hollywood:'HOLLYWOOD HILLS',downtown:'DOWNTOWN HOUSTON',base:'CAMP LEJEUNE',forest:'PINE FOREST',mountain:'LEVEL 29 GARDENS'};
-=======
-const ZONE_NAMES={gulf:'THE BAYOU',quarter:'FRENCH QUARTER',marina:'MARINA DISTRICT',hollywood:'HOLLYWOOD HILLS',downtown:'DOWNTOWN HOUSTON',base:'CAMP LEJEUNE',forest:'PINE FOREST',mountain:'SUMMIT RANGE'};
->>>>>>> main
 const CHAPTER_SAFE=['3,0','5,0','6,5','7,0','8,2','7,4','5,7'];
 const SAVE_KEY='level29.openworld.v1';
 let save={apartment:false,garage:[],custom:{},owned:{},fishCaught:0,caches:[]};
@@ -58,7 +54,6 @@ function paintCurves(g,k,mini){
       const bx0=Math.max(0,Math.floor(c.box[0]/TILE)),by0=Math.max(0,Math.floor(c.box[1]/TILE)),bx1=Math.min(MW-1,Math.ceil(c.box[2]/TILE)),by1=Math.min(MH-1,Math.ceil(c.box[3]/TILE));
       g.save();g.beginPath();g.rect(c.box[0],c.box[1],c.box[2]-c.box[0],c.box[3]-c.box[1]);
       for(let ty=by0;ty<=by1;ty++)for(let tx=bx0;tx<=bx1;tx++){const t=city.get(tx,ty);if(t===T_ROAD||t===T_BRIDGE)g.rect(tx*TILE,ty*TILE,TILE,TILE);}
-<<<<<<< HEAD
       // Clip using a second mask: duplicate rectangles in the even-odd path can reopen holes.
       g.clip('evenodd');
       g.beginPath();g.rect(0,0,WORLD,WORLD);
@@ -69,13 +64,6 @@ function paintCurves(g,k,mini){
       path();g.strokeStyle='#cfcfc6';g.lineWidth=TILE*3.35*S;g.stroke();                         // edge lines
       path();g.strokeStyle='#11161b';g.lineWidth=TILE*3.05*S;g.stroke();                         // asphalt
       path();g.strokeStyle='rgba(255,255,255,.015)';g.lineWidth=TILE*2.2*S;g.stroke();
-=======
-      g.clip('evenodd');
-      path();g.strokeStyle='rgba(30,26,18,.28)';g.lineWidth=TILE*4.4*S;g.stroke();            // soft verge
-      path();g.strokeStyle='#cfcfc6';g.lineWidth=TILE*3.35*S;g.stroke();                         // edge lines
-      path();g.strokeStyle='#2c3034';g.lineWidth=TILE*3.05*S;g.stroke();                         // asphalt
-      path();g.strokeStyle='rgba(255,255,255,.04)';g.lineWidth=TILE*2.2*S;g.stroke();
->>>>>>> main
       g.setLineDash([26*S,22*S]);path();g.strokeStyle='#d7b13b';g.lineWidth=3*S;g.stroke();g.setLineDash([]);
       g.restore();
     } else {path();g.strokeStyle='#d9d9d2';g.lineWidth=TILE*2.6*S;g.stroke();}
@@ -195,19 +183,12 @@ function buildOpenWorld(c){
     {x:(GULF_X-14)*TILE,y:44*TILE,a:Math.PI,type:'yacht'});
   c.caches=[{id:'harbor-locker',x:(GULF_X+5)*TILE,y:35*TILE,amt:4500},{id:'pine-cache',x:112*TILE,y:81*TILE,amt:8500},
     {id:'summit-cache',x:83*TILE,y:113*TILE,amt:15000}];
-<<<<<<< HEAD
   c.formerMountains=c.features.filter(f=>f.kind==='mountain').map(f=>({...f}));
   for(const f of c.features)if(f.kind==='mountain')f.kind='garden';
   c.rocks=c.rocks.filter(r=>!c.formerMountains.some(f=>r.x>=f.x&&r.x<=f.x+f.w&&r.y>=f.y&&r.y<=f.y+f.h));
   const forestF=c.features.filter(f=>f.kind==='forest');
   c.heightAt=(x,y)=>{
     if(interior==='apartment'&&c.residence&&x>c.residence.b.x-20&&x<c.residence.b.x+c.residence.b.w+20&&y>c.residence.b.y-20&&y<c.residence.b.y+c.residence.b.h+20)return c.residence.floor;
-=======
-  const mtn=c.features.filter(f=>f.kind==='mountain'),forestF=c.features.filter(f=>f.kind==='forest');
-  c.heightAt=(x,y)=>{
-    if(interior==='apartment'&&c.residence&&x>c.residence.b.x-20&&x<c.residence.b.x+c.residence.b.w+20&&y>c.residence.b.y-20&&y<c.residence.b.y+c.residence.b.h+20)return c.residence.floor;
-    for(const f of mtn){const u=(x-f.x)/f.w,v=(y-f.y)/f.h;if(u>0&&u<1&&v>0&&v<1){const cd=c.curveDist(x,y),valley=cd>190?1:cd<70?0:Math.pow((cd-70)/120,1.4);return valley*Math.pow(Math.sin(u*Math.PI)*Math.sin(v*Math.PI),1.6)*(220+85*Math.sin(f.x+f.y));}}
->>>>>>> main
     for(const f of forestF)if(x>f.x&&x<f.x+f.w&&y>f.y&&y<f.y+f.h)return Math.max(0,3*Math.sin(x/95)*Math.sin(y/130));return 0;
   };
   indexTrees(c);
@@ -255,7 +236,6 @@ updateCar=function(c,input){if(c.boat&&c.dead)return;if(city&&city.world&&!input
 // ---------------------------------------------------------------- boating models
 const prevCarMesh=makeCarMesh;
 makeCarMesh=function(c){if(!c.boat)return prevCarMesh(c);
-<<<<<<< HEAD
   const g=new THREE.Group(),L=c.spec.len,W=c.spec.wid,yacht=c.type==='yacht'||c.type==='cabinboat';
   const paint=new THREE.MeshPhysicalMaterial({name:'boatPaint',color:c.col,metalness:.35,roughness:.22,clearcoat:1,clearcoatRoughness:.12});
   const hull=new THREE.Shape();hull.moveTo(-L/2,-W/2);hull.lineTo(L*.22,-W/2);hull.quadraticCurveTo(L*.54,-W*.35,L/2,0);hull.quadraticCurveTo(L*.54,W*.35,L*.22,W/2);hull.lineTo(-L/2,W/2);hull.closePath();
@@ -282,20 +262,6 @@ makeCarMesh=function(c){if(!c.boat)return prevCarMesh(c);
   const helm=new THREE.Mesh(new THREE.TorusGeometry(2,.25,6,18),chrome);helm.position.set(-L*.06,16,0);helm.rotation.y=Math.PI/2;g.add(helm);
   const prop=new THREE.Mesh(new THREE.TorusGeometry(2,.45,6,12),rubber);prop.position.set(-L*.53,1,0);prop.rotation.y=Math.PI/2;g.add(prop);
   addPart(g,1,2,5,-L*.53,1,0,chrome);addPart(g,.8,5,1,-L*.53,1,0,chrome);
-=======
-  const g=new THREE.Group(),L=c.spec.len,W=c.spec.wid,yacht=c.type==='yacht';
-  const paint=new THREE.MeshStandardMaterial({color:c.col,metalness:.25,roughness:.3});
-  const hull=new THREE.Shape();hull.moveTo(-L/2,-W/2);hull.lineTo(L*.22,-W/2);hull.quadraticCurveTo(L*.54,-W*.35,L/2,0);hull.quadraticCurveTo(L*.54,W*.35,L*.22,W/2);hull.lineTo(-L/2,W/2);hull.closePath();
-  const hgeo=new THREE.ExtrudeGeometry(hull,{depth:8,bevelEnabled:true,bevelThickness:2,bevelSize:1.8,bevelSegments:2,steps:1,curveSegments:7});hgeo.rotateX(-Math.PI/2);hgeo.translate(0,5,0);g.add(new THREE.Mesh(hgeo,paint));
-  const deck=lam('#e8e1ce'),glass=lam('#324b5c',{emissive:0x091418});
-  addPart(g,L*.7,1,W*.86,-L*.09,9,0,deck);
-  addPart(g,L*.18,7,W*.68,-L*.10,13,0,glass);
-  addPart(g,12,3,W*.64,-L*.30,11,0,lam('#b7aa90'));
-  addPart(g,7,11,6,-L*.5-2,3,0,lam('#24282e'));
-  if(yacht){addPart(g,L*.37,14,W*.74,-L*.12,19,0,deck);addPart(g,L*.26,10,W*.65,-L*.14,31,0,glass);addPart(g,L*.43,1.6,W*.88,-L*.12,37,0,deck);
-    for(const z of [-W*.37,W*.37])addPart(g,L*.5,1,1,L*.22,17,z,lam('#b8c4c9'));}
-  else{addPart(g,22,2,1,2,16,-W*.33,deck);addPart(g,22,2,1,2,16,W*.33,deck);}
->>>>>>> main
   addSign(g,yacht?'LEVEL 29 YACHT':'LEVEL 29',yacht?46:28,6,-L/2-.3,10,0,'#d9b861').rotation.y=-Math.PI/2;
   g.userData={paint,dead:false,col:c.col,top:16,bar:null};scene.add(g);return g;
 };
@@ -312,11 +278,7 @@ function tower(c){
   const glass=canvasTex(512,512,(ctx,w,h)=>{ctx.fillStyle='#29424f';ctx.fillRect(0,0,w,h);for(let y=0;y<h;y+=32)for(let x=0;x<w;x+=32){ctx.fillStyle=(x/32+y/32)%3?'#476975':'#d5b674';ctx.fillRect(x+2,y+3,28,26);ctx.fillStyle='#1e343f';ctx.fillRect(x+2,y+3,10,26);}});
   const glassMat=h=>{const t=glass.clone();t.needsUpdate=true;t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(1,Math.max(.2,h/340));return new THREE.MeshStandardMaterial({map:t,roughness:.3,metalness:.45,emissive:0x1b1608,emissiveMap:t,emissiveIntensity:isNight()?1.4:.25});};
   const gm=glassMat(420);
-<<<<<<< HEAD
   const fl=resident.floor,curtain=new THREE.MeshPhysicalMaterial({name:'buildingGlass',color:'#b9d0d6',transmission:.78,thickness:.3,ior:1.45,transparent:true,opacity:1,roughness:.1,metalness:0,depthWrite:false,side:THREE.DoubleSide});
-=======
-  const fl=resident.floor,curtain=new THREE.MeshStandardMaterial({color:'#9ec0cb',transparent:true,opacity:.18,roughness:.1,metalness:.3,side:THREE.DoubleSide});
->>>>>>> main
   const s1=box(b.w,fl-48,b.h,gm),s2=box(b.w,44,b.h,curtain),s3=box(b.w,250,b.h,glassMat(250));
   s1.position.set(b.x+b.w/2,48+(fl-48)/2,b.y+b.h/2);s2.position.set(b.x+b.w/2,fl+22,b.y+b.h/2);s3.position.set(b.x+b.w/2,fl+44+125,b.y+b.h/2);g.add(s1,s2,s3);part(g,b.w,3,b.h,b.x+b.w/2,fl+44,b.y+b.h/2,'#e4dccd');
   // Stepped crown with a lit gold lantern, spire, and a two-story podium with colonnade.
@@ -473,27 +435,17 @@ function batchStatic(root,skip,target){
 }
 const prevBuild=buildCity;
 buildCity=function(){
-<<<<<<< HEAD
   stopFishing();
   prevBuild();
   if(!city.world)return;
   waterMats=[];
   const sea=cityGroup.children[1];if(sea&&sea.material){sea.material=new THREE.MeshStandardMaterial({color:'#36452a',roughness:.24,metalness:.2,transparent:true,opacity:.97});sea.position.y=-1.2;waterMats.push(sea);}
-=======
-  prevBuild();
-  if(!city.world)return;
-  waterMats=[];
-  const sea=cityGroup.children[1];if(sea&&sea.material){sea.material=new THREE.MeshPhongMaterial({color:'#36452a',shininess:28,specular:0x5a6648,transparent:true,opacity:.97});sea.position.y=-1.2;waterMats.push(sea);}
->>>>>>> main
   marina(city);tower(city);mountains(city);
   resident=city.residence;
   scene.fog.far=Math.max(scene.fog.far,1000);
   const skip=[cityGroup.children[0],cityGroup.children[1]];const wd=cityGroup.getObjectByName('level29-world-detail');if(wd&&wd.userData.wheel)skip.push(wd.userData.wheel);
   for(const o of cityGroup.children)if(o.name==='level29-mountains')skip.push(o);
-<<<<<<< HEAD
   for(const v of city.venues||[])if(v.roof){v.roof.userData.noBatch=true;skip.push(v.roof);}
-=======
->>>>>>> main
   for(const v of city.venues||[])for(const o of [v.door,v.worker,...(v.brushes||[])])if(o)skip.push(o);
   const t0=performance.now();const out=batchStatic(cityGroup,skip);city.batchInfo={ms:Math.round(performance.now()-t0),meshes:out.userData.count};
 };
@@ -631,7 +583,6 @@ function nearWaterSpot(){
 function startFishing(){
   if(!city||!city.world||state!=='play'||fish)return;
   const spot=nearWaterSpot();if(!spot){toast('GO TO THE PIER, BEACH OR A BOAT TO FISH');return;}
-<<<<<<< HEAD
   fish={phase:'cast',t:60+Math.random()*130,x:spot.x,y:spot.y,needle:0,dir:1,hold:0,boat:!!(player.car&&player.car.boat),originX:player.x,originY:player.y,progress:0,tension:.25};sfx('door');toast('LINE CAST · WAIT FOR A BITE');
   if(!fishingBar){fishingBar=document.createElement('div');fishingBar.id='fishPanel';document.body.appendChild(fishingBar);}fishingBar.style.display='block';fishingBar.textContent='Waiting for a bite...';
 }
@@ -697,32 +648,6 @@ function fishTick(){
     fish.t--;fish.reelCooldown=Math.max(0,(fish.reelCooldown||0)-1);fish.tension=Math.max(.08,fish.tension-.004);
     if(fish.t<=0){stopFishing('THE FISH SHOOK THE HOOK');return;}if(frame%6===0)fishingUI();
   }
-=======
-  fish={phase:'cast',t:60+Math.random()*130,x:spot.x,y:spot.y,needle:0,dir:1,hold:0};sfx('door');toast('LINE CAST · WAIT FOR A BITE');
-  if(!fishingBar){fishingBar=document.createElement('div');fishingBar.id='fishPanel';document.body.appendChild(fishingBar);}fishingBar.style.display='block';fishingBar.textContent='Waiting for a bite...';
-}
-function stopFishing(msg){fish=null;if(fishingBar)fishingBar.style.display='none';if(msg)toast(msg);}
-function reel(){
-  if(!fish)return startFishing();
-  if(fish.phase==='cast'){stopFishing('YOU REELED IN TOO SOON');return;}
-  if(fish.phase!=='bite')return;
-  const width=save.owned.rod?.34:.24,center=.5,ok=Math.abs(fish.needle-center)<width/2;
-  if(!ok){stopFishing('THE FISH GOT AWAY');return;}
-  let r=Math.random(),pick=fishTable[0];if(save.owned.treasure)r*=.85;for(const f of fishTable){if(r<f[2]){pick=f;break;}r-=f[2];}
-  if(!pick||r>1)pick=fishTable[1];
-  const gain=Math.round(pick[1]*(.85+Math.random()*.4)*(save.owned.rod?1.25:1));cash+=gain;save.fishCaught++;sfx('cash');
-  stopFishing(pick[0].toUpperCase()+' CAUGHT · +$'+gain);
-  if(Math.random()<(save.owned.treasure?.18:.07)){const stash=300+Math.floor(Math.random()*1800);setTimeout(()=>{if(!player.dead){cash+=stash;sfx('cash');toast('HIDDEN WATERPROOF BAG · +$'+stash);}},900);}
-  persist();
-}
-function fishTick(){
-  if(!fish)return;
-  if(!nearWaterSpot()||state!=='play'||player.dead){stopFishing('FISHING CANCELLED');return;}
-  if(fish.phase==='cast'){fish.t--;if(fish.t<=0){fish.phase='bite';fish.t=95;fish.needle=0;fish.dir=1;sfx('hit');fishingBar.innerHTML='Bite. Press I when the marker is in the gold zone.<div class="track"><div class="sweet"></div><div class="needle" style="left:0%"></div></div>';}}
-  else if(fish.phase==='bite'){fish.t--;fish.needle+=fish.dir*(.021+up.cool*.0005);if(fish.needle>1){fish.needle=1;fish.dir=-1;}if(fish.needle<0){fish.needle=0;fish.dir=1;}
-    const n=fishingBar.querySelector('.needle');if(n)n.style.left=(fish.needle*100)+'%';if(save.owned.rod){const s=fishingBar.querySelector('.sweet');if(s){s.style.left='33%';s.style.width='34%';}}
-    if(fish.t<=0)stopFishing('THE FISH GOT AWAY');}
->>>>>>> main
 }
 function cacheTick(){
   if(!city.caches)return;
@@ -732,7 +657,6 @@ function cacheTick(){
     if(dist(ox,oy,k.x,k.y)<34){save.caches.push(k.id);cash+=k.amt;if(k.mesh){k.mesh.visible=false;}sfx('cash');toast('HIDDEN CASH FOUND · +$'+k.amt);banner={big:'HIDDEN MONEY',small:'+ $'+k.amt+' IN A BURIED CASH CACHE',t:180,good:true};persist();}
   }
 }
-<<<<<<< HEAD
 let wakeGroup=null,wakeCity=null,wakeCursor=0;
 function boatWakeTick(){
   if(!scene)return;
@@ -757,26 +681,15 @@ function boatWakeTick(){
     }
   }
 }
-=======
->>>>>>> main
 function updateWorld(){
   if(!city||!city.world||state==='menu'||!player)return;
   if(panel.style.display!=='none'&&state!=='shop')closeStore();
   if(frame%6===0&&city.residence){const l=city.residence.lobby;nearResidence=interior==='apartment'?'apartment':dist(player.x,player.y,l.x,l.y)<150?'lobby':dist(player.x,player.y,city.residence.garage.x,city.residence.garage.y)<150?'garage':null;}
-<<<<<<< HEAD
   if(state!=='play'){if(fish)stopFishing();return;}
   warmAssets();zombieDoors();fishTick();cacheTick();boatWakeTick();
   // The tower's elevator only works inside the lobby; high-floor camera uses terrainHeight.
   if(!resident)resident=city.residence;
   if(interior==='apartment'&&resident){const b=resident.b;player.x=clamp(player.x,b.x+8,b.x+b.w-8);player.y=clamp(player.y,b.y+8,b.y+b.h-8);}
-=======
-  if(state!=='play')return;
-  warmAssets();zombieDoors();fishTick();cacheTick();
-  // The tower's elevator only works inside the lobby; high-floor camera uses terrainHeight.
-  if(!resident)resident=city.residence;
-  if(interior==='apartment'&&resident){const b=resident.b;player.x=clamp(player.x,b.x+8,b.x+b.w-8);player.y=clamp(player.y,b.y+8,b.y+b.h-8);}
-  if(player.car&&player.car.boat&&frame%5===0&&Math.abs(player.car.v)>1.2){const c=player.car;parts.push({k:'smoke',x:c.x-Math.cos(c.a)*c.spec.len*.45,y:c.y-Math.sin(c.a)*c.spec.len*.45,vx:rnd(-.2,.2),vy:rnd(-.3,.2),t:22});}
->>>>>>> main
 }
 let nearResidence=null,warmed=false;
 const prevBlips=extraBlips;

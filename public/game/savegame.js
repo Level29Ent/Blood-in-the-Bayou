@@ -60,11 +60,7 @@ cont.onclick=()=>{const s=read();if(!s){return old&&old();}
 startBtn.addEventListener('click',e=>{if(!read())return;if(Date.now()-armed<4500){return;}e.preventDefault();e.stopImmediatePropagation();armed=Date.now();startBtn.dataset.label=startBtn.textContent;startBtn.textContent='ERASES SAVE · CLICK AGAIN';setTimeout(()=>{if(startBtn.dataset.label&&Date.now()-armed>=4400){startBtn.textContent=startBtn.dataset.label;}},4600);},true);
 
 // Save code: move progress to another browser or device.
-<<<<<<< HEAD
 const KEYS=['level29.campaign.v2','level29.places.v1','level29.venues.v1','level29.openworld.v1','level29.guard.v1','level29.jobs.v1','level29.shelter-search.v1','level29.trading.v1'];
-=======
-const KEYS=['level29.campaign.v2','level29.places.v1','level29.venues.v1','level29.openworld.v1','level29.guard.v1','level29.jobs.v1'];
->>>>>>> main
 const box=document.createElement('div');box.style.cssText='position:fixed;inset:0;z-index:99;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.78)';
 box.innerHTML='<div style="width:min(520px,92vw);background:#16171b;border:1px solid #ecc35c;padding:18px;font:12px/1.5 monospace;color:#eee"><div id="sioT" style="color:#ecc35c;font-weight:700;letter-spacing:.1em;margin-bottom:8px"></div><textarea id="sioA" style="width:100%;height:120px;background:#0c0d0f;color:#ecc35c;border:1px solid #444;font:11px monospace;box-sizing:border-box"></textarea><div id="sioM" style="min-height:18px;margin:6px 0;color:#9bd"></div><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="sioGo" style="background:#ecc35c;color:#101114;border:0;height:34px;padding:0 14px;font:700 12px monospace;cursor:pointer"></button><button id="sioX" style="background:transparent;color:#ecc35c;border:1px solid #ecc35c;height:34px;padding:0 14px;font:700 12px monospace;cursor:pointer">CLOSE</button></div></div>';
 document.body.appendChild(box);
