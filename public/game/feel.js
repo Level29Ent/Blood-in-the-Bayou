@@ -4,7 +4,7 @@
 (() => {
   const now = () => performance.now();
   const rand = (a, b) => a + Math.random() * (b - a);
-  const lowGfx = () => (localStorage.getItem('l29_gfx_quality') || '') === 'low';
+  const lowGfx = () => (window.level29Graphics?.quality || localStorage.getItem('level29.graphics.stage1') || 'low') === 'low';
   const touch = matchMedia('(pointer: coarse)').matches;
 
   // ================= WEAPON KICK =================
