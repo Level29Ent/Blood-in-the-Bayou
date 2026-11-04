@@ -582,7 +582,7 @@ function applyLightMode(){
 // ---------- Sync dynamic objects ----------
 const _c = new THREE.Color();
 function syncDynamic(){
-  const p = player, camP = camera.position, far = isNight() ? 470 : 600;
+  const p = player, camP = camera.position, far = window.level29Downtown?.ride?1200:isNight()?470:600;
   syncCars();
   // zombies
   zPool.begin();

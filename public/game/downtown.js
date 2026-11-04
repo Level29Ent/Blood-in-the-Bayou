@@ -308,6 +308,7 @@ try{const prevHurt=hurtPlayer;hurtPlayer=function(){if(ride||(player&&dockSafe(p
 
 // ---------------------------------------------------------------- bomber gunner ride
 let ride=null,fireHeld=false,tracers=[];
+let lastBomberRoute=-1;
 function startBomber(missionFlight=false){
   if(mpRole)return toast('BOMBER RIDE IS AVAILABLE IN SOLO PLAY');if(ride)return;if(!lots.airport)return toast('NO AIRPORT ON THIS MAP');if(player.car)return toast('STEP OUT OF YOUR VEHICLE FIRST');
   if(!missionFlight&&cash<BOMBER_COST)return toast('THE BOMBER RIDE COSTS '+money(BOMBER_COST));
@@ -318,7 +319,7 @@ function startBomber(missionFlight=false){
   ride.radius=level29Gunnery.ORBIT_RADIUS;const center=level29Gunnery.orbitCenter(ride.cx,ride.cy,MW*T,MH*T,ride.radius);ride.cx=center.x;ride.cy=center.y;
   ride.remainingMs=(missionFlight?60:level29Gunnery.DURATION_SECONDS)*1000;ride.t=Math.ceil(ride.remainingMs*.06);ride.lastUpdate=performance.now();
   ride.altitude=level29AircraftFlight.altitude(city,ride.cx,ride.cy,ride.radius);
-  ride.mesh.position.set(ride.cx+ride.radius,ride.altitude,ride.cy);
+  ride.routeIndex=level29BomberRoutes.choose(lastBomberRoute);lastBomberRoute=ride.routeIndex;ride.route=level29BomberRoutes.plan(ride.routeIndex,MW*T,MH*T);ride.routePhase=Math.random();ride.elapsedMs=0;const first=level29BomberRoutes.sample(ride.route,ride.routePhase);ride.a=first.heading-Math.PI/2;ride.altitude=level29BomberRoutes.clearance(city,first.x,first.y);ride.mesh.position.set(first.x,ride.altitude,first.y);
   toast('GUNNER SEAT · HOLD FIRE ON THE .50 CAL');
 }
 function updateRide(){
@@ -327,8 +328,8 @@ function updateRide(){
   const now=performance.now(),elapsed=Math.max(0,now-ride.lastUpdate);ride.lastUpdate=now;
   if(state!=='play')return;
   ride.remainingMs=Math.max(0,ride.remainingMs-elapsed);ride.t=Math.ceil(ride.remainingMs*.06);
-  const R=ride.radius;ride.a+=elapsed*.000318;
-  const px=ride.cx+Math.cos(ride.a)*R,py=ride.cy+Math.sin(ride.a)*R;
+  ride.elapsedMs+=elapsed;const pos=level29BomberRoutes.sample(ride.route,ride.routePhase+ride.elapsedMs/110000),ahead=level29BomberRoutes.sample(ride.route,ride.routePhase+(ride.elapsedMs+3000)/110000);ride.a=pos.heading-Math.PI/2;
+  const px=pos.x,py=pos.y;const desired=Math.max(level29BomberRoutes.clearance(city,px,py),level29BomberRoutes.clearance(city,ahead.x,ahead.y));ride.altitude=desired>ride.altitude?desired:Math.max(desired,ride.altitude-elapsed*.025);
   player.x=px;player.y=py;if('vx' in player){player.vx=0;player.vy=0;}
   ride.mesh.position.set(px,ride.altitude,py);ride.mesh.rotation.set(0,-(ride.a+Math.PI/2),0);ride.mesh.rotateX(.35);
   if(frame%18===0&&zombiesNear(px,py,520)<16){const a=Math.random()*6.28,r=rnd(120,420);spawnZombieAt(px+Math.cos(a)*r,py+Math.sin(a)*r);}
@@ -343,7 +344,7 @@ function fireBomber(){
   const visible=o=>{for(let p=o;p;p=p.parent)if(!p.visible)return false;return true;};
   // Only rendered, alive zombies can be hit. Do not award kills for offscreen,
   // culled or hidden NPCs; exact mesh intersections must lie on the center ray.
-  const cull=isNight()?470:600,fog=scene.fog?.far||level29Gunnery.MAX_RANGE;
+  const cull=1200,fog=scene.fog?.far||level29Gunnery.MAX_RANGE;
   for(const z of zombies){const m=zPool?.map.get(z);if(!z.alive||!m||!m.parent||!visible(m)||d2(z.x,z.y,player.x,player.y)>cull)continue;
     m.updateWorldMatrix(true,true);const hit=ray.intersectObject(m,true).find(h=>visible(h.object));
     if(hit&&hit.distance<fog*.9)candidates.push({target:z,visible:true,alive:true,distance:hit.distance});
@@ -633,7 +634,7 @@ drawHUD=function(){const r=prevHUD.apply(this,arguments);try{
   cx.save();cx.textAlign='center';cx.textBaseline='middle';
   if(curSpot&&!coarse()){const t='E · '+curSpot.label;cx.font="800 18px 'Barlow Condensed'";const w=cx.measureText(t).width+28;cx.fillStyle='rgba(20,10,34,.85)';cx.fillRect(SW/2-w/2,SH-128,w,34);cx.strokeStyle=COL.gold;cx.strokeRect(SW/2-w/2,SH-128,w,34);cx.fillStyle='#fff';cx.fillText(t,SW/2,SH-111);}
   if(ride){cx.fillStyle='rgba(120,10,20,.12)';cx.fillRect(0,0,SW,SH);cx.strokeStyle='#ffd36b';cx.lineWidth=2;cx.beginPath();cx.arc(SW/2,SH/2,34,0,6.283);cx.moveTo(SW/2-50,SH/2);cx.lineTo(SW/2+50,SH/2);cx.moveTo(SW/2,SH/2-50);cx.lineTo(SW/2,SH/2+50);cx.stroke();
-    cx.font="800 26px 'Barlow Condensed'";cx.fillStyle='#ffd36b';cx.fillText('B-29 GUNNER · '+(ride.t/60).toFixed(1)+'s · KILLS '+ride.kills,SW/2,70);}
+    cx.font="800 26px 'Barlow Condensed'";cx.fillStyle='#ffd36b';cx.fillText('B-29 · '+level29BomberRoutes.NAMES[ride.routeIndex]+' · '+(ride.t/60).toFixed(1)+'s · KILLS '+ride.kills,SW/2,70);}
   if(run&&course){cx.font="800 24px 'Barlow Condensed'";cx.fillStyle=COL.gold;const p=course.pts[run.i];cx.fillText('COURSE '+((frame-run.t0)/60).toFixed(1)+'s · '+(p.name||'')+(p.hold?' · HOLD '+Math.round((run.hold||0)/p.hold*100)+'%':'')+' ('+run.i+'/'+(course.pts.length-1)+')',SW/2,70);}
   cx.restore();}catch(_){}return r;};
 const prevFullMap=drawFullMap;
