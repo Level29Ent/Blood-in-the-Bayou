@@ -727,6 +727,7 @@ function render(){
   renderer.clearDepth(); renderer.render(vmScene, vmCam);
   if (view.hit > 0) view.hit--;
   cx.setTransform(DPR, 0, 0, DPR, 0, 0); cx.clearRect(0, 0, SW, SH);
+  if(state==='play'&&player&&!player.dead&&!player.car&&zombies.some(z=>z.alive&&z.windup!==undefined)){cx.save();cx.strokeStyle='#efbe62';cx.lineWidth=3;cx.strokeRect(SW/2-20,SH/2-20,40,40);cx.restore();}
   if (state!=='menu' && player) drawHUD();
 }
 

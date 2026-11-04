@@ -1025,7 +1025,7 @@ function update(){
     if (z.atkCd > 0) z.atkCd--;
     if (tgt && dist(z.x, z.y, tgt.x, tgt.y) < z.r + 12 && z.atkCd <= 0){ tgt.hp -= z.type==='brute' ? 20 : 8; z.atkCd = 50; snd('hurt'); decal(tgt.x, tgt.y, 'blood', .5); }
     if (rem && !rem.car && !rem.safe && dBest < z.r + 14 && z.atkCd <= 0 && typeof mpHurtRemote === 'function'){ mpHurtRemote(rem, z.type==='brute' ? 13 : z.type==='runner' ? 5 : 6, z.x, z.y); z.atkCd = 60; }
-    if (!p.dead && !p.car && !localSafe && dLocal < z.r + p.r + 4 && z.atkCd <= 0){ hurtPlayer(z.type==='brute' ? 13 : z.type==='runner' ? 5 : 6, z.x, z.y); z.atkCd = 60; }
+    if (!p.dead && !p.car && !localSafe && dLocal < z.r + p.r + 4 && z.atkCd <= 0){if(z.windup===undefined)z.windup=18;if(--z.windup<=0){hurtPlayer(z.type==='brute' ? 13 : z.type==='runner' ? 5 : 6, z.x, z.y);z.atkCd=60;z.windup=undefined;}}else z.windup=undefined;
     // vs cars
     for (const c of cars){
       if (c.dead || (c.z || 0) > 8 || c===p.car&&localSafe) continue;
