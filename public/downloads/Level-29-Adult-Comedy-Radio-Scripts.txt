@@ -1,0 +1,229 @@
+LEVEL 29 ENT. — BAYOU AFTER DARK
+ADULT-COMEDY RADIO RECORDING PACK
+Blood in the Bayou / Ronniebaby Radio
+Version 1 • Original fictional copy • Mature language
+
+RECORDING NOTES
+Use original announcer voices—not celebrity impressions. Read with relaxed,
+confident comic timing. Record each filename separately. Leave one second of
+silence at both ends; deliver clean WAV masters plus MP3 copies. No copyrighted
+music is supplied. Timing estimates depend on delivery. These are scripts,
+not recorded audio; they are not connected to radio rotation yet.
+
+Mix recipe: music track → short station ID → music track → one commercial →
+DJ bumper → music track. Do not stack all commercials back-to-back. Keep speech
+clear over a quiet, licensed/original bed. Pause radio speech for mission dialogue.
+No real prices, websites, endorsements or checkout destinations are implied.
+Everything advertised below is an in-game fictional service or studio promo.
+
+====================================================================
+STATION IDS — 5–10 SECONDS EACH
+====================================================================
+
+01 • l29_station_id_01.wav
+ANNOUNCER: “Level 29 Radio. Ronniebaby on the speakers, bad decisions in the
+rearview. Turn it up. Keep your ass on the road.”
+SFX: Original two-note station sting.
+
+02 • l29_station_id_02.wav
+ANNOUNCER: “Blood in the Bayou. The dead are walking, the traffic’s terrible,
+and somehow your rent is still due. This is Level 29.”
+
+03 • l29_station_id_03.wav
+ANNOUNCER: “From the strip to the swamp: Ronniebaby Radio. More bass, less
+bullshit. Except the commercials. Those are professionally seasoned bullshit.”
+
+04 • l29_station_id_04.wav
+ANNOUNCER: “Level 29 Ent. presents Bayou After Dark. The only station whose
+listeners occasionally eat the DJ. Stay tuned. Stay alive.”
+
+05 • l29_station_id_05.wav
+ANNOUNCER: “Your slab is clean. Your record ain’t. Your soundtrack is Level 29.”
+SFX: Short hydraulic hiss, then station sting.
+
+06 • l29_station_id_06.wav
+ANNOUNCER: “Ronniebaby Radio. If your mirror shows a zombie, that’s traffic.
+If it shows your ex, take the next damn exit.”
+
+====================================================================
+FICTIONAL COMMERCIALS — APPROXIMATELY 20–30 SECONDS
+====================================================================
+
+07 • l29_ad_greenmart.wav
+VOICE A, painfully cheerful: “Welcome to Greenmart! Two floors of groceries,
+home goods, and people abandoning carts like they’re fleeing a damn crime scene.”
+VOICE B: “Are those bananas organic?”
+VOICE A: “Ma’am, there’s a zombie in frozen foods. We’re focusing on edible.”
+ANNOUNCER: “Greenmart. Come for the groceries. Stay because you forgot where
+you parked. Use the lift. The cart is not a staircase vehicle.”
+SFX: Checkout beep; distant cart wheel squeak.
+
+08 • l29_ad_29_cuisine.wav
+ANNOUNCER: “You’ve been running, shooting, and surviving on questionable swamp
+fruit. Treat your stomach like somebody you actually give a damn about.”
+COOK: “29 Cuisine! Hot food. Fresh attitude. Napkins that work harder than
+your last business partner.”
+ANNOUNCER: “Find us at the mall. Grab a meal, regain your strength, and stop
+calling one chicken tender a balanced lifestyle.”
+SFX: Fryer sizzle; paper bag fold.
+
+09 • l29_ad_slab_customs.wav
+CUSTOMER: “My car needs to make a statement.”
+MECHANIC: “Right now it says ‘check engine.’ Let’s start there.”
+ANNOUNCER: “Level 29 Slab Customs. Paint, rims, underglow, and hydraulics
+that make your ride bounce harder than your last three checks.”
+MECHANIC: “Park it before you show off. We fix cars, not the laws of physics.”
+ANNOUNCER: “Make an entrance. Preferably through the driveway.”
+SFX: Hydraulic hiss; tasteful low bass hit.
+
+10 • l29_ad_boomcity.wav
+ANNOUNCER, mock glamorous: “BoomCity Casino! Bright lights, cold drinks,
+and a carpet loud enough to testify against you.”
+PATRON: “I’ve got a system.”
+DEALER: “So does the machine, baby.”
+ANNOUNCER: “Play the in-game slots with fictional game cash. No real-money
+wagering or cash-out. Set a limit. When the fun stops, walk your grown ass
+outside. The zombies are giving away cardio.”
+SFX: Three reel clicks; restrained coin chime.
+
+11 • l29_ad_tire_shop.wav
+CUSTOMER: “Can you patch this?”
+MECHANIC: “Sir, that tire is a bracelet.”
+ANNOUNCER: “Bayou Tire Shop. For potholes, bad landings, and drivers who think
+concrete barriers are a suggestion.”
+MECHANIC: “Bring your vehicle. Bring some game cash. Leave the ‘my cousin can
+do it cheaper’ speech at home.”
+ANNOUNCER: “We put you back on the road. We cannot put common sense in the
+passenger seat.”
+SFX: Air wrench; tire bounce.
+
+12 • l29_ad_aquarium.wav
+ANNOUNCER, soothing: “Need a little peace? Visit the mall aquarium store.
+Koi, goldfish, angelfish, freshwater shrimp, and snails.”
+CUSTOMER: “That snail looks stressed.”
+CLERK: “He heard your driving.”
+ANNOUNCER: “Watch beautiful fish glide through glowing tanks while you pretend
+you’ve got your shit together. Please don’t tap the glass. The fish have enough
+going on without your fingerprints.”
+SFX: Soft water bubbles.
+
+13 • l29_ad_plant_shop.wav
+ANNOUNCER: “The city is chaos. Your apartment doesn’t have to look like the
+back room of that chaos. Visit the mall plant store.”
+CLERK: “How much sunlight does your place get?”
+CUSTOMER: “I open the fridge a lot.”
+CLERK: “Let’s start with something forgiving.”
+ANNOUNCER: “Add a little green to your crib. Water the plant, not the damn
+outlet. That advice is complimentary.”
+SFX: Watering can trickle.
+
+14 • l29_ad_library.wav
+LIBRARIAN, whisper: “Welcome to the public library. Knowledge is power.”
+VISITOR, whisper: “Got anything on surviving the apocalypse?”
+LIBRARIAN: “Second shelf. Next to ‘Using Your Turn Signal.’ Both are apparently
+fantasy to this town.”
+ANNOUNCER, whisper: “Visit your city library. Books, quiet, and a chance to
+finish one thing without unloading a magazine.”
+LIBRARIAN: “And stop returning books with bite marks. We know it’s you.”
+
+15 • l29_ad_carwash.wav
+ANNOUNCER: “Your slab came out of the bayou looking like a chocolate cake
+with outstanding warrants. Time for a wash.”
+ATTENDANT: “Windows up. Antenna down. Ego in neutral.”
+ANNOUNCER: “Level 29 Car Wash. We remove mud, grime, and the evidence that
+you parked under a very angry bird.”
+ATTENDANT: “We do not remove heartbreak. But the paint will look fantastic.”
+PRODUCTION NOTE: Use only after the functional car wash is released. Do not
+advertise an unavailable service as working gameplay.
+
+16 • l29_ad_green_town.wav
+ANNOUNCER: “Greentown Mall. Multiple floors. Real stores. A food court, because
+shopping hungry turns grown adults into hostile NPCs.”
+SHOPPER: “I came for shoes.”
+FRIEND: “You bought a couch.”
+SHOPPER: “It matched my mood.”
+ANNOUNCER: “Browse. Eat. Use the escalator like a person. Please do not test
+your SUV’s suspension in the atrium. Security is already having a shit day.”
+SFX: Mall ambience; gentle fountain splash.
+
+17 • l29_film_blood_in_the_bayou.wav
+TRAILER VOICE: “In a city where the dead won’t stay down, one problem remains…”
+HERO: “Who parked across my driveway?”
+TRAILER VOICE: “Blood in the Bayou. Survival. Loyalty. Bad timing. A Level 29
+Ent. production.”
+HERO: “If I survive tonight, I’m putting up a damn fence.”
+ANNOUNCER: “Follow Level 29 Ent. for official updates. No release date or
+streaming destination is announced in this spot.”
+SFX: Original dramatic impact; distant thunder.
+
+18 • l29_film_viral.wav
+TRAILER VOICE: “Everybody wants to go viral.”
+VOICE A: “How many views?”
+VOICE B: “You should be asking how many exits.”
+TRAILER VOICE: “VIRAL. From Level 29 Ent. Some attention costs more than
+it pays.”
+DJ: “Finally, a horror story about checking your damn notifications.”
+ANNOUNCER: “Look for official announcements from Level 29 Ent. Release details
+are not supplied in this script.”
+SFX: Original notification tone stretching into a dark sting.
+
+====================================================================
+DJ BUMPERS / TRAFFIC / WEATHER — 8–18 SECONDS
+====================================================================
+
+19 • l29_dj_back_to_music.wav
+DJ: “Enough advertising. You’ve survived a horde and three fictional sales
+pitches. You deserve some Ronniebaby. Back to the music.”
+
+20 • l29_dj_traffic.wav
+DJ: “Traffic report: somebody stopped in the left lane to admire their rims.
+Beautiful rims. Terrible damn location. Keep right unless you’re passing,
+and quit making the apocalypse wait behind your ass.”
+
+21 • l29_dj_weather.wav
+DJ: “Tonight’s forecast: humid, moody, and full of things that want a piece
+of you. So, basically your last relationship, but with better fog effects.”
+
+22 • l29_dj_police.wav
+DJ: “If you see flashing lights behind you, that is not a complimentary
+light show for your underglow. Ease up. Your insurance agent is already
+crying into a calculator.”
+
+23 • l29_dj_fishing.wav
+DJ: “Shout-out to everybody fishing off the steamboat. Catfish, gar, koi…
+you’re out there finding inner peace while the rest of us are finding new
+ways to say ‘what the hell was that?’”
+
+24 • l29_dj_safehouse.wav
+DJ: “Check your stash. Lock your safe. Put your feet up. If you brought home
+a zombie, that’s not a roommate—that’s a lease violation with teeth.”
+
+25 • l29_dj_hydraulics.wav
+DJ: “To the slab hopping at the light: we see you. The whole block sees you.
+The groceries in your trunk have become a smoothie. Looking clean, though.”
+
+26 • l29_dj_midnight.wav
+DJ: “It’s Bayou After Dark on Level 29 Radio. Stay sharp, tip your imaginary
+bartender, and remember: being the main character does not make your car
+bulletproof. Here comes another Ronniebaby track.”
+
+====================================================================
+GANG WARNING VOICE PACK — SHORT, ORIGINAL CHARACTER READS
+These replace browser speech synthesis only after recorded files are wired in.
+No slurs. No celebrity imitation. Keep each threat fictional and in character.
+====================================================================
+
+27 • gang_warning_01.wav
+PATROL: “Wrong block, friend. Turn around before your ride becomes a damn
+insurance claim.”
+
+28 • gang_warning_02.wav
+PATROL: “That shiny car does not buy you a pass. Keep rolling.”
+
+29 • gang_warning_03.wav
+PATROL: “You lost? This is not the scenic route. Take the next street.”
+
+30 • gang_driveby_retreat.wav
+PASSENGER: “Driver, move! This block ain’t paying enough for this bullshit!”
+
+END OF PACK

@@ -1,0 +1,16 @@
+{
+  "name": "blood-in-the-bayou-ios",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "sync": "node ../../scripts/package-ios.cjs && cap sync ios"
+  },
+  "dependencies": {
+    "@capacitor-community/admob": "8.2.0",
+    "@capacitor/core": "8.5.3",
+    "@capacitor/ios": "8.5.3"
+  },
+  "devDependencies": {
+    "@capacitor/cli": "8.5.3"
+  }
+}

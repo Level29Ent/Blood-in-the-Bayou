@@ -1,5 +1,11 @@
+packages:
+  - native/ios-app
+
 pmOnFail: ignore
 
 minimumReleaseAgeExclude:
   - '@next/*'
   - next
+
+allowBuilds:
+  esbuild: true

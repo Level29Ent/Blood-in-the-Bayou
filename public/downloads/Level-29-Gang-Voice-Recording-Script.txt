@@ -1,0 +1,44 @@
+LEVEL 29 — GANG WARNING RECORDING SCRIPT
+Blood in the Bayou
+
+Delivery: Adult fictional gang characters. Firm, confrontational street warnings;
+project clearly without clipping the microphone. No celebrity imitation.
+Record each line separately. Leave one second of silence before and after each
+line. Supply clean WAV masters, ideally mono 48 kHz, plus MP3 listening copies.
+Do not add music, reverb or gunshots; those can be mixed in the game separately.
+
+CURRENT WARNING LINES
+These three lines match the in-game warning captions. Synthesized gang speech
+is disabled by the accompanying code change. Recordings still need integration.
+
+01 — gang_warning_01.wav
+“This is our block! Get the hell out. You have been warned!”
+
+02 — gang_warning_02.wav
+“Back your ass up! Keep moving before this turns ugly!”
+
+03 — gang_warning_03.wav
+“Wrong damn street! Turn around. We are not asking twice!”
+
+OPTIONAL ADDITIONAL TAKES
+These lines are proposed additions, not current in-game triggers.
+
+04 — gang_driveby_warning.wav
+“Keep your head down and get off our block!”
+
+05 — gang_driveby_retreat.wav
+“Driver, move! This block ain't paying enough for this bullshit!”
+
+06 — gang_player_leaving.wav
+“That's right. Keep walking. Don't bring that trouble back here!”
+
+07 — gang_patrol_alert.wav
+“Heads up! Somebody's bringing trouble down the street!”
+
+08 — gang_hold_fire.wav
+“Hold up! Let 'em leave. Save the ammo!”
+
+IMPLEMENTATION NOTE
+Downloading or recording this script does not install the clips in the game.
+Keep the three current warnings clearly labeled; send the finished audio for
+proximity-limited playback with pause, mute and leave-area cancellation.

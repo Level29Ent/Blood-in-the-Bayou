@@ -1,0 +1,255 @@
+SGT. POWELL — EXPANDED MISSIONS & VOICE RECORDING SCRIPT
+Blood in the Bayou · Level 29 Military Base
+
+STATUS
+This is a proposed mission roster and recording script, not confirmation that these missions or recordings are implemented in the game.
+
+VOICE DIRECTION
+Firm, composed and encouraging. Speak clearly rather than shouting every line.
+Record each named line as a separate audio file. Leave a short silence before and after each take.
+
+MISSION RULES FOR IMPLEMENTATION
+- Show a waypoint for every destination, resource, boss, survivor and return point.
+- Unlock missions in order; allow a failed mission to be retried.
+- Award fictional in-game cash only, once per completed run.
+- Airborne mission flights last 60 seconds. The regular paid ride remains 29 seconds.
+- Airborne shots require actual aimed hits on visible targets; no proximity kills.
+- Mission availability, targets, rewards and timers below are proposed design values.
+
+GENERAL DIALOGUE
+
+powell_greet.mp3
+“I’m Sergeant Powell. Welcome to Level 29 Military Base. We’ve got people to bring home and a city that still needs defending.”
+
+powell_mission_board.mp3
+“Check the assignment board. Pick your operation, review the objective, and follow your markers. Report back to me when it’s done.”
+
+powell_accept.mp3
+“Assignment confirmed. Check your gear, watch your surroundings, and bring your people back.”
+
+powell_waypoint.mp3
+“Your next objective is marked. Follow the waypoint and keep moving.”
+
+powell_return.mp3
+“Objective complete. Return to the base and report to me.”
+
+powell_success.mp3
+“Good work. Your report checks out. Payment approved. Get some rest before the next operation.”
+
+powell_failed.mp3
+“The operation didn’t go our way. Regroup at the base. We’ll review the objective and try again.”
+
+powell_locked.mp3
+“Finish your current assignment first. One operation at a time.”
+
+powell_goodbye.mp3
+“Stay sharp out there. Sergeant Powell, out.”
+
+01 — FOUR SHADOWS
+Type: Search and destroy
+Objectives: Find and defeat four marked boss zombies at separate locations. Return to Powell.
+Proposed reward: $12,000 game cash.
+
+powell_four_shadows_brief.mp3
+“Four boss infected are holding separate positions around the city. Locate each marked target, clear all four, then report back to me.”
+
+powell_boss_down.mp3
+“Target confirmed down. Check your map for the next position.”
+
+powell_four_shadows_complete.mp3
+“All four targets confirmed. That gives our people room to move. Return to base.”
+
+02 — BRING THEM HOME
+Type: Search and rescue
+Objectives: Locate three different stranded NPCs, one at a time, and escort each to the marked safe zone.
+Proposed reward: $9,000 game cash.
+
+powell_bring_home_brief.mp3
+“We have three people stranded at separate locations. Find them, get them moving, and escort each one to the marked safe zone. Nobody gets left behind.”
+
+powell_survivor_found.mp3
+“You found them. Stay close and guide them toward the safe-zone marker.”
+
+powell_survivor_safe.mp3
+“Survivor accounted for. Your next rescue location is marked.”
+
+03 — EYES IN THE SKY
+Type: Airborne assault
+Objectives: Reach the airport terminal, board the mission bomber, and eliminate 12 visible zombies during a 60-second flight. Return to Powell.
+Proposed reward: $10,000 game cash.
+
+powell_sky_brief.mp3
+“Get to the airport and take the gunner seat. You’ll have one minute in the air. Confirm your targets through the sights—every hit needs to be earned.”
+
+powell_sky_board.mp3
+“That’s your aircraft. Board at the marked position and prepare for takeoff.”
+
+powell_sky_start.mp3
+“Your one-minute flight starts now. Aim at visible infected and keep your shots on target.”
+
+powell_sky_thirty.mp3
+“Thirty seconds remaining. Check your target count.”
+
+powell_sky_ten.mp3
+“Ten seconds. Make the remaining shots count.”
+
+powell_sky_complete.mp3
+“Airborne objective confirmed. Finish the flight, then report back to base.”
+
+04 — MEDICAL LIFELINE
+Type: Resource recovery
+Objectives: Collect three marked medical cases from a clinic, hospital dispatch and an abandoned ambulance. Deliver them to base medical.
+Proposed reward: $6,500 game cash.
+
+powell_medical_brief.mp3
+“Base medical is running low. Recover the three marked supply cases and deliver them to our medical station. Keep those cases intact.”
+
+powell_resource_collected.mp3
+“Supplies secured. The next pickup is marked.”
+
+05 — BROKEN SIGNAL
+Type: Communications repair
+Objectives: Recover a battery and radio module, then use them at three marked relay stations. Return to Powell.
+Proposed reward: $7,500 game cash.
+
+powell_signal_brief.mp3
+“Our relay network is down. Recover the marked battery and radio module, then bring the three relay stations back online.”
+
+powell_relay_online.mp3
+“That relay is transmitting. Move to the next marked station.”
+
+06 — LAST TRUCK OUT
+Type: Vehicle recovery
+Objectives: Locate the exact marked military supply truck, repair it at the indicated service point if needed, and return it to base with at least 25 percent vehicle health.
+Proposed reward: $8,000 game cash.
+
+powell_truck_brief.mp3
+“One of our supply trucks is stranded in the city. Recover that marked vehicle and bring it back running. A replacement truck won’t complete this assignment.”
+
+powell_truck_warning.mp3
+“That truck is taking damage. Get it repaired before you lose the supplies.”
+
+07 — HOLD THE GATE
+Type: Base defense
+Objectives: Reach the defensive checkpoint and hold it against three waves of infected. Remain within the marked defense zone.
+Proposed reward: $8,500 game cash.
+
+powell_gate_brief.mp3
+“Infected are closing on the checkpoint. Get to the marked position and hold through three waves. Keep the gate secure.”
+
+powell_gate_wave.mp3
+“More infected approaching. Hold your position.”
+
+powell_gate_return.mp3
+“You’re leaving the defense zone. Get back to the checkpoint.”
+
+08 — MISSING PATROL
+Type: Search, rescue and escort
+Objectives: Find two missing patrol members at separate search points, escort them to a marked extraction vehicle, and return to Powell.
+Proposed reward: $9,500 game cash.
+
+powell_patrol_brief.mp3
+“Two members of our patrol missed their check-in. Search the marked locations, find them, and escort them to extraction.”
+
+powell_patrol_extract.mp3
+“Patrol member secured at extraction. Check for any remaining search markers.”
+
+09 — BLACK BOX
+Type: Search and recovery
+Objectives: Search three marked wreck sites, recover the flight recorder from the correct wreck, and deliver it to Powell. No shooting the recorder is required.
+Proposed reward: $7,000 game cash.
+
+powell_black_box_brief.mp3
+“We need the recorder from a downed aircraft. Search the three marked wreck sites, recover the black box, and bring it directly to me.”
+
+powell_black_box_found.mp3
+“That’s the recorder. Search complete. Return to base.”
+
+10 — SAFE PASSAGE
+Type: Route clearance
+Objectives: Clear infected from four marked checkpoints along an evacuation route. Confirm each checkpoint before proceeding.
+Proposed reward: $10,500 game cash.
+
+powell_passage_brief.mp3
+“An evacuation route is blocked. Clear the four marked checkpoints and confirm each location before moving on.”
+
+powell_checkpoint_clear.mp3
+“Checkpoint clear. The next section of the route is marked.”
+
+11 — FUEL FOR THE FLEET
+Type: Resource delivery
+Objectives: Collect three marked sealed fuel supplies at service depots and deliver them to the base motor pool.
+Proposed reward: $6,000 game cash.
+
+powell_fuel_brief.mp3
+“Our motor pool needs fuel. Collect the three marked sealed supplies and deliver them to the base depot.”
+
+powell_delivery_complete.mp3
+“Delivery received. Check your objectives for anything still outstanding.”
+
+12 — OVERWATCH RESCUE
+Type: Airborne route protection
+Objectives: Reach the airport, board the mission bomber and clear three marked groups threatening an evacuation route during a 60-second flight. Ground survivors wait at safe checkpoints until their nearby threats are cleared.
+Proposed reward: $14,000 game cash.
+
+powell_overwatch_brief.mp3
+“Evacuation teams need overwatch. Take the gunner aircraft and clear the three marked threat groups. You have one minute in the air. Keep your sights on infected, not the survivors.”
+
+powell_overwatch_group.mp3
+“That threat group is cleared. Move your sights toward the next marker.”
+
+13 — THE HEAVY RESPONSE
+Type: Boss hunt and resource recovery
+Objectives: Defeat two marked armored boss zombies, then retrieve the two supply cases they were guarding. Return both cases to base.
+Proposed reward: $13,000 game cash.
+
+powell_heavy_brief.mp3
+“Two armored infected are guarding stolen supplies. Take down the marked bosses, recover both cases, and bring them home.”
+
+powell_heavy_resource.mp3
+“Boss down doesn’t mean the assignment is finished. Collect the marked supply case.”
+
+14 — NIGHT WATCH
+Type: Patrol and rescue
+Objectives: Visit four marked patrol points. At the final point, locate a stranded civilian and escort them to the station. Designed to work in the current lighting mode; changing the game clock is not required.
+Proposed reward: $8,000 game cash.
+
+powell_night_brief.mp3
+“We need eyes on four patrol points. Follow the route and check every location. There’s also a missing civilian in the final search area.”
+
+15 — LEVEL 29 UNITED
+Type: Multi-stage finale
+Objectives: Recover two medical cases, rescue two NPCs, then defeat one marked boss at the final extraction point. Deliver survivors and supplies before reporting to Powell.
+Proposed reward: $20,000 game cash.
+
+powell_finale_brief.mp3
+“This operation brings it all together. Recover the medical supplies, bring our people to safety, then clear the boss blocking extraction. Follow the objectives in order.”
+
+powell_finale_stage.mp3
+“Stage confirmed complete. Your next objective is marked.”
+
+powell_finale_complete.mp3
+“Supplies delivered. Survivors safe. Extraction clear. You’ve done right by this city. Come back to base—we’re glad to have you on our side.”
+
+OPTIONAL FAILURE / STATUS LINES
+
+powell_survivor_lost.mp3
+“We lost contact with the survivor. Return to the rescue marker and check their position.”
+
+powell_vehicle_lost.mp3
+“The assigned vehicle is destroyed. Regroup at base before restarting the operation.”
+
+powell_wrong_vehicle.mp3
+“That isn’t the assigned vehicle. Follow the truck marker.”
+
+powell_out_of_time.mp3
+“Time is up. Return to base and prepare for another attempt.”
+
+powell_progress_saved.mp3
+“Checkpoint recorded. Continue from your next objective.”
+
+powell_all_complete.mp3
+“You’ve completed every assignment on my board. Outstanding work. This base—and this city—owe you one.”
+
+RECORDING HANDOFF
+Return the recordings using the filenames above. Audio integration must be implemented and tested separately; creating this script does not connect voice files or add playable missions by itself.
