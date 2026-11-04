@@ -16,7 +16,7 @@ const persist=()=>{try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));}catc
 const money=n=>'$'+Math.floor(n).toLocaleString();
 const rnd=(a,b)=>a+Math.random()*(b-a);
 const d2=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
-const isWorld=c=>!!(c&&c.world&&c.width===WORLD_SIZE);
+const isWorld=c=>!!(c&&c.world&&(c.coreWidth||c.width)===WORLD_SIZE);
 const COL={purple:'#5b2a86',gold:'#f2c14e',green:'#2fae66'};
 <<<<<<< HEAD
 const BOMBER_COST=2900,BOMBER_FRAMES=29*60;
@@ -369,9 +369,6 @@ function birdMesh(){
  a.ell(g,3,.35,2.8,-3.6,-.1,0,dark);g.userData.w=wings;return g;
 }
 function hitBird(b){if(!birds.includes(b)||!b.alive)return false;b.alive=false;cash+=29;save.birds++;persist();sfx('cash');toast('BIRD DOWN · +$29 · '+save.birds+' BAGGED');return true;}
-=======
-function birdMesh(){const g=new THREE.Group(),m=lam('#3b2f2a');box(g,7,3,3,0,0,0,m);const l=box(g,2,.6,9,0,0,5,m),r=box(g,2,.6,9,0,0,-5,m);g.userData.w=[l,r];return g;}
->>>>>>> main
 function updateBirds(){
   if(!scene||!player)return;
   while(birds.length<10){const a=Math.random()*6.28,r=rnd(250,650);const b={x:player.x+Math.cos(a)*r,y:player.y+Math.sin(a)*r,h:rnd(42,80),a:Math.random()*6.28,v:rnd(1.6,2.6),alive:true,fall:0,mesh:birdMesh()};scene.add(b.mesh);birds.push(b);}
@@ -383,6 +380,8 @@ function updateBirds(){
 =======
       for(const bl of bullets){if(d2(bl.x,bl.y,b.x,b.y)<20){b.alive=false;bl.life=0;cash+=29;save.birds++;persist();sfx('cash');toast('BIRD DOWN · +$29 · '+save.birds+' BAGGED');break;}}}
 >>>>>>> main
+      // Hits are resolved from the camera ray on an actual firearm shot (bird-aim.js).
+    }
     else{b.h-=2.4;b.fall++;b.mesh.rotation.z+=.3;}
     b.mesh.position.set(b.x,b.h,b.y);b.mesh.rotation.y=-b.a;
   }
@@ -823,4 +822,5 @@ window.level29Downtown={get lots(){return lots;},get save(){return save;},get ri
 =======
 window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
 >>>>>>> main
+window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},get birdTargets(){return birds;},hitBird,startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
 })();

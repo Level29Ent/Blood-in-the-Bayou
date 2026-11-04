@@ -556,6 +556,7 @@ function buildViewModel(){
 
 // ---------- Input: look ----------
 function turnView(dx, dy){
+  if (state!=='play' || !player || player.dead || typeof wheelOpen!=='undefined'&&wheelOpen) return;
 <<<<<<< HEAD
   if (state!=='play' || !player || player.dead || typeof wheelOpen!=='undefined'&&wheelOpen) return;
 =======
