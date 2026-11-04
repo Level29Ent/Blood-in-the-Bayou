@@ -595,10 +595,11 @@ function spawnHordeAround(x, y, n, minR, maxR){
   for (let k=0;k<n;k++){ const p = randomRoadPoint(x, y, minR || 60, maxR || 300); if (p) spawnZombieAt(p.x, p.y); }
 }
 function ambientSpawn(){
-  const cap = Math.min(85, 22 + Math.floor(heat * 9) + Math.floor(missionIdx/CAMPAIGN_LAST*20));
+  const night=typeof isNight==='function'&&isNight();
+  const cap = Math.min(night?100:85, (night?34:22) + Math.floor(heat * 9) + Math.floor(missionIdx/CAMPAIGN_LAST*20));
   const alive = zombies.filter(z => z.alive).length;
   if (alive >= cap) return;
-  const rate = Math.max(10, 60 - heat * 9);
+  const rate = Math.max(10, (night?38:60) - heat * 9);
   if (frame % Math.round(rate) !== 0) return;
   const px = player.car ? player.car.x : player.x, py = player.car ? player.car.y : player.y;
   const n = 1 + Math.floor(heat / 2);

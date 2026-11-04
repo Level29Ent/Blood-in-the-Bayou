@@ -577,7 +577,8 @@ const spotifyScript=document.createElement('script');spotifyScript.src='https://
 spotifyScript.onerror=mountSpotifyFallback;document.head.appendChild(spotifyScript);
 setTimeout(()=>{if(!spotifyCtl)mountSpotifyFallback();},6000);
 let spotifyWanted=false;
-function spotifyWantedNow(){return soundMode===0&&['play','shop'].includes(state)&&player&&(player.car||window.level29CityLife?.inClub)&&!player.dead;}
+function spotifyWantedNow(){return stage1RadioEnabled&&soundMode===0&&['play','shop'].includes(state)&&player&&(player.car||window.level29CityLife?.inClub)&&!player.dead;}
+let stage1RadioEnabled=true;window.level29RadioMenu={show(){mountSpotifyFallback();},setEnabled(v){stage1RadioEnabled=!!v;if(!v&&spotifyCtl)spotifyCtl.pause();}};
 const _baseRadio=updateRadio;
 updateRadio=function(){
   _baseRadio();
@@ -599,4 +600,4 @@ window.level29Expansion={
   height:terrainHeight,service:serviceVenue,get save(){return venueSave;}
 };
 // Regenerate the initial district through the expansion hook before the next frame.
-travelToMenu();
+if(!window.level29Boot)travelToMenu();

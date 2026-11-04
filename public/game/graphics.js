@@ -2,8 +2,8 @@
 // gradient sky dome with sun glow and stars, and a cinematic vignette.
 // Loaded last; wraps initGL/render the same way the other expansion files do.
 (function(){
-  // Performance-first policy on every device; ignore previously saved expensive settings.
-  const quality = 'low';
+  // Default lightweight; explicit user choice can opt into higher quality.
+  let quality='low';try{const q=localStorage.getItem('level29.graphics.stage1');if(['low','medium','high'].includes(q))quality=q;}catch(_){}
 
   const SHADOW = {
     high:   { size: 2048, extent: 260, every: 1 },
@@ -184,5 +184,5 @@
     baseRender.apply(this, arguments);
   };
 
-  window.level29Graphics={get quality(){return quality;},setQuality(){ /* Fixed performance policy. */ }};
+  window.level29Graphics={get quality(){return quality;},setQuality(q){if(!['low','medium','high'].includes(q))return;quality=q;try{localStorage.setItem('level29.graphics.stage1',q);}catch(_){}if(typeof renderer!=='undefined'&&renderer&&ready)applyQuality();}};
 })();
