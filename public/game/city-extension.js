@@ -44,7 +44,7 @@ function build(){const c=city;if(!c?.neighborhood)return;const root=new THREE.Gr
  for(const x of [B.left,B.right])for(let y=B.top+100;y<B.bottom-100;y+=96){box(1,.2,35,x,1.2,y,white);for(const side of [-1,1])box(1,2,92,x+side*82,7,y,metal);}
  for(const link of c.interstateExits?[]:c.highway.links){const p=link.path[Math.min(3,link.path.length-1)];addSign(root,link.name,140,9,p.x,35,p.y,'#e8e7ce');}
  addSign(root,'DECATUR ST · BAYOU RESIDENTIAL · 6 BLOCKS',210,12,58*TILE,40,(c.coreWidth+6)*TILE,'#e8d4a1');
- for(const [i,title]of ['LEVEL 29 ENT.','BLOOD IN THE BAYOU','VIRAL'].entries()){const x=B.right-100,z=1800+i*640;box(3,60,3,x,30,z,metal);const face=addSign(root,title,140,34,x,75,z,'#d8bb6a');level29BillboardLighting.add(face);}
+ for(const [i,title]of ['LEVEL 29 ENT.','BLOOD IN THE BAYOU','VIRAL'].entries()){const x=B.right-100,z=1800+i*640;box(3,60,3,x,30,z,metal);let face;if(i&&window.level29MoviePosters){face=level29MoviePosters.poster(i===1?'bayou':'viral',44);face.position.set(x,75,z);root.add(face);}else face=addSign(root,title,140,34,x,75,z,'#d8bb6a');level29BillboardLighting.add(face);}
  q.finish();if(window.level29BatchStatic)level29BatchStatic(root,[]);
 }
 const buildBase=buildCity;buildCity=function(){buildBase.apply(this,arguments);build();};
