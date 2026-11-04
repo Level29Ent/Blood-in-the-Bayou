@@ -1,10 +1,13 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<!-- Shared H5 Ads placeholder; see docs/ads.md before enabling. -->
+<script src="/game/ads.js?v=restored-world-8" data-game-ads></script>
 <title>Level 29 · Blood in the Bayou</title>
-<link rel="icon" href="/icons/icon-192.png">
-<link rel="apple-touch-icon" href="/apple-icon.png">
+<link rel="icon" href="/icons/bayou-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="/icons/bayou-apple-180.png">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="expansion-ui.css">
 <style>
 html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'Barlow Condensed',sans-serif;color:#f6f3e6}
 #gl,#c{position:absolute;inset:0;width:100%;height:100%}
@@ -71,24 +74,33 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 .mpjoin{display:flex;gap:8px}.mpjoin input{margin:0;width:90px}.mpl{display:block;font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.12em;color:#e8bd52}
 .mpstatus.bad{color:#ff8a8a}
 @media(max-width:560px){.sbox{padding:16px}.sbox h2{font-size:32px}.rbhead img{width:76px;height:76px}.mpcols{grid-template-columns:1fr}.sbox .item{flex-direction:column;align-items:stretch}.sbox .item button{min-width:0}}
-</style></head><body>
+</style><link rel="stylesheet" href="foundation-menu.css?v=1"></head><body>
+<div id="entryGate" role="dialog" aria-modal="true" aria-label="Enter Blood in the Bayou"><div><small>LEVEL 29 PRODUCTION</small><h1>BLOOD IN THE BAYOU</h1><button id="entryButton" type="button" disabled>CLICK TO ENTER</button><div id="loadTrack" role="progressbar" aria-label="Asset loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="loadFill"></div></div><p id="loadStatus" role="status">CLICK TO UNLOCK GAME AUDIO</p></div></div><script src="startup-diagnostics.js?v=restored-world-8"></script><script src="boot-gate.js?v=restored-world-8"></script>
 <canvas id="gl"></canvas><canvas id="c"></canvas>
 <div id="menu"><div class="copy">
 <div class="eyebrow">Level 29 / First-person open-world survival</div>
 <div class="logo" id="jesterLogo"><img src="logo.png" alt="Level 29 jester logo"></div>
 <h1>Blood in<span>the Bayou.</span></h1>
-<p class="blurb">See it through the jester's eyes. Walk the streets, hijack a ride with Ronniebaby on the radio, gear up at Ammu-Nation, and hold the line from the French Quarter to Parris Island.</p>
+<p class="blurb">See it through the jester's eyes. Walk the streets, hijack a ride with Ronniebaby on the radio, gear up at Bayou Arsenal, and hold the line from the French Quarter to Parris Island.</p>
 <div class="row"><select id="district" hidden aria-hidden="true" tabindex="-1" style="display:none"><option value="0" selected>Level 29 City</option></select>
 <button id="start">Enter the city</button></div>
 <div class="keys"><b>MOUSE</b> look &bull; <b>CLICK</b> fire &bull; <b>W/S</b> move &bull; <b>A/D</b> strafe &bull; <b>&larr; &rarr;</b> turn<br>
 <b>E</b> enter / exit vehicle &bull; <b>C</b> car camera &bull; <b>SHIFT</b> sprint / nitro &bull; <b>SPACE</b> brake<br>
-<b>F</b> fire with aim assist &bull; <b>Q</b> weapon wheel &bull; <b>1-5</b> weapons &bull; <b>T</b> cheat code<br>
+<b>F</b> fire with aim assist &bull; <b>Q</b> weapon wheel &bull; <b>1-7</b> weapons &bull; <b>T</b> cheat code<br>
 <b>R</b> Spotify car playlist &bull; <b>TAB</b> map &bull; <b>P</b> pause &bull; <b>N</b> music &bull; <b>M</b> mute<br>
 <b>JOYSTICK</b> on touch screens moves you, drag the screen to look &bull; plug in an Xbox or PlayStation controller to play with sticks. 210 missions, a boss every fifth. <b>MULTIPLAYER</b> lets up to 6 Jesters team up with a room code.</div>
 </div></div>
 <button id="audio">SOUND ON</button>
 <div id="touch" class="off"><div class="group"><button id="shoot">FIRE</button><button id="enter">ENTER</button></div></div>
 <div id="joy"><div id="joyKnob"></div></div>
+<script src="three.min.js?v=restored-world-8"></script><script src="graphics-pre.js?v=restored-world-8"></script><script src="detailed-materials.js?v=restored-world-8"></script><script src="peerjs.min.js?v=restored-world-8"></script><script src="animal-anatomy.js?v=restored-world-8"></script><script src="audio.js?v=restored-world-8"></script><script src="vo.js?v=restored-world-8"></script>
+<script src="gameplay-math.js?v=restored-world-8"></script><script src="game.js?v=restored-world-8"></script><script src="fp.js?v=restored-world-8"></script><script src="people.js?v=restored-world-8"></script><script src="dialogue-sequencer.js?v=restored-world-8"></script><script src="ronnie.js?v=restored-world-8"></script><script src="traffic-clearance.js?v=restored-world-8"></script><script src="gta.js?v=restored-world-8"></script><script src="arsenal-visuals.js?v=restored-world-8"></script><script src="mp.js?v=restored-world-8"></script><script src="joy.js?v=restored-world-8"></script><script src="expansion.js?v=restored-world-8"></script><script src="cars.js?v=restored-world-8"></script><script src="world.js?v=restored-world-8"></script><script src="gulf.js?v=restored-world-8"></script><script src="intro.js?v=restored-world-8"></script><script src="captain-smith.js?v=restored-world-8"></script><script src="places.js?v=restored-world-8"></script><script src="guard.js?v=restored-world-8"></script><script src="jobs.js?v=restored-world-8"></script><script src="daily-spin.js?v=restored-world-8"></script><script src="dailyreward.js?v=restored-world-8"></script><script src="campaign.js?v=restored-world-8"></script><script src="estate.js?v=restored-world-8"></script><script src="savegame.js?v=restored-world-8"></script><script src="life.js?v=restored-world-8"></script><script src="graphics.js?v=restored-world-8"></script><script src="smooth.js?v=restored-world-8"></script><script src="aircraft-gunnery.js?v=restored-world-8"></script><script src="aircraft-flight.js?v=restored-world-8"></script><script src="boomcity.js?v=restored-world-8"></script><script src="downtown.js?v=restored-world-8"></script><script src="coastline.js?v=restored-world-8"></script>
+
+<script src="access.js?v=restored-world-8"></script><script src="trading.js?v=restored-world-8"></script>
+<script src="site-layout.js?v=restored-world-8"></script><script src="armory-showroom.js?v=restored-world-8"></script><script src="terrain-sites.js?v=restored-world-8"></script><script src="farm-models.js?v=restored-world-8"></script><script src="city-life.js?v=restored-world-8"></script><script src="premium.js?v=restored-world-8"></script>
+<script src="story-core.js?v=restored-world-8"></script><script src="story-scenes.js?v=restored-world-8"></script><script src="business-contracts.js?v=restored-world-8"></script><script src="city-stories.js?v=restored-world-8"></script><script src="recorded-audio.js?v=restored-world-8"></script><script src="felicia-voice.js?v=restored-world-8"></script><script src="felicia.js?v=restored-world-8"></script><script src="business-polish.js?v=restored-world-8"></script><script src="wardrobe-catalog.js?v=restored-world-8"></script><script src="wardrobe.js?v=restored-world-8"></script><script src="farm-upgrade.js?v=restored-world-8"></script><script src="world-anchors.js?v=restored-world-8"></script><script src="interior-models.js?v=restored-world-8"></script><script src="mall-displays.js?v=restored-world-8"></script><script src="mall-gardens.js?v=restored-world-8"></script><script src="city-zoning.js?v=restored-world-8"></script><script src="amenity-parcels.js?v=restored-world-8"></script><script src="farm-roads.js?v=restored-world-8"></script><script src="parcel-roads.js?v=restored-world-8"></script><script src="hospital-departments.js?v=restored-world-8"></script><script src="retail-casino-detail.js?v=restored-world-8"></script><script src="interior-details.js?v=restored-world-8"></script><script src="civic-interiors.js?v=restored-world-8"></script><script src="specialty-stores.js?v=restored-world-8"></script><script src="business-lettering-font.js?v=restored-world-8"></script><script src="business-lettering.js?v=restored-world-8"></script><script src="street-frontage.js?v=restored-world-8"></script><script src="terrain-layout.js?v=restored-world-8"></script><script src="venue-build-once.js?v=restored-world-8"></script><script src="vendor/postprocessing-r149.js?v=restored-world-8"></script><script src="cinematic.js?v=restored-world-8"></script>
+
+<script src="vendor/gltf-loader-r149.js?v=restored-world-8"></script><script src="watercraft-assets.js?v=restored-world-8"></script><script src="boss-defense.js?v=restored-world-8"></script><script src="street-navigation.js?v=restored-world-8"></script><script src="campaign-map.js?v=restored-world-8"></script><script src="polish.js?v=restored-world-8"></script><script src="feel.js?v=restored-world-8"></script>
 <script>
   // Global Raycaster camera auto-patch for Three.js
   window.addEventListener('DOMContentLoaded', () => {
@@ -109,11 +121,12 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
     }
   });
 </script>
-<script src="entry-recovery.js?v=entry-recovery-7"></script><script src="startup-diagnostics.js?v=entry-recovery-7"></script><script src="three.min.js?v=entry-recovery-7"></script><script src="graphics-pre.js?v=entry-recovery-7"></script><script src="peerjs.min.js?v=entry-recovery-7"></script><script src="audio.js?v=entry-recovery-7"></script><script src="vo.js?v=entry-recovery-7"></script>
-<script src="game.js?v=entry-recovery-7"></script><script src="fp.js?v=entry-recovery-7"></script><script src="ronnie.js?v=entry-recovery-7"></script><script src="gta.js?v=entry-recovery-7"></script><script src="arsenal-visuals.js?v=entry-recovery-7"></script><script src="mp.js?v=entry-recovery-7"></script><script src="joy.js?v=entry-recovery-7"></script><script src="expansion.js?v=entry-recovery-7"></script><script src="cars.js?v=entry-recovery-7"></script><script src="world.js?v=entry-recovery-7"></script><script src="gulf.js?v=entry-recovery-7"></script><script src="intro.js?v=entry-recovery-7"></script><script src="places.js?v=entry-recovery-7"></script><script src="guard.js?v=entry-recovery-7"></script><script src="jobs.js?v=entry-recovery-7"></script><script src="dailyreward.js?v=entry-recovery-7"></script><script src="campaign.js?v=entry-recovery-7"></script><script src="estate.js?v=entry-recovery-7"></script><script src="savegame.js?v=entry-recovery-7"></script><script src="life.js?v=entry-recovery-7"></script><script src="graphics.js?v=entry-recovery-7"></script><script src="smooth.js?v=entry-recovery-7"></script><script src="boomcity.js?v=entry-recovery-7"></script><script src="downtown.js?v=entry-recovery-7"></script><script src="coastline.js?v=entry-recovery-7"></script>
-<script src="polish.js?v=entry-recovery-7"></script><script src="feel.js?v=entry-recovery-7"></script>
 
-<script> if (typeof navigator.serviceWorker !== 'undefined' && !/v0\.|localhost|vusercontent/.test(location.hostname)) { navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'}) } </script>
+
+
+
+
+<script> if (typeof navigator.serviceWorker !== 'undefined' && !/v0\.|localhost|vusercontent/.test(location.hostname)) { navigator.serviceWorker.register('/sw.js') } </script>
 <script>
 (function(){
   // district list: one entry per chapter, labelled like the original title screen
@@ -125,7 +138,52 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
   var st=document.createElement('style'); st.textContent='#menu[style*="none"]~#audio{opacity:.75;padding:8px 10px;font-size:10px}'; document.head.appendChild(st);
 })();
 </script>
-<script src="mobile-layout-fix.js?v=entry-recovery-7"></script>
-<script src="cinematic-surfaces.js?v=entry-recovery-7"></script>
-<script src="architecture-water.js?v=entry-recovery-7"></script>
+<script src="aircraft-camera.js?v=restored-world-8"></script>
+<script src="ad-transitions.js?v=restored-world-8"></script>
+<script src="traffic-safety.js?v=restored-world-8"></script>
+<script src="world-safety.js?v=restored-world-8"></script>
+<script src="powell-ops.js?v=restored-world-8"></script>
+
+<script src="mission-guidance.js?v=restored-world-8"></script>
+<script src="hud-layout.js?v=restored-world-8"></script>
+
+<script src="business-animation.js?v=restored-world-8"></script>
+<script src="gameplay-feel.js?v=restored-world-8"></script>
+<script src="pause-controls.js?v=restored-world-8"></script>
+<script src="expansion-assets.js?v=restored-world-8"></script>
+<script src="expansion-kit.js?v=restored-world-8"></script>
+<script src="world-atmosphere.js?v=restored-world-8"></script>
+
+<script src="landscape-solids.js?v=restored-world-8"></script>
+
+
+
+
+<script src="compact-actions.js?v=restored-world-8"></script>
+<script src="night-patrol.js?v=restored-world-8"></script>
+<script src="progression-systems.js?v=restored-world-8"></script><script src="bird-aim.js?v=restored-world-8"></script>
+<script src="billboard-lighting.js?v=restored-world-8"></script>
+<script src="city-extension.js?v=restored-world-8"></script>
+<script src="military-base.js?v=restored-world-8"></script>
+<script src="interstate-civic.js?v=restored-world-8"></script>
+
+<script src="foundation-road.js?v=restored-world-8"></script><script src="foundation-menu.js?v=restored-world-8"></script>
+<script src="slab-hydraulics.js?v=restored-world-8"></script><script src="crib-armory.js?v=restored-world-8"></script>
+<script src="greenmart.js?v=restored-world-8"></script>
+<script src="rearview.js?v=restored-world-8"></script><script src="city-events.js?v=restored-world-8"></script><script src="cinematic-events.js?v=restored-world-8"></script>
+<script src="street-activities.js?v=restored-world-8"></script>
+<script src="street-lighting.js?v=restored-world-8"></script>
+<script src="territory-security.js?v=restored-world-8"></script><script src="property-locker.js?v=restored-world-8"></script>
+<script src="gang-drivebys.js?v=restored-world-8"></script><script src="bayou-volumetrics.js?v=restored-world-8"></script>
+<script src="weapon-readability.js?v=restored-world-8"></script>
+<script src="29-land.js?v=restored-world-8"></script>
+<script src="road-support.js?v=restored-world-8"></script><script src="city-destinations.js?v=restored-world-8"></script><script src="metro-travel.js?v=restored-world-8"></script>
+<script src="gang-weapons.js?v=restored-world-8"></script><script src="zoo-base-activities.js?v=restored-world-8"></script>
+<script src="lived-interiors.js?v=restored-world-8"></script><script src="room-performance.js?v=restored-world-8"></script>
+<script src="movie-posters.js?v=restored-world-8"></script>
+<script src="runtime-resources.js?v=restored-world-8"></script>
+<script src="session-recovery.js?v=restored-world-8"></script><script src="city-career-catalog.js?v=restored-world-8"></script><script src="city-careers.js?v=restored-world-8"></script>
+<script src="combat-feedback.js?v=restored-world-8"></script>
+<script src="mobile-layout-fix.js?v=restored-world-8"></script>
+
 </body></html>

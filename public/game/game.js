@@ -68,7 +68,7 @@ const DISTRICTS = [
     cars:['humvee','mtvr','humvee','sedan','humvee','pickup'], hMin:18, hMax:40 },
   { id:'forest', name:'FOREST RESERVE', grass:'#36553b', walk:'#827663', roofs:['#566247','#867457'], wall:.6,
     v:['PINE TRAIL','RANGER ROAD','CEDAR TRACK','TIMBER RUN','LAKE ROAD','FOREST EDGE'], h:['SOUTH CAMP','OLD MILL ROAD','RANGER STATION','DEEP WOODS','CREEK ROAD','NORTH CAMP'], cars:['pickup','humvee','sedan','van'], hMin:18, hMax:36 },
-  { id:'mountain', name:'MOUNTAIN PASS', grass:'#697260', walk:'#8a887b', roofs:['#7b807c','#756752'], wall:.6,
+  { id:'mountain', name:'LEVEL 29 GARDENS', grass:'#697260', walk:'#8a887b', roofs:['#7b807c','#756752'], wall:.6,
     v:['SUMMIT ROAD','RIDGELINE','QUARRY TRACK','ALPINE WAY','SWITCHBACK','EAST RIDGE'], h:['BASE CAMP','VALLEY ROAD','MOUNTAIN PASS','SUMMIT TRAIL','SNOWLINE','LOOKOUT ROAD'], cars:['pickup','humvee','sports','mtvr'], hMin:18, hMax:38 },
 ];
 const MISSIONS_PER = 30, CAMPAIGN_TOTAL = DISTRICTS.length * MISSIONS_PER, CAMPAIGN_LAST = CAMPAIGN_TOTAL - 1;
@@ -289,7 +289,7 @@ function renderGround(){
     const t = city.get(tx, ty), x = tx*TILE, y = ty*TILE, h = hash(tx*31 + ty*17);
     if (t===T_GRASS || t===T_PARK){ g.fillStyle = shade(DG.grass, .92 + h*.16); g.fillRect(x, y, TILE, TILE); g.fillStyle = shade(DG.grass, 1.15); for (let k=0;k<4;k++) g.fillRect(x + hash(tx+k*7+ty)*30, y + hash(ty+k*13+tx)*30, 2, 2); }
     else if (t===T_ROAD || t===T_BRIDGE){
-      g.fillStyle = t===T_BRIDGE ? '#5e6266' : shade('#2b2f33', .92 + h*.12); g.fillRect(x, y, TILE, TILE);
+      g.fillStyle = t===T_BRIDGE ? '#5e6266' : shade('#11161b', .92 + h*.12); g.fillRect(x, y, TILE, TILE);
       if (h > .86){ g.fillStyle = 'rgba(0,0,0,.22)'; g.beginPath(); g.ellipse(x+16, y+16, 6+h*6, 3+h*3, h*3, 0, 7); g.fill(); }
     }
     else if (t===T_WALK){ g.fillStyle = shade(DG.walk, .95 + h*.08); g.fillRect(x, y, TILE, TILE); g.strokeStyle = 'rgba(0,0,0,.14)'; g.lineWidth = 1; g.strokeRect(x+.5, y+.5, TILE-1, TILE-1); }
@@ -440,6 +440,7 @@ function missionTarget(){
   if (t==='deliver') return m.step==='pickup' ? { x:m.targets[0].x, y:m.targets[0].y, col:'#f4c355', label:'C' } : { x:m.drop.x, y:m.drop.y, col:'#3cc86e', label:'D' };
   if (t==='race') return m.cks[m.ckIdx] ? { x:m.cks[m.ckIdx].x, y:m.cks[m.ckIdx].y, col:'#ff9b2a', label:String(m.ckIdx+1) } : null;
   if (t==='defend') return { x:m.targets[0].x, y:m.targets[0].y, col:'#ff5a4a', label:'H', zone:220 };
+  if (t==='boss' && m.drop) return { x:m.drop.x, y:m.drop.y, col:'#f4c355', label:'C' };
   if (t==='boss') return boss && !boss.dead ? { x:boss.x, y:boss.y, col:'#ff3a3a', label:'☠' } : { x:m.targets[0].x, y:m.targets[0].y, col:'#ff3a3a', label:'☠' };
   return null;
 }
@@ -583,7 +584,7 @@ function damageBoss(n){
     B.hp = 0; B.dead = true; snd('bossdie'); shake = 24; bossSay(4, true);
     gore(B.x, B.y, 40); decal(B.x, B.y, 'blood', 3);
     cash += 1000 + missionIdx*50;
-    for (const z of zombies) if (z.alive && dist(z.x, z.y, B.x, B.y) < 500) killZombie(z, 0, 0);
+    for (const z of zombies) if (z.alive && dist(z.x, z.y, B.x, B.y) < 500){z.killSource='ambient';killZombie(z, 0, 0);}
   }
 }
 
@@ -594,10 +595,11 @@ function spawnHordeAround(x, y, n, minR, maxR){
   for (let k=0;k<n;k++){ const p = randomRoadPoint(x, y, minR || 60, maxR || 300); if (p) spawnZombieAt(p.x, p.y); }
 }
 function ambientSpawn(){
-  const cap = Math.min(85, 22 + Math.floor(heat * 9) + Math.floor(missionIdx/CAMPAIGN_LAST*20));
+  const night=typeof isNight==='function'&&isNight();
+  const cap = Math.min(night?100:85, (night?34:22) + Math.floor(heat * 9) + Math.floor(missionIdx/CAMPAIGN_LAST*20));
   const alive = zombies.filter(z => z.alive).length;
   if (alive >= cap) return;
-  const rate = Math.max(10, 60 - heat * 9);
+  const rate = Math.max(10, (night?38:60) - heat * 9);
   if (frame % Math.round(rate) !== 0) return;
   const px = player.car ? player.car.x : player.x, py = player.car ? player.car.y : player.y;
   const n = 1 + Math.floor(heat / 2);
@@ -630,11 +632,13 @@ function fireWeapon(ox, oy, aim){
 function gore(x, y, n, col){ for (let k=0;k<n;k++) parts.push({ k:'gore', x, y, vx:rnd(-3,3), vy:rnd(-3,3), t:rnd(20,40), c: col || (Math.random()<.5 ? '#5f8a3a' : '#8a1a1a') }); }
 function killZombie(z, vx, vy){
   if (!z.alive) return;
+  z.playerKill=z.killSource!=='ambient'&&z.killSource!=='guard'&&z.killSource!=='remote';
   z.alive = false; snd('zdie'); zombieSay(z, true);
   gore(z.x, z.y, 10); decal(z.x, z.y, Math.random()<.5 ? 'blood' : 'green', z.type==='brute' ? 1.6 : 1);
   parts.push({ k:'corpse', x:z.x, y:z.y, a:z.a, t:600, shirt:z.shirt, military:z.military, r:z.r, vx:(vx||0)*.4, vy:(vy||0)*.4 });
-  cash += z.pts; heat = Math.min(5, heat + .05);
-  if (mission && mission.phase==='active' && mission.info.type==='clear' && dist(z.x, z.y, mission.targets[0].x, mission.targets[0].y) < 420) mission.kills++;
+  if(z.playerKill){cash += z.pts; heat = Math.min(5, heat + .05);}
+  if ((z.playerKill||(z.killSource==='remote'&&typeof mpRole!=='undefined'&&mpRole==='host')) && mission && mission.phase==='active' && mission.info.type==='clear' && dist(z.x, z.y, mission.targets[0].x, mission.targets[0].y) < 420) mission.kills++;
+  if (!z.playerKill)return;
   if (Math.random() < .045) pickups.push({ x:z.x, y:z.y, kind: Math.random()<.6 ? 'health' : 'armor', t:0 });
   else if (Math.random() < .22) pickups.push({ x:z.x, y:z.y, kind:'cash', t:0, amt: 50 + Math.floor(Math.random()*150), expiresAt:Date.now()+30000 });
 }
@@ -646,14 +650,15 @@ function hurtPlayer(n, sx, sy){
   snd('hurt'); decal(p.x, p.y, 'blood', .6);
   if (p.hp <= 0) killPlayer();
 }
-function damageCar(c, n){
+function damageCar(c, n, source='ambient', owner=0){
   if (c.dead) return;
+  c.lastDamager=source;c.lastDamageOwner=source==='remote'?owner:0;
   c.hp -= n * (c.driven && up.tough ? 1 / (1 + up.tough*.6) : 1);
   if (c.hp <= 0 && !c.burnT){ c.burnT = 180; c.hp = 0; }
 }
 function explodeCar(c){
   c.dead = true; c.burnT = 0; sfx('explode'); shake = 22;
-  explosions.push({ x:c.x, y:c.y, r:0, max:110, t:28, dealt:false });
+  explosions.push({ x:c.x, y:c.y, r:0, max:110, t:28, playerOwned:c.lastDamager==='player', owner:c.lastDamageOwner||0, dealt:false });
   decal(c.x, c.y, 'scorch', 1.2);
   for (let k=0;k<26;k++) parts.push({ k:'fire', x:c.x, y:c.y, vx:rnd(-5,5), vy:rnd(-5,5), t:rnd(20,45) });
   if (player.car === c){ exitCar(true); hurtPlayer(45, c.x, c.y); }
@@ -708,7 +713,7 @@ function updateCar(c, input){
   if (brake) c.v *= .9;
   c.v *= .996;
   const sp = Math.abs(c.v);
-  c.steerSmooth = (c.steerSmooth || 0) + (clamp(steer,-1,1) - (c.steerSmooth || 0)) * .16;
+  c.steerSmooth = (c.steerSmooth || 0) + (clamp(steer,-1,1) - (c.steerSmooth || 0)) * (c.driven&&!c.boat?.22:.16);
   const turn = c.steerSmooth * .043 * clamp(c.v / 2.8, -1, 1) / (1 + sp * .075);
   c.a += turn;
   const grip = brake ? .7 : s.grip;
@@ -912,7 +917,8 @@ function applyPower(k, announce){
   if (announce){ banner = { big:'POWER-UP', small: name + (id==='nitro' ? ' · HOLD SHIFT IN A CAR' : ''), t:220, good:true }; snd('power'); if (id==='armor') player.armor = up.armor*25; player.hp = player.maxHp; }
   return name;
 }
-document.getElementById('start').addEventListener('click',()=>{if(state!=='menu')return;startGame(+document.getElementById('district').value);});
+document.getElementById('start').addEventListener('click', () => startGame(+document.getElementById('district').value));
+
 // ---------- Update ----------
 function update(){
   frame++;
@@ -942,9 +948,9 @@ function update(){
       p.a = view.yaw;
       if (ml > 1){ mx /= ml; my /= ml; }
       if (ml > .05) p.anim += .25 * Math.min(1, ml);
-      p.vx = p.vx * .7 + mx * spd * .3; p.vy = p.vy * .7 + my * spd * .3;
+      p.vx = level29GameplayMath.velocity(p.vx,mx*spd); p.vy = level29GameplayMath.velocity(p.vy,my*spd);
       moveCircle(p, p.vx, p.vy, p.r);
-      if (tileAt(p.x, p.y)===T_WATER) hurtPlayer(1, p.x, p.y);
+      if (tileAt(p.x, p.y)===T_WATER&&!window.level29Destinations?.swimming&&!window.level29MetroTravel?.underground) hurtPlayer(1, p.x, p.y);
     }
     // aiming
     const ox = p.car ? p.car.x : p.x, oy = p.car ? p.car.y : p.y;
@@ -980,6 +986,7 @@ function update(){
   pickups = pickups.filter(k => !k.got && (k.kind==='crate'||k.kind==='power'||(k.kind==='cash' ? Date.now() < (k.expiresAt || (k.expiresAt=Date.now()+Math.max(0,1800-k.t)*1000/60)) : k.t < 60*60)));
   // zombies
   const px = p.car ? p.car.x : p.x, py = p.car ? p.car.y : p.y;
+  const localSafe=typeof isPlayerInsideBuilding==='function'&&isPlayerInsideBuilding(p),outdoorRemotes=mpRemotes.filter(r=>!r.dead&&!r.safe&&!(typeof isPlayerInsideBuilding==='function'&&isPlayerInsideBuilding(r)));
   if (frame - lastShotFrame < 3) alertZombies(px, py, 520);
   if (frame - lastShotFrame > 480) heat = Math.max(0, heat - .0025);
   // Nearby-cell separation avoids an all-zombies-against-all-zombies scan.
@@ -992,16 +999,16 @@ function update(){
     if (!z.alive) continue;
     if (z.flash > 0) z.flash--;
     // multiplayer: chase whichever Jester is closest
-    let gxP = px, gyP = py, rem = null, dLocal = Math.hypot(px - z.x, py - z.y), dBest = p.dead ? 1e9 : dLocal;
-    for (const r of mpRemotes){ if (r.dead) continue; const rd = Math.hypot(r.x - z.x, r.y - z.y); if (rd < dBest){ dBest = rd; gxP = r.x; gyP = r.y; rem = r; } }
+    let gxP = px, gyP = py, rem = null, dLocal = Math.hypot(px - z.x, py - z.y), dBest = p.dead||localSafe ? 1e9 : dLocal;
+    for (const r of outdoorRemotes){ const rd = Math.hypot(r.x - z.x, r.y - z.y); if (rd < dBest){ dBest = rd; gxP = r.x; gyP = r.y; rem = r; } }
     const d = Math.min(dBest, dLocal + (p.dead ? 1e9 : 0));
-    if (d > 1500){ z.alive = false; continue; }
+    if (d > 1500){ if(z.heavyArmor)continue;z.alive = false; continue; }
     if (d < 200) z.alert = true;
     let tx = 0, ty = 0;
     // target survivors too
     let tgt = null;
-    if (survivors.length && survivors[0].hp > 0 && !survivors[0].inCar){ const s = survivors[0], sd = dist(z.x, z.y, s.x, s.y); if (sd < d && sd < 260) tgt = s; }
-    if (z.alert && (!p.dead || rem)){
+    if (survivors.length && survivors[0].hp > 0 && !survivors[0].inCar && !(typeof isPlayerInsideBuilding==='function'&&isPlayerInsideBuilding(survivors[0]))){ const s = survivors[0], sd = dist(z.x, z.y, s.x, s.y); if (sd < d && sd < 260) tgt = s; }
+    if (z.alert && ((!p.dead&&!localSafe) || rem || tgt)){
       const gg = zombieGoal(z, tgt ? tgt.x : gxP, tgt ? tgt.y : gyP), gx = gg.x, gy = gg.y;
       z.a = Math.atan2(gy - z.y, gx - z.x); tx = Math.cos(z.a) * z.speed; ty = Math.sin(z.a) * z.speed;
     } else { if (frame % 120 === 0) z.wander += rnd(-1.5, 1.5); z.a = z.wander; tx = Math.cos(z.a) * .35; ty = Math.sin(z.a) * .35; }
@@ -1018,15 +1025,15 @@ function update(){
     if (z.atkCd > 0) z.atkCd--;
     if (tgt && dist(z.x, z.y, tgt.x, tgt.y) < z.r + 12 && z.atkCd <= 0){ tgt.hp -= z.type==='brute' ? 20 : 8; z.atkCd = 50; snd('hurt'); decal(tgt.x, tgt.y, 'blood', .5); }
     if (rem && !rem.car && !rem.safe && dBest < z.r + 14 && z.atkCd <= 0 && typeof mpHurtRemote === 'function'){ mpHurtRemote(rem, z.type==='brute' ? 13 : z.type==='runner' ? 5 : 6, z.x, z.y); z.atkCd = 60; }
-    if (!p.dead && !p.car && dLocal < z.r + p.r + 4 && z.atkCd <= 0){ hurtPlayer(z.type==='brute' ? 13 : z.type==='runner' ? 5 : 6, z.x, z.y); z.atkCd = 60; }
+    if (!p.dead && !p.car && !localSafe && dLocal < z.r + p.r + 4 && z.atkCd <= 0){if(z.windup===undefined)z.windup=18;if(--z.windup<=0){hurtPlayer(z.type==='brute' ? 13 : z.type==='runner' ? 5 : 6, z.x, z.y);z.atkCd=60;z.windup=undefined;}}else z.windup=undefined;
     // vs cars
     for (const c of cars){
-      if (c.dead || (c.z || 0) > 8) continue;
+      if (c.dead || (c.z || 0) > 8 || c===p.car&&localSafe) continue;
       const cd = dist(z.x, z.y, c.x, c.y);
       if (cd < c.r + z.r - 2){
         const sp = Math.abs(c.v);
         if (sp > 2.2 && !c.ai && !(z.type==='brute' && sp < 4.5)){
-          killZombie(z, Math.cos(c.a)*c.v, Math.sin(c.a)*c.v); sfx('splat'); damageCar(c, z.type==='brute' ? 10 : 2.5); c.v *= z.type==='brute' ? .55 : .93; shake = Math.max(shake, 3);
+          z.killSource=c===p.car?'player':'ambient';z.lastHit=0;killZombie(z, Math.cos(c.a)*c.v, Math.sin(c.a)*c.v); sfx('splat'); damageCar(c, z.type==='brute' ? 10 : 2.5); c.v *= z.type==='brute' ? .55 : .93; shake = Math.max(shake, 3);
           if (z.type==='brute') shake = 9;
           break;
         } else {
@@ -1041,19 +1048,19 @@ function update(){
   if (frame % 80 === 0 && Math.random() < .6){ const near = zombies.filter(z => dist(z.x, z.y, px, py) < 500); if (near.length){ const z = near[Math.floor(Math.random()*near.length)]; if (!(Math.random() < .6 && zombieSay(z))) snd('groan', z.type==='brute' ? 70 : z.type==='runner' ? 150 : 105); } }
   // bullets
   for (const b of bullets){
-    b.x += b.vx; b.y += b.vy; b.life--;
-    if (solidAt(b.x, b.y) && tileAt(b.x, b.y)===T_BLD){ b.life = 0; parts.push({ k:'spark', x:b.x - b.vx*.5, y:b.y - b.vy*.5, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); continue; }
+    const previousX=b.x,previousY=b.y;b.x += b.vx; b.y += b.vy; b.life--;
+    if (level29GameplayMath.blockedSegment(previousX,previousY,b.x,b.y,(x,y)=>solidAt(x,y)&&tileAt(x,y)===T_BLD)){ b.life = 0; parts.push({ k:'spark', x:b.x - b.vx*.5, y:b.y - b.vy*.5, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); continue; }
     for (const z of zombies){
       if (!z.alive || b.hit.has(z)) continue;
-      if ((b.x - z.x)**2 + (b.y - z.y)**2 < (z.r + 3)**2){
-        z.hp -= b.dmg; z.flash = 4; b.hit.add(z); z.lastHit = b.owner || 0; z.alert = true; z.stun = z.type==='brute' ? 2 : 6;
+      if (level29GameplayMath.segmentDistance2(z.x,z.y,previousX,previousY,b.x,b.y) < (z.r + 3)**2){
+        z.hp -= b.dmg; z.flash = 4; b.hit.add(z); z.lastHit = b.owner || 0; z.killSource=b.owner?'remote':'player'; z.alert = true; z.stun = z.type==='brute' ? 2 : 6;
         moveCircle(z, b.vx*.12, b.vy*.12, z.r*.8); gore(b.x, b.y, 2);
-        if (!b.owner) view.hit = 7; if (z.hp <= 0) killZombie(z, b.vx, b.vy); else snd('zhit');
+        if (!b.owner){view.hit = 7;window.level29GameFeel?.hit(z.hp<=0);} if (z.hp <= 0) killZombie(z, b.vx, b.vy); else snd('zhit');
         if (b.pierce-- <= 0){ b.life = 0; break; }
       }
     }
     if (b.life > 0 && boss && !boss.dead && (b.x - boss.x)**2 + (b.y - boss.y)**2 < boss.r**2){ damageBoss(b.dmg); view.hit = 7; b.life = 0; gore(b.x, b.y, 2); if (frame % 3 === 0) snd('bosshit'); }
-    if (b.life > 0) for (const c of cars){ if (c.dead || c === p.car) continue; if ((b.x - c.x)**2 + (b.y - c.y)**2 < (c.r*.8)**2){ damageCar(c, .8); b.life = 0; parts.push({ k:'spark', x:b.x, y:b.y, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); break; } }
+    if (b.life > 0) for (const c of cars){ if (c.dead || c === p.car) continue; if ((b.x - c.x)**2 + (b.y - c.y)**2 < (c.r*.8)**2){ damageCar(c, .8,b.owner?'remote':'player',b.owner); b.life = 0; parts.push({ k:'spark', x:b.x, y:b.y, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); break; } }
   }
   bullets = bullets.filter(b => b.life > 0);
   // boss + spits
@@ -1070,8 +1077,8 @@ function update(){
     e.t--; e.r += (e.max - e.r) * .25;
     if (!e.dealt && e.r > e.max * .6){
       e.dealt = true;
-      for (const z of zombies) if (z.alive && dist(z.x, z.y, e.x, e.y) < e.max) { if (e.wave) { z.stun = 30; } else killZombie(z, z.x - e.x, z.y - e.y); }
-      if (!e.wave) for (const c of cars) if (!c.dead && !c.burnT && dist(c.x, c.y, e.x, e.y) < e.max && c !== p.car) damageCar(c, 60);
+      for (const z of zombies) if (z.alive && dist(z.x, z.y, e.x, e.y) < e.max) { if (e.wave) { z.stun = 30; } else {z.killSource=e.owner?'remote':e.playerOwned?'player':'ambient';z.lastHit=e.owner||0;killZombie(z, z.x - e.x, z.y - e.y);} }
+      if (!e.wave) for (const c of cars) if (!c.dead && !c.burnT && dist(c.x, c.y, e.x, e.y) < e.max && c !== p.car) damageCar(c, 60,e.owner?'remote':e.playerOwned?'player':'ambient',e.owner);
       const tx = p.car ? p.car.x : p.x, ty = p.car ? p.car.y : p.y;
       if (dist(tx, ty, e.x, e.y) < e.max){ if (p.car) damageCar(p.car, e.wave ? 20 : 40); else hurtPlayer(e.wave ? 22 : 35, e.x, e.y); }
     }
@@ -1375,7 +1382,7 @@ function drawPickup(k){
   const b = Math.sin(frame * .1 + k.x) * 2;
   cx.save(); cx.translate(k.x, k.y + b);
   cx.fillStyle = 'rgba(0,0,0,.3)'; cx.beginPath(); cx.ellipse(2, 10 - b, 10, 4, 0, 0, 7); cx.fill();
-  if (k.kind==='health'){ cx.fillStyle = '#fff'; cx.fillRect(-9, -9, 18, 18); cx.fillStyle = '#d02020'; cx.fillRect(-2, -6, 4, 12); cx.fillRect(-6, -2, 12, 4); }
+  if (k.kind==='health'){ cx.fillStyle = '#ee2525'; cx.fillRect(-3, -10, 6, 20); cx.fillRect(-10, -3, 20, 6); }
   if (k.kind==='armor'){ cx.fillStyle = '#2a5ad0'; cx.beginPath(); cx.moveTo(0, -10); cx.lineTo(9, -6); cx.lineTo(7, 6); cx.lineTo(0, 10); cx.lineTo(-7, 6); cx.lineTo(-9, -6); cx.closePath(); cx.fill(); cx.strokeStyle = '#fff'; cx.lineWidth = 1.5; cx.stroke(); }
   if (k.kind==='cash'){ cx.fillStyle = '#2f8a3a'; cx.fillRect(-10, -6, 20, 12); cx.fillStyle = '#9fe0a0'; cx.font = "800 11px 'Barlow Condensed'"; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText('$', 0, 1); }
   if (k.kind==='crate'){ cx.fillStyle = '#4b5320'; cx.fillRect(-13, -13, 26, 26); cx.fillStyle = '#f4c355'; cx.fillRect(-13, -3, 26, 6); cx.strokeStyle = '#2f3416'; cx.lineWidth = 2; cx.strokeRect(-13, -13, 26, 26); }
@@ -1408,8 +1415,8 @@ function hudText(t, x, y, size, col, align, font){
 function drawHUD(){
   const p = player, small = SW < 700 || SH < 500;
   // top right: cash + health + armor + heat skulls + weapon
-  const mobileHUD=small&&SH>SW;const topInset=mobileHUD?30:0;cx.save();cx.translate(0,topInset);
   const R = SW - 18;
+  if(!window.level29UnifiedHUD){
   hudText(money(cash), R, 14, small ? 26 : 34, '#7fe08a', 'right');
   const bw = small ? 140 : 190, bx = R - bw;
   let y = small ? 46 : 56;
@@ -1434,17 +1441,19 @@ function drawHUD(){
   if (up.rapid) chips.push('RAPID ×' + up.rapid); if (up.spread) chips.push(up.spread > 1 ? 'WIDE SPREAD' : 'SPREAD'); if (up.armor) chips.push('ARMOR ×' + up.armor);
   if (up.nitro) chips.push('NITRO'); if (up.cool) chips.push('COOLING ×' + up.cool); if (up.ap) chips.push('AP ×' + up.ap); if (up.tough) chips.push('TOUGH RIDES ×' + up.tough);
   if (chips.length){ y += 6; chips.forEach((ch, k) => { if (!small || k < 4) hudText(ch, R, y + k*16, small ? 10 : 12, '#9fdcab', 'right', '600 '); }); }
+  // DOM actions start after the actual status stack (armor, vehicle and upgrade chips included).
+  document.documentElement.style.setProperty('--hud-status-bottom', (y + (chips.length ? Math.min(chips.length, small ? 4 : chips.length) * 16 : 0) + 14) + 'px');
+  }
   // mission panel top-left
   if (mission){
     const info = mission.info;
     hudText('MISSION ' + (info.i+1) + ' / ' + CAMPAIGN_TOTAL, 18, 14, 14, '#f4c355');
-    const title=info.title.toUpperCase();hudText(title.length>22&&small?title.slice(0,21)+'…':title,18,30,small?18:28,'#fff');
+    hudText(info.title.toUpperCase(), 18, 30, small ? 22 : 28, '#fff');
     cx.font = "600 " + (small ? 12 : 14) + "px 'IBM Plex Mono'";
-    const lines = wrap(objective, small ? Math.max(90,SW-190) : 430);
+    const lines = wrap(objective, small ? SW - 200 : 430);
     lines.forEach((l, i) => { cx.fillStyle = 'rgba(0,0,0,.7)'; cx.fillText(l, 20, (small ? 58 : 66) + i*18 + 2); cx.fillStyle = '#d7dde0'; cx.fillText(l, 18, (small ? 58 : 66) + i*18); });
     if (mission.phase==='active' && mission.timer > 0 && !(info.type==='race' && !mission.started)){ const s = Math.ceil(mission.timer / 60); hudText(Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'), 18, (small ? 62 : 72) + lines.length*18, small ? 22 : 30, s < 20 && frame % 30 < 15 ? '#ff5a4a' : '#fff'); }
   }
-  cx.restore();
   // boss bar
   if (boss && !boss.dead){ const w = Math.min(560, SW - 60), x = (SW - w)/2, by = SH - (small ? 150 : 58); cx.fillStyle = 'rgba(0,0,0,.7)'; cx.fillRect(x - 4, by - 22, w + 8, 38); hudText(boss.name, SW/2, by - 20, 14, '#ff8a8a', 'center'); cx.fillStyle = '#3a0a0a'; cx.fillRect(x, by - 2, w, 10); cx.fillStyle = boss.hp < boss.maxHp*.4 ? '#ffea00' : '#e83a3a'; cx.fillRect(x, by - 2, w * boss.hp / boss.maxHp, 10); }
   // minimap
@@ -1527,70 +1536,23 @@ const loopErrors = new Map();
 function reportLoopError(where, e){
   const key = where + ':' + (e && e.message);
   const n = (loopErrors.get(key) || 0) + 1; loopErrors.set(key, n);
-  if(n===1)window.level29StartupDiagnostics?.report(where+': '+(e?.message||e));
   if (n === 1 || n % 600 === 0) console.error('[loop] ' + where + ' failed (x' + n + '):', e);
 }
 function loop(now){
   // Schedule first so a thrown error in one frame can never stop the game permanently.
   requestAnimationFrame(loop);
+  if (window.bayouAdActive || document.hidden) { last = now; accT = 0; return; }
   // Avoid a catch-up spiral on a slow phone: at most three simulation steps per rendered frame.
-  accT = Math.min(50, accT + Math.min(50, now - last)); last = now;
-  let stepped = false;
+  accT = Math.min(50, accT + Math.min(50, now - last)*(mpRole?1:(window.level29TimeScale||1))); last = now;
+  let stepped = false; const stepStart=performance.now(); let steps=0;
   while (accT >= 1000/60){
     accT -= 1000/60; stepped = true;
     try { if (state==='menu'){ frame++; menuBackdrop(); for (const z of zombies){ z.a = z.wander; z.anim += .1; moveCircle(z, Math.cos(z.a)*.3, Math.sin(z.a)*.3, 8) && (z.wander += 2); } } else update(); }
     catch (e) { reportLoopError('update', e); }
+    steps++; if(steps>=3 || performance.now()-stepStart>=8){accT=Math.min(accT,1000/60);break;}
   }
   try { updateMusic(); updateEngine(); } catch (e) { reportLoopError('audio', e); }
   // On 90/120Hz phones a frame with no simulation step would redraw an identical image; skipping it halves GPU load and heat.
   if (!stepped && window.L29_SKIP_IDLE_FRAMES) return;
   try { render(); } catch (e) { reportLoopError('render', e); }
-}
-// Initialize AdMob when the game loads
-async function initAdMob() {
-  const AdMob=window.Capacitor?.Plugins?.AdMob;if(!AdMob)return false;
-  try {
-    await AdMob.initialize({
-      requestTrackingAuthorization: true,
-    });
-    // Show your banner automatically at the bottom
-    showGameBanner();
-  } catch (e) {
-    console.error("AdMob Init Error:", e);
-  }
-}
-
-// Banner Ad (Using your Banner ID)
-async function showGameBanner() {
-  const AdMob=window.Capacitor?.Plugins?.AdMob;if(!AdMob)return false;
-  try {
-    await AdMob.showBanner({
-      adId: 'ca-app-pub-9730543201329278/8674949283', // Your Banner ID
-      position: 'BOTTOM_CENTER',
-      size: 'BANNER',
-      margin: 0,
-      isTesting: false,
-    });
-  } catch (e) {
-    console.error("Banner Error:", e);
-  }
-}
-
-// Rewarded Ad (Call this when a player wants a bonus/revive)
-async function playRewardedAd() {
-  const AdMob=window.Capacitor?.Plugins?.AdMob;if(!AdMob)return false;
-  try {
-    await AdMob.prepareRewardVideoAd({
-      adId: 'ca-app-pub-9730543201329278/2903747857', // Your Rewarded ID
-      isTesting: false,
-    });
-    
-    const reward = await AdMob.showRewardVideoAd();
-    if (reward) {
-      // TODO: Give the player their in-game reward here!
-      console.log("Reward granted!");
-    }
-  } catch (e) {
-    console.error("Rewarded Ad Error:", e);
-  }
 }

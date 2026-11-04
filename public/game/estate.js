@@ -4,6 +4,9 @@
 const {batch}=level29World;
 const material=(color,rough=.85,metal=0)=>level29World.material(color,metal,rough);
 const vehicleData=[
+ ['electric','CRESCENT ELECTRIC','sedan',48,24,8.9,150],
+ ['ambulance','PARISH AMBULANCE','van',65,28,7,230],
+ ['utility','LEVEE UTILITY PICKUP','pickup',58,27,6.5,210],
  ['compact','CITY COMPACT','sedan',36,20,6.9,100],
  ['hatchback','SPORT HATCH','sedan',40,21,7.8,110],
  ['wagon','TOURING WAGON','sedan',52,23,7.4,140],
@@ -116,7 +119,8 @@ function buildPenthouse(){
  const marble=canvasTex(256,256,c=>{c.fillStyle='#8b8171';c.fillRect(0,0,256,256);const r=mkRng(2928);for(let k=0;k<60;k++){c.strokeStyle=k%3?'rgba(239,226,192,.12)':'rgba(40,32,30,.22)';c.lineWidth=.3+r()*1.8;c.beginPath();const y=r()*256;c.moveTo(0,y);c.bezierCurveTo(70,y-25,130,y+20,256,y+20);c.stroke();}});
  marble.wrapS=marble.wrapT=THREE.RepeatWrapping;marble.repeat.set(4,3);
  const floorMat=new THREE.MeshStandardMaterial({map:marble,roughness:.4,metalness:.04});
- const walls=new THREE.MeshStandardMaterial({map:wallTexture(),roughness:.88}),q=batch(g),cx=b.x+b.w/2,cy=b.y+b.h/2;
+ const paintTexture=wallTexture();paintTexture.encoding=THREE.sRGBEncoding;
+ const walls=new THREE.MeshBasicMaterial({name:'penthouseOriginalPaint',map:paintTexture,toneMapped:false}),q=batch(g),cx=b.x+b.w/2,cy=b.y+b.h/2;
  penthouse={b,base,active:false,lift:{x:cx,y:b.y+b.h+12},exit:{x:cx,y:b.y+b.h-19},furniture:[]};
  city.penthouse=penthouse;
  q.box(b.w,2,b.h,cx,base,cy,floorMat);
@@ -125,9 +129,9 @@ function buildPenthouse(){
   addMesh(g,new THREE.BoxGeometry(w,48,d),walls,x,base+25,z);
  // City-facing penthouse glazing, with a sill and slim brass mullions.
  for(const z of [b.y+10,b.y+b.h-10])addMesh(g,new THREE.BoxGeometry(2,48,20),walls,b.x+b.w,base+25,z);
- q.box(2,13,b.h-40,b.x+b.w,base+7,cy,material('#173f30'));
- q.box(2,11,b.h-40,b.x+b.w,base+43,cy,material('#672e79'));
- const glass=new THREE.MeshStandardMaterial({color:'#9abac0',transparent:true,opacity:.22,roughness:.18,metalness:.15,depthWrite:false});
+ q.box(2,13,b.h-40,b.x+b.w,base+7,cy,new THREE.MeshBasicMaterial({name:'penthouseOriginalGreen',color:'#173f30',toneMapped:false}));
+ q.box(2,11,b.h-40,b.x+b.w,base+43,cy,new THREE.MeshBasicMaterial({name:'penthouseOriginalPurple',color:'#672e79',toneMapped:false}));
+ const glass=new THREE.MeshPhysicalMaterial({name:'buildingGlass',color:'#b9d0d6',transmission:.78,thickness:.25,ior:1.45,transparent:true,opacity:1,roughness:.1,metalness:0,depthWrite:false});
  q.box(.5,24,b.h-40,b.x+b.w,base+26,cy,glass);
  for(const z of [b.y+20,cy-20,cy+20,b.y+b.h-20])q.box(2,25,1,b.x+b.w-1,base+26,z,gold);
  q.box(2,1,b.h-40,b.x+b.w-1,base+14,cy,gold);q.box(2,1,b.h-40,b.x+b.w-1,base+38,cy,gold);
@@ -176,7 +180,7 @@ function buildPenthouse(){
 function germanShepherd(){
  const g=new THREE.Group();g.name='Ronniebaby German Shepherd';
  const tan=material('#b07a3c',.8),black=material('#1d1a17',.8),dark=material('#5a3a1e',.8),eye=material('#0b0a09',.3);
- const B=(parent,w,h,d,x,y,z,m)=>{const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);mesh.position.set(x,y,z);parent.add(mesh);return mesh;};
+ const B=level29AnimalAnatomy.ell;
  B(g,11,4.4,4.2,0,7.4,0,tan);
  B(g,8.6,1.6,4.5,-.6,9.6,0,black);
  B(g,3.4,3.8,4,4.6,8.6,0,tan);
@@ -184,9 +188,10 @@ function germanShepherd(){
  const head=new THREE.Group();head.position.set(6.8,11.6,0);g.add(head);
  B(head,3.4,3,3.2,0,0,0,tan);B(head,1.2,2.4,2.4,-.6,.7,0,black);
  B(head,2.8,1.6,2,2.6,-.6,0,tan);B(head,1.2,1.2,1.4,3.6,-.4,0,black);B(head,.6,.6,.8,4.2,-.1,0,eye);
- for(const z of [1.1,-1.1]){const ear=B(head,.9,2.6,1.1,-.4,2.6,z,black);ear.rotation.x=z>0?-.18:.18;B(head,.4,.4,.4,1.5,.5,z*1.2,eye);}
+ for(const z of [1.1,-1.1]){const ear=level29AnimalAnatomy.tip(head,-.4,2.6,z,.7,3,.65,black);ear.rotation.x=z>0?-.18:.18;B(head,.4,.4,.4,1.5,.5,z*1.2,eye);}
  const tail=new THREE.Group();tail.position.set(-5.4,8.6,0);g.add(tail);
  const t1=B(tail,4.6,1.3,1.3,-2,-.8,0,tan);t1.rotation.z=.55;B(tail,2.2,1.2,1.2,-4.2,-2.4,0,black).rotation.z=.9;
+ for(const z of [-1.1,1.1]){B(head,.12,.12,.12,1.7,.6,z*1.25,material('#e5cf9b'));for(let k=0;k<3;k++)B(g,1.1,.15,.15,4.3,.4,z+(k-1)*.3,dark);}
  g.userData.tail=tail;g.userData.head=head;
  g.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=true;}});
  return g;
@@ -217,8 +222,8 @@ const oldWorld=buildWorld;
 buildWorld=function(){
  oldWorld();if(!city.world)return;
  const r=mkRng(292903);
- // Five caches per 5x3 land cell: regional spread, stable IDs, reachable ground.
- for(let gy=0;gy<5;gy++)for(let gx=0;gx<3;gx++)for(let n=0;n<4;n++){
+ // One cache per region; preserve stable IDs without littering every street.
+ for(let gy=0;gy<5;gy++)for(let gx=0;gx<3;gx++)for(let n=0;n<1;n++){
   for(let tries=0;tries<120;tries++){
    const x=(GULF_X+7+(MW-GULF_X-10)*(gx+r())/3)*TILE,y=(4+(MH-8)*(gy+r())/5)*TILE;
    if(solidAt(x,y)||blockedCircle(x,y,14)||[T_WATER,T_BRIDGE,T_BLD,T_ROAD].includes(tileAt(x,y)))continue;
@@ -232,21 +237,21 @@ function decorateVenues(){
  const g=new THREE.Group();g.name='career-interior-detail';cityGroup.add(g);const q=batch(g);
  const steel=material('#a2aaa5',.42,.5),dark=material('#273437'),wood=material('#846340'),paper=material('#e1d8c3'),red=material('#b34432'),green=material('#56765b'),blue=material('#36647b');
  for(const v of city.venues||[]){
+  if(v.id==='mall'||v.frontage?.angle||v.storyRole||v.kind==='snowballs'||v.id==='hospital')continue; // Rotated rooms receive local-space detail from interior-details.
   const b=v.b,levels=v.id==='hospital'?5:1;
   for(let l=0;l<levels;l++){
-   const z=l*56,x=b.x+b.w/2,y=b.y+7;
+   const z=(v.baseY||0)+l*56,x=b.x+b.w/2,y=b.y+7;
    // Painted skirting, tiled floor joints and ceiling fixture covers.
    for(const xx of [b.x+3,b.x+b.w-3])q.box(1,3,b.h-8,xx,z+2,b.y+b.h/2,dark);
    for(let yy=b.y+24;yy<b.y+b.h-5;yy+=32)q.box(b.w-8,.06,.22,x,z+.9,yy,steel);
    const title={garage:'SERVICE / DIAGNOSTICS',armory:'LICENSED EQUIPMENT',spray:'DETAILING / FINISH BAY',business:'OPERATIONS / DISPATCH',safe:'RESIDENT LOUNGE',bank:'ACCOUNTS / SECURE DEPOSITS',grocery:'FRESH PRODUCE / CHECKOUT',gym:'STRENGTH / RECOVERY',hospital:['TRIAGE / EMERGENCY','PHARMACY / WARD','STERILE OPERATING ROOM','IMAGING / PATHOLOGY','RECOVERY WARD'][l],police:'DUTY ROSTER / EVIDENCE',gas:'FUEL / CONVENIENCE',fire:'RESCUE / EQUIPMENT'}[v.id];
-   if(title)text(g,title,Math.min(120,b.w-20),9,x,z+39,y);
+   if(title&&v.id!=='business')text(g,title,Math.min(120,b.w-20),9,x,z+39,y);
    if(['garage','spray'].includes(v.id)){
     for(const xx of [b.x+17,b.x+b.w-17]){q.box(12,20,19,xx,z+10,b.y+25,red);for(let k=0;k<4;k++)q.box(9,.5,.7,xx,z+4+k*4,b.y+35,steel);}
     if(v.id==='garage')for(let k=0;k<5;k++){q.box(2,6+k%2*2,1,b.x+24+k*9,z+26,b.y+3,steel);q.box(4,2,1,b.x+24+k*9,z+30,b.y+3,steel);}
     else for(const xx of [b.x+9,b.x+b.w-9]){q.box(4,35,4,xx,z+18,b.y+b.h*.45,blue);for(let k=0;k<9;k++)q.box(4,2,7,xx,z+5+k*3,b.y+b.h*.45,green);}
    }else if(v.id==='armory'){
-    q.box(b.w-20,20,2,x,z+23,b.y+3,dark);
-    for(let k=0;k<5;k++){const xx=b.x+20+k*(b.w-40)/4;q.box(2,14,1.5,xx,z+24,b.y+5,steel);q.box(4,5,2,xx,z+17,b.y+5,wood);}
+    // Dedicated model pedestals are built by armory-showroom.js; no duplicate wall rack.
    }else if(['business','police','bank'].includes(v.id)){
     q.box(47,23,1,b.x+32,z+25,b.y+3,dark);
     for(let k=0;k<6;k++)q.box(10,6,.4,b.x+17+(k%3)*13,z+20+Math.floor(k/3)*8,b.y+4,paper);
@@ -440,6 +445,7 @@ syncRonnie=function(){
   window.level29BatchStatic(u.body,[u.armL,u.armR,u.legL,u.legR,u.helmet]);
   rbMesh.position.copy(pos);rbMesh.rotation.copy(rot);rbMesh.scale.copy(scale);u.body.position.copy(bp);u.estateBatched=true;
  }
+ if(missionIdx>0&&!penthouse.active){rbMesh.visible=state!=='menu';poseFigure(rbMesh,ronnie.x,ronnie.y,0,0,'stand');rbMesh.position.y=terrainHeight(ronnie.x,ronnie.y);return;}
  const b=penthouse.b;ronnie.x=b.x+b.w/2;ronnie.y=b.y+34;
  rbMesh.visible=state!=='menu'&&penthouse.active;
  poseFigure(rbMesh,ronnie.x,ronnie.y,Math.PI/2,0,'stand');rbMesh.position.y=penthouse.base+1;
