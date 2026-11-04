@@ -7,7 +7,7 @@ if(typeof module!=='undefined')module.exports={wantedState,crime,wantedTick};if(
 const wanted=wantedState();let officers=[],responders=[],dispatch=null,cooldown=0,last=0,forCity=null,phone=null;
 function releaseEntities(){for(const o of officers)o.mesh.parent?.remove(o.mesh);officers=[];for(const r of responders){r.car.gone=true;r.car.dead=true;}responders=[];dispatch=null;wanted.stars=0;wanted.visual=false;}
 function addCrime(severity){if(mpRole)return;crime(wanted,severity);toast('POLICE ALERT · '+wanted.stars+' STARS');}
-const enter=enterExit;enterExit=function(){const before=player?.car;enter.apply(this,arguments);const c=player?.car;if(!before&&c&&!c.playerOwned&&c.type!=='steamboat')addCrime(c.type==='police'?2:1);};
+const enter=enterExit;enterExit=function(){const before=player?.car,known=new Set(cars.filter(c=>c.driven||c.playerOwned));enter.apply(this,arguments);const c=player?.car;if(!before&&c&&!known.has(c)&&!c.playerOwned&&c.type!=='steamboat')addCrime(c.type==='police'?2:1);};
 const damage=damageCar;damageCar=function(c,amount,source){damage.apply(this,arguments);if(source==='player'&&c.type==='police')addCrime(1);};
 function officer(){const m=makeFigure(false);setFigureColors(m,'#af8563','#324965','#263744','#151b20');m.traverse(o=>{o.userData.noBatch=true;});m.name='Responding police officer';return m;}
 function dispatchStart(kind='bounty'){if(dispatch||mpRole)return false;if(kind==='heist'&&!isNight())return toast('NIGHT HEIST · AVAILABLE AFTER 20:00');const p=randomRoadPoint(player.x,player.y,400,1000);if(!p)return false;dispatch={kind,point:p,timer:kind==='heist'?150:180,stage:'go',enemies:[],reward:kind==='heist'?4500:1800,home:{x:player.x,y:player.y}};toast('PHONE DISPATCH · '+kind.toUpperCase()+' · FOLLOW D');return true;}
