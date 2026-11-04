@@ -1,0 +1,6 @@
+{
+  "appId": "com.level29.bloodinthebayou",
+  "appName": "Blood in the Bayou",
+  "webDir": "www",
+  "ios": { "contentInset": "never", "backgroundColor": "#0b0b0b" }
+}

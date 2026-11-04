@@ -1,0 +1,43 @@
+{
+  "source": "New Recording 3.m4a",
+  "sourceDurationSeconds": 48.789333,
+  "mapping": "Seven user-supplied ranges in script order; greeting corrected to 02\u201306 per follow-up. Final repeated 6 interpreted as 7/farewell.",
+  "clips": [
+    {
+      "file": "felicia_greet.mp3",
+      "start": 2,
+      "end": 6
+    },
+    {
+      "file": "felicia_pitch.mp3",
+      "start": 8,
+      "end": 15
+    },
+    {
+      "file": "felicia_buy.mp3",
+      "start": 17,
+      "end": 23
+    },
+    {
+      "file": "felicia_poor.mp3",
+      "start": 23,
+      "end": 27
+    },
+    {
+      "file": "felicia_equip.mp3",
+      "start": 29,
+      "end": 36
+    },
+    {
+      "file": "felicia_empty.mp3",
+      "start": 38,
+      "end": 42
+    },
+    {
+      "file": "felicia_bye.mp3",
+      "start": 43,
+      "end": 47
+    }
+  ],
+  "processing": "Mono 44.1kHz 96kbps MP3; 8ms/15ms boundary fades. No speech recognition, timing inference or content edits."
+}

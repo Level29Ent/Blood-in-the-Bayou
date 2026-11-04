@@ -1,0 +1,41 @@
+const {test}=require('node:test');const assert=require('node:assert/strict');const vm=require('node:vm');const fs=require('node:fs');
+const {lowland,padWeight}=require('../public/game/terrain-sites.js');
+test('farm sites reject raised terrain and slopes; flat lowlands are allowed',()=>{const r={x:0,y:0,w:100,h:100};assert.equal(lowland({heightAt:()=>0},r),true);assert.equal(lowland({heightAt:()=>20},r),false);assert.equal(lowland({heightAt:(x,y)=>x*.05},r),false);});
+test('development pads flatten footprints with a smooth taper, not abrupt mountain walls',()=>{const b={x:10,y:10,w:30,h:30};assert.equal(padWeight(20,20,b,20),1);assert.equal(padWeight(0,20,b,20),.5);assert.equal(padWeight(-10,20,b,20),0);});
+function kill(source){const code=fs.readFileSync('public/game/game.js','utf8');const ctx={cash:0,heat:0,mission:{phase:'active',info:{type:'clear'},targets:[{x:0,y:0}],kills:0},snd(){},zombieSay(){},gore(){},decal(){},parts:[],pickups:[],dist:Math.hypot,Math:Object.assign(Object.create(Math),{random:()=>0})};vm.createContext(ctx);vm.runInContext(code.slice(code.indexOf('function killZombie('),code.indexOf('function hurtPlayer(')),ctx);const z={alive:true,x:0,y:0,pts:25,killSource:source};ctx.killZombie(z,0,0);return {ctx,z};}
+test('guard, ambient and remote kills grant no local cash, mission kills or drops',()=>{for(const source of ['guard','ambient','remote']){const {ctx,z}=kill(source);assert.equal(z.alive,false);assert.equal(z.playerKill,false);assert.equal(ctx.cash,0);assert.equal(ctx.mission.kills,0);assert.equal(ctx.pickups.length,0);}});
+test('local kills retain rewards and cannot pay twice',()=>{const {ctx,z}=kill('player');assert.equal(ctx.cash,25);assert.equal(ctx.mission.kills,1);assert.equal(z.playerKill,true);ctx.killZombie(z,0,0);assert.equal(ctx.cash,25);});
+test('matched Three addon bundle does not contain a second renderer',()=>{const three=require('../public/game/three.min.js');assert.equal(three.REVISION,'149');const bundle=fs.readFileSync('public/game/vendor/postprocessing-r149.js','utf8');assert.match(bundle,/window.THREE/);assert.ok(bundle.length<60000);});
+test('terrain padding survives later terrain-provider replacement without flattening apartment floors',()=>{
+ const desc=fs.readFileSync('public/game/terrain-layout.js','utf8');const c={world:true,buildings:[{x:100,y:100,w:100,h:100}],trees:[],heightAt:()=>80};
+ const ctx={window:{level29Downtown:{lots:{}},level29OpenWorld:{interior:null}},level29SiteLayout:require('../public/game/site-layout.js'),buildVenue(){},level29Terrain:require('../public/game/terrain-sites.js'),genCity:()=>c,TILE:32,indexTrees(){}};vm.createContext(ctx);vm.runInContext(desc,ctx);ctx.genCity();assert.equal(c.heightAt(150,150),80);assert.equal(c.heightAt(500,500),80);c.heightAt=()=>120;assert.equal(c.heightAt(150,150),80);assert.equal(c.heightAt(500,500),120);
+ c.residence={b:c.buildings[0]};ctx.window.level29OpenWorld.interior='apartment';c.heightAt=()=>420;assert.equal(c.heightAt(150,150),420);
+});
+test('ambient car damage clears old player attribution before a later explosion',()=>{
+ const code=fs.readFileSync('public/game/game.js','utf8');const ctx={up:{},sfx(){},decal(){},rnd:()=>0,parts:[],explosions:[],player:{car:null},shake:0};vm.createContext(ctx);vm.runInContext(code.slice(code.indexOf('function damageCar('),code.indexOf('function killPlayer(')),ctx);
+ const c={hp:2,maxHp:2};ctx.damageCar(c,1,'player');ctx.damageCar(c,1);ctx.explodeCar(c);assert.equal(ctx.explosions[0].playerOwned,false);
+});
+test('remote rocket blasts retain their owner instead of paying the local player',()=>{
+ const code=fs.readFileSync('public/game/gta.js','utf8');const ctx={explosions:[],sfx(){},shake:0,decal(){},parts:[],rnd:()=>0};vm.createContext(ctx);vm.runInContext(code.slice(code.indexOf('function boom('),code.indexOf('function updateWeapons(')),ctx);ctx.boom(0,0,130,'remote-player');assert.equal(ctx.explosions[0].owner,'remote-player');assert.equal(ctx.explosions[0].playerOwned,false);ctx.boom(0,0,130);assert.equal(ctx.explosions[1].playerOwned,true);
+});
+function pipeline(){
+ const THREE={...require('../public/game/three.min.js'),PMREMGenerator:null};let q='high',direct=0;
+ class Pass{constructor(){this.material={dispose(){}};this.fsQuad={dispose(){}};}dispose(){}}
+ class Composer{constructor(){this.passes=[];}addPass(p){this.passes.push(p);}setPixelRatio(){}setSize(w,h){this.size=[w,h];}render(){if(this.fail)throw Error('GPU failure');}dispose(){this.disposed=true;}}
+ const scene={traverse(){},fog:{},environment:null};const renderer={capabilities:{isWebGL2:true},extensions:{has:()=>true},outputEncoding:THREE.sRGBEncoding,getDrawingBufferSize:v=>v.set(640,480),getContext:()=>({isContextLost:()=>false}),render:()=>direct++,setRenderTarget(){},clear(){}};
+ const ctx={THREE,window:{BayouPost:{EffectComposer:Composer,RenderPass:Pass,SSAOPass:Pass,ShaderPass:Pass},level29Graphics:{get quality(){return q;}}},localStorage:{getItem:()=>q},renderer,scene,vmScene:scene,sun:{},hemi:{},lightMode:'day',camera:{},initGL(){},makeCarMesh(){},syncCars(){},carMeshes:new Map(),addEventListener(){},console:{warn(){}},clamp:(x,a,b)=>Math.min(b,Math.max(a,x))};vm.createContext(ctx);vm.runInContext(fs.readFileSync('public/game/detailed-materials.js','utf8'),ctx);ctx.level29SurfaceDetail=ctx.window.level29SurfaceDetail;vm.runInContext(fs.readFileSync('public/game/cinematic.js','utf8'),ctx);return {ctx,api:ctx.window.level29Cinematic,setQuality:v=>q=v,direct:()=>direct};
+}
+test('postprocessing follows quality, bounds render targets and restores output encoding',()=>{
+ const p=pipeline();p.api.drawWorld();assert.equal(p.api.ssao.enabled,true);assert.equal(p.api.size.width,640);assert.equal(p.ctx.renderer.outputEncoding,p.ctx.THREE.sRGBEncoding);
+ p.setQuality('medium');p.api.drawWorld();assert.equal(p.api.size.width,384);assert.equal(p.api.ssao.enabled,true);
+ p.setQuality('low');p.api.drawWorld();assert.equal(p.api.ssao,null);assert.equal(p.api.composer,null);assert.equal(p.direct(),1);
+});
+test('a failed composer disposes targets and falls back to direct rendering',()=>{
+ const p=pipeline();p.api.drawWorld();const c=p.api.composer;c.fail=true;p.api.drawWorld();assert.equal(c.disposed,true);assert.equal(p.api.failed,true);assert.equal(p.direct(),1);p.api.drawWorld();assert.equal(p.direct(),2);
+});
+test('low quality allocates no composer and can explicitly re-enable effects',()=>{const p=pipeline();p.setQuality('low');p.api.drawWorld();assert.equal(p.api.composer,null);assert.equal(p.direct(),1);p.setQuality('high');p.api.drawWorld();assert.equal(p.api.ssao.enabled,true);});
+test('ground remains rough nonmetallic asphalt rather than receiving generic reflective conversion',()=>{
+ const THREE=require('../public/game/three.min.js'),p=pipeline();const mat=new THREE.MeshStandardMaterial({name:'worldGround',roughness:1,metalness:0,envMapIntensity:0}),mesh=new THREE.Mesh(new THREE.PlaneGeometry(10,10),mat),root=new THREE.Group();root.add(mesh);p.api.prepare(root);assert.equal(mesh.material,mat);assert.equal(mat.metalness,0);assert.equal(mat.roughness,1);assert.equal(mat.envMapIntensity,0);
+ const code=fs.readFileSync('public/game/fp.js','utf8');assert.match(code,/gt.encoding=THREE.sRGBEncoding/);assert.match(code,/name:'worldGround'.*roughness:1,metalness:0,envMapIntensity:0/);
+});
+test('quality tiers share the same color balance without a desaturating postprocess tint',()=>{const s=fs.readFileSync('public/game/cinematic.js','utf8');assert.match(s,/contrast:\{value:1\},saturation:\{value:1\}/);assert.ok(!s.includes('c*=vec3(1.015,1.0,.985)'));assert.match(fs.readFileSync('public/game/game.js','utf8'),/shade\('#11161b'/);assert.match(fs.readFileSync('public/game/gulf.js','utf8'),/strokeStyle='#11161b'/);});
