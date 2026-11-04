@@ -607,4 +607,4 @@ window.level29Expansion={
   height:terrainHeight,service:serviceVenue,get save(){return venueSave;}
 };
 // Regenerate the initial district through the expansion hook before the next frame.
-travelToMenu();
+if(!window.level29DeferredEntry)travelToMenu();
