@@ -1,9 +1,5 @@
 'use strict';
-<<<<<<< HEAD
 // Downtown expansion: airport (3 Level 29 jets + 29s bomber gunner ride), clouds, bird hunting, dispensary,
-=======
-// Downtown expansion: airport (3 Level 29 jets + 13s bomber gunner ride), clouds, bird hunting, dispensary,
->>>>>>> main
 // smoke shop, food truck, university + football stadium, Bonnie De Vette's slab dealership, the Velvet Jester
 // club, the BoomCity casino floor (6 jester slots, blackjack, poker, roulette wheel, Level 29 Jackpot),
 // the Natchez deck net fishing, a steamboat safe zone, and a playable confidence course. Load after boomcity.js.
@@ -18,11 +14,7 @@ const rnd=(a,b)=>a+Math.random()*(b-a);
 const d2=(ax,ay,bx,by)=>Math.hypot(ax-bx,ay-by);
 const isWorld=c=>!!(c&&c.world&&(c.coreWidth||c.width)===WORLD_SIZE);
 const COL={purple:'#5b2a86',gold:'#f2c14e',green:'#2fae66'};
-<<<<<<< HEAD
 const BOMBER_COST=2900,BOMBER_FRAMES=29*60;
-=======
-const BOMBER_COST=2900,BOMBER_FRAMES=13*60;
->>>>>>> main
 const coarse=()=>window.matchMedia&&matchMedia('(pointer: coarse)').matches;
 const addJackpot=n=>{save.jackpot+=n;persist();};
 
@@ -34,15 +26,9 @@ const LOTS=[
   {id:'airport',w:12,h:11,name:'LEVEL 29 INTERNATIONAL'},
   {id:'stadium',w:10,h:8,name:'JESTER STADIUM'},
   {id:'university',w:9,h:6,name:'BAYOU STATE UNIVERSITY'},
-<<<<<<< HEAD
   {id:'dealer',w:12,h:10,name:'BONNIE DE VETTE SLAB MOTORS'},
   {id:'club',w:5,h:4,name:'THE VELVET JESTER'},
   {id:'dispensary',w:3,h:4,name:'ELEVATED MELANIN'},
-=======
-  {id:'dealer',w:8,h:7,name:'BONNIE DE VETTE SLAB MOTORS'},
-  {id:'club',w:5,h:4,name:'THE VELVET JESTER'},
-  {id:'dispensary',w:3,h:4,name:'GREEN BAYOU DISPENSARY'},
->>>>>>> main
   {id:'smoke',w:3,h:4,name:'CROWN SMOKE SHOP'},
   {id:'truck',w:3,h:3,name:"MAMA 29'S FOOD TRUCK"},
 ];
@@ -72,20 +58,12 @@ genCity=function(di){
   const c=prevGen.apply(this,arguments);lots={};if(!isWorld(c))return c;
   const W=c.width,set=(x,y,t)=>{if(x>=0&&y>=0&&x<W&&y<c.height)c.g[y*W+x]=t;};
   const taken=[];
-<<<<<<< HEAD
   for(const L of [...LOTS].sort((a,b)=>(a.id==='dealer'?-1:b.id==='dealer'?1:0))){let w=L.w,h=L.h,r=null;while(!r&&w>=3&&h>=3){r=findLot(c,w,h,taken);if(!r){w--;if(h>w)h--;}}if(!r)continue;taken.push(r);lots[L.id]=Object.assign({},L,r);}
-=======
-  for(const L of LOTS){let w=L.w,h=L.h,r=null;while(!r&&w>=3&&h>=3){r=findLot(c,w,h,taken);if(!r){w--;if(h>w)h--;}}if(!r)continue;taken.push(r);lots[L.id]=Object.assign({},L,r);}
->>>>>>> main
   for(const id in lots){const L=lots[id];
     for(let y=L.y0;y<=L.y1;y++)for(let x=L.x0;x<=L.x1;x++)set(x,y,T_PLAZA);
     let fb=null;
     if(id==='airport')fb={x0:L.x0,y0:L.y0,x1:L.x0+3,y1:L.y0+3};
-<<<<<<< HEAD
     else if(id==='dealer')fb={x0:L.x0,y0:L.y0,x1:Math.min(L.x1,L.x0+5),y1:L.y0+2};
-=======
-    else if(id==='dealer')fb={x0:L.x0,y0:L.y0,x1:L.x0+3,y1:L.y0+1};
->>>>>>> main
     else if(id!=='truck')fb={x0:L.x0,y0:L.y0,x1:L.x1,y1:L.y1-2};
     L.fb=fb;
     if(fb)for(let y=fb.y0;y<=fb.y1;y++)for(let x=fb.x0;x<=fb.x1;x++)set(x,y,T_BLD);
@@ -104,11 +82,7 @@ genCity=function(di){
   const h0=c.heightAt;if(typeof h0==='function')c.heightAt=(x,y)=>hits(x,y,0)?0:h0(x,y);
   if(typeof indexTrees==='function')indexTrees(c);
   const D=lots.dealer;
-<<<<<<< HEAD
   if(D)D.inventory=['lowrider','slab','sedan','suv'].filter(type=>CAR_SPECS[type]).map((type,k)=>({type,price:4500+k*2000,x:(D.x0+1+k*1.9)*T,y:(D.y0+5.4)*T}));
-=======
-  if(D){[['lowrider',0],['slab',1],['lowrider',2],['slab',3]].forEach(([type,k])=>c.parked.push({x:(D.x0+1+k*1.9)*T,y:(D.y0+5.4)*T,a:-Math.PI/2,type}));}
->>>>>>> main
   return c;
 };
 
@@ -122,16 +96,12 @@ function textTex(text,fg,bg,w,h){const cv=document.createElement('canvas');cv.wi
   g.fillStyle=fg;g.shadowColor=fg;g.shadowBlur=18;g.textAlign='center';g.textBaseline='middle';g.fillText(text,cv.width/2,cv.height/2+2);
   const t=new THREE.CanvasTexture(cv);return t;}
 function sign(g,text,w,h,x,y,z,fg,bg,rotY){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:textTex(text,fg,bg),side:THREE.DoubleSide}));m.position.set(x,y,z);if(rotY)m.rotation.y=rotY;g.add(m);return m;}
-<<<<<<< HEAD
 function priceLabel(g,text,x,y,z){const cv=document.createElement('canvas');cv.width=1024;cv.height=192;const c=cv.getContext('2d');c.fillStyle='#0b141b';c.fillRect(0,0,1024,192);c.strokeStyle='#f4d27a';c.lineWidth=6;c.strokeRect(4,4,1016,184);c.fillStyle='#fff5d9';c.textAlign='center';c.font='bold 54px monospace';let fs=54;while(c.measureText(text).width>980){c.font='bold '+(--fs)+'px monospace';}c.fillText(text,512,118);const map=new THREE.CanvasTexture(cv);map.encoding=THREE.sRGBEncoding;map.minFilter=THREE.LinearFilter;map.generateMipmaps=false;
  const m=new THREE.Sprite(new THREE.SpriteMaterial({map,color:'#ffffff',opacity:1,transparent:false,fog:false,toneMapped:false,depthWrite:false}));m.name='dealer-opaque-price';m.scale.set(68,12.75,1);m.position.set(x,y,z);g.add(m);return m;}
-=======
->>>>>>> main
 let logoTex=null;const getLogo=()=>logoTex||(logoTex=new THREE.TextureLoader().load('logo.png'));
 let bonnieTex=null;const getBonnie=()=>bonnieTex||(bonnieTex=new THREE.TextureLoader().load('bonnie.png'));
 
 function planeMesh(bomber){
-<<<<<<< HEAD
   const g=new THREE.Group(),s=bomber?1.25:1,body=lam(bomber?'#69716e':'#dadfdc'),metal=lam('#78868e'),dark=lam('#202b36'),rubber=lam('#202326');
   // Lathed tapered fuselage, aligned nose-forward along +X.
   const profile=[[-45,.2],[-38,2],[-24,5],[-5,6.8],[22,6.3],[33,4.8],[41,2.2],[44,.2]];
@@ -155,19 +125,6 @@ function planeMesh(bomber){
     cyl(g,.7,.7,6,x*s,-8*s,z*s,metal,8);
     const tire=cyl(g,2.7,2.7,2,x*s,-11*s,z*s,rubber,12);tire.rotation.x=Math.PI/2;
   }
-=======
-  const g=new THREE.Group(),body=lam(COL.purple),gold=lam(COL.gold),green=lam(COL.green),s=bomber?1.25:1;
-  const f=cyl(g,7*s,5*s,80*s,0,0,0,body);f.rotation.z=Math.PI/2;
-  const nose=new THREE.Mesh(new THREE.SphereGeometry(7*s,12,10),gold);nose.position.set(40*s,0,0);g.add(nose);
-  box(g,80*s,2,14.4*s,0,0,0,gold);
-  box(g,22*s,1.6,112*s,4*s,-1,0,body);box(g,8*s,2,6,4*s,-1,56*s,green);box(g,8*s,2,6,4*s,-1,-56*s,green);
-  box(g,12*s,1.2,36*s,-36*s,1,0,body);
-  box(g,16*s,22*s,1.6,-34*s,12*s,0,body);
-  const logo=new THREE.MeshBasicMaterial({map:getLogo(),transparent:true,side:THREE.DoubleSide});
-  for(const z of [1,-1]){const p=new THREE.Mesh(new THREE.PlaneGeometry(14*s,14*s),logo);p.position.set(-34*s,13*s,z*1.0);g.add(p);}
-  const eng=bomber?[-38,-18,18,38]:[-24,24];for(const z of eng){const e=cyl(g,3.4*s,3.4*s,14*s,8*s,-4*s,z*s,green);e.rotation.z=Math.PI/2;}
-  if(bomber){const tur=new THREE.Mesh(new THREE.SphereGeometry(6,10,8),gold);tur.position.set(-6,7*s,0);g.add(tur);const gun=cyl(g,.8,.8,18,4,9*s,0,lam('#222'));gun.rotation.z=Math.PI/2;}
->>>>>>> main
   return g;}
 
 function lowriderMesh(color){
@@ -183,7 +140,6 @@ function lowriderMesh(color){
   return g;}
 
 function bonnieMesh(){
-<<<<<<< HEAD
   const g=makeFigure(false),u=g.userData;setFigureColors(g,'#7a4a2e','#14231a','#24352c','#0d0a0a');
   u.torso.scale.z*=.94;u.longHair.visible=true;u.longHair.scale.set(.95,1.15,1.02);
   const goldM=lam(COL.gold),braid=u.hair.material;
@@ -203,18 +159,6 @@ function bonnieMesh(){
 function genericBuilding(g,L,height,color,fg,bg){
   const fb=L.fb,w=(fb.x1-fb.x0+1)*T,d=(fb.y1-fb.y0+1)*T,cx=fb.x0*T+w/2,cz=fb.y0*T+d/2;
   if(L.venue){buildVenue(L.venue);return {cx,cz,w,d};}
-=======
-  const g=new THREE.Group(),skin=lam('#7a4a2e'),dress=lam('#14231a',0x061a0c),goldM=lam(COL.gold,0x3a2600),braid=lam('#0d0a0a');
-  cyl(g,4.5,7,26,0,13,0,dress);cyl(g,2.4,2.4,6,0,28,0,skin);
-  const head=new THREE.Mesh(new THREE.SphereGeometry(5,14,12),skin);head.position.set(0,34,0);g.add(head);
-  const crown=new THREE.Mesh(new THREE.TorusGeometry(5.2,.7,6,20),goldM);crown.rotation.x=Math.PI/2;crown.position.set(0,36.5,0);g.add(crown);
-  for(let k=0;k<12;k++){const a=k/12*Math.PI*2;if(Math.sin(a)>.75)continue;cyl(g,.8,.6,24,Math.cos(a)*4.6,24,Math.sin(a)*4.6,braid,6);}
-  for(const x of [-6,6]){const arm=cyl(g,1.4,1.2,16,x,18,0,skin);arm.rotation.z=x>0?-.2:.2;}
-  return g;}
-
-function genericBuilding(g,L,height,color,fg,bg){
-  const fb=L.fb,w=(fb.x1-fb.x0+1)*T,d=(fb.y1-fb.y0+1)*T,cx=fb.x0*T+w/2,cz=fb.y0*T+d/2;
->>>>>>> main
   box(g,w-6,height,d-6,cx,height/2,cz,lam(color));
   box(g,w,3,d,cx,height+1.5,cz,lam(bg||'#1a1a1a'));
   sign(g,L.name,Math.min(w-10,260),Math.min(36,height*.35),cx,height*.72,fb.y0*T+d-2.5,fg,bg);
@@ -230,16 +174,11 @@ function buildLots(g){
       const run=new THREE.Mesh(new THREE.PlaneGeometry(w-T,2.6*T),lam('#2b2b30'));run.rotation.x=-Math.PI/2;run.position.set(L.x0*T+w/2+T/2,.8,(L.y1-1.5)*T);g.add(run);
       for(let k=0;k<12;k++)box(g,T*.6,.3,3,L.x0*T+T*1.4+k*(w-2*T)/12,1,(L.y1-1.5)*T,lam('#f4f1e6'));
       const fb=L.fb,hw=(fb.x1-fb.x0+1)*T,hd=(fb.y1-fb.y0+1)*T;
-<<<<<<< HEAD
       if(L.venue)buildVenue(L.venue);else{const hang=cyl(g,hd/2,hd/2,hw-6,fb.x0*T+hw/2,0,fb.y0*T+hd/2,lam('#8d8c96'),20);hang.rotation.z=Math.PI/2;hang.scale.set(1,1,.9);}
-=======
-      const hang=cyl(g,hd/2,hd/2,hw-6,fb.x0*T+hw/2,0,fb.y0*T+hd/2,lam('#8d8c96'),20);hang.rotation.z=Math.PI/2;hang.scale.set(1,1,.9);
->>>>>>> main
       sign(g,'LEVEL 29 INTERNATIONAL',hw-14,26,fb.x0*T+hw/2,hd*.42,fb.y0*T+hd-2,COL.gold,'#24103a');
       const towerX=(L.x1+.2)*T,towerZ=(L.y0+1.5)*T;cyl(g,8,10,90,towerX,45,towerZ,lam('#d9d4c4'));cyl(g,16,14,18,towerX,99,towerZ,lam('#2a6a8a',0x062030));
       const p1=planeMesh(false);p1.position.set((L.x0+(L.x1-L.x0+1)*.5)*T,14,(L.y0+2.5)*T);p1.rotation.y=-Math.PI/2;g.add(p1);
       const pb=planeMesh(true);pb.position.set((L.x0+(L.x1-L.x0+1)*.8)*T,16,(L.y0+2.5)*T);pb.rotation.y=-Math.PI/2;g.add(pb);
-<<<<<<< HEAD
       sign(g,'BOMBER RIDE '+money(BOMBER_COST)+' · 29 SEC',120,18,(L.x0+(L.x1-L.x0+1)*.8)*T,8,(L.y0+4.3)*T,'#ff6b6b','#1a0808');
       const additions=[];for(const [i,label]of ['LEVEL 29 · BAYOU AIR','LEVEL 29 · GULF EXPRESS'].entries()){
        const p=planeMesh(false);p.name=label;p.position.set((L.x0+7+i*5)*T,14,(L.y0+6)*T);p.rotation.y=-Math.PI/2;
@@ -247,10 +186,6 @@ function buildLots(g){
        const stripe=new THREE.Mesh(new THREE.BoxGeometry(48,.8,13.8),lam(i?'#d4ab50':'#5b4096'));stripe.position.set(-6,-1,0);p.add(stripe);g.add(p);additions.push(p);
        box(g,110,.2,115,p.position.x,.9,p.position.z,lam('#333b40'));sign(g,label,100,5,p.position.x,7,p.position.z+57,'#e4c071','#24374a');
       }L.planes=[p1,pb,...additions];
-=======
-      sign(g,'BOMBER RIDE '+money(BOMBER_COST)+' · 13 SEC',120,18,(L.x0+(L.x1-L.x0+1)*.8)*T,8,(L.y0+4.3)*T,'#ff6b6b','#1a0808');
-      L.planes=[p1,pb];
->>>>>>> main
     }
     else if(id==='stadium'){
       const fb=L.fb,w=(fb.x1-fb.x0+1)*T,d=(fb.y1-fb.y0+1)*T,cx=fb.x0*T+w/2,cz=fb.y0*T+d/2,wall=lam('#3a1f5c'),seat=lam('#c9a33a');
@@ -267,19 +202,11 @@ function buildLots(g){
       const dome=new THREE.Mesh(new THREE.SphereGeometry(22,16,10,0,Math.PI*2,0,Math.PI/2),lam(COL.gold,0x221800));dome.position.set(b.cx,64,b.cz);g.add(dome);
     }
     else if(id==='dealer'){
-<<<<<<< HEAD
       genericBuilding(g,L,48,'#efeae0','#ffffff','#5b2a86');
       const cols=['#6a1fb0','#c21f6a','#1f9e5a','#d9a520'];
       cols.forEach((c,k)=>{const pad=new THREE.Group();pad.position.set((L.x0+1+k*(L.x1-L.x0-1)/3)*T,0,(L.y0+5)*T);g.add(pad);
         cyl(pad,30,32,3,0,1.5,0,lam('#1a1424'));const rec=L.inventory[k],sample=rec?makeCar(0,0,0,rec.type):null;if(sample)sample.col=c;const car=sample?makeCarMesh(sample):lowriderMesh(c);car.position.set(0,3,0);car.rotation.y=Math.PI/2;pad.add(car);spins.push(car);if(rec)priceLabel(pad,CAR_SPECS[rec.type].name+' · '+money(rec.price),0,35,27);});
       const fig=bonnieMesh(),bp=window.level29Frontage?level29Frontage.lotPoint(L,{x:(L.x0+2)*T,y:(L.y0+1.2)*T}):{x:(L.x0+2)*T,y:(L.y0+1.2)*T};fig.position.set(bp.x,L.venue?.baseY||0,bp.y);g.add(fig);dealerFig=fig;
-=======
-      genericBuilding(g,L,34,'#efeae0','#ffffff','#5b2a86');
-      const cols=['#6a1fb0','#c21f6a','#1f9e5a','#d9a520'];
-      cols.forEach((c,k)=>{const pad=new THREE.Group();pad.position.set((L.x0+1+k*1.9)*T,0,(L.y0+3.3)*T);g.add(pad);
-        cyl(pad,30,32,3,0,1.5,0,lam('#1a1424'));const car=lowriderMesh(c);car.position.y=3;car.rotation.y=Math.PI/2;pad.add(car);spins.push(car);});
-      const fig=bonnieMesh();fig.position.set((L.x0+5)*T,0,(L.y0+1.2)*T);g.add(fig);dealerFig=fig;
->>>>>>> main
       const bb=new THREE.Mesh(new THREE.PlaneGeometry(56,32),new THREE.MeshBasicMaterial({map:getBonnie(),side:THREE.DoubleSide}));bb.position.set((L.x0+6.6)*T,62,(L.y0+.5)*T);g.add(bb);
       cyl(g,1.5,1.5,46,(L.x0+6.6)*T,23,(L.y0+.5)*T,lam('#333'));
       sign(g,'BONNIE DE VETTE · OWNER',56,9,(L.x0+6.6)*T,41,(L.y0+.5)*T+.4,COL.gold,'#14231a');
@@ -288,11 +215,7 @@ function buildLots(g){
       for(const [c,y] of [[COL.green,30],[COL.gold,34]])box(g,b.w-8,1.2,1.2,b.cx,y,b.cz+b.d/2+.8,lam(c,c));}
     else if(id==='dispensary')genericBuilding(g,L,28,'#e8efe6','#2fae66','#0d2416');
     else if(id==='smoke')genericBuilding(g,L,28,'#2a2420',COL.gold,'#1a120c');
-<<<<<<< HEAD
     else if(id==='truck'){if(L.venue){buildVenue(L.venue);continue;}const tx=(L.x0+1.5)*T,tz=(L.y0+1.2)*T;
-=======
-    else if(id==='truck'){const tx=(L.x0+1.5)*T,tz=(L.y0+1.2)*T;
->>>>>>> main
       box(g,70,30,28,tx,19,tz,lam('#f2c14e'));box(g,22,22,26,tx+44,15,tz,lam(COL.purple));
       box(g,36,12,1,tx-4,22,tz+14.2,lam('#1a1424',0x110022));
       sign(g,"MAMA 29'S",56,10,tx-4,34,tz+14.6,'#5b2a86','#f2c14e');
@@ -307,7 +230,6 @@ function buildCourse(g){
   const pts=[
     {x:f.x+W/2,y:f.y+H+40,type:'start'},
     {x:f.x+20,y:f.y+H-24,type:'gate',name:'SPRINT GATE'},
-<<<<<<< HEAD
     {x:f.x+20,y:f.y+30,type:'hold',hold:90,name:'HURDLE DRILL'},
     {x:f.x+W/2,y:f.y+28,type:'rope',taps:8,name:'ROPE CLIMB'},
     {x:f.x+W-20,y:f.y+30,type:'hold',hold:120,name:'LOW CRAWL'},
@@ -325,16 +247,6 @@ function buildCourse(g){
     else if(p.name==='LOW CRAWL'){for(const x of [-20,20])box(g,2,12,35,p.x+x,6,p.y,steel);for(let z=-15;z<=15;z+=6)box(g,40,.5,1,p.x,12,p.y+z,rope);}
     else for(const x of [-22,22])box(g,2,24,2,p.x+x,12,p.y,steel);
   }
-=======
-    {x:f.x+20,y:f.y+30,type:'gate',name:'HURDLE LANE'},
-    {x:f.x+W/2,y:f.y+28,type:'rope',taps:8,name:'ROPE CLIMB'},
-    {x:f.x+W-20,y:f.y+30,type:'gate',name:'LOW CRAWL'},
-    {x:f.x+W-20,y:f.y+H/2,type:'wall',taps:6,name:'WALL OVER'},
-    {x:f.x+W/2,y:f.y+H/2,type:'gate',name:'BALANCE BEAM'},
-    {x:f.x+W/2,y:f.y+H+40,type:'finish',name:'FINISH'},
-  ];
-  const rings=pts.map((p,i)=>{const m=new THREE.Mesh(new THREE.TorusGeometry(15,1.6,8,24),new THREE.MeshBasicMaterial({color:i===0?COL.green:COL.purple}));m.position.set(p.x,16,p.y);g.add(m);return m;});
->>>>>>> main
   course={f,pts,rings};
 }
 
@@ -348,11 +260,7 @@ function ensureSky(){
   if(!scene)return;
   if(!clouds.length){const m=new THREE.MeshLambertMaterial({color:'#ffffff',transparent:true,opacity:.82});
     for(let i=0;i<26;i++){const c=new THREE.Group();const n=3+Math.floor(Math.random()*3);for(let k=0;k<n;k++){const s=new THREE.Mesh(new THREE.SphereGeometry(rnd(26,46),10,8),m);s.position.set(k*34-n*17,rnd(-6,8),rnd(-14,14));s.scale.y=.6;c.add(s);}
-<<<<<<< HEAD
       c.name='weather-cloud';c.userData.v=rnd(.15,.45);c.position.set(player.x+rnd(-1300,1300),rnd(300,420),player.y+rnd(-1300,1300));clouds.push(c);}}
-=======
-      c.userData.v=rnd(.15,.45);c.position.set(player.x+rnd(-1300,1300),rnd(300,420),player.y+rnd(-1300,1300));clouds.push(c);}}
->>>>>>> main
   for(const c of clouds)if(!c.parent)scene.add(c);
   if(!flyer){flyer=planeMesh(false);flyer.userData.a=0;}
   if(isWorld(city)&&!flyer.parent)scene.add(flyer);
