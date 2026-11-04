@@ -2,16 +2,8 @@
 // gradient sky dome with sun glow and stars, and a cinematic vignette.
 // Loaded last; wraps initGL/render the same way the other expansion files do.
 (function(){
-<<<<<<< HEAD
-  // Performance-first policy on every device; ignore previously saved expensive settings.
-  const quality = 'low';
-=======
-  const QUALITY_KEY = 'l29_gfx_quality';
-  const LEVELS = ['high', 'medium', 'low'];
-  const touch = matchMedia('(pointer: coarse)').matches;
-  let quality = localStorage.getItem(QUALITY_KEY);
-  if (!LEVELS.includes(quality)) quality = touch ? 'medium' : 'high';
->>>>>>> main
+  // Default lightweight; explicit user choice can opt into higher quality.
+  let quality='low';try{const q=localStorage.getItem('level29.graphics.stage1');if(['low','medium','high'].includes(q))quality=q;}catch(_){}
 
   const SHADOW = {
     high:   { size: 2048, extent: 260, every: 1 },
@@ -22,11 +14,7 @@
   const sunDir = new THREE.Vector3();
   const tmp = new THREE.Vector3();
   const seenMats = new WeakSet();
-<<<<<<< HEAD
   let sky = null, ready = false, frameN = 0, vignette = null, scannedCity=null;
-=======
-  let sky = null, ready = false, frameN = 0, vignette = null;
->>>>>>> main
 
   function fixTexture(t){
     if (t && t.encoding !== THREE.sRGBEncoding){ t.encoding = THREE.sRGBEncoding; t.needsUpdate = true; return true; }
@@ -108,10 +96,6 @@
     return mesh;
   }
 
-<<<<<<< HEAD
-=======
-  const EXPOSURE = { day: 0.74, dusk: 1.0, night: 1.15 };
->>>>>>> main
   const DAY_ZENITH = new THREE.Color('#3f74b8'), DUSK_ZENITH = new THREE.Color('#4a3d6e'), NIGHT_ZENITH = new THREE.Color('#03060f');
   function updateSky(){
     if (!sky) return;
@@ -124,12 +108,7 @@
     u.sunDir.value.copy(sunDir);
     u.night.value = mode === 'night' ? 1 : 0;
     u.sunSize.value = mode === 'night' ? 0.25 : 1;
-<<<<<<< HEAD
     renderer.toneMappingExposure = 1;
-=======
-    const target = EXPOSURE[mode] || EXPOSURE.day;
-    renderer.toneMappingExposure += (target - renderer.toneMappingExposure) * 0.05;
->>>>>>> main
   }
 
   function applyQuality(){
@@ -177,13 +156,8 @@
     if (ready || !renderer) return;
     ready = true;
     renderer.outputEncoding = THREE.sRGBEncoding;
-<<<<<<< HEAD
     renderer.toneMapping = THREE.NoToneMapping;
     renderer.toneMappingExposure = 1;
-=======
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.05;
->>>>>>> main
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     sunDir.copy(sun.position).normalize();
     scene.add(sun.target);
@@ -203,39 +177,12 @@
     if (renderer && !ready) setup();
     if (ready){
       frameN++;
-<<<<<<< HEAD
       if(scannedCity!==city){scanScenes();scannedCity=city;}
-=======
-      if (frameN % 30 === 1) scanScenes();
->>>>>>> main
       updateSky();
       updateShadowCamera();
     }
     baseRender.apply(this, arguments);
   };
 
-<<<<<<< HEAD
-  window.level29Graphics={get quality(){return quality;},setQuality(){ /* Fixed performance policy. */ }};
-=======
-  function toast(text){
-    let el = document.getElementById('gfx-toast');
-    if (!el){
-      el = document.createElement('div'); el.id = 'gfx-toast'; el.setAttribute('role', 'status');
-      el.style.cssText = 'position:absolute;left:50%;top:18px;transform:translateX(-50%);z-index:20;padding:8px 14px;' +
-        'background:rgba(8,9,11,.82);border:1px solid rgba(246,243,230,.25);color:#f6f3e6;font:600 14px "IBM Plex Mono",monospace;' +
-        'letter-spacing:.08em;pointer-events:none;transition:opacity .3s';
-      document.body.appendChild(el);
-    }
-    el.textContent = text; el.style.opacity = '1';
-    clearTimeout(el._t); el._t = setTimeout(() => { el.style.opacity = '0'; }, 1400);
-  }
-
-  addEventListener('keydown', e => {
-    if (e.code !== 'KeyG' || e.repeat || e.target.closest('input,textarea')) return;
-    quality = LEVELS[(LEVELS.indexOf(quality) + 1) % LEVELS.length];
-    localStorage.setItem(QUALITY_KEY, quality);
-    if (ready) applyQuality();
-    toast('GRAPHICS: ' + quality.toUpperCase());
-  });
->>>>>>> main
+  window.level29Graphics={get quality(){return quality;},setQuality(q){if(!['low','medium','high'].includes(q))return;quality=q;try{localStorage.setItem('level29.graphics.stage1',q);}catch(_){}if(typeof renderer!=='undefined'&&renderer&&ready)applyQuality();}};
 })();

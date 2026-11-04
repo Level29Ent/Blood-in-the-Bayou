@@ -267,7 +267,6 @@ function ensureSky(){
   if(!isWorld(city)&&flyer.parent)flyer.parent.remove(flyer);
 }
 let birds=[];
-<<<<<<< HEAD
 function birdMesh(){
  const g=new THREE.Group(),m=lam('#6c7374'),dark=lam('#252b29'),pale=lam('#d7d5c9'),a=level29AnimalAnatomy;
  a.ell(g,6,2.6,2.8,0,0,0,m);a.ell(g,2.4,2.2,2.1,2.8,.8,0,m);
@@ -282,12 +281,6 @@ function updateBirds(){
   while(birds.length<10){const a=Math.random()*6.28,r=rnd(250,650);const b={x:player.x+Math.cos(a)*r,y:player.y+Math.sin(a)*r,h:rnd(42,80),a:Math.random()*6.28,v:rnd(1.6,2.6),alive:true,fall:0,mesh:birdMesh()};scene.add(b.mesh);birds.push(b);}
   for(const b of birds){
     if(b.alive){b.a+=rnd(-.03,.03);b.x+=Math.cos(b.a)*b.v;b.y+=Math.sin(b.a)*b.v;const fl=Math.sin(frame*.4+b.x)*.7;b.mesh.userData.w[0].rotation.x=fl;b.mesh.userData.w[1].rotation.x=-fl;
-<<<<<<< HEAD
-      // Hits are resolved from the camera ray on an actual firearm shot (bird-aim.js).
-    }
-=======
-      for(const bl of bullets){if(d2(bl.x,bl.y,b.x,b.y)<20){b.alive=false;bl.life=0;cash+=29;save.birds++;persist();sfx('cash');toast('BIRD DOWN · +$29 · '+save.birds+' BAGGED');break;}}}
->>>>>>> main
       // Hits are resolved from the camera ray on an actual firearm shot (bird-aim.js).
     }
     else{b.h-=2.4;b.fall++;b.mesh.rotation.z+=.3;}
@@ -306,11 +299,7 @@ function updateSky(){
 // ---------------------------------------------------------------- steamboat safe zone
 const dockSafe=(x,y)=>{const B=window.boomCity;if(!B||!isWorld(city))return false;return d2(x,y,B.DOCK.x,B.DOCK.y)<600||d2(x,y,B.CAPTAIN.x,B.CAPTAIN.y)<500;};
 function updateSafeZone(){
-<<<<<<< HEAD
   if(!player||ride||!dockSafe(player.x,player.y))return;
-=======
-  if(!player||!dockSafe(player.x,player.y))return;
->>>>>>> main
   const push=o=>{if(!o||typeof o.x!=='number')return;const d=d2(o.x,o.y,player.x,player.y);if(d<520){const k=(520-d)/520*4+1;o.x+=(o.x-player.x)/(d||1)*k;o.y+=(o.y-player.y)/(d||1)*k;o.alert=false;if('atkCd' in o)o.atkCd=Math.max(o.atkCd,30);}};
   for(const z of zombies)if(z.alive)push(z);
   try{if(typeof gators!=='undefined'&&Array.isArray(gators))for(const g of gators)push(g);}catch(_){}
@@ -319,7 +308,6 @@ try{const prevHurt=hurtPlayer;hurtPlayer=function(){if(ride||(player&&dockSafe(p
 
 // ---------------------------------------------------------------- bomber gunner ride
 let ride=null,fireHeld=false,tracers=[];
-<<<<<<< HEAD
 function startBomber(missionFlight=false){
   if(mpRole)return toast('BOMBER RIDE IS AVAILABLE IN SOLO PLAY');if(ride)return;if(!lots.airport)return toast('NO AIRPORT ON THIS MAP');if(player.car)return toast('STEP OUT OF YOUR VEHICLE FIRST');
   if(!missionFlight&&cash<BOMBER_COST)return toast('THE BOMBER RIDE COSTS '+money(BOMBER_COST));
@@ -331,20 +319,11 @@ function startBomber(missionFlight=false){
   ride.remainingMs=(missionFlight?60:level29Gunnery.DURATION_SECONDS)*1000;ride.t=Math.ceil(ride.remainingMs*.06);ride.lastUpdate=performance.now();
   ride.altitude=level29AircraftFlight.altitude(city,ride.cx,ride.cy,ride.radius);
   ride.mesh.position.set(ride.cx+ride.radius,ride.altitude,ride.cy);
-=======
-function startBomber(){
-  if(ride)return;if(!lots.airport)return toast('NO AIRPORT ON THIS MAP');if(player.car)return toast('STEP OUT OF YOUR VEHICLE FIRST');
-  if(cash<BOMBER_COST)return toast('THE BOMBER RIDE COSTS '+money(BOMBER_COST));
-  cash-=BOMBER_COST;sfx('cash');save.bomberRuns++;persist();closePanel();
-  const L=lots.airport,m=planeMesh(true);scene.add(m);
-  ride={t:BOMBER_FRAMES,a:0,cx:(L.x0+6)*T,cy:(L.y0+5)*T,home:{x:player.x,y:player.y},kills:0,cd:0,mesh:m};
->>>>>>> main
   toast('GUNNER SEAT · HOLD FIRE ON THE .50 CAL');
 }
 function updateRide(){
   if(!ride)return;
   if(state==='shop'){try{if(typeof closeShop==='function')closeShop();}catch(_){}try{closePanel();}catch(_){}document.querySelectorAll('.panel,.overlay,#shop').forEach(e=>{if(e.style)e.style.display='none';});state='play';}
-<<<<<<< HEAD
   const now=performance.now(),elapsed=Math.max(0,now-ride.lastUpdate);ride.lastUpdate=now;
   if(state!=='play')return;
   ride.remainingMs=Math.max(0,ride.remainingMs-elapsed);ride.t=Math.ceil(ride.remainingMs*.06);
@@ -384,53 +363,25 @@ function fireBomber(){
 function addTracer(origin,point){const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(origin.x,origin.y,origin.z),new THREE.Vector3(point.x,point.y,point.z)]);const l=new THREE.Line(geo,new THREE.LineBasicMaterial({color:'#ffd36b'}));scene.add(l);tracers.push({l,t:6});}
 function updateTracers(){tracers=tracers.filter(t=>{if(--t.t<=0){scene.remove(t.l);t.l.geometry.dispose();t.l.material.dispose();return false;}return true;});}
 function endRide(){const r=ride;ride=null;fireHeld=false;scene.remove(r.mesh);player.x=r.home.x;player.y=r.home.y;player.vx=player.vy=0;mouse.down=false;keys[' ']=keys.Space=false;view.yaw=r.homeView.yaw;view.pitch=r.homeView.pitch;snapCamera();const bounty=r.kills*15;cash+=bounty;
-=======
-  if(state!=='play')return;
-  const R=440;ride.a+=.011;ride.t--;
-  const px=ride.cx+Math.cos(ride.a)*R,py=ride.cy+Math.sin(ride.a)*R;
-  player.x=px;player.y=py;if('vx' in player){player.vx=0;player.vy=0;}
-  ride.mesh.position.set(px,150,py);ride.mesh.rotation.set(0,-(ride.a+Math.PI/2),0);ride.mesh.rotateX(.35);
-  if(frame%18===0&&zombiesNear(px,py,520)<16){const a=Math.random()*6.28,r=rnd(120,420);spawnZombieAt(px+Math.cos(a)*r,py+Math.sin(a)*r);}
-  const firing=fireHeld||mouse.down||keys[' ']||keys.Space;
-  if(firing&&--ride.cd<=0){ride.cd=6;let best=null,bd=460;for(const z of zombies){if(!z.alive)continue;const d=d2(z.x,z.y,px,py);if(d<bd){bd=d;best=z;}}
-    if(best){addTracer(px,py,best.x,best.y);killZombie(best,(best.x-px)*.02,(best.y-py)*.02);ride.kills++;}else addTracer(px,py,px+rnd(-200,200),py+rnd(-200,200));
-    if(frame%12<6)sfx('bang');}
-  if(ride.t<=0)endRide();
-}
-function addTracer(x1,y1,x2,y2){const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(x1,145,y1),new THREE.Vector3(x2,4,y2)]);const l=new THREE.Line(geo,new THREE.LineBasicMaterial({color:'#ffd36b'}));scene.add(l);tracers.push({l,t:6});}
-function updateTracers(){tracers=tracers.filter(t=>{if(--t.t<=0){scene.remove(t.l);t.l.geometry.dispose();return false;}return true;});}
-function endRide(){const r=ride;ride=null;fireHeld=false;scene.remove(r.mesh);player.x=r.home.x;player.y=r.home.y;const bounty=r.kills*15;cash+=bounty;
->>>>>>> main
   toast('LANDED · '+r.kills+' ZOMBIES FROM THE SKY · BOUNTY '+money(bounty));sfx('cash');}
 
 // ---------------------------------------------------------------- obstacle course
 let run=null;
-<<<<<<< HEAD
 function startCourse(){if(run)return;if(player.car)return toast('THE COURSE IS ON FOOT');run={i:1,t0:frame,taps:0,hold:0};setRing();toast('GO! RUN THROUGH THE GOLD RINGS');}
-=======
-function startCourse(){if(run)return;if(player.car)return toast('THE COURSE IS ON FOOT');run={i:1,t0:frame,taps:0};setRing();toast('GO! RUN THROUGH THE GOLD RINGS');}
->>>>>>> main
 function setRing(){if(!course)return;course.rings.forEach((m,i)=>m.material.color.set(run&&i===run.i?COL.gold:i===0||i===course.pts.length-1?COL.green:COL.purple));}
 function updateCourse(){
   if(!run||!course)return;const p=course.pts[run.i];
   if(player.car||player.dead||frame-run.t0>150*60){run=null;setRing();return toast('COURSE FAILED · TRY AGAIN AT THE START');}
-<<<<<<< HEAD
   if(p.type==='hold'||p.type==='balance'){
     const close=d2(player.x,player.y,p.x,p.y)<(p.type==='balance'?26:30),balanced=p.type!=='balance'||Math.abs(player.x-p.x)<7;
     run.hold=close&&balanced?(run.hold||0)+1:0;
     if(run.hold>=p.hold){run.i++;run.hold=0;sfx('cash');setRing();toast('DRILL CLEARED · '+course.pts[run.i].name);}
   }
-=======
->>>>>>> main
   if((p.type==='gate'||p.type==='finish')&&d2(player.x,player.y,p.x,p.y)<34){
     if(p.type==='finish')return finishCourse();run.i++;run.taps=0;sfx('cash');setRing();toast((course.pts[run.i].name||'NEXT'));}
   course.rings[run.i]&&(course.rings[run.i].rotation.y+=.05);
 }
-<<<<<<< HEAD
 function climbTap(){if(!run||!course||state!=='play'||player.car||player.dead)return;const p=course.pts[run.i];if(!p.taps||d2(player.x,player.y,p.x,p.y)>46||frame-(run.lastTap??-100)<10)return;run.lastTap=frame;run.taps++;if(run.taps>=p.taps){run.i++;run.taps=0;sfx('cash');setRing();toast(p.name+' CLEARED');}}
-=======
-function climbTap(){const p=course.pts[run.i];run.taps++;if(run.taps>=p.taps){run.i++;run.taps=0;sfx('cash');setRing();toast(p.name+' CLEARED');}}
->>>>>>> main
 function finishCourse(){const secs=(frame-run.t0)/60;run=null;setRing();
   const medal=secs<45?'GOLD':secs<65?'SILVER':'BRONZE',pay={GOLD:1500,SILVER:900,BRONZE:400}[medal];
   const record=!save.courseBest||secs<save.courseBest;if(record){save.courseBest=secs;persist();}
@@ -438,7 +389,6 @@ function finishCourse(){const secs=(frame-run.t0)/60;run=null;setRing();
 
 // ---------------------------------------------------------------- interaction spots
 function spots(){
-<<<<<<< HEAD
   const out=[];const add=(p,label,act)=>{if(p){const l=Object.values(lots).find(l=>l.venue&&p.x>=l.venue.b.x&&p.x<=l.venue.b.x+l.venue.b.w&&p.y>=l.venue.b.y&&p.y<=l.venue.b.y+l.venue.b.h);const casino=city.casinoVenue,f=casino?.frontage;const q=l&&window.level29Frontage?level29Frontage.lotPoint(l,p):f&&window.level29Frontage&&p.x>=casino.b.x&&p.x<=casino.b.x+casino.b.w&&p.y>=casino.b.y&&p.y<=casino.b.y+casino.b.h?level29Frontage.lotPoint({venue:casino},p):p;out.push({x:q.x,y:q.y,label,act});}};
   for(const id in lots){const L=lots[id];
     if(id==='airport'){add({x:(L.fb.x0+L.fb.x1+1)/2*T,y:(L.fb.y0+1.2)*T},'AIRPORT TERMINAL',()=>openPanel(airportPanel));add({x:(L.x0+(L.x1-L.x0+1)*.8)*T,y:(L.y0+4.6)*T},'BOMBER GUNNER RIDE · '+money(BOMBER_COST),()=>openPanel(airportPanel));}
@@ -451,30 +401,12 @@ function spots(){
     if(id==='truck')add(L.door,"FELICIA'S SNOWBALL TRAILER · WALK INSIDE",()=>window.level29Felicia?.open());}
   const B=window.boomCity;
   if(B&&isWorld(city)){for(const [i,p]of (city.casinoStations||[]).entries())add(p,['PLAY SLOT MACHINE','PLAY BLACKJACK','PLAY POKER','PLAY ROULETTE'][i%4],()=>{tab=['slots','bj','poker','rr'][i%4];openPanel(casinoPanel);});
-=======
-  const out=[];const add=(p,label,act)=>{if(p)out.push({x:p.x,y:p.y,label,act});};
-  for(const id in lots){const L=lots[id];
-    if(id==='airport'){add(L.door,'AIRPORT TERMINAL',()=>openPanel(airportPanel));add({x:(L.x0+(L.x1-L.x0+1)*.8)*T,y:(L.y0+4.6)*T},'BOMBER GUNNER RIDE · '+money(BOMBER_COST),()=>openPanel(airportPanel));}
-    if(id==='stadium')add(L.door,'JESTER STADIUM · KICK FIELD GOALS',()=>openPanel(kickPanel()));
-    if(id==='university')add(L.door,'BAYOU STATE UNIVERSITY · CLASS',()=>openPanel(quizPanel()));
-    if(id==='dealer')add({x:(L.x0+5)*T,y:(L.y0+1.9)*T},'TALK TO BONNIE DE VETTE',()=>openPanel(bonniePanel));
-    if(id==='club')add(L.door,'ENTER THE VELVET JESTER',()=>openPanel(clubPanel));
-    if(id==='dispensary')add(L.door,'GREEN BAYOU DISPENSARY',()=>openPanel(shopPanel('dispensary')));
-    if(id==='smoke')add(L.door,'CROWN SMOKE SHOP',()=>openPanel(shopPanel('smoke')));
-    if(id==='truck')add(L.door,"ORDER AT MAMA 29'S",()=>openPanel(shopPanel('truck')));}
-  const B=window.boomCity;
-  if(B&&isWorld(city)){add(B.DOOR,'ENTER BOOMCITY CASINO',()=>openPanel(casinoPanel));
->>>>>>> main
     add({x:B.CAPTAIN.x+T*1.7,y:B.CAPTAIN.y},'BOARD THE NATCHEZ DECK · NET FISHING',()=>openPanel(fishPanel()));}
   if(course){if(!run)add(course.pts[0],'START CONFIDENCE COURSE'+(save.courseBest?' · BEST '+save.courseBest.toFixed(1)+'s':''),startCourse);
     else{const p=course.pts[run.i];if(p.taps)add(p,p.name+' · TAP '+run.taps+' / '+p.taps,climbTap);}}
   return out;}
 let curSpot=null;
-<<<<<<< HEAD
 function nearestSpot(){if(!player||player.car||player.dead||ride)return null;let best=null,bd=42;for(const s of spots()){const d=d2(s.x,s.y,player.x,player.y);if(d<bd){bd=d;best=s;}}return best;}
-=======
-function nearestSpot(){if(!player||player.car||player.dead||ride)return null;let best=null,bd=64;for(const s of spots()){const d=d2(s.x,s.y,player.x,player.y);if(d<bd){bd=d;best=s;}}return best;}
->>>>>>> main
 
 const prevEnter=enterExit;
 enterExit=function(){if(state==='play'){const s=nearestSpot();if(s){s.act();return;}}return prevEnter.apply(this,arguments);};
@@ -647,11 +579,7 @@ const clubPanel={theme:'club',
 
 // ---------------------------------------------------------------- shops
 const SHOPS={
-<<<<<<< HEAD
   dispensary:{t:'Elevated Melanin',eb:'Hemp & wellness · fictional in-game items',items:[['Bayou herbal tea',29,15],['Purple Jester CBD gummies',59,30],['Gold Leaf hemp balm',99,50],['King Cake wellness bar',149,100]]},
-=======
-  dispensary:{t:'Green Bayou Dispensary',eb:'Hemp & wellness · fictional in-game items',items:[['Bayou herbal tea',29,15],['Purple Jester CBD gummies',59,30],['Gold Leaf hemp balm',99,50],['King Cake wellness bar',149,100]]},
->>>>>>> main
   smoke:{t:'Crown Smoke Shop',eb:'Cigars · hookah · accessories',items:[['Swisher pack',12,8],['Cohiba cigar',45,20],['Hookah session',80,40],['Level 29 gold grinder',29,0]]},
   truck:{t:"Mama 29's Food Truck",eb:'Fresh off the bayou',items:[['Beignets',9,15],['Sweet tea',4,8],['Jambalaya',16,30],["Shrimp po'boy",18,35],['Seafood gumbo',20,40],['Crawfish etouffee',22,45]]}};
 function shopPanel(id){const S=SHOPS[id];let m='';return{
@@ -660,7 +588,6 @@ function shopPanel(id){const S=SHOPS[id];let m='';return{
 
 // ---------------------------------------------------------------- airport, Bonnie, university, stadium, fishing
 const airportPanel={render(){return '<div class="eb">Level 29 International</div><h2>Airport terminal</h2>'+wallet()+
-<<<<<<< HEAD
   '<div class="grid"><div class="card"><b>Jester One</b><p>Purple and gold jet with the Level 29 logo on the tail. Always flying over the city.</p></div><div class="card"><b>Jester Two</b><p>Parked on the apron for display.</p></div><div class="card"><b>B-29 Jester Bomber</b><p>Ride the .50 cal gunner seat for 29 seconds and shoot zombies from the sky. $15 bounty per kill.</p><button class="g" data-a="bomb" '+(cash<BOMBER_COST?'disabled':'')+'>Fly · '+money(BOMBER_COST)+'</button></div></div>'+
   '<p style="color:#a89fb0">Move the mouse, drag the view, or use the right stick to aim the center crosshair. Hold the mouse button, Space, FIRE, or RT to shoot. Hits require a visible zombie under the crosshair; buildings block shots. You can\'t be hurt while you\'re in the air.</p>';},act(a){if(a==='bomb')startBomber();}};
 const bonniePanel={render(){const L=lots.dealer;return '<div class="eb">Owner · in-game cash</div><h2>Bonnie De Vette</h2><button data-a=story>RECOVERY MISSIONS · TALK TO BONNIE</button>'+wallet()+'<p>Welcome to Slab Motors. Choose your ride; I will deliver it to the front lot.</p><div class="grid">'+(L?.inventory||[]).map((r,i)=>'<div class="card"><b>'+CAR_SPECS[r.type].name+'</b><p>'+money(r.price)+'</p><button data-a="vehicle" data-v="'+i+'" '+(cash<r.price?'disabled':'')+'>PURCHASE</button></div>').join('')+'</div><p>Owned vehicles are stored in your local garage.</p>'+((window.level29OpenWorld?.save.dealerGarage)||[]).map((r,i)=>'<button data-a=recall data-v='+i+'>DELIVER OWNED '+CAR_SPECS[r.type].name+'</button>').join('');},act(a,v){
@@ -672,12 +599,6 @@ const bonniePanel={render(){const L=lots.dealer;return '<div class="eb">Owner ·
  const c=makeCar(x,y,0,r.type);c.dealerOwned=true;cars.push(c);cash-=r.price;
  const own=window.level29OpenWorld?.save;if(own){own.dealerGarage=own.dealerGarage||[];c.dealerSlot=own.dealerGarage.length;own.dealerGarage.push({type:r.type,col:c.col});persistOpenWorld();}if(window.level29Save)level29Save.save();toast('PURCHASED · YOUR VEHICLE IS OUT FRONT');sfx('cash');
 }};
-=======
-  '<div class="grid"><div class="card"><b>Jester One</b><p>Purple and gold jet with the Level 29 logo on the tail. Always flying over the city.</p></div><div class="card"><b>Jester Two</b><p>Parked on the apron for display.</p></div><div class="card"><b>B-29 Jester Bomber</b><p>Ride the .50 cal gunner seat for 13 seconds and shoot zombies from the sky. $15 bounty per kill.</p><button class="g" data-a="bomb" '+(cash<BOMBER_COST?'disabled':'')+'>Fly · '+money(BOMBER_COST)+'</button></div></div>'+
-  '<p style="color:#a89fb0">Hold the mouse button, Space, or the FIRE button to shoot. You can\'t be hurt while you\'re in the air.</p>';},act(a){if(a==='bomb')startBomber();}};
-const bonniePanel={render(){return '<div class="row" style="flex-wrap:nowrap;align-items:flex-start;gap:14px"><img src="bonnie.png" alt="Bonnie De Vette" style="width:42%;max-width:280px;border-radius:10px;border:2px solid #f2c14e;object-fit:cover"><div><div class="eb">Owner</div><h2>Bonnie De Vette</h2>'+
-  '<p>"Welcome to Slab Motors, baby. Everything on my lot is candy paint and swangas, Houston style, poking out like they supposed to."</p><p>"Hop in any slab or lowrider parked out front for a test drive. Bring it back with all its rims."</p><p style="color:#a89fb0">Walk up to a car in the front row and press E (or tap ENTER) to drive.</p></div></div>';},act(){}};
->>>>>>> main
 const QUIZ=[['What is the state capital of Louisiana?',['Baton Rouge','New Orleans','Shreveport'],0],['What river runs through New Orleans?',['Mississippi','Red River','Missouri'],0],['Mardi Gras colors are purple, green and...',['Gold','Red','Blue'],0],['What is a beignet?',['A fried pastry','A boat','A dance'],0],['Louisiana counties are called...',['Parishes','Boroughs','Wards'],0],['Which is a classic Cajun dish?',['Jambalaya','Pierogi','Pho'],0],['What animal is the Louisiana state reptile?',['Alligator','Turtle','Snake'],0],['The French Quarter is in which city?',['New Orleans','Lafayette','Houma'],0]];
 function quizPanel(){const qs=QUIZ.slice().sort(()=>Math.random()-.5).slice(0,5).map(([q,o,a])=>{const ord=o.map((t,i)=>[t,i===a]).sort(()=>Math.random()-.5);return{q,o:ord};});let i=0,right=0,m='';
   return{render(){if(i>=qs.length)return '<div class="eb">Bayou State University</div><h2>Class dismissed</h2><p>'+right+' / '+qs.length+' correct · earned '+money(right*290)+'</p>';
@@ -713,11 +634,7 @@ drawHUD=function(){const r=prevHUD.apply(this,arguments);try{
   if(curSpot&&!coarse()){const t='E · '+curSpot.label;cx.font="800 18px 'Barlow Condensed'";const w=cx.measureText(t).width+28;cx.fillStyle='rgba(20,10,34,.85)';cx.fillRect(SW/2-w/2,SH-128,w,34);cx.strokeStyle=COL.gold;cx.strokeRect(SW/2-w/2,SH-128,w,34);cx.fillStyle='#fff';cx.fillText(t,SW/2,SH-111);}
   if(ride){cx.fillStyle='rgba(120,10,20,.12)';cx.fillRect(0,0,SW,SH);cx.strokeStyle='#ffd36b';cx.lineWidth=2;cx.beginPath();cx.arc(SW/2,SH/2,34,0,6.283);cx.moveTo(SW/2-50,SH/2);cx.lineTo(SW/2+50,SH/2);cx.moveTo(SW/2,SH/2-50);cx.lineTo(SW/2,SH/2+50);cx.stroke();
     cx.font="800 26px 'Barlow Condensed'";cx.fillStyle='#ffd36b';cx.fillText('B-29 GUNNER · '+(ride.t/60).toFixed(1)+'s · KILLS '+ride.kills,SW/2,70);}
-<<<<<<< HEAD
   if(run&&course){cx.font="800 24px 'Barlow Condensed'";cx.fillStyle=COL.gold;const p=course.pts[run.i];cx.fillText('COURSE '+((frame-run.t0)/60).toFixed(1)+'s · '+(p.name||'')+(p.hold?' · HOLD '+Math.round((run.hold||0)/p.hold*100)+'%':'')+' ('+run.i+'/'+(course.pts.length-1)+')',SW/2,70);}
-=======
-  if(run&&course){cx.font="800 24px 'Barlow Condensed'";cx.fillStyle=COL.gold;const p=course.pts[run.i];cx.fillText('COURSE '+((frame-run.t0)/60).toFixed(1)+'s · '+(p.name||'')+' ('+run.i+'/'+(course.pts.length-1)+')',SW/2,70);}
->>>>>>> main
   cx.restore();}catch(_){}return r;};
 const prevFullMap=drawFullMap;
 drawFullMap=function(){prevFullMap.apply(this,arguments);if(!isWorld(city))return;try{
@@ -725,10 +642,5 @@ drawFullMap=function(){prevFullMap.apply(this,arguments);if(!isWorld(city))retur
   for(const id in lots){const L=lots[id],x=(L.x0+L.x1+1)/2*T,y=(L.y0+L.y1+1)/2*T;cx.font="800 12px 'Barlow Condensed'";cx.textAlign='center';cx.textBaseline='middle';const w=cx.measureText(L.name).width+10;
     cx.fillStyle='rgba(8,10,12,.8)';cx.fillRect(X+x*sc-w/2,Y+y*sc-8,w,16);cx.fillStyle=COL.gold;cx.fillText(L.name,X+x*sc,Y+y*sc);}}catch(_){}};
 
-<<<<<<< HEAD
-window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},get birdTargets(){return birds;},hitBird,startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
-=======
-window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
->>>>>>> main
 window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},get birdTargets(){return birds;},hitBird,startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
 })();

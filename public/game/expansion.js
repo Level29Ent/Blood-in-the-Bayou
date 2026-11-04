@@ -5,11 +5,7 @@ const VENUE_TYPES = [
   {id:'safe',name:'LEVEL 29 SAFE HOUSE',short:'SAFE HOUSE',letter:'S',col:'#6ecf96'},
   {id:'garage',name:'LEVEL 29 GARAGE',short:'GARAGE',letter:'G',col:'#e8bc64'},
   {id:'armory',name:'LEVEL 29 ARMORY',short:'ARMORY',letter:'A',col:'#e58e72'},
-<<<<<<< HEAD
   {id:'spray',name:"BAYOU SHINE AUTO SPA",short:'BAYOU SHINE',letter:'P',col:'#73bddd'},
-=======
-  {id:'spray',name:"PAY N SPRAY CARWASH",short:'PAY N SPRAY',letter:'P',col:'#73bddd'},
->>>>>>> main
   {id:'business',name:'LEVEL 29 BUSINESS',short:'BUSINESS',letter:'B',col:'#bea0dd'}
 ];
 const expansionSaveKey='level29.venues.v1';
@@ -19,16 +15,7 @@ function saveVenues(){try{localStorage.setItem(expansionSaveKey,JSON.stringify(v
 function smooth01(t){t=clamp(t,0,1);return t*t*(3-2*t);}
 function rawTerrain(id,x,y){
   if(id==='forest') return 7+5*Math.sin(x/290)*Math.cos(y/250)+3*Math.sin((x+y)/170);
-<<<<<<< HEAD
   if(id==='mountain')return 0; // Former mountain chapter is level landscaped ground.
-=======
-  if(id==='mountain'){
-    const peak=(cx,cy,r,h)=>h*Math.exp(-((x-cx)**2+(y-cy)**2)/(r*r));
-    const rim=Math.max(0,Math.max(Math.abs(x-WORLD/2),Math.abs(y-WORLD/2))-WORLD*.36)/(WORLD*.14);
-    return 16 + peak(1780,1530,500,820)+peak(780,1750,470,560)+peak(2050,600,420,640)+peak(480,1000,380,330)+peak(1250,2250,360,420)
-      + 260*rim*rim + 22*Math.sin(x/180)*Math.sin(y/230);
-  }
->>>>>>> main
   return 0;
 }
 function generateBiome(di){
@@ -181,11 +168,7 @@ function addSign(group,text,w,h,x,y,z,col){
   c.textAlign='center';c.textBaseline='middle';c.shadowColor=col;c.shadowBlur=Math.round(size*.18);
   c.fillStyle=col;c.fillText(text,cv.width/2,cv.height/2+2);c.shadowBlur=0;c.fillStyle='rgba(255,255,255,.35)';c.fillText(text,cv.width/2,cv.height/2+2);
   const tex=new THREE.CanvasTexture(cv);tex.anisotropy=8;tex.encoding=THREE.sRGBEncoding;
-<<<<<<< HEAD
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));m.position.set(x,y,z);m.name='venue-sign:'+text;group.add(m);return m;
-=======
-  const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));m.position.set(x,y,z);group.add(m);return m;
->>>>>>> main
 }
 let sharedVehicleEnv=null;
 function vehicleEnv(){
@@ -311,11 +294,7 @@ function buildVenue(v){
   if(v.vehicle){for(let k=0;k<8;k++)addPart(v.door,v.doorW-2,.3,.2,0,-18+k*5,1,trim);}else{addPart(v.door,1.5,.6,1.5,v.doorW/2-4,0,1,trim);addPart(v.door,v.doorW*.6,15,.3,0,7,1,new THREE.MeshStandardMaterial({color:'#254039',metalness:.4,roughness:.2}));}
   addSign(group,v.name,Math.min(160,b.w),13,b.x+b.w/2,height+10.5,v.doorY-1,v.col);v.labelH=height+32;
   addSign(group,v.vehicle?'DRIVE IN · E OPEN BAY':'WALK IN · AUTO DOOR',Math.min(125,b.w-8),7,v.doorX,46,v.doorY+.3,v.col);
-<<<<<<< HEAD
   if(v.id!=='business')addSign(group,v.short,Math.min(100,b.w-15),12,b.x+b.w/2,35,b.y+3,v.col);
-=======
-  addSign(group,v.short,Math.min(100,b.w-15),12,b.x+b.w/2,35,b.y+3,v.col);
->>>>>>> main
   for(const z of [b.y+25,b.y+b.h-25]){
     addPart(group,60,1,5,b.x+b.w/2,48,z,new THREE.MeshBasicMaterial({color:'#e8e8cf'}));
     const pool=new THREE.Mesh(new THREE.PlaneGeometry(110,90).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:'#fff1d4',map:softTex,transparent:true,opacity:.12,depthWrite:false}));pool.position.set(b.x+b.w/2,.7,z);group.add(pool);
@@ -336,24 +315,13 @@ function buildVenue(v){
     addPart(group,b.w-45,3,4,b.x+b.w/2,35,b.y+60,trim);
     addSign(group,'WASH + RESPRAY · $250',100,9,b.x+b.w/2,21,b.y+3,v.col);
   }else if(v.id==='armory'){
-<<<<<<< HEAD
     if(window.level29ArmoryShowroom)level29ArmoryShowroom.build(v,group);
     addSign(group,'U BUY WEAPONS / ARMOR',100,9,b.x+b.w/2,38,b.y+4,v.col);
-=======
-    furniture(b.x+b.w/2,b.y+18,b.w-22,10,15,'#5f6859');
-    for(const z of [b.y+40,b.y+72]){furniture(b.x+14,z,18,30,24,'#424a45');furniture(b.x+b.w-14,z,18,30,24,'#424a45');}
-    for(let i=0;i<4;i++){const gun=new THREE.Group();addPart(gun,20,1.6,1,0,0,0,MAT.pole);addPart(gun,5,4,1,-6,-1,0,MAT.pole);gun.position.set(b.x+23+i*(b.w-46)/3,25,b.y+4);group.add(gun);}
-    addSign(group,'U BUY WEAPONS / ARMOR',100,9,b.x+b.w/2,16,b.y+4,v.col);
->>>>>>> main
   }else if(v.id==='business'){
     furniture(b.x+30,b.y+30,40,9,24,'#805f42');furniture(b.x+b.w-22,b.y+40,25,22,45,'#5a625b');
     addPart(group,14,10,1,b.x+30,18,b.y+32,new THREE.MeshStandardMaterial({color:'#243840',metalness:.2,roughness:.2}));
     furniture(b.x+30,b.y+70,16,9,16,'#3d4548');
-<<<<<<< HEAD
     const deskSign=addSign(group,'U · BUSINESS SERVICES',Math.min(65,b.w-20),5,b.x+b.w/2,26,b.y+4,v.col);deskSign.name='business-service-sign';
-=======
-    addSign(group,'OWN · $2,000 / COLLECT INCOME',135,9,b.x+b.w/2,18,b.y+4,v.col);
->>>>>>> main
   }else{
     furniture(b.x+31,b.y+24,47,8,30,'#665d48');addPart(group,43,3,25,b.x+31,9,b.y+24,new THREE.MeshStandardMaterial({color:'#a8b39b',roughness:1}));
     furniture(b.x+b.w-24,b.y+25,30,13,35,'#635b48');furniture(b.x+b.w-25,b.y+76,33,7,37,'#47574b');
@@ -485,8 +453,8 @@ syncCars=function(){
   for(const[c,m]of carMeshes){
     if(!m.visible)continue;
     const h=terrainHeight(c.x,c.y);m.position.y=h+(c.dead?-1:(c.z||0));
-    const dx=Math.cos(c.a),dy=Math.sin(c.a),pitch=Math.atan2(terrainHeight(c.x+dx*12,c.y+dy*12)-terrainHeight(c.x-dx*12,c.y-dy*12),24);
-    const roll=Math.atan2(terrainHeight(c.x-dy*12,c.y+dx*12)-terrainHeight(c.x+dy*12,c.y-dx*12),24);
+    const dx=Math.cos(c.a),dy=Math.sin(c.a),surface=(x,y)=>{const v=terrainHeight(x,y);return Math.abs(v-h)>12?h:v;},pitch=Math.atan2(surface(c.x+dx*12,c.y+dy*12)-surface(c.x-dx*12,c.y-dy*12),24);
+    const roll=Math.atan2(surface(c.x-dy*12,c.y+dx*12)-surface(c.x+dy*12,c.y-dx*12),24);
     m.rotation.z+=clamp(pitch,-.5,.5);m.rotation.x+=clamp(roll,-.35,.35);
     for(const wheel of m.userData.wheels||[]){wheel.mesh.rotation.z-=c.v*.023;if(wheel.front)wheel.mesh.rotation.y=clamp(c.vs*.35,-.25,.25);}
     for(const lamp of m.userData.tails||[])lamp.material.color.set((keys[' ']||c.v<-.5)?'#ff3440':'#8e2026');
@@ -527,10 +495,6 @@ applyLightMode=function(){
   }
 };
 const _venueRay=new THREE.Raycaster(),_venueTarget=new THREE.Vector3();
-<<<<<<< HEAD
-=======
-_venueRay.camera = camera; // Or whatever your active camera variable is named
->>>>>>> main
 function venueLabelVisible(v,top){
   if(typeof cityGroup==='undefined'||!camera)return true;
   _venueTarget.set(v.doorX,top+terrainHeight(v.doorX,v.doorY),v.doorY+4);
@@ -613,11 +577,8 @@ const spotifyScript=document.createElement('script');spotifyScript.src='https://
 spotifyScript.onerror=mountSpotifyFallback;document.head.appendChild(spotifyScript);
 setTimeout(()=>{if(!spotifyCtl)mountSpotifyFallback();},6000);
 let spotifyWanted=false;
-<<<<<<< HEAD
-function spotifyWantedNow(){return soundMode===0&&['play','shop'].includes(state)&&player&&(player.car||window.level29CityLife?.inClub)&&!player.dead;}
-=======
-function spotifyWantedNow(){return soundMode===0&&['play','shop'].includes(state)&&player&&player.car&&!player.dead;}
->>>>>>> main
+function spotifyWantedNow(){return stage1RadioEnabled&&soundMode===0&&['play','shop'].includes(state)&&player&&(player.car||window.level29CityLife?.inClub)&&!player.dead;}
+let stage1RadioEnabled=true;window.level29RadioMenu={show(){mountSpotifyFallback();},setEnabled(v){stage1RadioEnabled=!!v;if(!v&&spotifyCtl)spotifyCtl.pause();}};
 const _baseRadio=updateRadio;
 updateRadio=function(){
   _baseRadio();
@@ -639,4 +600,4 @@ window.level29Expansion={
   height:terrainHeight,service:serviceVenue,get save(){return venueSave;}
 };
 // Regenerate the initial district through the expansion hook before the next frame.
-travelToMenu();
+if(!window.level29Boot)travelToMenu();

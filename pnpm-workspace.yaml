@@ -1,17 +1,11 @@
-<<<<<<< HEAD
 packages:
   - native/ios-app
 
-=======
->>>>>>> main
 pmOnFail: ignore
 
 minimumReleaseAgeExclude:
   - '@next/*'
   - next
-<<<<<<< HEAD
 
 allowBuilds:
   esbuild: true
-=======
->>>>>>> main

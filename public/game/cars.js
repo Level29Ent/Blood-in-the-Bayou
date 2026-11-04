@@ -19,12 +19,9 @@
   };
   // Fifteen additional coachwork profiles, with distinct wheelbase, roofline and equipment.
   const additions={
-<<<<<<< HEAD
     electric:['sedan',{belt:10.6,roof:17.8,rf:.15,rr:-.28,doors:4}],
     ambulance:['van',{roof:28,rf:.2,rr:-.4,doors:4}],
     utility:['pickup',{roof:23,r:4.6,doors:2,bed:true}],
-=======
->>>>>>> main
     compact:['sedan',{roof:16.3,rr:-.28,doors:2}],
     hatchback:['sedan',{roof:18.5,rf:.15,rr:-.35,br:-.44}],
     wagon:['sedan',{roof:19,rr:-.39,br:-.45,doors:4}],
@@ -52,10 +49,7 @@
     camper:['truck',{roof:28,r:4.4,rf:.26,rr:-.44,br:-.47}]
   };
   for(const [key,[base,patch]]of Object.entries(additions))profiles[key]={...profiles[base],...patch};
-<<<<<<< HEAD
   profiles.slab={...profiles.lowrider,roof:15.8,r:3.8,doors:4};
-=======
->>>>>>> main
   function init(){
     if(materials)return;
     treadTexture=canvasTex(128,128,(g,w,h)=>{
@@ -72,15 +66,9 @@
       chrome:new THREE.MeshStandardMaterial({color:'#b4bdc5',metalness:.94,roughness:.22,envMap:env,envMapIntensity:1.1}),
       alloy:new THREE.MeshStandardMaterial({color:'#8e989e',metalness:.87,roughness:.31,envMap:env}),
       leather:new THREE.MeshStandardMaterial({color:'#272a29',roughness:.88}),
-<<<<<<< HEAD
       glass:new THREE.MeshPhysicalMaterial({color:'#314956',metalness:0,roughness:.075,clearcoat:1,transmission:.78,thickness:.3,ior:1.45,envMap:env,envMapIntensity:.8,transparent:true,opacity:1,depthWrite:false,side:THREE.DoubleSide}),
       windshield:new THREE.MeshPhysicalMaterial({color:'#56717b',metalness:0,roughness:.075,clearcoat:1,transmission:.82,thickness:.3,ior:1.45,envMap:env,envMapIntensity:.8,transparent:true,opacity:1,depthWrite:false,side:THREE.DoubleSide}),
       darkGlass:new THREE.MeshPhysicalMaterial({color:'#192a33',metalness:0,roughness:.09,transmission:.55,thickness:.3,ior:1.45,transparent:true,opacity:1,depthWrite:false,envMap:env,envMapIntensity:.7,side:THREE.DoubleSide}),
-=======
-      glass:new THREE.MeshPhysicalMaterial({color:'#314956',metalness:.22,roughness:.075,clearcoat:1,envMap:env,envMapIntensity:1.4,transparent:true,opacity:.87,depthWrite:false,side:THREE.DoubleSide}),
-      windshield:new THREE.MeshPhysicalMaterial({color:'#56717b',metalness:.18,roughness:.075,clearcoat:1,envMap:env,envMapIntensity:1.5,transparent:true,opacity:.62,depthWrite:false,side:THREE.DoubleSide}),
-      darkGlass:new THREE.MeshPhysicalMaterial({color:'#192a33',metalness:.24,roughness:.09,envMap:env,envMapIntensity:1.2,side:THREE.DoubleSide}),
->>>>>>> main
       seam:new THREE.MeshStandardMaterial({color:'#253035',roughness:.75}),
       brake:new THREE.MeshStandardMaterial({color:'#696b68',metalness:.8,roughness:.46}),
       caliper:new THREE.MeshStandardMaterial({color:'#9c2927',metalness:.3,roughness:.6}),
@@ -248,7 +236,6 @@
     rb(g,3,2,W*.76,bf-1.6,B+.7,0,materials.trim,.45);
     const steering=mesh(g,new THREE.TorusGeometry(1.8,.20,8,24),materials.leather,bf-4,B+2.0,-W*.22);steering.rotation.y=Math.PI/2-.35;
     beam(g,[bf-3,B+1.3,-W*.22],[bf-4,B+2,-W*.22],.24,materials.trim);
-<<<<<<< HEAD
     for(const side of [-1,1]){
       rb(g,Math.max(8,bf-br-3),3,.8,(bf+br)*.5,B-.8,side*W*.45,materials.leather,.2);
       rb(g,2,.35,.8,bf-4,B+.3,side*W*.44,materials.chrome,.08);
@@ -256,8 +243,6 @@
     }
     rb(g,.4,2,2,bf-3,B+1.7,0,materials.darkGlass,.08);
     for(const z of [-W*.19,-W*.28])mesh(g,new THREE.CircleGeometry(.7,12),materials.chrome,bf-3.15,B+1.7,z).rotation.y=-Math.PI/2;
-=======
->>>>>>> main
     // Separate wipers rest on the lower windshield.
     for(const z of [-W*.17,W*.17])beam(g,[bf+.2,B+.6,z-2.0],[bf-1.4,B+1.2,z+3],.075,materials.trim);
     return seatX;
@@ -273,23 +258,16 @@
     const lip=mesh(spin,new THREE.TorusGeometry(rim,.12,6,32),materials.chrome,0,0,outer);
     const dish=mesh(spin,new THREE.CylinderGeometry(rim*.83,rim*.83,.15,32),materials.brake,0,0,side*width*.38);dish.rotation.x=Math.PI/2;
     const caliper=rb(pivot,1.0,R*.8,.85,x>0?1.6:-1.6,.3,side*width*.46,sports?materials.caliper:materials.trim,.15);
-<<<<<<< HEAD
     const spokes=p.classic?40:p.military?8:sports?5:10;
-=======
-    const spokes=p.classic?12:p.military?8:sports?5:10;
->>>>>>> main
     for(let k=0;k<spokes;k++){
       const a=k*Math.PI*2/spokes,sp=rb(spin,rim*.76,p.classic?.13:sports?.36:.23,.23,Math.cos(a)*rim*.43,Math.sin(a)*rim*.43,outer-.04,materials.alloy,.05);sp.rotation.z=a+.12;
       if(sports){const split=rb(spin,rim*.74,.13,.21,Math.cos(a+.10)*rim*.43,Math.sin(a+.10)*rim*.43,outer-.035,materials.chrome,.025);split.rotation.z=a+.24;}
     }
-<<<<<<< HEAD
     if(p.classic){
       // Houston wire-wheel dish with crossed wires and a projecting swanga hub.
       for(let k=0;k<40;k++){const a=k*Math.PI*2/40;beam(spin,[Math.cos(a)*rim*.85,Math.sin(a)*rim*.85,outer],[Math.cos(a+.5)*rim*.23,Math.sin(a+.5)*rim*.23,outer+side*.5],.055,materials.chrome);}
       const poke=mesh(spin,new THREE.CylinderGeometry(rim*.20,rim*.10,3.5,16),materials.chrome,0,0,outer+side*1.75);poke.rotation.x=Math.PI/2;
     }
-=======
->>>>>>> main
     const hub=mesh(spin,new THREE.CylinderGeometry(rim*.22,rim*.22,.30,16),materials.alloy,0,0,outer);hub.rotation.x=Math.PI/2;
     for(let k=0;k<5;k++){
       const a=k*Math.PI*2/5;const bolt=mesh(spin,new THREE.CylinderGeometry(.10,.10,.35,6),materials.chrome,Math.cos(a)*rim*.28,Math.sin(a)*rim*.28,outer);bolt.rotation.x=Math.PI/2;
@@ -428,12 +406,9 @@
       rb(shell,2,13,2,-L*.38,p.belt+3,0,materials.trim,.2);
     }
     if(type==='flatbed')rb(shell,L*.53,1.8,W*1.04,-L*.22,p.belt+1,0,materials.chrome,.2);
-<<<<<<< HEAD
     if(type==='electric')for(const s of [-1,1])rb(shell,.4,1.2,W*.28,L*.47,p.belt-1,s*W*.27,materials.chrome,.1);
     if(type==='ambulance'){const cross=new THREE.MeshStandardMaterial({color:'#b34436',roughness:.6});for(const s of [-1,1]){rb(shell,8,2,.5,-L*.15,17,s*W*.505,cross,.1);rb(shell,2,8,.5,-L*.15,17,s*W*.505,cross,.1);}rb(shell,8,2,5,L*.1,p.roof+1,0,materials.chrome,.2);}
     if(type==='utility'){for(const z of [-W*.4,W*.4])rb(shell,L*.45,4,3,-L*.18,p.belt+2,z,materials.chrome,.2);}
-=======
->>>>>>> main
     const axles=p.cargo?[p.rear,-.105,p.front]:[p.rear,p.front];
     for(const x of axles)for(const s of [-1,1])wheel(g,x*L,s*(W*.5-.1),p,s,type==='sports');
     // Narrow shadow grounds the tires; soft outer shadow does not look like a floating oval.
@@ -492,11 +467,7 @@
       for(const l of u.headlights)l.material.emissiveIntensity=night?1.45:.08;
       for(const l of u.reverseLights){l.material.emissive.set(reverse?'#eaf2ec':'#000000');l.material.emissiveIntensity=reverse?1.25:0;}
       // Surface wear grows with damage and resets correctly when a garage/carwash repairs the car.
-<<<<<<< HEAD
       const damage=clamp(1-c.hp/c.maxHp,0,1);u.paint.roughness=u.profile.military?.7:Math.min(.68,.22+damage*.4);u.paint.clearcoat=u.profile.military?.08:.85-damage*.5;
-=======
-      const damage=clamp(1-c.hp/c.maxHp,0,1);u.paint.roughness=u.profile.military?.7:Math.min(.68,.3+damage*.3);u.paint.clearcoat=u.profile.military?.08:.85-damage*.5;
->>>>>>> main
     }
   };
   // Free per-instance materials on retirement; geometry and shared trim remain cached.

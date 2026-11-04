@@ -26,7 +26,6 @@ Ronniebaby's uploaded voice clips, existing road layout, mission extensions, dri
 Car music uses the Level 29 Spotify playlist only. Spotify's own playback, account and browser restrictions still control playback and shuffle; this game does not override them.
 
 Graphics are procedural and stylized, with added shape, material and environmental detail rather than photorealistic scanned assets. Multiplayer smoke testing covers two connected browser sessions, not a six-device load test or a guarantee of frame rate on every phone.
-<<<<<<< HEAD
 
 ## Street access and survival activities
 
@@ -147,5 +146,3 @@ The entire renderer now uses `NoToneMapping` at fixed exposure 1, with no animat
 ## MAP HUD action slot
 
 The farm-map action now displays **MAP** in every state. Its existing open-map / return-with-directions / cancel-directions behavior is unchanged; the tooltip and accessible label describe the current action. MAP and the daily reward badge share a spaced DOM action container anchored 12px below the actual canvas status stack, including armor, weapon/ammo, vehicle and visible upgrade rows. Short landscape viewports use a horizontal action row. The map target remains at least 44px tall and hides outside gameplay.
-=======
->>>>>>> main

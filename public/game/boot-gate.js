@@ -1,0 +1,10 @@
+'use strict';
+(function(){
+// Loaded before game scripts. The engine starts only after a real user gesture.
+let entered=false,started=false,failed=false;const gate=document.getElementById('entryGate'),button=document.getElementById('entryButton'),status=document.getElementById('loadStatus'),fill=document.getElementById('loadFill');let pending=0,total=0,done=0,ready=false;
+function paint(){const percent=total?Math.floor(done/total*100):0;fill.style.width=percent+'%';fill.parentElement.setAttribute('aria-valuenow',String(percent));status.textContent=failed?'ENGINE START FAILED · RELOAD TO RETRY':!entered?'CLICK TO UNLOCK GAME AUDIO':!ready?'INITIALIZING CITY / RENDERER':pending?'LOADING ASSETS · '+done+' / '+total+' · '+percent+'%':'CITY READY · '+done+' ASSETS PROCESSED';if(ready&&!pending&&!failed){gate.classList.add('entered');setTimeout(()=>{gate.hidden=true;},350);}}
+window.level29Boot={get entered(){return entered;},get started(){return started;},codeReady(){button.disabled=false;status.textContent='CLICK TO UNLOCK GAME AUDIO';},ready(){ready=true;paint();},assetStart(){pending++;total++;paint();},assetEnd(){pending=Math.max(0,pending-1);done++;paint();}};
+function start(){if(started)return;entered=true;button.disabled=true;button.textContent='ENTERING…';try{ensureAudio();if(typeof actx!=='undefined'&&actx?.state==='suspended')actx.resume().catch(()=>{});}catch(_){}paint();
+ requestAnimationFrame(()=>{try{travelToMenu();initGL();render();started=true;last=performance.now();accT=0;requestAnimationFrame(loop);window.level29Boot.ready();}catch(e){failed=true;console.error('Game startup failed',e);paint();}});}
+button.addEventListener('click',e=>{e.stopPropagation();start();});for(const type of ['pointerdown','pointerup','click','touchstart','touchend','keydown','keyup','wheel'])gate.addEventListener(type,e=>e.stopPropagation());
+})();

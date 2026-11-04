@@ -8,11 +8,7 @@ const CAREERS={
   {id:'fire-rescue',name:'Rescue Detail',pay:6200,mins:6,rank:0,hard:1,desc:'Three fires and a trapped resident guarded by a horde. A failed call costs 20 percent of your pay.',kind:'rescue',count:3,hold:440},
   {id:'fire-major',name:'Major Incident',pay:11000,mins:7,rank:1,hard:1,desc:'Eight fires back to back with zombie ambushes. Three failed calls end the shift.',kind:'fire',count:8,hold:480},
   {id:'fire-chem',name:'Chemical Fire',pay:15500,mins:8,rank:2,hard:2,desc:'Six fierce chemical fires with fast flare-ups and brutes in the smoke.',kind:'fire',count:6,hold:560}]},
-<<<<<<< HEAD
  police:{name:'Police',boss:'CAPTAIN SMITH',col:'#98b7f0',ranks:['CADET','OFFICER','CORPORAL','SERGEANT','CAPTAIN'],jobs:[
-=======
- police:{name:'Police',boss:'DESK SERGEANT',col:'#98b7f0',ranks:['CADET','OFFICER','CORPORAL','SERGEANT','CAPTAIN'],jobs:[
->>>>>>> main
   {id:'police-patrol',name:'Cruiser Patrol',pay:3400,mins:5,rank:0,hard:1,desc:'Five checkpoints in your cruiser. Zombies ambush every stop and you must stay stopped for three seconds. A 60-second limit applies to each checkpoint.',kind:'patrol',count:5},
   {id:'police-clear',name:'Horde Response',pay:5800,mins:6,rank:0,hard:1,desc:'Clear three large zombie groups with runners and brutes within 90 seconds each. Failed calls reduce your pay.',kind:'clear',count:3},
   {id:'police-evidence',name:'Evidence Courier',pay:8200,mins:6,rank:1,hard:1,desc:'Recover three sealed cases under heavy ambush, then return to the station.',kind:'evidence',count:3},
@@ -57,15 +53,12 @@ const CAREERS={
   {id:'safe-chores',name:'House Chores',pay:1800,mins:3,rank:0,desc:'Restock four bunk and supply stations inside the safe house. Hold U at each marker.',kind:'inside',count:4,hold:200,verb:'Restock supplies'},
   {id:'safe-supply',name:'Supply Run',pay:4000,mins:5,rank:0,desc:'Drive the supply van to three drop points and unload under zombie ambush.',kind:'drop',count:3,hold:150,verb:'Unload supplies',ambush:2},
   {id:'safe-sweep',name:'Perimeter Sweep',pay:7200,mins:6,rank:1,hard:1,desc:'Clear three zombie groups near the safe house, runners and brutes included. Requires HOUSEHAND rank.',kind:'clear',count:3}]},
-<<<<<<< HEAD
  farm:{name:'Farm Hand',venue:'grocery',boss:'FARM COORDINATOR',col:'#b8cf79',ranks:['FIELD HAND','GROWER','SENIOR GROWER','FOREMAN','FARM MANAGER'],jobs:[
  {id:'farm-feed',name:'Animal Care & Harvest',pay:3200,mins:6,rank:0,kind:'farm',count:4,hold:180,desc:'Use the supplied van to travel to Bayou Farm. Fill the animal troughs, check the flock, harvest produce and load the barn crate. Hold WORK at each station, then return the van to market dispatch.'},
  {id:'farm-market',name:'Produce Delivery',pay:4700,mins:6,rank:0,kind:'drop',count:3,hold:180,verb:'Deliver fresh produce',desc:'Drive the market van to three fresh-produce customers, unload on foot and return for wages.'}]},
  air:{name:'Airport Ground Crew',venue:'terminal',boss:'GROUND OPERATIONS',col:'#8cc3d0',ranks:['RAMP TRAINEE','RAMP AGENT','SENIOR AGENT','CREW CHIEF','OPERATIONS LEAD'],jobs:[
  {id:'air-inspect',name:'Apron Inspection',pay:3600,mins:6,rank:0,kind:'apron',count:3,hold:180,desc:'Check the marked baggage, safety and ground-service stations on the apron. Keep off the runway and return to the terminal to clock out.'},
  {id:'air-courier',name:'Air Freight Courier',pay:5100,mins:6,rank:0,kind:'drop',count:3,hold:160,verb:'Unload air freight',desc:'Drive three freight loads from the terminal to marked city drop points, then return to dispatch.'}]},
-=======
->>>>>>> main
  taxi:{name:'Cab Driver',venue:'gas',boss:'DISPATCHER',col:'#f2d04a',ranks:['TRAINEE DRIVER','CAB DRIVER','SENIOR DRIVER','FLEET DRIVER','FLEET OWNER'],jobs:[
   {id:'taxi-short',name:'Short Fares',pay:2600,mins:5,rank:0,desc:'Pick up three passengers in the cab and drop each at their street. Get out to pick up or drop off.',kind:'fare',count:3,hold:90},
   {id:'taxi-night',name:'Night Fares',pay:5000,mins:6,rank:0,desc:'Four fares through the night with zombie ambushes at the pick-ups.',kind:'fare',count:4,hold:100,ambush:2},
@@ -145,11 +138,7 @@ const use=document.getElementById('venueAction');if(use)use.onclick=()=>{const c
 
 
 // ---- Job duties and on-shift zombie incidents ----
-<<<<<<< HEAD
 const DUTY={farm:'Care for animals and load fresh harvests at Bayou Farm. Return to market dispatch for wages.',air:'Inspect ground equipment on the airport apron; freight shifts use marked city deliveries.',fire:'Put out fires, rescue trapped residents and hold off zombies drawn to the flames.',police:'Answer calls, protect civilians and survive ambushes, flanking rushes, brute charges and distress calls.',gas:'Serve customers, deliver stock and keep zombies off the forecourt.',hospital:'Treat patients, move casualties and defend your route from the infected.',grocery:'Restock, deliver orders and keep the street clear on your runs.',bank:'Serve customers, move cash safely and fight off robbers and zombies on the road.',gym:'Coach clients and train through live zombie drills.',garage:'Repair vehicles and defend your service truck.',armory:'Maintain weapons and escort ammo runs.',spray:'Detail cars and handle customers on the street.',business:'Run client errands and protect signed deals.',safe:'Keep the safe house stocked and the perimeter clear.',taxi:'Pick up fares and get them home alive.'};
-=======
-const DUTY={fire:'Put out fires, rescue trapped residents and hold off zombies drawn to the flames.',police:'Answer calls, protect civilians and survive ambushes, flanking rushes, brute charges and distress calls.',gas:'Serve customers, deliver stock and keep zombies off the forecourt.',hospital:'Treat patients, move casualties and defend your route from the infected.',grocery:'Restock, deliver orders and keep the street clear on your runs.',bank:'Serve customers, move cash safely and fight off robbers and zombies on the road.',gym:'Coach clients and train through live zombie drills.',garage:'Repair vehicles and defend your service truck.',armory:'Maintain weapons and escort ammo runs.',spray:'Detail cars and handle customers on the street.',business:'Run client errands and protect signed deals.',safe:'Keep the safe house stocked and the perimeter clear.',taxi:'Pick up fares and get them home alive.'};
->>>>>>> main
 const VEH={fire:'RESCUE ENGINE',police:'DUTY CRUISER',hospital:'AMBULANCE',grocery:'MARKET VAN',bank:'ARMORED VAN',garage:'SERVICE TRUCK',armory:'SUPPLY VAN',spray:'DETAIL VAN',business:'COMPANY VAN',safe:'SUPPLY VAN',taxi:'CAB',gas:'DELIVERY VAN'};
 function specs(career,j,r){const th=j.kind==='inside'||j.kind==='triage'?['NONE','#8fd0a0']:j.hard>1?['EXTREME','#ff7a66']:j.hard||j.ambush>=3?['HIGH','#ffb35a']:j.ambush?['MEDIUM','#f2d04a']:['LOW','#a9d8b0'];
  const n=(j.kind==='fare'?j.count*2:j.kind==='rescue'?j.count+1:j.kind==='pro'?j.count+2:j.count)+1,veh=['fuel','service','triage','inside','pro'].includes(j.kind)||career==='gym'?'ON FOOT':(VEH[career]||'VAN'),best=stats[career].best[j.id];
@@ -174,24 +163,15 @@ function safePoint(x,y,min=180,max=650,road=false){for(let i=0;i<100;i++){const 
 function reachable(x,y){if(x<20||y<20||x>WORLD-20||y>WORLD-20)return false;const t=tileAt(x,y);if(t===T_WATER||t===T_BLD)return false;const prev=moverCtx;moverCtx={x,y};let ok=true;try{ok=!blockedCircle(x,y,13);}catch(e){}moverCtx=prev;return ok;}
 function reach(p){if(reachable(p.x,p.y))return p;for(let r=18;r<=270;r+=18)for(let k=0;k<12;k++){const a=k/12*Math.PI*2,x=p.x+Math.cos(a)*r,y=p.y+Math.sin(a)*r;if(reachable(x,y)&&!(city.venues||[]).some(v=>insideVenue(v,{x,y})))return {x,y};}return p;}
 function task(type,p,label,hold=180,extra={}){const q=extra.floor!=null||(city.venues||[]).some(v=>insideVenue(v,p))?p:reach(p);return {type,x:q.x,y:q.y,label,hold,progress:0,...extra};}
-<<<<<<< HEAD
 function returnTask(home){return task('return',{x:home.doorX+(home.frontage?.dx||0)*30,y:home.doorY+(home.frontage?.dy??1)*30},'Return to dispatch and clock out',120);}
 function vehicle(home,role){const type=role==='police'?'police':role==='fire'?'truck':role==='garage'?'pickup':role==='taxi'?'sedan':'van',p=safePoint(home.doorX,home.doorY,75,190,true),c=makeCar(p.x,p.y,0,type);c.jobRole=role;c.maxHp=Math.round(c.maxHp*(CAREERS[role]?armor[rank(role)]:1.6));c.hp=c.maxHp;c.spec={...c.spec,name:({fire:'LEVEL 29 RESCUE ENGINE',hospital:'LEVEL 29 AMBULANCE',police:'DUTY CRUISER',grocery:'MARKET DELIVERY VAN',bank:'ARMORED TRANSFER VAN',garage:'SERVICE TRUCK',armory:'ARMORY SUPPLY VAN',spray:'MOBILE DETAIL VAN',business:'COMPANY VAN',safe:'SAFE HOUSE SUPPLY VAN',taxi:'LEVEL 29 CAB'})[role]||'STOCK DELIVERY VAN'};c.col=({fire:'#b43529',hospital:'#e5e8dc',police:'#f2f2ef',grocery:'#4f9a52',bank:'#5d646b',garage:'#c9992f',armory:'#6b4a3d',spray:'#3c93b8',business:'#4b3f63',safe:'#4a6b52',taxi:'#e8c63a'})[role]||'#d6b24c';c.ai=null;cars.push(c);return c;}
 function begin(career,def,home){if(window.level29CityStories?.active)return toast('FINISH YOUR CITY STORY FIRST');if(active||level29Guard.shift||mission?.phase==='active'||!atHome(home)||rank(career)<def.rank)return toast('FINISH YOUR CURRENT JOB AND CLOCK IN ON FOOT AT DISPATCH');
-=======
-function returnTask(home){return task('return',{x:home.doorX,y:home.doorY+30},'Return to dispatch and clock out',120);}
-function vehicle(home,role){const type=role==='police'?'police':role==='fire'?'truck':role==='garage'?'pickup':role==='taxi'?'sedan':'van',p=safePoint(home.doorX,home.doorY,75,190,true),c=makeCar(p.x,p.y,0,type);c.jobRole=role;c.maxHp=Math.round(c.maxHp*(CAREERS[role]?armor[rank(role)]:1.6));c.hp=c.maxHp;c.spec={...c.spec,name:({fire:'LEVEL 29 RESCUE ENGINE',hospital:'LEVEL 29 AMBULANCE',police:'DUTY CRUISER',grocery:'MARKET DELIVERY VAN',bank:'ARMORED TRANSFER VAN',garage:'SERVICE TRUCK',armory:'ARMORY SUPPLY VAN',spray:'MOBILE DETAIL VAN',business:'COMPANY VAN',safe:'SAFE HOUSE SUPPLY VAN',taxi:'LEVEL 29 CAB'})[role]||'STOCK DELIVERY VAN'};c.col=({fire:'#b43529',hospital:'#e5e8dc',police:'#f2f2ef',grocery:'#4f9a52',bank:'#5d646b',garage:'#c9992f',armory:'#6b4a3d',spray:'#3c93b8',business:'#4b3f63',safe:'#4a6b52',taxi:'#e8c63a'})[role]||'#d6b24c';c.ai=null;cars.push(c);return c;}
-function begin(career,def,home){if(active||level29Guard.shift||mission?.phase==='active'||!atHome(home)||rank(career)<def.rank)return toast('FINISH YOUR CURRENT JOB AND CLOCK IN ON FOOT AT DISPATCH');
->>>>>>> main
  const r=rank(career),tasks=[],road=()=>safePoint(home.doorX,home.doorY,230,850,true);const kind=def.kind;
  const hard=def.hard||0,amb=(n,b=0)=>({ambush:n,brutes:b}),sx=home.stationX,sy=home.stationY,spots=[[-60,-10],[60,-10],[0,-48],[-60,38],[60,38],[0,22]];
  const inside=(i,n,verb)=>{const B=home.b;let pt={x:sx,y:sy};for(let k=0;k<6;k++){const o=spots[(i+k)%6],q={x:Math.max(B.x+22,Math.min(B.x+B.w-22,sx+o[0])),y:Math.max(B.y+22,Math.min(B.y+B.h-30,sy+o[1]))};if(!blockedCircle(q.x,q.y,14)){pt=q;break;}}return task('work',pt,verb+' '+(i+1)+' of '+n,def.hold||220);};
  const horde=(i,n)=>task('clear',road(),(kind==='pro'?'Training run ':'Clear horde call ')+(i+1)+' of '+n,0,{enemies:[],spawned:false,limit:5400,size:def.small?3+i:Math.min(14,(hard>1?8:6)+2*i),brutes:def.small?0:Math.min(4,hard>1?1+i:i)});
-<<<<<<< HEAD
  if(kind==='farm'){if(!city.farm)return toast('NO FARM IN THIS MAP');const f=city.farm;const points=[[36,80,'Fill feed trough'],[f.w-36,100,'Inspect the flock'],[50,f.h-40,'Harvest produce'],[f.w/2,f.h-35,'Load barn crate']];for(const [x,y,label]of points)tasks.push(task('work',reach({x:f.x+x,y:f.y+y}),label,def.hold));}
  if(kind==='apron'){const l=level29Downtown.lots.airport;for(let i=0;i<def.count;i++)tasks.push(task('work',reach({x:(l.x0+4.5)*TILE,y:(l.y0+1.5+i*2)*TILE}),['Inspect baggage cart','Check apron safety kit','Service ground equipment'][i],def.hold));}
-=======
->>>>>>> main
  if(kind==='fire'||kind==='rescue'){for(let i=0;i<def.count;i++)tasks.push(task('fire',road(),'Extinguish fire '+(i+1)+' of '+def.count,def.hold,{limit:4800+(hard>1?600:0),...amb(Math.min(2+Math.floor(i/2),5),hard>1?1+Math.floor(i/3):0),flare:hard>1?190:260,fr:hard>1?68:62}));if(kind==='rescue')tasks.push(task('rescue',road(),'Stabilize and collect the stranded resident',def.hold-80,{limit:5400,...amb(6,1)}));}
  if(kind==='patrol')for(let i=0;i<def.count;i++)tasks.push(task('patrol',road(),'Cruiser checkpoint '+(i+1)+' of '+def.count,180,{limit:3600,...amb(3+Math.floor(i/2),i>=3?1:0)}));
  if(kind==='clear')for(let i=0;i<def.count;i++)tasks.push(horde(i,def.count));
@@ -208,11 +188,7 @@ function begin(career,def,home){if(active||level29Guard.shift||mission?.phase===
  if(kind==='ambulance')for(let i=0;i<def.count;i++)tasks.push(task('patient',road(),'Stabilize and collect casualty '+(i+1)+' of '+def.count,300));
  tasks.push(returnTask(home));
  active={career,def,home,t:def.mins*3600,total:def.mins*3600,index:0,tasks,mult:multipliers[r],speed:speeds[r],tips:0,streak:0,bestStreak:0,incMiss:0,tipMsg:'',savedObj:objective,city,car:null,carUsed:false,cargo:0,meshes:[],customer:null,spawned:[],entered:frame,bonus:0,incDone:0,inc:null,incT:900+Math.floor(Math.random()*600)};
-<<<<<<< HEAD
  if(!['fuel','service','triage','inside','pro','apron'].includes(kind)&&career!=='gym')active.car=vehicle(home,career);
-=======
- if(!['fuel','service','triage','inside','pro'].includes(kind)&&career!=='gym')active.car=vehicle(home,career);
->>>>>>> main
  if(career==='police')player.armor=Math.max(player.armor||0,100);
  gps=null;held=touchHeld=false;makeObjects();activateTask();banner={big:'CLOCKED IN',small:CAREERS[career].name.toUpperCase()+' · '+def.name.toUpperCase(),t:160,good:true};sfx('missionstart');
  level29Places.speak(CAREERS[career].boss,'You are on the clock. Follow the work marker, hold U to do each task, then return here for your pay.',CAREERS[career].col);return true;}
@@ -231,13 +207,10 @@ function activateTask(){if(!active)return;clearTaskVisuals();const a=active,t=a.
  if(t.type==='fire'){for(let k=0;k<7;k++){const m=new THREE.Mesh(new THREE.ConeGeometry(5+k%3,18+k*2,5),new THREE.MeshBasicMaterial({color:k%2?'#ff6a24':'#ffc53a',transparent:true,opacity:.85}));m.position.set(Math.cos(k*2.4)*9,12,Math.sin(k*2.4)*9);group.add(m);}}
  if(['patient','rescue','deliver','fare'].includes(t.type)){const m=makeFigure(false);setFigureColors(m,'#a47150',t.floor!==undefined?'#9bbec9':'#947760','#454f64','#352820');poseFigure(m,0,0,0,0,'stand');group.add(m);if(t.type==='deliver'&&a.def.kind!=='fare'){const bag=new THREE.Mesh(new THREE.BoxGeometry(9,7,7),new THREE.MeshLambertMaterial({color:CAREERS[a.career].col}));bag.position.set(9,3.5,0);group.add(bag);}const plus=t.type==='deliver'||t.type==='fare'?new THREE.Mesh(new THREE.BoxGeometry(.1,.1,.1),new THREE.MeshBasicMaterial({color:'#000'})):new THREE.Mesh(new THREE.BoxGeometry(2,9,1),new THREE.MeshBasicMaterial({color:'#83e0dd'})),cross=new THREE.Mesh(new THREE.BoxGeometry(8,2,1),plus.material.clone());plus.position.y=cross.position.y=35;group.add(plus,cross);}
  if(t.type==='work'){const bench=new THREE.Mesh(new THREE.BoxGeometry(14,3,10),new THREE.MeshBasicMaterial({color:CAREERS[a.career].col,transparent:true,opacity:.6}));bench.position.y=2;group.add(bench);}
-<<<<<<< HEAD
  if(t.type==='work'&&(a.career==='farm'||a.career==='air')){const steel=new THREE.MeshStandardMaterial({color:'#7d8c8b',roughness:.7,metalness:.35}),wood=new THREE.MeshStandardMaterial({color:'#9b784a',roughness:.95});const part=(w,h,d,x,y,z,m)=>{const o=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),m);o.position.set(x,y,z);group.add(o);};
   if(a.career==='farm'){part(17,5,11,15,2.5,0,wood);part(14,1,8,15,5,0,new THREE.MeshStandardMaterial({color:a.index===0?'#c4b16a':'#598546',roughness:1}));for(let k=0;k<5;k++)part(2,2,3,10+k*2.5,7,0,wood);}
   else{part(20,2,12,15,3,0,steel);for(const z of [-6,6])for(const x of [8,22]){const wheel=new THREE.Mesh(new THREE.CylinderGeometry(2,2,1.5,10),wood);wheel.rotation.x=Math.PI/2;wheel.position.set(x,2,z);group.add(wheel);}for(let k=0;k<3;k++)part(6,5+k%2,8,8+k*7,7,0,wood);}
  }
-=======
->>>>>>> main
  if(t.type==='crate'){const box=new THREE.Mesh(new THREE.BoxGeometry(17,12,14),new THREE.MeshLambertMaterial({color:a.career==='hospital'?'#d8ece7':'#ad8855'}));box.position.y=6;group.add(box);const seal=new THREE.Mesh(new THREE.BoxGeometry(3,12.3,14.3),new THREE.MeshBasicMaterial({color:CAREERS[a.career].col}));seal.position.y=6;group.add(seal);}
  objects.add(group);a.meshes.push(group);toast(t.label.toUpperCase()+(a.tipMsg?' · '+a.tipMsg:''));a.tipMsg='';sfx('checkpoint');}
 function canWork(t){if(!active||!t||!player||player.dead)return false;const p=player.car||player;if(t.floor!==undefined&&(active.home.floor!==t.floor||player.car))return false;
