@@ -5,7 +5,7 @@
   const QUALITY_KEY = 'l29_gfx_quality';
   const LEVELS = ['high', 'medium', 'low'];
   const touch = matchMedia('(pointer: coarse)').matches;
-  let quality = localStorage.getItem(QUALITY_KEY);
+  let quality = 'low'; // Recovery boot starts safely; player may opt in after entry.
   if (!LEVELS.includes(quality)) quality = 'low';
 
   const SHADOW = {

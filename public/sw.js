@@ -1,4 +1,4 @@
-const CACHE = 'level29-startup-repair-v6'
+const CACHE = 'level29-entry-recovery-v7'
 const CORE = ['/', '/game/index.html', '/game/three.min.js', '/game/logo.png', '/icons/icon-192.png']
 
 self.addEventListener('install', (event) => {

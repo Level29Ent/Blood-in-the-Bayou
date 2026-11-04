@@ -313,5 +313,5 @@ const oldText=window.render_game_to_text;window.render_game_to_text=()=>{const x
 window.advanceTime=ms=>{for(let i=0;i<Math.min(600,Math.round(ms/16.667));i++)update();render();};
 window.level29Places={get saved(){return saved;},get robbery(){return robbery;},get guards(){return guards;},get panel(){return panel;},show,close,speak};
 // Initial title backdrop must use the newly reserved blocks too.
-travelToMenu();
+if(!window.level29DeferredEntry)travelToMenu();
 })();
