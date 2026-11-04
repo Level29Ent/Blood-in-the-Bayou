@@ -1,7 +1,7 @@
 'use strict';
 // =====================================================================
 // BLOOD IN THE BAYOU — open-world extras: weapon wheel, gun shop,
-// Pay 'n' Spray, rampages, hidden packages, stunt jumps, traffic, cheats.
+// Bayou Shine, rampages, hidden packages, stunt jumps, traffic, cheats.
 // =====================================================================
 
 // ---------- Weapons ----------
@@ -10,9 +10,14 @@ const WEAPONS = {
   shotgun: { name:'SHOTGUN',   key:'2', price:900,  ammo:24,  pack:24, ammoPrice:150, col:'#e8a25a' },
   rpg:     { name:'RPG',       key:'3', price:3500, ammo:6,   pack:4,  ammoPrice:600, col:'#ff6a4a' },
   molotov: { name:'MOLOTOV',   key:'4', price:600,  ammo:6,   pack:5,  ammoPrice:200, col:'#ff9a2a' },
+  smg:     { name:'BAYOU SMG', key:'6', price:1700, ammo:120, pack:120, ammoPrice:220, col:'#81c5cf' },
+  carbine: { name:'RANGER CARBINE', key:'7', price:2800, ammo:60, pack:60, ammoPrice:300, col:'#a6c183' },
+  pistol: {name:'MARSH PISTOL',key:'8',price:1200,ammo:48,pack:48,ammoPrice:180,col:'#92bcca'},
+  marksman: {name:'DELTA MARKSMAN',key:'9',price:4600,ammo:30,pack:30,ammoPrice:400,col:'#bcb894'},
+  snowball: {name:'FELICIA SNOWBALL',key:'0',price:180,ammo:6,pack:6,ammoPrice:180,col:'#a5e5f4'},
   bat:     { name:'BAT',       key:'5', price:150,  ammo:Infinity, pack:0, col:'#c9a37a' },
 };
-const WORDER = ['m240','shotgun','rpg','molotov','bat'];
+const WORDER = ['m240','shotgun','rpg','molotov','bat','smg','carbine','pistol','marksman','snowball'];
 let arsenal = null, curW = 'm240', wheelOpen = false, wheelSel = 0, wFire = 0, batSwing = 0;
 function resetArsenal(){ arsenal = { m240: Infinity, bat: 0 }; arsenal.bat = undefined; delete arsenal.bat; curW = 'm240'; }
 resetArsenal();
@@ -26,7 +31,17 @@ fireWeapon = function(ox, oy, aim){
   const p = player;
   if (curW === 'm240' || p.car && curW === 'bat') return _fireWeapon(ox, oy, aim);
   if (curW !== 'bat' && arsenal[curW] <= 0){ if (frame % 30 === 0) toast('OUT OF ' + WEAPONS[curW].name + ' AMMO · Q TO SWITCH'); p.fireCd = 20; return; }
-  if (curW === 'shotgun'){
+  if(curW==='snowball'){
+    bullets.push({x:ox+Math.cos(aim)*22,y:oy+Math.sin(aim)*22,vx:Math.cos(aim)*11,vy:Math.sin(aim)*11,life:40,dmg:36,pierce:0,hit:new Set(),snowball:true});arsenal.snowball--;p.fireCd=35;p.flash=0;view.kick=.6;sfx('door');
+  }else if(curW==='pistol'||curW==='marksman'){
+    const long=curW==='marksman',a=aim+rnd(long?-.008:-.035,long?.008:.035),sp=long?30:22;
+    bullets.push({x:ox+Math.cos(a)*22,y:oy+Math.sin(a)*22,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:long?48:26,dmg:(long?10:3.5)*(window.level29Trading?.damage||1)+up.ap*.35,pierce:long?2:0,hit:new Set()});
+    arsenal[curW]--;p.fireCd=long?48:16;p.flash=3;view.kick=long?2.4:1.1;snd('shot');
+  }else if(curW==='smg'||curW==='carbine'){
+    const rifle=curW==='carbine',spread=(rifle?.018:.07)*(window.level29Trading?.spread||1),a=aim+rnd(-spread,spread),speed=rifle?24:18;
+    bullets.push({x:ox+Math.cos(a)*22,y:oy+Math.sin(a)*22,vx:Math.cos(a)*speed,vy:Math.sin(a)*speed,life:rifle?38:24,dmg:(rifle?4.8:1.7)*(window.level29Trading?.damage||1)+up.ap*.35,pierce:rifle?1:0,hit:new Set()});
+    arsenal[curW]--;p.fireCd=rifle?20:6;p.flash=3;view.kick=rifle?1.8:.65;snd('shot');
+  }else if (curW === 'shotgun'){
     for (let k=0;k<9;k++){ const a = aim + rnd(-.16, .16), sp = rnd(13, 17); bullets.push({ x: ox + Math.cos(a)*22, y: oy + Math.sin(a)*22, vx: Math.cos(a)*sp, vy: Math.sin(a)*sp, life: 20, dmg: 1.4 + up.ap*.4, pierce: 0, hit: new Set() }); }
     arsenal.shotgun--; p.fireCd = 42; p.flash = 3; shake = Math.max(shake, 5); snd('shot'); snd('shot'); view.kick = 2;
   } else if (curW === 'rpg'){
@@ -39,14 +54,14 @@ fireWeapon = function(ox, oy, aim){
   } else if (curW === 'bat'){
     batSwing = 14; p.fireCd = 26; snd('bump');
     let hit = false;
-    for (const z of zombies){ if (!z.alive) continue; const d = dist(ox, oy, z.x, z.y); if (d < 46 + z.r && Math.abs(angDiff(aim, Math.atan2(z.y - oy, z.x - ox))) < .9){ z.hp -= 3.2 + up.ap; z.flash = 5; z.stun = 30; moveCircle(z, Math.cos(aim)*18, Math.sin(aim)*18, z.r*.8); gore(z.x, z.y, 4); hit = true; if (z.hp <= 0) killZombie(z, Math.cos(aim)*6, Math.sin(aim)*6); else snd('zhit'); } }
+    for (const z of zombies){ if (!z.alive) continue; const d = dist(ox, oy, z.x, z.y); if (d < 46 + z.r && Math.abs(angDiff(aim, Math.atan2(z.y - oy, z.x - ox))) < .9){ z.killSource='player';z.lastHit=0;z.hp -= 3.2 + up.ap; z.flash = 5; z.stun = 30; moveCircle(z, Math.cos(aim)*18, Math.sin(aim)*18, z.r*.8); gore(z.x, z.y, 4); hit = true; if (z.hp <= 0) killZombie(z, Math.cos(aim)*6, Math.sin(aim)*6); else snd('zhit'); } }
     if (boss && !boss.dead && dist(ox, oy, boss.x, boss.y) < 60 + boss.r){ damageBoss(4); hit = true; }
     if (hit){ view.hit = 7; shake = Math.max(shake, 4); sfx('splat'); }
   }
   lastShotFrame = frame; heat = Math.min(5, heat + .02);
 };
 let rockets = [], throws = [], fires = [];
-function boom(x, y, max){ explosions.push({ x, y, r: 0, max: max || 120, t: 28, dealt: false }); sfx('explode'); shake = Math.max(shake, 16); decal(x, y, 'scorch', 1); for (let k=0;k<22;k++) parts.push({ k:'fire', x, y, vx: rnd(-5,5), vy: rnd(-5,5), t: rnd(20,45) }); }
+function boom(x, y, max, owner){ explosions.push({ x, y, r: 0, max: max || 120, playerOwned:!owner, owner:owner||0, t: 28, dealt: false }); sfx('explode'); shake = Math.max(shake, 16); decal(x, y, 'scorch', 1); for (let k=0;k<22;k++) parts.push({ k:'fire', x, y, vx: rnd(-5,5), vy: rnd(-5,5), t: rnd(20,45) }); }
 function updateWeapons(){
   const p = player;
   if (batSwing > 0) batSwing--;
@@ -56,20 +71,20 @@ function updateWeapons(){
     let hit = solidAt(r.x, r.y) || r.life <= 0;
     if (!hit) for (const z of zombies) if (z.alive && dist(r.x, r.y, z.x, z.y) < z.r + 6){ hit = true; break; }
     if (!hit && boss && !boss.dead && dist(r.x, r.y, boss.x, boss.y) < boss.r + 6){ hit = true; damageBoss(18 + up.ap*4); }
-    if (!hit) for (const c of cars) if (!c.dead && c !== p.car && dist(r.x, r.y, c.x, c.y) < c.r){ hit = true; damageCar(c, 300); break; }
-    if (hit){ r.life = 0; boom(r.x, r.y, 130); if (boss && !boss.dead && dist(r.x, r.y, boss.x, boss.y) < 140) damageBoss(10); }
+    if (!hit) for (const c of cars) if (!c.dead && c !== p.car && dist(r.x, r.y, c.x, c.y) < c.r){ hit = true; damageCar(c, 300,r.owner?'remote':'player',r.owner); break; }
+    if (hit){ r.life = 0; boom(r.x, r.y, 130,r.owner); if (boss && !boss.dead && dist(r.x, r.y, boss.x, boss.y) < 140) damageBoss(10); }
   }
   rockets = rockets.filter(r => r.life > 0);
   for (const t of throws){
     t.t++; const k = t.t / t.T; t.x = t.sx + (t.tx - t.sx) * k; t.y = t.sy + (t.ty - t.sy) * k; t.h = 14 + Math.sin(k * Math.PI) * 40;
-    if (solidAt(t.x, t.y) || t.t >= t.T){ t.done = true; fires.push({ x: t.x, y: t.y, t: 300, r: 70 }); sfx('crash', 3); for (let j=0;j<30;j++) parts.push({ k:'fire', x: t.x + rnd(-30,30), y: t.y + rnd(-30,30), vx: rnd(-1,1), vy: rnd(-1,1), t: rnd(20,40) }); }
+    if (solidAt(t.x, t.y) || t.t >= t.T){ t.done = true; fires.push({ x: t.x, y: t.y, owner:t.owner||0, t: 300, r: 70 }); sfx('crash', 3); for (let j=0;j<30;j++) parts.push({ k:'fire', x: t.x + rnd(-30,30), y: t.y + rnd(-30,30), vx: rnd(-1,1), vy: rnd(-1,1), t: rnd(20,40) }); }
   }
   throws = throws.filter(t => !t.done);
   for (const f of fires){
     f.t--;
     if (frame % 2 === 0) parts.push({ k:'fire', x: f.x + rnd(-f.r, f.r) * .8, y: f.y + rnd(-f.r, f.r) * .8, vx: rnd(-.3,.3), vy: rnd(-.3,.3), t: rnd(15, 30) });
     if (frame % 10 === 0){
-      for (const z of zombies) if (z.alive && dist(z.x, z.y, f.x, f.y) < f.r){ z.hp -= 1.1; z.flash = 3; if (z.hp <= 0) killZombie(z, 0, 0); }
+      for (const z of zombies) if (z.alive && dist(z.x, z.y, f.x, f.y) < f.r){ z.killSource=f.owner?'remote':'player';z.lastHit=f.owner||0;z.hp -= 1.1; z.flash = 3; if (z.hp <= 0) killZombie(z, 0, 0); }
       if (boss && !boss.dead && dist(boss.x, boss.y, f.x, f.y) < f.r + boss.r) damageBoss(1.5);
       if (!p.car && !p.dead && dist(p.x, p.y, f.x, f.y) < f.r * .8) hurtPlayer(4, f.x, f.y);
     }
@@ -78,21 +93,31 @@ function updateWeapons(){
 }
 
 // ---------- Weapon wheel ----------
-function openWheel(on){ wheelOpen = on; if (on) wheelSel = Math.max(0, WORDER.indexOf(curW)); else { const w = WORDER[wheelSel]; if (hasW(w)) selectW(w); } }
+let wheelCursor={x:0,y:0};
+function openWheel(on,commit=true){
+ if(on){if(state!=='play'||!player||player.dead)return;wheelOpen=true;wheelSel=Math.max(0,WORDER.indexOf(curW));wheelCursor={x:0,y:0};mouse.down=false;return;}
+ const wasOpen=wheelOpen;wheelOpen=false;mouse.down=false;
+ if(wasOpen&&commit&&state==='play'){const w=WORDER[wheelSel];if(hasW(w))selectW(w);}
+}
+function wheelPointer(e){if(!wheelOpen)return;
+ if(document.pointerLockElement===cv){wheelCursor.x=clamp(wheelCursor.x+(e.movementX||0),-SW/2,SW/2);wheelCursor.y=clamp(wheelCursor.y+(e.movementY||0),-SH/2,SH/2);}
+ else{const r=cv.getBoundingClientRect();wheelCursor.x=(e.clientX-r.left)*SW/r.width-SW/2;wheelCursor.y=(e.clientY-r.top)*SH/r.height-SH/2;}
+ if(Math.hypot(wheelCursor.x,wheelCursor.y)<30)return;const page=Math.floor(wheelSel/10),n=Math.min(10,WORDER.length-page*10),a=Math.atan2(wheelCursor.y,wheelCursor.x);wheelSel=page*10+((Math.round((a+Math.PI/2)/(Math.PI*2/n))%n)+n)%n;
+}
 function drawWheel(){
-  if (!wheelOpen) return;
+  if (!wheelOpen) return;if(state!=='play'){openWheel(false,false);return;}
   cx.fillStyle = 'rgba(8,10,12,.55)'; cx.fillRect(0, 0, SW, SH);
-  const R = Math.min(SW, SH) * .3, X = SW/2, Y = SH/2;
-  WORDER.forEach((w, i) => {
-    const a = -Math.PI/2 + i * Math.PI*2/WORDER.length, x = X + Math.cos(a) * R, y = Y + Math.sin(a) * R, sel = i === wheelSel, own = hasW(w);
-    cx.fillStyle = sel ? 'rgba(244,195,85,.92)' : 'rgba(18,24,28,.88)'; cx.beginPath(); cx.arc(x, y, 50, 0, 7); cx.fill();
+  const R=Math.min(SW,SH)*.34,X=SW/2,Y=SH/2,bubble=Math.min(44,R*Math.sin(Math.PI/Math.min(10,WORDER.length))-4),font=Math.max(8,Math.min(13,bubble*.35));
+  const page=Math.floor(wheelSel/10),visibleWeapons=WORDER.slice(page*10,page*10+10);visibleWeapons.forEach((w, slot) => {
+    const i=page*10+slot,a = -Math.PI/2 + slot * Math.PI*2/visibleWeapons.length, x = X + Math.cos(a) * R, y = Y + Math.sin(a) * R, sel = i === wheelSel, own = hasW(w);
+    cx.fillStyle = sel ? 'rgba(244,195,85,.92)' : 'rgba(18,24,28,.88)'; cx.beginPath(); cx.arc(x, y, bubble, 0, 7); cx.fill();
     cx.strokeStyle = own ? WEAPONS[w].col : '#555'; cx.lineWidth = 3; cx.stroke();
-    hudText(WEAPONS[w].name, x, y - 16, 18, sel ? '#13191d' : own ? '#f6f3e6' : '#666', 'center', '900 ');
+    const words=WEAPONS[w].name.split(' '),cut=Math.ceil(words.length/2);for(const [j,line]of [words.slice(0,cut).join(' '),words.slice(cut).join(' ')].entries())hudText(line,x,y-14+j*font,font,sel?'#13191d':own?'#f6f3e6':'#666','center','900 ');
     const am = own ? (arsenal[w] === Infinity ? '∞' : arsenal[w] + '') : 'LOCKED';
-    hudText(am, x, y + 6, 13, sel ? '#13191d' : own ? '#c9d1d4' : '#666', 'center', '700 ');
+    hudText(am, x, y + bubble*.5, font, sel ? '#13191d' : own ? '#c9d1d4' : '#666', 'center', '700 ');
   });
-  hudText('WEAPON WHEEL', X, Y - 22, 26, '#f4c355', 'center', '900 ');
-  hudText('move mouse or arrows · release Q · 1-5 also work', X, Y + 10, 12, '#c9d1d4', 'center', '600 ');
+  hudText('WEAPON WHEEL · '+(page+1)+'/'+Math.ceil(WORDER.length/10), X, Y - 22, 26, '#f4c355', 'center', '900 ');
+  hudText('mouse/arrows · scroll pages · release Q', X, Y + 10, 12, '#c9d1d4', 'center', '600 ');
 }
 function drawWeaponPanel(R, bw, y){
   const p = player, W = WEAPONS[curW];
@@ -161,6 +186,7 @@ function extraBlips(){
 // ---------- Gun shop UI ----------
 const shopEl = document.createElement('div'); shopEl.id = 'shop'; document.body.appendChild(shopEl);
 const SHOP_ITEMS = () => [
+  ...['smg','carbine'].map(id=>({id,label:WEAPONS[id].name,desc:id==='smg'?'Fast automatic fire with a wider spread.':'Accurate, hard-hitting semi-automatic rounds with penetration.',price:hasW(id)?WEAPONS[id].ammoPrice:WEAPONS[id].price,buy:hasW(id)?'+'+WEAPONS[id].pack+' ROUNDS':'BUY'})),
   { id:'shotgun', label:'Shotgun', desc:'9-pellet spread. Clears a crowd at close range.', price: hasW('shotgun') ? WEAPONS.shotgun.ammoPrice : WEAPONS.shotgun.price, buy: hasW('shotgun') ? '+24 SHELLS' : 'BUY' },
   { id:'rpg', label:'RPG launcher', desc:'Rocket with blast radius. Flattens bosses and cars.', price: hasW('rpg') ? WEAPONS.rpg.ammoPrice : WEAPONS.rpg.price, buy: hasW('rpg') ? '+4 ROCKETS' : 'BUY' },
   { id:'molotov', label:'Molotov cocktails', desc:'Throw a pool of fire that burns for five seconds.', price: hasW('molotov') ? WEAPONS.molotov.ammoPrice : WEAPONS.molotov.price, buy: hasW('molotov') ? '+5 BOTTLES' : 'BUY' },
@@ -171,7 +197,7 @@ const SHOP_ITEMS = () => [
 function openShop(){
   state = 'shop'; mouse.down = false;
   const items = SHOP_ITEMS();
-  shopEl.innerHTML = '<div class="sbox"><div class="eyebrow">AMMU-NATION · ' + D.name + '</div><h2>Gun shop</h2><p class="cash">' + money(cash) + '</p>' +
+  shopEl.innerHTML = '<div class="sbox"><div class="eyebrow">BAYOU ARSENAL · ' + D.name + '</div><h2>Gun shop</h2><p class="cash">' + money(cash) + '</p>' +
     items.map(it => '<div class="item"><div><b>' + it.label + '</b><span>' + it.desc + '</span></div><button data-id="' + it.id + '"' + ((it.buy === 'OWNED' || cash < it.price) ? ' disabled' : '') + '>' + it.buy + (it.price ? ' · $' + it.price : '') + '</button></div>').join('') +
     '<button class="close">LEAVE SHOP · ESC</button></div>';
   shopEl.style.display = 'flex';
@@ -198,7 +224,7 @@ const CHEATS = {
   JESTERMODE:  ['HEALTH + ARMOR MAXED', () => { player.hp = player.maxHp; player.armor = 50 + up.armor*25; }],
   BAYOUBLAST:  ['SPAWN A SPORTS COUPE', () => { const p = player; const c = makeCar(p.x + Math.cos(view.yaw)*42, p.y + Math.sin(view.yaw)*42, view.yaw, 'sports'); cars.push(c); }],
   SEMPERFI:    ['SPAWN A HUMVEE', () => { const p = player; const c = makeCar(p.x + Math.cos(view.yaw)*42, p.y + Math.sin(view.yaw)*42, view.yaw, 'humvee'); cars.push(c); }],
-  QUIETSTORM:  ['HORDE CLEARED · HEAT ZERO', () => { heat = 0; for (const z of zombies) if (dist(z.x, z.y, player.x, player.y) < 900) killZombie(z, 0, 0); }],
+  QUIETSTORM:  ['HORDE CLEARED · HEAT ZERO', () => { heat = 0; for (const z of zombies) if (dist(z.x, z.y, player.x, player.y) < 900){z.killSource='ambient';killZombie(z, 0, 0);} }],
   NEVERHOT:    ['M240 NEVER OVERHEATS', () => { cheatFlags.cool = !cheatFlags.cool; return cheatFlags.cool ? 'M240 NEVER OVERHEATS' : 'M240 HEAT RESTORED'; }],
   GODMODE:     ['INVINCIBLE', () => { cheatFlags.god = !cheatFlags.god; return cheatFlags.god ? 'INVINCIBLE' : 'INVINCIBLE OFF'; }],
   SLOWDEAD:    ['ZOMBIES SLOWED', () => { cheatFlags.slow = !cheatFlags.slow; for (const z of zombies) z.speed *= cheatFlags.slow ? .5 : 2; return cheatFlags.slow ? 'ZOMBIES SLOWED' : 'ZOMBIE SPEED NORMAL'; }],
@@ -242,6 +268,7 @@ function spawnTraffic(){
     // right-hand: on vertical roads, east lane (side 2) heads south (+y), west lane north; horizontal: south lane (side 2) heads west
     const a = vert ? (side === 2 ? Math.PI/2 : -Math.PI/2) : (side === 2 ? Math.PI : 0);
     const c = makeCar(x, y, a, D.cars[Math.floor(rng() * D.cars.length)]);
+    if(!level29TrafficClearance.sweep(c,city,tileAt,[T_ROAD,T_BRIDGE],120))continue;
     c.ai = { input: { thr: 1, steer: 0, brake: false, boost: false }, cruise: c.spec.max * rnd(.38, .5), lane, vert, side, turnCd: 0, target: a, stuck: 0 };
     cars.push(c); return;
   }
@@ -262,7 +289,7 @@ function updateTraffic(){
     }
     // obstacles ahead: player, zombies (they plough slowly), other cars, buildings/water
     const fx = c.x + Math.cos(c.a) * (c.spec.len * .5 + 40), fy = c.y + Math.sin(c.a) * (c.spec.len * .5 + 40);
-    let block = solidAt(fx, fy) || tileAt(fx, fy) === T_WATER;
+    let block = !level29TrafficClearance.sweep(c,city,tileAt,[T_ROAD,T_BRIDGE],Math.max(55,c.v*c.v/ .35));
     if (!block) for (const o of cars){ if (o === c || o.dead) continue; if (dist(o.x, o.y, fx, fy) < o.r + 14){ block = true; break; } }
     const ped = !p.dead && !p.car && dist(p.x, p.y, fx, fy) < 34;
     let thr = Math.abs(c.v) < ai.cruise ? 1 : 0;
@@ -305,7 +332,7 @@ function startRampage(r){
   banner = { big: 'RAMPAGE', small: 'Kill ' + r.need + ' zombies in 60 seconds with the ' + WEAPONS[r.weap].name, t: 200, bad: true };
   snd('roar'); heat = 5; spawnHordeAround(r.x, r.y, 16, 200, 520);
 }
-const _kill = killZombie; killZombie = function(z, vx, vy){ const was = z.alive; _kill(z, vx, vy); if (was && !z.alive && rampage) rampage.kills++; };
+const _kill = killZombie; killZombie = function(z, vx, vy){ const was = z.alive; _kill(z, vx, vy); if (was && !z.alive && z.playerKill && rampage) rampage.kills++; };
 function updateRampage(){
   if (!rampage) return;
   const R = rampage; R.t--;
@@ -349,12 +376,12 @@ function updateStunts(){
   }
 }
 
-// ---------- Pay 'n' Spray ----------
+// ---------- Bayou Shine ----------
 function updateSpray(){
   const p = player; if (!world || !p.car) { sprayT = 0; return; }
   const s = world.sprays.find(s => dist(p.car.x, p.car.y, s.x, s.y) < 46);
   if (!s){ sprayT = 0; return; }
-  if (Math.abs(p.car.v) > 1){ if (frame % 60 === 0) toast("STOP IN THE PAY 'N' SPRAY"); return; }
+  if (Math.abs(p.car.v) > 1){ if (frame % 60 === 0) toast("STOP IN THE BAYOU SHINE"); return; }
   sprayT++;
   if (sprayT === 1){ if (cash < 250){ toast('PAY \'N\' SPRAY COSTS $250'); sprayT = -9999; return; } sfx('door'); }
   if (sprayT === 90){
@@ -373,11 +400,11 @@ function updatePackages(){
     if (dist(ox, oy, k.x, k.y) < 26){
       packagesFound.add(k.id); const n = packagesFound.size; cash += 500; sfx('cash'); sfx('checkpoint');
       let extra = '';
-      if (n === 10){ giveW('shotgun'); extra = ' · SHOTGUN UNLOCKED'; }
-      if (n === 25){ giveW('molotov', 10); extra = ' · MOLOTOVS UNLOCKED'; }
-      if (n === 40){ giveW('rpg', 8); extra = ' · RPG UNLOCKED'; }
-      if (n === 50){ up.cool += 2; extra = ' · M240 COOLING BOOST'; }
-      banner = { big: 'HIDDEN PACKAGE', small: n + ' of 50 · +$500' + extra, t: 170, good: true };
+      if (n === 5){ giveW('shotgun'); extra = ' · SHOTGUN UNLOCKED'; }
+      if (n === 10){ giveW('molotov', 10); extra = ' · MOLOTOVS UNLOCKED'; }
+      if (n === 15){ giveW('rpg', 8); extra = ' · RPG UNLOCKED'; }
+      if (n === 20){ up.cool += 2; extra = ' · M240 COOLING BOOST'; }
+      banner = { big: 'HIDDEN PACKAGE', small: n + ' found · +$500' + extra, t: 170, good: true };
     }
   }
 }
@@ -430,15 +457,17 @@ addEventListener('keydown', e => {
   if (state === 'shop' && (k === 'escape' || k === 'e')){ closeShop(); e.preventDefault(); e.stopImmediatePropagation(); keys[k] = true; return; }
   if (state === 'shop' || state === 'cheat'){ e.stopImmediatePropagation(); return; }
   if (state !== 'play') return;
-  if (k === 'q' && !e.repeat){ openWheel(true); }
-  if (wheelOpen){ if (k === 'arrowleft' || k === 'arrowup') wheelSel = (wheelSel + WORDER.length - 1) % WORDER.length; if (k === 'arrowright' || k === 'arrowdown') wheelSel = (wheelSel + 1) % WORDER.length; }
-  if (/^[1-5]$/.test(k)) selectW(WORDER[+k - 1]);
+  if (k === 'q' && !e.repeat){ e.preventDefault();openWheel(true);return; }
+  if (wheelOpen){ if(k==='escape'){openWheel(false,false);e.preventDefault();e.stopImmediatePropagation();return;}if(k.startsWith('arrow')){e.preventDefault();e.stopImmediatePropagation();}if (k === 'arrowleft' || k === 'arrowup') wheelSel = (wheelSel + WORDER.length - 1) % WORDER.length; if (k === 'arrowright' || k === 'arrowdown') wheelSel = (wheelSel + 1) % WORDER.length;return; }
+  const numbered=Object.keys(WEAPONS).find(id=>WEAPONS[id].key===k);if(numbered)selectW(numbered);
   if (k === 't' && !e.repeat){ e.preventDefault(); openCheat(); return; }
   if (k.length === 1 && /[a-z0-9]/.test(k)){ typed = (typed + k).slice(-12).toUpperCase(); for (const c of [...Object.keys(CHEATS), 'KILO3028']) if (typed.endsWith(c)){ applyCheat(c); typed = ''; } }
 }, true);
 addEventListener('keyup', e => { if (e.key.toLowerCase() === 'q' && wheelOpen) openWheel(false); });
-addEventListener('wheel', e => { if (state !== 'play') return; const owned = WORDER.filter(hasW); const i = owned.indexOf(curW); selectW(owned[(i + (e.deltaY > 0 ? 1 : -1) + owned.length) % owned.length]); }, { passive: true });
-cv.addEventListener('mousemove', e => { if (!wheelOpen) return; const a = Math.atan2(e.clientY - SH/2, e.clientX - SW/2); if (Math.hypot(e.clientX - SW/2, e.clientY - SH/2) > 40){ let i = Math.round((a + Math.PI/2) / (Math.PI*2/WORDER.length)); wheelSel = ((i % WORDER.length) + WORDER.length) % WORDER.length; } });
+addEventListener('wheel', e => { if (state !== 'play')return;if(wheelOpen){const pages=Math.ceil(WORDER.length/10),page=(Math.floor(wheelSel/10)+(e.deltaY>0?1:pages-1))%pages;wheelSel=page*10;return;} const owned = WORDER.filter(hasW); const i = owned.indexOf(curW); selectW(owned[(i + (e.deltaY > 0 ? 1 : -1) + owned.length) % owned.length]); }, { passive: true });
+cv.addEventListener('mousemove',wheelPointer);
+addEventListener('blur',()=>openWheel(false,false));
+document.addEventListener('visibilitychange',()=>{if(document.hidden)openWheel(false,false);});
 // touch: weapon button
 const wBtn = document.createElement('button'); wBtn.id = 'wbtn'; wBtn.textContent = 'WEAPON'; document.querySelector('#touch .group:last-child').prepend(wBtn);
 wBtn.addEventListener('click', e => { e.preventDefault(); const owned = WORDER.filter(hasW); const i = owned.indexOf(curW); selectW(owned[(i + 1) % owned.length]); });
@@ -449,9 +478,9 @@ drawHUD = function(){
   _drawHUD();
   const small = SW < 700 || SH < 500, p = player;
   if (rampage){ const s = Math.ceil(rampage.t / 60); hudText('RAMPAGE  ' + rampage.kills + ' / ' + rampage.r.need, SW/2, small ? 64 : 52, small ? 18 : 24, '#d23aff', 'center', '900 '); hudText('0:' + String(s).padStart(2, '0'), SW/2, small ? 86 : 80, 18, s < 10 && frame % 30 < 15 ? '#ff5a4a' : '#fff', 'center', '800 '); }
-  if (world && p && p.car && sprayT > 0 && sprayT < 90){ cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(SW/2 - 120, SH*.62, 240, 30); cx.fillStyle = '#5fb7ff'; cx.fillRect(SW/2 - 116, SH*.62 + 22, 232 * sprayT / 90, 4); hudText("PAY 'N' SPRAY · $250", SW/2, SH*.62 + 3, 16, '#5fb7ff', 'center'); }
+  if (world && p && p.car && sprayT > 0 && sprayT < 90){ cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(SW/2 - 120, SH*.62, 240, 30); cx.fillStyle = '#5fb7ff'; cx.fillRect(SW/2 - 116, SH*.62 + 22, 232 * sprayT / 90, 4); hudText("BAYOU SHINE · $250", SW/2, SH*.62 + 3, 16, '#5fb7ff', 'center'); }
   // stats line on the full map
-  if (showMap){ hudText('PACKAGES ' + packagesFound.size + '/' + DISTRICTS.length*10 + '   ·   STUNT JUMPS ' + jumpsDone.size + '/' + DISTRICTS.length*4 + '   ·   RAMPAGES ' + rampagesDone.size + '/' + DISTRICTS.length*3 + '', SW/2, SH - 26, 13, '#f4c355', 'center', '700 '); hudText('$ gun shop   P pay \'n\' spray   R rampage   J stunt jump', SW/2, 14, 12, '#c9d1d4', 'center', '600 '); }
+  if (showMap){ hudText('PACKAGES ' + world.packages.filter(p=>packagesFound.has(p.id)).length + '/' + (world?.packages.length||0) + '   ·   STUNT JUMPS ' + jumpsDone.size + '/' + DISTRICTS.length*4 + '   ·   RAMPAGES ' + rampagesDone.size + '/' + DISTRICTS.length*3 + '', SW/2, SH - 26, 13, '#f4c355', 'center', '700 '); hudText('$ gun shop   P pay \'n\' spray   R rampage   J stunt jump', SW/2, 14, 12, '#c9d1d4', 'center', '600 '); }
   drawWheel();
 };
 const _fpHUD = fpHUD;
@@ -461,8 +490,8 @@ fpHUD = function(small){
   // world labels for nearby features
   const ox = p.car ? p.car.x : p.x, oy = p.car ? p.car.y : p.y;
   const label = (x, y, h, t, col, maxD) => { const d = dist(ox, oy, x, y); if (d > maxD) return; const pr = project(x, y, h); if (!pr || pr.x < 0 || pr.x > SW || pr.y < 0 || pr.y > SH) return; cx.globalAlpha = clamp(1.4 - d / maxD, 0, 1); hudText(t, pr.x, pr.y, 15, col, 'center', '900 '); hudText(Math.round(d/10) + ' M', pr.x, pr.y + 18, 11, '#f6f3e6', 'center', '700 '); cx.globalAlpha = 1; };
-  for (const s of world.shops) label(s.x, s.y, 60, 'AMMU-NATION', '#ff8a3a', 650);
-  for (const s of world.sprays) label(s.x, s.y, 54, "PAY 'N' SPRAY", '#5fb7ff', 650);
+  for (const s of world.shops) label(s.x, s.y, 60, 'BAYOU ARSENAL', '#ff8a3a', 650);
+  for (const s of world.sprays) label(s.x, s.y, 54, "BAYOU SHINE", '#5fb7ff', 650);
   for (const r of world.rampages) if (!rampagesDone.has(r.id) && !rampage) label(r.x, r.y, 36, 'RAMPAGE', '#d23aff', 420);
   for (const j of world.jumps) if (!jumpsDone.has(j.id)) label(j.x, j.y, 26, 'STUNT JUMP', '#f6f3e6', 380);
 };
@@ -473,12 +502,12 @@ function buildGtaMeshes(){
   if (gtaGroup){ scene.remove(gtaGroup); gtaGroup.traverse(o => o.geometry && o.geometry.dispose()); }
   gtaGroup = new THREE.Group(); scene.add(gtaGroup); gtaBuiltFor = world; pkgMeshes = []; rampMeshes = []; jumpMeshes = [];
   for (const s of world.shops){
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(90, 22), new THREE.MeshBasicMaterial({ map: signTex('AMMU-NATION', '#1a1a1a', '#ff8a3a', 360, 88) }));
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(90, 22), new THREE.MeshBasicMaterial({ map: signTex('BAYOU ARSENAL', '#1a1a1a', '#ff8a3a', 360, 88) }));
     sign.position.set(s.x, 50, s.B.y + s.B.h + .8); gtaGroup.add(sign);
     const door = box(26, 30, 1.2, lam('#2a1a10', { emissive: 0x401800 })); door.position.set(s.x, 15, s.B.y + s.B.h + .6); gtaGroup.add(door);
   }
   for (const s of world.sprays){
-    const sign = new THREE.Mesh(new THREE.PlaneGeometry(100, 22), new THREE.MeshBasicMaterial({ map: signTex("PAY 'N' SPRAY", '#0e2a4a', '#5fb7ff', 400, 88) }));
+    const sign = new THREE.Mesh(new THREE.PlaneGeometry(100, 22), new THREE.MeshBasicMaterial({ map: signTex("BAYOU SHINE", '#0e2a4a', '#5fb7ff', 400, 88) }));
     sign.position.set(s.x, 52, s.B.y + s.B.h + .8); gtaGroup.add(sign);
     const bay = new THREE.Mesh(new THREE.PlaneGeometry(70, 70).rotateX(-Math.PI/2), new THREE.MeshBasicMaterial({ color: 0x5fb7ff, transparent: true, opacity: .25, depthWrite: false })); bay.position.set(s.x, .8, s.y); gtaGroup.add(bay);
     const garage = box(64, 36, 1.2, lam('#9aa8b4')); garage.position.set(s.x, 18, s.B.y + s.B.h + .5); gtaGroup.add(garage);
@@ -505,11 +534,35 @@ function ensurePools(){
   // view-model weapons
   extraWeap = {};
   const blk = lam('#1d1e1f'), wood = lam('#6a4428'), olv = lam('#4b5320'), glove = lam('#2b2620'), sleeve = lam('#0d0d0d');
-  const arms = g => { const gl = box(2.2, 2.2, 2.6, glove); gl.position.set(.2, -1.6, -6.2); const fl = box(2.4, 2.4, 9, sleeve); fl.rotation.set(.3, .45, 0); fl.position.set(-1.8, -3.4, -2.2); const gr = box(2.2, 2.4, 2.4, glove); gr.position.set(.5, -2.4, 2.2); const fr = box(2.6, 2.6, 10, sleeve); fr.rotation.set(.5, -.25, 0); fr.position.set(1.8, -4.8, 7.2); g.add(gl, fl, gr, fr); };
+  const arms = g => { const gl = box(2.2, 2.2, 2.6, glove); gl.position.set(.2, -1.6, -6.2); const fl = box(2.4, 2.4, 9, sleeve); fl.rotation.set(.3, .45, 0); fl.position.set(-1.8, -3.4, -2.2); const gr = box(2.2, 2.4, 2.4, glove); gr.position.set(.5, -2.4, 2.2); const fr = box(2.6, 2.6, 10, sleeve); fr.rotation.set(.5, -.25, 0); fr.position.set(1.8, -4.8, 7.2); for(const o of [gl,fl,gr,fr])o.userData.firstPersonOnly=true;g.add(gl, fl, gr, fr); };
   let g = new THREE.Group(); const b1 = new THREE.Mesh(new THREE.CylinderGeometry(.5, .5, 13, 8), blk); b1.rotation.x = Math.PI/2; b1.position.set(-.5, .3, -7); const b2 = b1.clone(); b2.position.x = .5; const st = box(1.8, 2.6, 7, wood); st.position.set(0, -.6, 3.5); const pump = box(1.9, 1.4, 4, wood); pump.position.set(0, -.6, -6); g.add(b1, b2, st, pump); arms(g); extraWeap.shotgun = g;
   g = new THREE.Group(); const tube = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 20, 12), olv); tube.rotation.x = Math.PI/2; tube.position.set(0, 1.5, -4); const war = new THREE.Mesh(new THREE.ConeGeometry(2.4, 6, 10), lam('#3a4a2a')); war.rotation.x = -Math.PI/2; war.position.set(0, 1.5, -16.5); const grip = box(1, 3, 1.2, blk); grip.position.set(0, -1.2, -1); g.add(tube, war, grip); arms(g); extraWeap.rpg = g;
   g = new THREE.Group(); const bot = new THREE.Mesh(new THREE.CylinderGeometry(1.4, 1.6, 6, 10), lam('#6a8a3a', { transparent: true, opacity: .85 })); bot.position.set(1, 0, -6); const neck = new THREE.Mesh(new THREE.CylinderGeometry(.6, .8, 3, 8), lam('#6a8a3a')); neck.position.set(1, 4.4, -6); const rag = new THREE.Mesh(new THREE.SphereGeometry(1, 8, 6), new THREE.MeshBasicMaterial({ color: 0xffa020 })); rag.position.set(1, 6.4, -6); const hand = box(3, 3, 3, glove); hand.position.set(1, -2.5, -6); const arm = box(2.6, 2.6, 11, sleeve); arm.rotation.set(.4, -.2, 0); arm.position.set(2.4, -5, 1); g.add(bot, neck, rag, hand, arm); g.userData.rag = rag; extraWeap.molotov = g;
   g = new THREE.Group(); const batG = new THREE.CylinderGeometry(.9, .45, 18, 10); const bat = new THREE.Mesh(batG, lam('#b08850')); bat.position.set(0, 8, 0); const hnd = box(2.6, 3, 3, glove); hnd.position.set(0, -.4, 0); const arm2 = box(2.6, 2.6, 10, sleeve); arm2.rotation.set(.6, 0, 0); arm2.position.set(0, -4, 4); g.add(bat, hnd, arm2); extraWeap.bat = g;
+  for(const id of ['smg','carbine','pistol','marksman']){
+    const m=new THREE.Group(),paint=new THREE.MeshStandardMaterial({color:'#353c41',roughness:.48,metalness:.55}),rifle=id==='carbine'||id==='marksman';
+    const part=(w,h,d,x,y,z,mat)=>{const o=box(w,h,d,mat);o.position.set(x,y,z);m.add(o);return o;};
+    part(1.9,2.2,rifle?8:5,0,0,0,paint);part(1.4,2,3,0,-.5,rifle?6:4,blk);
+    part(.9,3.2,1.7,0,-2,1,blk);part(.9,3,2,0,-2.2,-1.5,paint);
+    const barrel=new THREE.Mesh(new THREE.CylinderGeometry(.32,.32,rifle?10:5,10),blk);barrel.rotation.x=Math.PI/2;barrel.position.set(0,.4,rifle?-8:-5);m.add(barrel);
+    part(1.5,.6,4,0,1.4,-1,blk);
+    for(let j=0;j<5;j++)part(1.65,.16,.22,0,1.8,-3+j*.55,blk);
+    for(const side of [-1,1]){part(.12,.8,3,side*1.03,.1,-1,paint);for(let j=0;j<3;j++)part(.14,.24,.35,side*1.12,.3,-2+j*.7,blk);}
+    const muzzleBrake=new THREE.Mesh(new THREE.CylinderGeometry(.43,.43,1.4,16),paint);muzzleBrake.rotation.x=Math.PI/2;muzzleBrake.position.set(0,.4,rifle?-13:-7.6);m.add(muzzleBrake);
+    part(.5,1,.5,0,1.7,rifle?-12:-7,blk);
+    const sight=new THREE.Mesh(new THREE.TorusGeometry(.65,.13,6,16),blk);sight.position.set(0,2,-1);m.add(sight);if(id==='pistol'){
+      for(const o of [...m.children]){m.remove(o);o.geometry.dispose();}
+      part(1.6,1.2,5,0,.6,-1.4,paint);const handle=part(1.4,3,1.8,0,-1.5,.4,blk);handle.rotation.x=-.18;
+      const muzzle=new THREE.Mesh(new THREE.CylinderGeometry(.24,.24,4.5,14),blk);muzzle.rotation.x=Math.PI/2;muzzle.position.set(0,.65,-1.7);m.add(muzzle);
+      part(1.4,.2,.3,0,1.35,.5,blk);part(.3,.3,.3,0,1.4,-3.5,blk);
+      for(let j=0;j<4;j++)part(1.68,.55,.1,0,.7,-.1+j*.25,blk);
+    }
+    arms(m);
+    if(id==='pistol'){part(1.6,.7,5,0,1,-1.8,paint);part(1.3,1.2,.3,0,-1.6,1,blk);}
+    if(id==='marksman'){const scope=new THREE.Mesh(new THREE.CylinderGeometry(.8,.8,5,16),blk);scope.rotation.x=Math.PI/2;scope.position.set(0,2.6,0);m.add(scope);part(1,1.3,.6,0,1.7,-2,paint);part(1,1.3,.6,0,1.7,2,paint);part(1,.4,5,0,2,-7,paint);}
+    m.userData.finishMaterial=paint;extraWeap[id]=m;
+  }
+  const ice=new THREE.Group();const ball=new THREE.Mesh(new THREE.SphereGeometry(2.3,16,12),new THREE.MeshStandardMaterial({color:'#d3f4ff',roughness:.35}));ball.position.set(1,0,-5);ice.add(ball);arms(ice);extraWeap.snowball=ice;
   for (const k in extraWeap){ extraWeap[k].scale.setScalar(k === 'rpg' ? .4 : .55); extraWeap[k].visible = false; vmScene.add(extraWeap[k]); }
 }
 function syncGta(){
@@ -529,7 +582,7 @@ function syncGta(){
   const useExtra = show && curW !== 'm240' && (!p.car || firingInCar) && !(p.car && curW === 'bat');
   if (useExtra) gun.visible = false;
   for (const k in extraWeap){
-    const m = extraWeap[k]; m.visible = !!(useExtra && k === curW); if (!m.visible) continue;
+    const m = extraWeap[k]; if(m.userData.finishMaterial)m.userData.finishMaterial.color.set(window.level29Trading?.color||'#353c41'); m.visible = !!(useExtra && k === curW); if (!m.visible) continue;
     const moving = !p.car && Math.hypot(p.vx, p.vy) > .4, bobX = moving ? Math.sin(p.anim * .5) * .35 : 0, bobY = moving ? -Math.abs(Math.cos(p.anim * .5)) * .3 : 0;
     if (k === 'bat'){ const s = batSwing / 14; m.position.set(4.5 + bobX - s * 6, -5 + bobY + s * 2, -10); m.rotation.set(-.3 - s * .4, 0, -.5 + s * 1.8); }
     else { m.position.set((k === 'rpg' ? 5.2 : 4.2) + bobX, (k === 'rpg' ? -3.6 : -4.4) + bobY, -12 + view.kick * .8); m.rotation.set(view.kick * .06, 0, 0); }
@@ -540,7 +593,7 @@ const _render = render;
 render = function(){ if (renderer) syncGta(); _render(); };
 
 // ---------- Boot ----------
-if(!window.level29DeferredEntry)travelToMenu();
-if(!window.level29DeferredEntry)requestAnimationFrame(loop);
+if(!window.level29Boot)travelToMenu();
+if(!window.level29Boot)requestAnimationFrame(loop);
 window.render_game_to_text = () => JSON.stringify({ state, district: D.name, mission: mission && { n: mission.info.i+1, type: mission.info.type, phase: mission.phase, step: mission.step, kills: mission.kills, need: mission.need }, player: player && { x: Math.round(player.x), y: Math.round(player.y), hp: Math.round(player.hp), armor: Math.round(player.armor), inCar: !!player.car, carZ: player.car ? +(player.car.z || 0).toFixed(1) : 0, yaw: +view.yaw.toFixed(2) }, weapon: curW, arsenal: Object.fromEntries(Object.entries(arsenal).map(([k, v]) => [k, v === Infinity ? 'inf' : v])), view: { chase: view.chase, mode: lightMode }, zombies: zombies.length, traffic: cars.filter(c => c.ai && !c.dead).length, cash, heat: +heat.toFixed(2), boss: boss && { hp: Math.round(boss.hp), dead: boss.dead }, rampage: rampage && { kills: rampage.kills, need: rampage.r.need, t: Math.ceil(rampage.t/60) }, packages: packagesFound.size, jumps: jumpsDone.size, rampagesDone: rampagesDone.size, radio: RADIO[radioIdx] && RADIO[radioIdx][0], cheats: cheatFlags });
 window.__dc = { get player(){ return player; }, get mission(){ return mission; }, get cars(){ return cars; }, get boss(){ return boss; }, get zombies(){ return zombies; }, startGame, enterExit, get state(){ return state; }, set mission(v){ mission = v; }, beginMission, setMission(i){ missionIdx = i; placeMissionStart(); }, get city(){ return city; }, get music(){ return mus.name; }, get vo(){ return Object.keys(voBufs).length; }, get up(){ return up; }, view, get info(){ return renderer && renderer.info.render; }, get world(){ return world; }, applyCheat, selectW, giveW, set cash(v){ cash = v; } };

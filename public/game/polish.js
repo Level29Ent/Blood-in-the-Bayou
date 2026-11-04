@@ -58,7 +58,7 @@
   killZombie = function(z, vx, vy){
     const was = z && z.alive;
     baseKill.apply(this, arguments);
-    if (!was || z.alive || state !== 'play' || !player || player.dead) return;
+    if (!was || z.alive || !z.playerKill || state !== 'play' || !player || player.dead) return;
     const t = now();
     streak.n = t - streak.last < STREAK_WINDOW ? streak.n + 1 : 1;
     streak.last = t;
