@@ -138,7 +138,7 @@ genCity=function(){
 // ---------------------------------------------------------------- meshes
 let wheel=null,gondolas=[],coaster=null,carousel=null,camRig=null,ocean=null;
 function buildPier(g){
-  if(!pier)return;const F=pier.F,grp=new THREE.Group();grp.name='Santa Monica Pier';
+  if(!pier||city.themePark){wheel=coaster=carousel=ocean=null;gondolas=[];return;}const F=pier.F,grp=new THREE.Group();grp.name='Santa Monica Pier';
   const o=F.toWorld(0,0);grp.position.set(o.x,0,o.y);grp.rotation.y=F.th;g.add(grp);
   const wood=std('#7b5b3e',{roughness:.85}),dark=std('#3a2a1e',{roughness:.9}),white=std('#f1efe8'),blue=std('#2f6db5'),red=std('#c8302c',{metalness:.3,roughness:.4}),steel=std('#c9ccd0',{metalness:.8,roughness:.3}),bulb=new THREE.MeshStandardMaterial({color:'#ffe08a',emissive:'#ffcc55',emissiveIntensity:1.2});
   const W=pier.water;
@@ -409,7 +409,7 @@ function startRide(kind){if(ride||!payFor(10))return;ride={kind,t:kind==='wheel'
 function ridePos(){if(!ride||!pier)return null;const grp=cityGroup.getObjectByName('Santa Monica Pier');if(!grp)return null;const v=new THREE.Vector3();
   if(ride.kind==='wheel')ride.g.m.getWorldPosition(v);else coaster.car.getWorldPosition(v);return v;}
 function spots(){const out=[];const add=(p,label,act)=>{if(p)out.push({x:p.x,y:p.y,label,act});};
-  if(pier){const F=pier.F;
+  if(pier&&!city.themePark){const F=pier.F;
     add(F.toWorld(-3.8*T,4.6*T),'RIDE THE PACIFIC WHEEL · $10',()=>startRide('wheel'));
     add(F.toWorld(2.6*T,4.8*T),'RIDE THE WEST COASTER · $10',()=>startRide('coaster'));
     add(F.toWorld(-2.7*T,5.6*T),'RIDE THE CAROUSEL · $5',()=>{if(payFor(5))toast('ROUND AND ROUND ON THE HIPPODROME CAROUSEL');});
