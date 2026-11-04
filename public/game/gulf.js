@@ -624,7 +624,7 @@ function reel(){
 function drawFishingVisual(){
   if(!fish||!scene)return;
   if(!fishingVisual){
-    fishingVisual=new THREE.Group();scene.add(fishingVisual);
+    fishingVisual=new THREE.Group();fishingVisual.name='Fishing bobber and line';scene.add(fishingVisual);
     const bob=new THREE.Mesh(new THREE.SphereGeometry(2.5,8,6),new THREE.MeshBasicMaterial({color:'#ffbe5a'}));fishingVisual.add(bob);
     const ring=new THREE.Mesh(new THREE.RingGeometry(5,6,24).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:'#d0efdc',transparent:true,opacity:.55,side:THREE.DoubleSide}));fishingVisual.add(ring);
     const geo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3()]);
