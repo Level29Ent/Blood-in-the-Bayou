@@ -427,16 +427,16 @@
     if(!cache.has(c.type))cache.set(c.type,template(c.type,c));
     const g=cache.get(c.type).clone(true),p=profiles[c.type]||profiles.sedan;
     const paint=cache.get(c.type).getObjectByName('coachwork').children.find(o=>o.material&&o.material.name==='vehiclePaint').material.clone();paint.color.set(c.col);
-    const lamps=[],tails=[],rev=[],wheels=[];let bar=[];
+    const ownedMaterials=new Set([paint]);const own=m=>{const clone=m.clone();ownedMaterials.add(clone);return clone;};const lamps=[],tails=[],rev=[],wheels=[];let bar=[];
     g.traverse(o=>{
       if(o.material&&o.material.name==='vehiclePaint')o.material=paint;
-      if(o.name.startsWith('head:')){o.material=o.material.clone();lamps.push(o);}
-      if(o.name.startsWith('tail:')){o.material=o.material.clone();tails.push(o);}
-      if(o.name.startsWith('reverse:')){o.material=o.material.clone();rev.push(o);}
-      if(o.name==='sirenRed'||o.name==='sirenBlue'){o.material=o.material.clone();bar[o.name==='sirenRed'?0:1]=o;}
+      if(o.name.startsWith('head:')){o.material=own(o.material);lamps.push(o);}
+      if(o.name.startsWith('tail:')){o.material=own(o.material);tails.push(o);}
+      if(o.name.startsWith('reverse:')){o.material=own(o.material);rev.push(o);}
+      if(o.name==='sirenRed'||o.name==='sirenBlue'){o.material=own(o.material);bar[o.name==='sirenRed'?0:1]=o;}
       if(o.name.startsWith('steer:'))wheels.push({pivot:o,spin:o.getObjectByName('spin'),front:o.position.x>0,side:Math.sign(o.position.z)});
     });
-    g.userData={paint,parts:[],top:p.van?18.2:p.belt,dead:false,col:c.col,wheels:[],tails:[],bar:bar.length?bar:null,
+    g.userData={paint,ownedMaterials,parts:[],top:p.van?18.2:p.belt,dead:false,col:c.col,wheels:[],tails:[],bar:bar.length?bar:null,
       shell:g.getObjectByName('coachwork'),distant:g.getObjectByName('distant'),rollingWheels:wheels,headlights:lamps,brakelights:tails,reverseLights:rev,
       profile:p,previousFrame:-1,previousV:c.v||0,steer:0,bodyPitch:0,bodyRoll:0,visualVersion:2};
     scene.add(g);return g;
