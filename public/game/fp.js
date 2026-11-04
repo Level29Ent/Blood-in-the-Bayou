@@ -679,7 +679,7 @@ function syncDynamic(){
     const sc = 1 + Math.sin(frame * .1) * .06; markerMesh.scale.set(sc, 1, sc);
     if (tg.zone){ markerRing.visible = true; markerRing.position.set(tg.x, .6, tg.y); markerRing.scale.set(tg.zone, tg.zone, tg.zone); markerRing.material.color.set(tg.col); }
   }
-  safeMarker.visible = state!=='menu' && !!city && dist(camP.x, camP.z, city.safe.x, city.safe.y) > 70; if (city) safeMarker.position.set(city.safe.x, 20, city.safe.y);
+  safeMarker.visible = state!=='menu' && !!city && dist(camP.x, camP.z, city.safe.x, city.safe.y) > 70; if (city) {const privateHome=city.safe===city.mansion;safeMarker.scale.set(1,privateHome?.025:1,1);safeMarker.position.set(city.safe.x,privateHome?.6:20,city.safe.y);}
 }
 
 // ---------- Lights that follow the player ----------

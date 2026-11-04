@@ -45,7 +45,7 @@ genCity=function(di){
  const c=oldGen(di);penthouse=null;guests=[];wildlife=[];
  if(!c.world)return c;
  c.mansion=(c.safes||[]).find(s=>s.fort)||null;
- if(c.mansion)c.safe=c.mansion;
+ if(c.mansion){c.safe=c.mansion;const v=c.venues.find(v=>v.b===c.mansion.B);if(v){v.privateResidence=true;v.name="RONNIEBABY'S PENTHOUSE";v.short='PRIVATE RESIDENCE';v.serviceLabel='RONNIEBABY · PRIVATE RESIDENCE · U ELEVATOR';}}
  const roadCars=c.parked.filter(p=>!CAR_SPECS[p.type]?.boat);
  // Reuse existing spaced parking spots, rather than increasing congestion.
  for(let i=0;i<roadCars.length;i++)if(i%2===0)roadCars[i].type=vehicleData[(i/2)%vehicleData.length][0];
@@ -155,9 +155,15 @@ function buildPenthouse(){
  furniture(b.x+b.w-15,b.y+27,19,15,42,wood);q.box(21,1,43,b.x+b.w-15,base+17,b.y+27,gold);
  for(let k=0;k<5;k++){q.box(2.3,7,2.3,b.x+b.w-15,base+21,b.y+10+k*6,material(['#33604c','#80532f','#d2c59c'][k%3]));}
  // Elevator: ground-level portal, actual top-floor exit and clear central circulation.
- q.box(30,37,2,cx,18.5,b.y+b.h+2,black);q.box(1,33,1,cx,18,b.y+b.h+3,gold);
+ // Private lift lobby: one clear central approach, one compact sign, no overlapping door panel.
+ q.box(42,39,2,cx,19.5,b.y+b.h+2,black);
+ for(const dx of [-22,22])q.box(2,41,4,cx+dx,20.5,b.y+b.h+3,gold);
+ q.box(46,2,25,cx,42,b.y+b.h+12,black);
+ q.box(38,.4,42,cx,.25,b.y+b.h+23,stone);
+ q.box(.8,34,.6,cx,18,b.y+b.h+3.2,gold);
+ for(const dx of [-16,16])q.box(1,28,.8,cx+dx,18,b.y+b.h+3.3,gold);
  q.box(29,34,1,cx,base+18,b.y+b.h-1,black);q.box(1,33,1,cx,base+18,b.y+b.h-2,gold);
- text(g,'PENTHOUSE ELEVATOR · U',55,10,cx,43,b.y+b.h+4);
+ text(g,'RONNIEBABY · PRIVATE LIFT · U',46,5,cx,36,b.y+b.h+4);
  text(g,'LOBBY · U',25,7,cx,base+38,b.y+b.h-2,'#e9ce85',Math.PI);
  text(g,'RONNIEBABY · LEVEL 29',71,11,cx,base+36,b.y+1.3);
  // Exactly two original, unaltered logo artworks with wide gold frames.
@@ -462,7 +468,7 @@ function useLift(){
  }
  if(p.active)ronnie.cd=0;
  player.vx=player.vy=0;view.yaw=-Math.PI/2;view.pitch=0;view.lastPlayer=player;snapCamera();
- toast(p.active?'RONNIEBABY’S PENTHOUSE · TOP FLOOR':'MANSION LOBBY');
+ toast(p.active?'RONNIEBABY’S PENTHOUSE · PRIVATE RESIDENCE':'RONNIEBABY · PRIVATE LIFT LOBBY');
 }
 const liftButton=document.createElement('button');liftButton.id='penthouseLift';liftButton.textContent='U · PENTHOUSE';
 liftButton.style.cssText='position:fixed;z-index:46;left:50%;transform:translateX(-50%);bottom:155px;border:1px solid #c7a74e;border-radius:8px;background:#243c32;color:#f0d692;padding:12px 18px;font:700 12px monospace;display:none;touch-action:manipulation';

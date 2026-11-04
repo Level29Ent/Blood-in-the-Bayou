@@ -46,7 +46,7 @@ buildVenue=function(v){
  if(!v.mesh||v.mesh.userData.businessLettering)return;
  for(const sign of generated){const text=sign.name.replace('venue-sign:','');if(text===v.name||text===v.short||/WALK IN|AUTO DOOR|DRIVE IN|BUY WEAPONS|VEHICLE SALES/.test(text)||sign.userData.venuePlacard&&Math.abs(sign.position.z-v.doorY)<=3&&sign.position.y>=38&&!text.startsWith('EXIT')){sign.parent?.remove(sign);}else if(sign.geometry?.parameters?.width>75){const w=sign.geometry.parameters.width;sign.scale.multiplyScalar(Math.min(1,65/w));}}
  // World/local build occurs before street-frontage transforms this group.
- const mount=mounting(v),name=create(v.name,mount.width,mount.height);name.position.set(mount.x,mount.y,mount.z);v.mesh.add(name);v.mesh.userData.businessLettering=true;
+ const mount=mounting(v);if(v.privateResidence){mount.y=89;mount.width=Math.min(135,v.b.w-18);mount.height=7;}const name=create(v.name,mount.width,mount.height);name.position.set(mount.x,mount.y,mount.z);v.mesh.add(name);v.mesh.userData.businessLettering=true;
  for(const actor of [v.worker,...(v.staff||[]).map(s=>s.m)].filter(Boolean)){const sprites=[];actor.traverse(o=>{if(o.isSprite)sprites.push(o);});for(const s of sprites){s.scale.set(10,1.5,1);s.position.y=25;s.userData.workerNameplate=true;}}
 };
 const renderBase=render;render=function(){for(const v of city?.venues||[])for(const actor of [v.worker,...(v.staff||[]).map(s=>s.m)].filter(Boolean))actor.traverse(o=>{if(o.userData.workerNameplate){const p=new THREE.Vector3();actor.getWorldPosition(p);const d=player?Math.hypot(player.x-p.x,player.y-p.z):Infinity;o.visible=!!player&&insideVenue(v,player)&&d<55&&d>14;}});renderBase.apply(this,arguments);};

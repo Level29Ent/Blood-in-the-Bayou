@@ -293,7 +293,7 @@ function buildVenue(v){
   v.door=addPart(group,v.doorW-1,41,1.5,v.doorX,20.5,v.doorY-.8,doorMat);
   if(v.vehicle){for(let k=0;k<8;k++)addPart(v.door,v.doorW-2,.3,.2,0,-18+k*5,1,trim);}else{addPart(v.door,1.5,.6,1.5,v.doorW/2-4,0,1,trim);addPart(v.door,v.doorW*.6,15,.3,0,7,1,new THREE.MeshStandardMaterial({color:'#254039',metalness:.4,roughness:.2}));}
   addSign(group,v.name,Math.min(160,b.w),13,b.x+b.w/2,height+10.5,v.doorY-1,v.col);v.labelH=height+32;
-  addSign(group,v.vehicle?'DRIVE IN · E OPEN BAY':'WALK IN · AUTO DOOR',Math.min(125,b.w-8),7,v.doorX,46,v.doorY+.3,v.col);
+  if(!v.privateResidence)addSign(group,v.vehicle?'DRIVE IN · E OPEN BAY':'WALK IN · AUTO DOOR',Math.min(125,b.w-8),7,v.doorX,46,v.doorY+.3,v.col);
   if(v.id!=='business')addSign(group,v.short,Math.min(100,b.w-15),12,b.x+b.w/2,35,b.y+3,v.col);
   for(const z of [b.y+25,b.y+b.h-25]){
     addPart(group,60,1,5,b.x+b.w/2,48,z,new THREE.MeshBasicMaterial({color:'#e8e8cf'}));
