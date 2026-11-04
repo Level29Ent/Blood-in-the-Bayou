@@ -8,7 +8,7 @@
 // =====================================================================
 (() => {
   const isTouch = matchMedia('(pointer: coarse)').matches || navigator.maxTouchPoints > 0;
-  window.L29_SKIP_IDLE_FRAMES = isTouch;
+  window.L29_SKIP_IDLE_FRAMES = true;
 
   const css = document.createElement('style');
   css.textContent = `
