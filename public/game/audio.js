@@ -6,10 +6,7 @@ let actx = null, noiseBuf = null, master = null, sfxBus = null, musicBus = null,
 let soundMode = 0; // 0 = music + sfx, 1 = sfx only, 2 = muted
 const SOUND_LABELS = ['MUSIC ON', 'MUSIC OFF', 'MUTED'];
 function ensureAudio(){
-<<<<<<< HEAD
   if (window.bayouAdActive) return;
-=======
->>>>>>> main
   if (!actx){
     try { actx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){ return; }
     comp = actx.createDynamicsCompressor(); comp.threshold.value = -14; comp.ratio.value = 4;

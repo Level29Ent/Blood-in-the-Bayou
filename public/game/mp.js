@@ -105,11 +105,7 @@ function mpHostData(id, d){
     mpSendAll(d, id);
   } else if (d.t === 'mel'){
     if(![d.x,d.y,d.a,d.dmg].every(Number.isFinite))return;
-<<<<<<< HEAD
     for (const z of zombies){ if (!z.alive) continue; const dd = dist(d.x, d.y, z.x, z.y); if (dd < 46 + z.r && Math.abs(angDiff(d.a, Math.atan2(z.y - d.y, z.x - d.x))) < .9){ z.hp -= Math.min(25,d.dmg); z.flash = 5; z.stun = 30; z.lastHit = id;z.killSource='remote'; moveCircle(z, Math.cos(d.a)*18, Math.sin(d.a)*18, z.r*.8); if (z.hp <= 0) killZombie(z, Math.cos(d.a)*6, Math.sin(d.a)*6); } }
-=======
-    for (const z of zombies){ if (!z.alive) continue; const dd = dist(d.x, d.y, z.x, z.y); if (dd < 46 + z.r && Math.abs(angDiff(d.a, Math.atan2(z.y - d.y, z.x - d.x))) < .9){ z.hp -= Math.min(25,d.dmg); z.flash = 5; z.stun = 30; z.lastHit = id; moveCircle(z, Math.cos(d.a)*18, Math.sin(d.a)*18, z.r*.8); if (z.hp <= 0) killZombie(z, Math.cos(d.a)*6, Math.sin(d.a)*6); } }
->>>>>>> main
     if (boss && !boss.dead && dist(d.x, d.y, boss.x, boss.y) < 60 + boss.r) damageBoss(4);
   } else if (d.t === 'take'){
     if (mission && mission.phase === 'start'){
@@ -259,11 +255,7 @@ makeZombie = function(x, y, type){ const z = _mkZombieMP(x, y, type); z.id = ++m
 // Client: the host owns kills, boss damage, mission starts, and mission placement.
 const _killZMP = killZombie;
 killZombie = function(z, vx, vy){
-<<<<<<< HEAD
   if (mpRole === 'client'||!z?.alive) return; // host decides; avoid duplicate reward packets
-=======
-  if (mpRole === 'client') return; // host decides; the snapshot removes it
->>>>>>> main
   const owner = z.lastHit, before = cash;
   _killZMP(z, vx, vy);
   if (mpRole === 'host' && owner && MP.remotes.has(owner)){
@@ -319,11 +311,7 @@ update = function(){
     for (const r of MP.remotes.values()){
       if (!r.car || Math.abs(r.car.v || 0) < 2.2 || (r.car.z || 0) > 8) continue;
       const cr = (CAR_SPECS[r.car.type] || CAR_SPECS.sedan).len * .42;
-<<<<<<< HEAD
       for (const z of zombies) if (z.alive && dist(z.x, z.y, r.car.x, r.car.y) < cr + z.r - 2 && !(z.type === 'brute' && Math.abs(r.car.v) < 4.5)){ z.lastHit = r.id;z.killSource='remote'; killZombie(z, Math.cos(r.car.a) * r.car.v, Math.sin(r.car.a) * r.car.v); }
-=======
-      for (const z of zombies) if (z.alive && dist(z.x, z.y, r.car.x, r.car.y) < cr + z.r - 2 && !(z.type === 'brute' && Math.abs(r.car.v) < 4.5)){ z.lastHit = r.id; killZombie(z, Math.cos(r.car.a) * r.car.v, Math.sin(r.car.a) * r.car.v); }
->>>>>>> main
     }
     if (performance.now()-(MP.lastNet||0)>=100 && MP.conns.size && [...MP.conns.values()].some(c=>mpCanSend(c,true))){ MP.lastNet=performance.now();mpSendAll(mpSnapshot()); }
     MP.others = [...MP.remotes.values()].map(r => ({ i: r.id, n: r.name, x: r.x, y: r.y, h:r.height||0, a: r.a || 0, d: r.dead ? 1 : 0, c: r.car ? [r.car.type, r.car.col, r.car.x, r.car.y, r.car.a, r.car.z || 0] : 0 }));
@@ -416,11 +404,7 @@ function syncTeam(){
 }
 const _renderMP = render;
 render = function(){ if (renderer){
-<<<<<<< HEAD
   const ratio=mpRole?Math.min(1,devicePixelRatio||1):Math.min(matchMedia('(pointer: coarse)').matches?1:1.5,devicePixelRatio||1);
-=======
-  const ratio=mpRole?Math.min(1,devicePixelRatio||1):Math.min(1.5,devicePixelRatio||1);
->>>>>>> main
   if(MP.renderScale!==ratio){MP.renderScale=ratio;renderer.setPixelRatio(ratio);}
   syncTeam();
 } _renderMP(); };

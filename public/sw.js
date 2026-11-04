@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-const CACHE = 'level29-v4-icons'
+const CACHE = 'level29-v5-merge-repair'
 const CORE = ['/', '/game/index.html', '/game/three.min.js', '/game/logo.png', '/icons/bayou-192.png']
-=======
-const CACHE = 'level29-v3'
-const CORE = ['/', '/game/index.html', '/game/three.min.js', '/game/logo.png', '/icons/icon-192.png']
->>>>>>> main
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()))
