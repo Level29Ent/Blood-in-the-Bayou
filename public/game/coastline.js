@@ -302,13 +302,9 @@ function buildCourt(g){
 function buildStairsAndCamera(){
   const E=window.level29Estate,p=E&&E.penthouse;if(!p)return;const pg=cityGroup.getObjectByName('Ronniebaby penthouse');if(!pg)return;
   const b=p.b,cx=b.x+b.w/2,gold=std('#c4a249',{metalness:.7,roughness:.35}),stone=std('#c9c1ad',{roughness:.8}),black=std('#15171a',{metalness:.3,roughness:.5});
-  const sx=Math.min(cx+46,b.x+b.w-18);p.stairs={out:{x:sx,y:b.y+b.h+32},top:{x:sx,y:b.y+b.h-18}};
-  for(let k=0;k<10;k++){const z=b.y+b.h+40-k*3.8,h=(k+1)*2.4;box(pg,24,h,3.8,sx,h/2,z,stone);}
-  for(const s of [-1,1])box(pg,1,1,38,sx+s*12.5,16,b.y+b.h+21,gold);
-  box(pg,22,30,1.2,sx,15,b.y+b.h+.8,black);sign(pg,'STAIRS · PENTHOUSE',30,6,sx,34,b.y+b.h+1.6,'#f0d692','#243c32');
-  // Top-of-stairs landing inside the penthouse.
-  box(pg,22,.4,16,sx,p.base+1.3,p.stairs.top.y,black);for(const s of [-1,1])box(pg,1,8,16,sx+s*11,p.base+5,p.stairs.top.y,gold);
-  sign(pg,'STAIRS DOWN',18,4,sx,p.base+14,p.stairs.top.y-8.2,'#f0d692','#243c32',Math.PI);
+  // The legacy short staircase teleported over 100 units and overlapped the lift.
+  // Use the single authored private lobby elevator, with an explicit U interaction.
+  p.stairs=null;
   // Only two guests remain in the penthouse.
   const gs=E.guests||[];for(let i=2;i<gs.length;i++)if(gs[i].parent)gs[i].parent.remove(gs[i]);
   // Cinema camera on a tripod with matte box, follow-focus, monitor and tally light.

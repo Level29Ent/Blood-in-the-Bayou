@@ -192,7 +192,7 @@ function buildFortresses(){guards=[];const g=new THREE.Group();g.name='level29-m
   q.box(112,5,6,f.gateX,66,f.y+f.h-4,iron);
   addSign(g,'LEVEL 29 · GUARDED MANSION',200,12,f.gateX,54,f.y+f.h-3,'#e3cc8f');addSign(g,'SECURE CHECKPOINT · RESIDENT ACCESS',165,7,f.gateX,41,f.y+f.h-2,'#b5cdad');
   q.box(b.w,43,b.h,b.x+b.w/2,76,b.y+b.h/2,facade('#c2b99e','stucco'));q.box(b.w+12,6,b.h+12,b.x+b.w/2,101,b.y+b.h/2,iron);q.box(b.w+10,3,38,b.x+b.w/2,56,b.y+b.h+12,cap);
-  for(const x of [b.x+10,b.x+b.w-10,b.x+b.w*.35,b.x+b.w*.65]){q.box(5,48,5,x,25,b.y+b.h+24,white);q.box(10,4,10,x,50,b.y+b.h+24,cap);}
+  for(const x of [b.x+10,b.x+b.w-10]){q.box(5,48,5,x,25,b.y+b.h+24,white);q.box(10,4,10,x,50,b.y+b.h+24,cap);}
   for(let k=0;k<14;k++)q.box(1.3,13,1.3,b.x+5+k*(b.w-10)/13,64,b.y+b.h+30,iron);q.box(b.w,1.5,1.5,b.x+b.w/2,71,b.y+b.h+30,iron);
   for(const x of [f.x+25,f.x+f.w-25])for(let k=0;k<3;k++)q.box(16,12,22,x,6,f.y+100+k*29,material('#4c6748'));
  }
