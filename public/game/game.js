@@ -1527,6 +1527,7 @@ const loopErrors = new Map();
 function reportLoopError(where, e){
   const key = where + ':' + (e && e.message);
   const n = (loopErrors.get(key) || 0) + 1; loopErrors.set(key, n);
+  if(n===1)window.level29StartupDiagnostics?.report(where+': '+(e?.message||e));
   if (n === 1 || n % 600 === 0) console.error('[loop] ' + where + ' failed (x' + n + '):', e);
 }
 function loop(now){
