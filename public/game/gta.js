@@ -593,7 +593,7 @@ const _render = render;
 render = function(){ if (renderer) syncGta(); _render(); };
 
 // ---------- Boot ----------
-travelToMenu();
-requestAnimationFrame(loop);
+if(!window.level29Boot)travelToMenu();
+if(!window.level29Boot)requestAnimationFrame(loop);
 window.render_game_to_text = () => JSON.stringify({ state, district: D.name, mission: mission && { n: mission.info.i+1, type: mission.info.type, phase: mission.phase, step: mission.step, kills: mission.kills, need: mission.need }, player: player && { x: Math.round(player.x), y: Math.round(player.y), hp: Math.round(player.hp), armor: Math.round(player.armor), inCar: !!player.car, carZ: player.car ? +(player.car.z || 0).toFixed(1) : 0, yaw: +view.yaw.toFixed(2) }, weapon: curW, arsenal: Object.fromEntries(Object.entries(arsenal).map(([k, v]) => [k, v === Infinity ? 'inf' : v])), view: { chase: view.chase, mode: lightMode }, zombies: zombies.length, traffic: cars.filter(c => c.ai && !c.dead).length, cash, heat: +heat.toFixed(2), boss: boss && { hp: Math.round(boss.hp), dead: boss.dead }, rampage: rampage && { kills: rampage.kills, need: rampage.r.need, t: Math.ceil(rampage.t/60) }, packages: packagesFound.size, jumps: jumpsDone.size, rampagesDone: rampagesDone.size, radio: RADIO[radioIdx] && RADIO[radioIdx][0], cheats: cheatFlags });
 window.__dc = { get player(){ return player; }, get mission(){ return mission; }, get cars(){ return cars; }, get boss(){ return boss; }, get zombies(){ return zombies; }, startGame, enterExit, get state(){ return state; }, set mission(v){ mission = v; }, beginMission, setMission(i){ missionIdx = i; placeMissionStart(); }, get city(){ return city; }, get music(){ return mus.name; }, get vo(){ return Object.keys(voBufs).length; }, get up(){ return up; }, view, get info(){ return renderer && renderer.info.render; }, get world(){ return world; }, applyCheat, selectW, giveW, set cash(v){ cash = v; } };
