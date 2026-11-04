@@ -913,15 +913,7 @@ function applyPower(k, announce){
   if (announce){ banner = { big:'POWER-UP', small: name + (id==='nitro' ? ' · HOLD SHIFT IN A CAR' : ''), t:220, good:true }; snd('power'); if (id==='armor') player.armor = up.armor*25; player.hp = player.maxHp; }
   return name;
 }
-document.getElementById('start').addEventListener('click', () => {
-    console.log("Displaying interstitial ad...");
-    
-    // Simulate a 3-second ad before launching the game
-    setTimeout(() => {
-        console.log("Ad closed. Entering the Bayou...");
-        startGame(+document.getElementById('district').value);
-    }, 3000);
-});
+document.getElementById('start').addEventListener('click',()=>{if(state!=='menu')return;startGame(+document.getElementById('district').value);});
 // ---------- Update ----------
 function update(){
   frame++;
