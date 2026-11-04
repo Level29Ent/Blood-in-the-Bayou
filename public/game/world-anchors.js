@@ -17,11 +17,12 @@ if(typeof window==='undefined')return;
 window.level29WorldAnchors={clearSite};
 const build=buildWorld;
 buildWorld=function(){build.apply(this,arguments);if(!city?.world||!world)return;
- const candidates=[];for(let y=4;y<MH-4;y++)for(let x=GULF_X+4;x<MW-4;x++){const px=(x+.5)*TILE,py=(y+.5)*TILE;if(tileAt(px,py)===T_ROAD&&clearSite(city,px,py,48,TILE))candidates.push({x:px,y:py});}
+ const candidates=[];for(let y=4;y<MH-4&&candidates.length<128;y+=2)for(let x=GULF_X+4;x<MW-4&&candidates.length<128;x+=2){const px=(x+.5)*TILE,py=(y+.5)*TILE;if(tileAt(px,py)===T_ROAD&&clearSite(city,px,py,48,TILE))candidates.push({x:px,y:py});}
  const used=[];for(const [key,radius]of [['jumps',48],['rampages',24],['packages',12]])for(const item of world[key]){
   if(clearSite(city,item.x,item.y,radius,TILE))continue;
-  const choices=candidates.filter(p=>clearSite(city,p.x,p.y,radius,TILE)&&!used.some(q=>dist(q.x,q.y,p.x,p.y)<100));
-  choices.sort((a,b)=>dist(a.x,a.y,item.x,item.y)-dist(b.x,b.y,item.x,item.y));const p=choices[0];
+  // Candidates already pass the largest (48-unit) clearance footprint.
+  // Smaller package/rampage footprints cannot require another terrain scan.
+  let p=null,best=Infinity;for(const q of candidates){if(used.some(u=>dist(u.x,u.y,q.x,q.y)<100))continue;const d=(q.x-item.x)**2+(q.y-item.y)**2;if(d<best){best=d;p=q;}}
   if(p){item.x=p.x;item.y=p.y;used.push(p);}else item.unavailable=true;
  }
  for(const key of ['jumps','rampages','packages'])world[key]=world[key].filter(o=>!o.unavailable);

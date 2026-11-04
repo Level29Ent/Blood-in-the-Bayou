@@ -281,6 +281,7 @@ function syncCars(){
   const p = player, far = isNight() ? 580 : 780;
   if (frame % 30 === 0){ const live = new Set(cars); for (const [c, m] of carMeshes) if (!live.has(c)){ scene.remove(m); carMeshes.delete(c); } }
   for (const c of cars){
+    if(c.gone)continue;
     const d = dist(c.x, c.y, camera.position.x, camera.position.z);
     let m = carMeshes.get(c);
     if (d >= far && (!p || p.car !== c)){ if (m) m.visible = false; continue; }
