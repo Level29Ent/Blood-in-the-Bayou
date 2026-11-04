@@ -453,8 +453,8 @@ syncCars=function(){
   for(const[c,m]of carMeshes){
     if(!m.visible)continue;
     const h=terrainHeight(c.x,c.y);m.position.y=h+(c.dead?-1:(c.z||0));
-    const dx=Math.cos(c.a),dy=Math.sin(c.a),pitch=Math.atan2(terrainHeight(c.x+dx*12,c.y+dy*12)-terrainHeight(c.x-dx*12,c.y-dy*12),24);
-    const roll=Math.atan2(terrainHeight(c.x-dy*12,c.y+dx*12)-terrainHeight(c.x+dy*12,c.y-dx*12),24);
+    const dx=Math.cos(c.a),dy=Math.sin(c.a),surface=(x,y)=>{const v=terrainHeight(x,y);return Math.abs(v-h)>12?h:v;},pitch=Math.atan2(surface(c.x+dx*12,c.y+dy*12)-surface(c.x-dx*12,c.y-dy*12),24);
+    const roll=Math.atan2(surface(c.x-dy*12,c.y+dx*12)-surface(c.x+dy*12,c.y-dx*12),24);
     m.rotation.z+=clamp(pitch,-.5,.5);m.rotation.x+=clamp(roll,-.35,.35);
     for(const wheel of m.userData.wheels||[]){wheel.mesh.rotation.z-=c.v*.023;if(wheel.front)wheel.mesh.rotation.y=clamp(c.vs*.35,-.25,.25);}
     for(const lamp of m.userData.tails||[])lamp.material.color.set((keys[' ']||c.v<-.5)?'#ff3440':'#8e2026');

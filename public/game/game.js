@@ -950,7 +950,7 @@ function update(){
       if (ml > .05) p.anim += .25 * Math.min(1, ml);
       p.vx = level29GameplayMath.velocity(p.vx,mx*spd); p.vy = level29GameplayMath.velocity(p.vy,my*spd);
       moveCircle(p, p.vx, p.vy, p.r);
-      if (tileAt(p.x, p.y)===T_WATER) hurtPlayer(1, p.x, p.y);
+      if (tileAt(p.x, p.y)===T_WATER&&!window.level29Destinations?.swimming&&!window.level29MetroTravel?.underground) hurtPlayer(1, p.x, p.y);
     }
     // aiming
     const ox = p.car ? p.car.x : p.x, oy = p.car ? p.car.y : p.y;
