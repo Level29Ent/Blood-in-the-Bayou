@@ -1,0 +1,15 @@
+diff --git a/public/game/boomcity.js b/public/game/boomcity.js
+index 0c6e7b92..d3b70ec8 100644
+--- a/public/game/boomcity.js
++++ b/public/game/boomcity.js
+@@ -167,8 +167,8 @@ makeCarMesh=function(c){if(c.type!=='steamboat')return prevMesh(c);
+   put(g,geoBox(16,9,16),paint,L*.18,41,0);put(g,geoBox(16.4,3,16.4),glass,L*.18,42,0);
+   for(const z of [-W*.22,W*.22]){put(g,new THREE.CylinderGeometry(3.2,3.2,36,12),dark,L*.3,54,z);put(g,new THREE.CylinderGeometry(5,3.2,4,12),gold,L*.3,73,z);}
+   const wheel=new THREE.Group();wheel.position.set(-L/2-8,13,0);g.add(wheel);
+-  const rim=new THREE.CylinderGeometry(13,13,W*.72,18,1,true);rim.rotateX(Math.PI/2);wheel.add(new THREE.Mesh(rim,new THREE.MeshLambertMaterial({color:'#b3261e',side:THREE.DoubleSide})));
+-  for(let k=0;k<8;k++){const p=new THREE.Mesh(geoBox(2,26,W*.7),red);p.rotation.z=k*Math.PI/8;wheel.add(p);}
++  const rim=new THREE.CylinderGeometry(13,13,W*.72,18,1,true);rim.rotateX(Math.PI/2);wheel.add(new THREE.Mesh(rim,new THREE.MeshLambertMaterial({color:0xff0000,side:THREE.DoubleSide})));
++  for(let k=0;k<8;k++){const p=new THREE.Mesh(geoBox(2,26,W*.7),new THREE.MeshLambertMaterial({color:0xff0000}));p.rotation.z=k*Math.PI/8;wheel.add(p);}
+   for(const s of [1,-1])signPlane(g,'NATCHEZ',L*.42,9,-L*.04,13,s*(W/2+.6),s>0?0:Math.PI,'#1c1c1c','#f4efe2','#f4efe2');
+   g.userData={paint,dead:false,col:c.col,top:42,bar:null,wheel};scene.add(g);return g;
+ };
