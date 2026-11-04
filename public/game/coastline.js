@@ -64,14 +64,22 @@ function layoutStrip(c,avoid){
   const Wp=c.width*T,Hp=c.height*T;let x0=1e9,y0=1e9,x1=-1,y1=-1;
   for(const f of mt){x0=Math.min(x0,f.x);y0=Math.min(y0,f.y);x1=Math.max(x1,f.x+f.w);y1=Math.max(y1,f.y+f.h);}
   if(!mt.length){x0=Wp*.8;x1=Wp;y0=Hp*.4;y1=Hp*.6;}
+<<<<<<< HEAD
   const side=nearestSide(c,x0,y0,x1,y1),w=21,h=11,W=c.width,H=c.height;
+=======
+  const side=nearestSide(c,x0,y0,x1,y1),w=12,h=11,W=c.width,H=c.height;
+>>>>>>> main
   const target=side==='L'||side==='R'?(y0+y1)/2/T:(x0+x1)/2/T;
   const cost=(rx,ry)=>{let s=0;for(let y=ry;y<ry+h;y++)for(let x=rx;x<rx+w;x++){const t=c.g[y*W+x];s+=t===T_WATER||t===T_BRIDGE?40:t===T_BLD?8:t===T_ROAD?1:0;}return s;};
   let best=null,bc=1e12;
   const span=side==='L'||side==='R'?H-h-2:W-w-2;
   for(let a=2;a<span;a++){
     const rx=side==='L'?1:side==='R'?W-w-1:a,ry=side==='T'?1:side==='B'?H-h-1:a;
+<<<<<<< HEAD
     const r=tileRect({x0:rx,y0:ry,x1:rx+w-1,y1:ry+h-1});if(avoid.some(o=>rectHit(r,o))||c.buildings.some(b=>rectHit({x:r.x-T,y:r.y-T,w:r.w+2*T,h:r.h+2*T},b))||c.features.some(f=>f.kind!=='forest'&&rectHit(r,f)))continue;
+=======
+    const r=tileRect({x0:rx,y0:ry,x1:rx+w-1,y1:ry+h-1});if(avoid.some(o=>rectHit(r,o)))continue;
+>>>>>>> main
     const k=cost(rx,ry)+Math.abs(a-target)*.6;if(k<bc){bc=k;best={x0:rx,y0:ry,x1:rx+w-1,y1:ry+h-1};}}
   if(!best)return null;
   const r=tileRect(best);clearArea(c,r,c.mansion?[c.mansion.B]:[]);
@@ -85,6 +93,7 @@ function layoutCourt(c,avoid){
   const W=c.width,H=c.height;
   const ref=c.residence?c.residence.lobby:{x:W*T/2,y:H*T/2},tx0=ref.x/T,ty0=ref.y/T;let best=null;
   const DL=window.level29Downtown&&window.level29Downtown.lots;const taken=avoid.slice();if(DL)for(const k in DL)taken.push(tileRect(DL[k]));
+<<<<<<< HEAD
   // Amenity footprints must not be reused: market stalls and court floor previously shared park tiles.
   for(const f of c.features||[])if(['market','basketball','cemetery','training','skatepark','mountain'].includes(f.kind))taken.push({x:f.x-T,y:f.y-T,w:f.w+T*2,h:f.h+T*2});
   const tries=[[8,5,1,t=>[T_GRASS,T_PARK,T_LOT,T_SAND,T_PLAZA].includes(t)],[6,4,1,t=>[T_GRASS,T_PARK,T_LOT,T_SAND,T_PLAZA].includes(t)]];
@@ -97,6 +106,18 @@ function layoutCourt(c,avoid){
   for(let y=best.y0-1;y<=best.y1+1;y++)for(let x=best.x0-1;x<=best.x1+1;x++)c.g[y*W+x]=T_PARK;
   for(let y=best.y0;y<=best.y1;y++)for(let x=best.x0;x<=best.x1;x++)c.g[y*W+x]=T_PLAZA;
   c.basketballReservation={x:r.x-T,y:r.y-T,w:r.w+T*2,h:r.h+T*2};c.recreationParcel={...c.basketballReservation};flats.push(c.basketballReservation);return Object.assign(best,{r});
+=======
+  const tries=[[8,5,1,t=>t===T_GRASS||t===T_PARK||t===T_LOT],[8,5,0,t=>t===T_GRASS||t===T_PARK||t===T_LOT||t===T_SAND],[6,4,0,t=>t===T_GRASS||t===T_PARK||t===T_LOT||t===T_SAND||t===T_PLAZA],
+    [8,5,0,t=>t!==T_WATER&&t!==T_BRIDGE&&t!==T_BLD&&t!==T_ROAD],[6,4,0,t=>t!==T_WATER&&t!==T_BRIDGE&&t!==T_BLD]];
+  for(const [w,h,m,ok] of tries){let bd=1e9;
+    for(let y=4;y+h<H-4;y++)for(let x=4;x+w<W-4;x++){const d=Math.abs(x-tx0)+Math.abs(y-ty0);if(d>=bd)continue;
+      let good=true;for(let yy=y-m;yy<y+h+m&&good;yy++)for(let xx=x-m;xx<x+w+m;xx++)if(!ok(c.g[yy*W+xx])||keptBuilding(c,(xx+.5)*T,(yy+.5)*T)){good=false;break;}
+      if(good){const r=tileRect({x0:x,y0:y,x1:x+w-1,y1:y+h-1});if(taken.some(o=>rectHit(r,o)))continue;best={x0:x,y0:y,x1:x+w-1,y1:y+h-1};bd=d;}}
+    if(best)break;}
+  if(!best)return null;const r=tileRect(best);clearArea(c,r,[]);
+  for(let y=best.y0;y<=best.y1;y++)for(let x=best.x0;x<=best.x1;x++)c.g[y*W+x]=T_PLAZA;
+  flats.push(r);return Object.assign(best,{r});
+>>>>>>> main
 }
 
 const prevGen=genCity;
@@ -106,6 +127,7 @@ genCity=function(){
   try{
     pier=layoutPier(c);
     const DL=window.level29Downtown&&window.level29Downtown.lots;const old=DL&&DL.airport;
+<<<<<<< HEAD
     strip=layoutStrip(c,(pier?[pier.rect]:[]).concat(DL?Object.values(DL).filter(l=>l.id!=='airport').map(tileRect):[]));
     if(strip&&DL){
       if(old)for(let y=old.y0;y<=old.y1;y++)for(let x=old.x0;x<=old.x1;x++)if(!flats.some(f=>inRect((x+.5)*T,(y+.5)*T,f)))c.g[y*c.width+x]=T_GRASS;
@@ -122,11 +144,20 @@ genCity=function(){
       }
       if(end<0)throw Error('No airport access route');
       for(let k=end;k!==-1;k=prev.get(k)){c.g[k]=c.g[k]===T_WATER?T_BRIDGE:T_ROAD;c.airportAccess.push({x:(k%c.width+.5)*T,y:(Math.floor(k/c.width)+.5)*T});}
+=======
+    strip=layoutStrip(c,pier?[pier.rect]:[]);
+    if(strip&&DL){
+      if(old)for(let y=old.y0;y<=old.y1;y++)for(let x=old.x0;x<=old.x1;x++)if(!flats.some(f=>inRect((x+.5)*T,(y+.5)*T,f)))c.g[y*c.width+x]=T_GRASS;
+      DL.airport=Object.assign({id:'airport',w:12,h:11,name:'LEVEL 29 AIRSTRIP'},old||{},{x0:strip.x0,y0:strip.y0,x1:strip.x1,y1:strip.y1,fb:strip.fb,door:strip.door,name:'LEVEL 29 AIRSTRIP'});
+>>>>>>> main
     }
     court=layoutCourt(c,flats.slice());
     if(typeof indexTrees==='function')indexTrees(c);
   }catch(e){console.warn('coastline layout',e);}
+<<<<<<< HEAD
   if(!c.airportParcel)throw Error('An isolated airport parcel is required');
+=======
+>>>>>>> main
   // Flatten the airstrip, pier and court even though heightAt is assigned later during the build.
   let inner=typeof c.heightAt==='function'?c.heightAt:null;
   const flat=(x,y)=>flats.some(f=>inRect(x,y,f));
@@ -153,6 +184,7 @@ function buildPier(g){
   for(const x of [-2.45,2.45])box(grp,1,6,(W-5.5)*T,x*T,4,(6.5+(W-5.5)/2)*T,white);
   box(grp,12*T,6,1,0,4,1*T,white);for(const x of [-6,6])box(grp,1,6,5.5*T,x*T,4,3.75*T,white);
   for(let z=1.6;z<W+1;z+=1.4)for(const x of [-2.3,2.3]){cyl(grp,.8,.8,24,x*T,13,z*T,std('#20262b',{metalness:.6}),6);const b=new THREE.Mesh(new THREE.SphereGeometry(2.4,10,8),bulb);b.position.set(x*T,26,z*T);grp.add(b);}
+<<<<<<< HEAD
   // Harbor fittings sit along the edge, leaving the center deck unobstructed.
   for(let z=7*T;z<W*T;z+=3*T)for(const side of [-1,1]){
     const x=side*2.25*T;box(grp,6,2,3,x,3,z,steel);box(grp,2,4,2,x,5,z,steel);
@@ -161,6 +193,8 @@ function buildPier(g){
   }
   for(const x of [-1.9*T,1.9*T]){box(grp,9,7,8,x,5,(W-1)*T,blue);box(grp,10,1,9,x,9,(W-1)*T,white);}
   sign(grp,'FISHING: I / FISH · WAIT · HOOK · REEL / REST',110,9,0,22,(W-.5)*T,'#f3e2b4','#194b54');
+=======
+>>>>>>> main
   // Entrance arch (inland end).
   const az=(W+1.4)*T;for(const x of [-2.3,2.3]){box(grp,6,52,6,x*T,26,az,white);}
   box(grp,4.8*T,14,4,0,50,az,std('#e9e1cf'));
@@ -328,6 +362,7 @@ function hash(x,y){const s=Math.sin(x*127.1+y*311.7)*43758.5453;return s-Math.fl
 function noise(x,y){const ix=Math.floor(x),iy=Math.floor(y),fx=x-ix,fy=y-iy,u=fx*fx*(3-2*fx),v=fy*fy*(3-2*fy);
   const a=hash(ix,iy),b=hash(ix+1,iy),c=hash(ix,iy+1),d=hash(ix+1,iy+1);return a+(b-a)*u+(c-a)*v+(a-b-c+d)*u*v;}
 function fbm(x,y){let s=0,a=.5,f=1;for(let i=0;i<5;i++){s+=a*(1-Math.abs(noise(x*f,y*f)*2-1));f*=2.03;a*=.5;}return s;}
+<<<<<<< HEAD
 let rockSurface=null;
 function terrainSurface(){
   if(rockSurface)return rockSurface;
@@ -335,12 +370,15 @@ function terrainSurface(){
   for(let y=0;y<128;y++)for(let x=0;x<128;x++){const i=(y*128+x)*4,n=noise(x*.15,y*.15),strata=Math.sin(y*.45+noise(x*.06,y*.02)*4),v=Math.round(145+n*65+strata*9);im.data[i]=v;im.data[i+1]=v;im.data[i+2]=v;im.data[i+3]=255;}
   g.putImageData(im,0,0);rockSurface=new THREE.CanvasTexture(c);rockSurface.wrapS=rockSurface.wrapT=THREE.RepeatWrapping;rockSurface.repeat.set(18,18);return rockSurface;
 }
+=======
+>>>>>>> main
 function rebuildMountains(c){
   const old=cityGroup.getObjectByName('level29-mountains');if(!old||typeof c.heightAt!=='function')return;
   old.parent.remove(old);const grp=new THREE.Group();grp.name='level29-mountains';cityGroup.add(grp);
   const rockM=new THREE.MeshStandardMaterial({color:'#7d776d',roughness:.95,flatShading:true}),pineM=std('#24412b',{roughness:.9}),trunkM=std('#4a3726',{roughness:.95});
   const rocks=[],pines=[];
   for(const f of c.features){if(f.kind!=='mountain')continue;
+<<<<<<< HEAD
     const seg=Math.min(64,Math.max(24,Math.round(Math.max(f.w,f.h)/24))),geo=new THREE.PlaneGeometry(f.w,f.h,seg,seg);geo.rotateX(-Math.PI/2);
     const pos=geo.attributes.position;
     for(let i=0;i<pos.count;i++){const x=pos.getX(i)+f.x+f.w/2,z=pos.getZ(i)+f.y+f.h/2;const road=(c.curveDist?c.curveDist(x,z)<64:false)&&!(c.developmentWeight&&c.developmentWeight(x,z)>.5);
@@ -350,11 +388,22 @@ function rebuildMountains(c){
     geo.computeVertexNormals();const nor=geo.attributes.normal,col=new Float32Array(pos.count*3);let maxH=1;for(let i=0;i<pos.count;i++)maxH=Math.max(maxH,pos.getY(i));
     for(let i=0;i<pos.count;i++){const h=pos.getY(i),k=h/maxH,slope=1-nor.getY(i),j=(noise(pos.getX(i)*.08,pos.getZ(i)*.08)-.5)*.08;let r,g,b;
       if(k>.87+noise(pos.getX(i)*.009,pos.getZ(i)*.009)*.08&&slope<.34){r=.92;g=.93;b=.95;}else if(slope>.42||k>.6){r=.45;g=.42;b=.38;}else if(k>.3){r=.3;g=.36;b=.24;}else if(k>.04){r=.25;g=.34;b=.2;}else{r=.36;g=.33;b=.24;}
+=======
+    const seg=Math.min(110,Math.max(40,Math.round(Math.max(f.w,f.h)/14))),geo=new THREE.PlaneGeometry(f.w,f.h,seg,seg);geo.rotateX(-Math.PI/2);
+    const pos=geo.attributes.position;
+    for(let i=0;i<pos.count;i++){const x=pos.getX(i)+f.x+f.w/2,z=pos.getZ(i)+f.y+f.h/2;const road=c.curveDist?c.curveDist(x,z)<64:false;
+      const base=c.heightAt(x,z);let h=road?-3:base;if(!road&&base>2){const m=Math.min(1,base/90);h+=(fbm(x*.006,z*.006)-.45)*60*m+(noise(x*.05,z*.05)-.5)*6*m;}
+      pos.setXYZ(i,x,Math.max(road?-3:0,h),z);}
+    geo.computeVertexNormals();const nor=geo.attributes.normal,col=new Float32Array(pos.count*3);let maxH=1;for(let i=0;i<pos.count;i++)maxH=Math.max(maxH,pos.getY(i));
+    for(let i=0;i<pos.count;i++){const h=pos.getY(i),k=h/maxH,slope=1-nor.getY(i),j=(noise(pos.getX(i)*.08,pos.getZ(i)*.08)-.5)*.08;let r,g,b;
+      if(k>.78&&slope<.45){r=.92;g=.93;b=.95;}else if(slope>.42||k>.6){r=.45;g=.42;b=.38;}else if(k>.3){r=.3;g=.36;b=.24;}else if(k>.04){r=.25;g=.34;b=.2;}else{r=.36;g=.33;b=.24;}
+>>>>>>> main
       col[i*3]=r+j;col[i*3+1]=g+j;col[i*3+2]=b+j;
       const x=pos.getX(i),z=pos.getZ(i),hr=hash(x*.13,z*.17);
       if(h>8&&slope>.3&&hr<.012)rocks.push([x,h,z,4+hr*600]);
       else if(h>4&&k<.55&&slope<.35&&hr<.03)pines.push([x,h,z,.8+hash(z,x)*.6]);}
     geo.setAttribute('color',new THREE.BufferAttribute(col,3));
+<<<<<<< HEAD
     const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,map:terrainSurface(),bumpMap:terrainSurface(),bumpScale:1.2,roughness:.96,metalness:0}));m.position.y=0;grp.add(m);}
   const dummy=new THREE.Object3D();
   if(rocks.length){const im=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,0),rockM,rocks.length);rocks.forEach(([x,y,z,s],i)=>{dummy.position.set(x,y,z);dummy.rotation.set(s,s*2,s*3);dummy.scale.set(s,s*.7,s*1.1);dummy.updateMatrix();im.setMatrixAt(i,dummy.matrix);});grp.add(im);}
@@ -364,6 +413,14 @@ function rebuildMountains(c){
     // A second offset crown breaks up the single traffic-cone silhouette, still instanced.
     const crown=new THREE.InstancedMesh(new THREE.ConeGeometry(5.8,20,11),std('#36533a',{roughness:1}),n);
     for(let i=0;i<n;i++){const [x,y,z,s]=pines[i];dummy.rotation.set(.04*Math.sin(x),s*4,.04*Math.cos(z));dummy.scale.set(s,s,s);dummy.position.set(x+1.2*s,y+28*s,z);dummy.updateMatrix();crown.setMatrixAt(i,dummy.matrix);}grp.add(crown);}
+=======
+    const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({vertexColors:true,roughness:.96,metalness:0}));m.position.y=.4;grp.add(m);}
+  const dummy=new THREE.Object3D();
+  if(rocks.length){const im=new THREE.InstancedMesh(new THREE.DodecahedronGeometry(1,0),rockM,rocks.length);rocks.forEach(([x,y,z,s],i)=>{dummy.position.set(x,y,z);dummy.rotation.set(s,s*2,s*3);dummy.scale.set(s,s*.7,s*1.1);dummy.updateMatrix();im.setMatrixAt(i,dummy.matrix);});grp.add(im);}
+  if(pines.length){const n=Math.min(pines.length,900),cone=new THREE.InstancedMesh(new THREE.ConeGeometry(7,26,7),pineM,n),tr=new THREE.InstancedMesh(new THREE.CylinderGeometry(1.2,1.6,8,5),trunkM,n);
+    for(let i=0;i<n;i++){const [x,y,z,s]=pines[i];dummy.rotation.set(0,s*9,0);dummy.scale.set(s,s,s);dummy.position.set(x,y+4*s,z);dummy.updateMatrix();tr.setMatrixAt(i,dummy.matrix);dummy.position.set(x,y+19*s,z);dummy.updateMatrix();cone.setMatrixAt(i,dummy.matrix);}
+    grp.add(tr);grp.add(cone);}
+>>>>>>> main
 }
 function upgradeMaterials(root){if(!root)return;const cache=new Map();
   root.traverse(o=>{if(!o.isMesh)return;const list=Array.isArray(o.material)?o.material:[o.material];
@@ -578,7 +635,10 @@ if(typeof makeCarMesh==='function'){
     glassMat=new THREE.MeshStandardMaterial({color:0x1c2630,metalness:.6,roughness:.08,transparent:true,opacity:.82});
   makeCarMesh=function(c){
     const g=baseCarMesh(c);
+<<<<<<< HEAD
     if(c.boat||g.userData.visualVersion===2)return g; // Boats have their own hull, deck and helm; never attach car wheels.
+=======
+>>>>>>> main
     try{
       const s=c.spec,L=s.len,W=s.wid,top=g.userData.top,old=g.userData.paint;
       if(old&&old.color){const paint=new THREE.MeshStandardMaterial({color:old.color.clone(),metalness:.55,roughness:.32});

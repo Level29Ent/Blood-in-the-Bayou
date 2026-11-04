@@ -27,7 +27,11 @@ genCity=function(di){
 };
 // Cached high-resolution brick / stucco / glass materials with matching window emission.
 const facades=new Map(),textures=new Map(),materials=new Map();
+<<<<<<< HEAD
 function material(color,metal=0,rough=.85){const key=color+metal+rough;if(!materials.has(key))materials.set(key,level29SurfaceDetail.apply(new THREE.MeshStandardMaterial({color,metalness:metal,roughness:rough}),level29SurfaceDetail.kind(color,metal)));return materials.get(key);}
+=======
+function material(color,metal=0,rough=.85){const key=color+metal+rough;if(!materials.has(key))materials.set(key,new THREE.MeshStandardMaterial({color,metalness:metal,roughness:rough}));return materials.get(key);}
+>>>>>>> main
 function facade(col,type){
  const key=col+':'+type;if(facades.has(key))return facades.get(key);
  const map=canvasTex(512,384,(g,w,h)=>{
@@ -49,7 +53,11 @@ function facade(col,type){
   if(type!=='glass'){g.fillStyle='rgba(246,229,202,.27)';g.fillRect(0,h-27,w,7);g.fillStyle='rgba(40,34,27,.2)';g.fillRect(0,h-20,w,4);}
  },true);
  const emission=canvasTex(512,384,(g)=>{g.fillStyle='#000';g.fillRect(0,0,512,384);for(const x of [58,304]){g.fillStyle=x===58?'#ffe0a5':'#514738';g.fillRect(x,type==='glass'?12:74,type==='glass'?191:150,type==='glass'?338:214);}},true);
+<<<<<<< HEAD
  const m=new THREE.MeshStandardMaterial({color:'#fff',map,emissiveMap:emission,emissive:'#000',roughness:type==='glass'?.3:.94,metalness:type==='glass'?.4:0});if(type!=='glass')level29SurfaceDetail.apply(m,type==='brick'?'brick':'plaster',false);facades.set(key,m);facadeMats.set('l29:'+key,m);return m;
+=======
+ const m=new THREE.MeshStandardMaterial({color:'#fff',map,emissiveMap:emission,emissive:'#000',roughness:type==='glass'?.3:.94,metalness:type==='glass'?.4:0});facades.set(key,m);facadeMats.set('l29:'+key,m);return m;
+>>>>>>> main
 }
 function roofMaterial(){
  if(!textures.has('roof'))textures.set('roof',canvasTex(256,256,g=>{g.fillStyle='#4a4b47';g.fillRect(0,0,256,256);const r=mkRng(82);for(let i=0;i<10000;i++){g.fillStyle=r()>.5?'#53544f':'#40423e';g.fillRect(r()*256,r()*256,1,1);}g.strokeStyle='#414841';g.lineWidth=2;g.strokeRect(4,4,248,248);},true));
@@ -177,7 +185,11 @@ const oldVenue=buildVenue;buildVenue=function(v){oldVenue(v);const b=v.b,g=v.mes
  for(let k=0;k<5;k++)q.box(.8,6,20,b.x+b.w*.73-8+k*4,60,b.y+b.h*.45,dark);
  for(const xx of [b.x+b.w*.17,b.x+b.w*.83]){
   if(Math.abs(xx-v.doorX)<v.doorW/2+12)continue;
+<<<<<<< HEAD
   q.box(21,21,.9,xx,23,v.doorY+1,stone);q.box(17,17,1,xx,23,v.doorY+1.7,new THREE.MeshPhysicalMaterial({name:'buildingGlass',color:'#b9d0d2',metalness:0,roughness:.1,transmission:.6,thickness:.25,ior:1.45,transparent:true,opacity:1,depthWrite:false}));q.box(.8,17,1,xx,23,v.doorY+2.3,dark);q.box(17,.8,1,xx,23,v.doorY+2.3,dark);
+=======
+  q.box(21,21,.9,xx,23,v.doorY+1,stone);q.box(17,17,1,xx,23,v.doorY+1.7,material('#3f6269',.4,.25));q.box(.8,17,1,xx,23,v.doorY+2.3,dark);q.box(17,.8,1,xx,23,v.doorY+2.3,dark);
+>>>>>>> main
  }
  q.finish();worker(v);
  // Interior finish: light ceiling with fluorescent fixtures and a less glaring floor.
@@ -190,6 +202,7 @@ function amenities(group){
  const q=batch(group),concrete=material('#a7a99b'),iron=material('#343f3c',.4),wood=material('#8b6242'),white=material('#e4dec8'),green=material('#467958');
  for(const f of city.features){const x=f.x,z=f.y,w=f.w,d=f.h;
   if(f.kind==='cemetery'){
+<<<<<<< HEAD
    const plot=new THREE.Group();plot.name='dedicated-cemetery';plot.position.y=city.heightAt?city.heightAt(x+w/2,z+d/2):0;group.add(plot);
    const cq=batch(plot),stone=material('#8b8472');
    cq.box(w,1,d,x+w/2,.55,z+d/2,stone);
@@ -203,6 +216,11 @@ function amenities(group){
     cq.box(25,19,38,xx,10,zz,white);cq.box(29,3,42,xx,21,zz,concrete);cq.box(13,5,1,xx,13,zz+19.6,iron);cq.box(1,8,1,xx,27,zz,white);cq.box(5,1,1,xx,28.5,zz,white);
    }
    addSign(plot,'LEVEL 29 · OLD TOWN CEMETERY',Math.min(190,w-24),12,x+w/2,24,z+d-6,'#d5c7a4');cq.finish();
+=======
+   q.box(w,1,d,x+w/2,.55,z+d/2,material('#8b8472'));
+   for(let row=0;row<4;row++)for(let col=0;col<5;col++){const xx=x+28+col*52,zz=z+26+row*61;q.box(25,19,38,xx,10,zz,white);q.box(29,3,42,xx,21,zz,concrete);q.box(13,5,1,xx,13,zz+19.6,iron);q.box(1,8,1,xx,27,zz,white);q.box(5,1,1,xx,28.5,zz,white);}
+   addSign(group,'LEVEL 29 · OLD TOWN CEMETERY',190,12,x+w/2,24,z+d, '#d5c7a4');
+>>>>>>> main
   }
   if(f.kind==='market'){
    q.box(w,1,d,x+w/2,.55,z+d/2,material('#8b826c'));

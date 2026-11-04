@@ -48,7 +48,11 @@ function signTex(text, bg, fg, w, h){
 function initGL(){
   const glCv = document.getElementById('gl');
   renderer = new THREE.WebGLRenderer({ canvas: glCv, antialias: true, powerPreference: 'high-performance' });
+<<<<<<< HEAD
   renderer.setPixelRatio(Math.min(matchMedia('(pointer: coarse)').matches?1:1.5, devicePixelRatio || 1));
+=======
+  renderer.setPixelRatio(Math.min(1.5, devicePixelRatio || 1));
+>>>>>>> main
   renderer.setSize(innerWidth, innerHeight, false);
   renderer.autoClear = false; renderer.info.autoReset = false;
   scene = new THREE.Scene();
@@ -77,8 +81,11 @@ function initGL(){
   spitMesh = new THREE.InstancedMesh(new THREE.SphereGeometry(3.2, 8, 6), new THREE.MeshBasicMaterial({ color: 0x86d93c }), 80); spitMesh.count = 0; spitMesh.frustumCulled = false; scene.add(spitMesh);
   const mkPts = (n, size, blend, op) => { const g = new THREE.BufferGeometry(); g.setAttribute('position', new THREE.BufferAttribute(new Float32Array(n*3), 3)); g.setAttribute('color', new THREE.BufferAttribute(new Float32Array(n*3), 3)); const m = new THREE.Points(g, new THREE.PointsMaterial({ size, map: softTex, vertexColors: true, transparent: true, opacity: op, depthWrite: false, blending: blend, sizeAttenuation: true })); m.frustumCulled = false; scene.add(m); return m; };
   ptsSmall = mkPts(700, 3.2, THREE.NormalBlending, 1); ptsFire = mkPts(500, 16, THREE.AdditiveBlending, .9); ptsSmoke = mkPts(300, 26, THREE.NormalBlending, .5);
+<<<<<<< HEAD
   // Elongated turbulent flame sprite rather than a round additive smoke blob.
   const flame=canvasTex(64,128,(g,W,H)=>{g.clearRect(0,0,W,H);const grad=g.createRadialGradient(32,96,2,32,76,53);grad.addColorStop(0,'rgba(255,255,215,1)');grad.addColorStop(.3,'rgba(255,201,65,.95)');grad.addColorStop(.7,'rgba(240,76,12,.65)');grad.addColorStop(1,'rgba(140,25,4,0)');g.fillStyle=grad;g.beginPath();g.moveTo(32,4);g.bezierCurveTo(16,44,6,68,12,105);g.bezierCurveTo(21,131,50,122,53,96);g.bezierCurveTo(58,65,34,45,32,4);g.fill();});ptsFire.material.map=flame;ptsFire.material.needsUpdate=true;
+=======
+>>>>>>> main
   for (let k=0;k<8;k++){ const m = new THREE.Mesh(new THREE.SphereGeometry(1, 16, 10), new THREE.MeshBasicMaterial({ color: 0xff8a30, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending })); m.visible = false; scene.add(m); boomPool.push(m); }
   markerMesh = new THREE.Mesh(new THREE.CylinderGeometry(24, 24, 70, 28, 1, true), new THREE.MeshBasicMaterial({ color: 0xf4c355, transparent: true, opacity: .32, side: THREE.DoubleSide, depthWrite: false, blending: THREE.AdditiveBlending, fog: false }));
   markerMesh.position.y = 35; scene.add(markerMesh);
@@ -110,14 +117,22 @@ function figParts(){
   const sph = (r, w, h) => new THREE.SphereGeometry(r, w || 14, h || 10);
   const hairCap = new THREE.SphereGeometry(2.42, 18, 10, 0, Math.PI * 2, 0, Math.PI * .46);
   hairCap.scale(1.04, 1.06, 1.04); hairCap.translate(0, -2.2, 0);
+<<<<<<< HEAD
   const longHair = new THREE.SphereGeometry(2.4, 16, 10, -Math.PI * .5, Math.PI, 0, Math.PI * .8);
+=======
+  const longHair = new THREE.SphereGeometry(2.4, 16, 10, Math.PI * .5, Math.PI, 0, Math.PI * .8);
+>>>>>>> main
   longHair.scale(1, 1.75, 1.05);
   FIG = {
     leg: cyl(1.6, 1.22, 7.4, 12), knee: sph(1.32, 10, 8), shoe: new THREE.BoxGeometry(4.3, 1.3, 2.7), toe: cyl(1.35, 1.35, 2.7, 10),
     hips: cyl(1, .95, 2.4, 14), belt: cyl(1, 1, .75, 14), buckle: new THREE.BoxGeometry(.3, .6, .9),
     torso: cyl(1, .84, 7.2, 16), shoulder: sph(1.48, 12, 8), neck: cyl(.92, 1, 1.8, 10),
+<<<<<<< HEAD
     head: sph(1, 20, 14), ear: sph(1, 8, 6), nose: sph(1,12,8), jaw: sph(1, 14, 8),
     humanEye: sph(1,12,8), iris: sph(1,10,8), lip: sph(1,12,6), cheek: sph(1,12,8),
+=======
+    head: sph(1, 20, 14), ear: sph(1, 8, 6), nose: new THREE.BoxGeometry(.75, .95, .6), jaw: sph(1, 14, 8),
+>>>>>>> main
     eyeW: new THREE.BoxGeometry(.18, .5, .72), pupil: new THREE.BoxGeometry(.14, .38, .36), brow: new THREE.BoxGeometry(.18, .22, .95), mouth: new THREE.BoxGeometry(.16, .2, 1.05),
     sleeve: cyl(1.3, 1.12, 3.8, 12), elbow: sph(1.08, 10, 8), forearm: cyl(1.02, .84, 3.6, 10), hand: sph(.95, 10, 8),
     hairCap, longHair, zEye: new THREE.BoxGeometry(.4, .8, .9),
@@ -149,8 +164,13 @@ function makeFigure(zombie){
   for (const z of [-3.6, 3.6]) add(body, P.shoulder, shirt, 0, 15, z, 1.1, .85, 1);
   add(body, P.neck, skin, .1, 16.4, 0);
 
+<<<<<<< HEAD
   const head = add(body, P.head, skin, .05, 18.3, 0, zombie?2.2:2.05, zombie?2.45:2.35, zombie?2.12:1.95);
   const jaw = add(body, P.jaw, skin, .45, 17.05, 0, 1.55, 1.05, 1.6);
+=======
+  const head = add(body, P.head, skin, .05, 18.3, 0, 2.2, 2.45, 2.12);
+  add(body, P.jaw, skin, .45, 17.25, 0, 1.65, 1.15, 1.75);
+>>>>>>> main
   const hair = add(body, P.hairCap, lam('#3a2a1a'), 0, 20.4, 0);
   hair.position.y = 20.4;
   const longHair = add(body, P.longHair, hair.material, -.35, 17.6, 0); longHair.visible = false;
@@ -159,6 +179,7 @@ function makeFigure(zombie){
   if (!zombie){
     face = new THREE.Group(); body.add(face);
     for (const z of [-2.12, 2.12]) add(face, P.ear, skin, -.1, 18.2, z, .45, .75, .3);
+<<<<<<< HEAD
     // Nose bridge/tip, cheek planes and lips sit on the face, not inside the skull.
     add(face, P.nose, skin, 2.03, 18.25, 0, .38, .74, .32);
     add(face, P.nose, skin, 2.38, 17.95, 0, .42, .3, .4);
@@ -171,6 +192,15 @@ function makeFigure(zombie){
     }
     add(face, P.lip, P.mouthMat, 1.98, 17.15, 0, .15, .11, .57);
     add(face, P.lip, P.mouthMat, 1.99, 16.98, 0, .16, .12, .5);
+=======
+    add(face, P.nose, skin, 2.3, 17.95, 0);
+    for (const z of [-.82, .82]){
+      add(face, P.eyeW, P.whiteMat, 2.04, 18.65, z);
+      add(face, P.pupil, P.pupilMat, 2.13, 18.62, z * 1.02);
+      const brow = add(face, P.brow, hair.material, 1.92, 19.3, z); brow.rotation.x = z > 0 ? .12 : -.12;
+    }
+    add(face, P.mouth, P.mouthMat, 2.05, 16.95, 0);
+>>>>>>> main
   }
 
   const armL = new THREE.Group(), armR = new THREE.Group();
@@ -187,7 +217,11 @@ function makeFigure(zombie){
   if (zombie){ eyes = new THREE.Group(); for (const z of [-.95, .95]){ const e = new THREE.Mesh(P.zEye, MAT.eye); e.position.set(2.05, 18.6, z); eyes.add(e); } body.add(eyes); }
   const helmet = new THREE.Mesh(new THREE.SphereGeometry(3, 16, 8, 0, Math.PI*2, 0, Math.PI/2), lam('#4b5320')); helmet.position.y = 19.6; helmet.scale.set(1, .8, 1); helmet.visible = false; body.add(helmet);
   g.traverse(o => { if (o.isMesh){ o.castShadow = true; o.receiveShadow = false; } });
+<<<<<<< HEAD
   g.userData = { body, legL, legR, armL, armR, torso, head, jaw, hair, longHair, face, eyes, helmet, skin, shirt, pants };
+=======
+  g.userData = { body, legL, legR, armL, armR, torso, head, hair, longHair, face, eyes, helmet, skin, shirt, pants };
+>>>>>>> main
   return g;
 }
 function setFigureColors(m, skin, shirt, pants, hairCol){
@@ -299,6 +333,7 @@ function syncCars(){
 }
 
 // ---------- Pickups ----------
+<<<<<<< HEAD
 function makePickup(){
  const g=new THREE.Group(),m=box(8,8,8,lam('#fff'));g.add(m);g.userData.m=m;
  const cross=new THREE.Group(),red=new THREE.MeshStandardMaterial({color:'#ee2525',emissive:'#b81717',emissiveIntensity:.55,roughness:.45});
@@ -307,6 +342,9 @@ function makePickup(){
  const shape=new THREE.Shape();shape.moveTo(-2,7);for(const [x,y]of [[2,7],[2,2],[7,2],[7,-2],[2,-2],[2,-7],[-2,-7],[-2,-2],[-7,-2],[-7,2],[-2,2]])shape.lineTo(x,y);shape.closePath();
  const geometry=new THREE.ExtrudeGeometry(shape,{depth:4,bevelEnabled:false,steps:1});geometry.translate(0,0,-2);cross.add(new THREE.Mesh(geometry,red));g.add(cross);g.userData.healthCross=cross;return g;
 }
+=======
+function makePickup(){ const g = new THREE.Group(); const m = box(8, 8, 8, lam('#fff')); m.position.y = 0; g.add(m); g.userData.m = m; return g; }
+>>>>>>> main
 const PICK = { health:['#f2f2f2', 0x501010], armor:['#2a5ad0', 0x0a1a50], cash:['#2f8a3a', 0x0a3010], crate:['#4b5320', 0], power:['#f4c355', 0x6a4a00] };
 
 // ---------- City build ----------
@@ -327,8 +365,13 @@ function buildCity(){
   decalN = 0; decalMesh.count = 0;
   builtCity = city; cityGroup = new THREE.Group(); scene.add(cityGroup);
   // ground
+<<<<<<< HEAD
   const gt = new THREE.CanvasTexture(groundCv); gt.encoding=THREE.sRGBEncoding;gt.anisotropy = Math.min(4,renderer.capabilities.getMaxAnisotropy());
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(WORLD, WORLD), new THREE.MeshStandardMaterial({name:'worldGround',map:gt,roughness:1,metalness:0,envMapIntensity:0}));
+=======
+  const gt = new THREE.CanvasTexture(groundCv); gt.anisotropy = renderer.capabilities.getMaxAnisotropy();
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(WORLD, WORLD), new THREE.MeshLambertMaterial({ map: gt }));
+>>>>>>> main
   ground.rotation.x = -Math.PI/2; ground.position.set(WORLD/2, 0, WORLD/2); cityGroup.add(ground);
   const sea = new THREE.Mesh(new THREE.PlaneGeometry(9000, 9000), lam(D.id==='pi' ? '#35574f' : '#1f4b66')); sea.rotation.x = -Math.PI/2; sea.position.set(WORLD/2, -1, WORLD/2); cityGroup.add(sea);
   // curbs along sidewalks (thin raised edges)
@@ -382,6 +425,7 @@ function buildCity(){
     normal.forEach((t, i) => { dummy.position.set(t.x, 0, t.y); dummy.scale.set(1, 22 + t.r*.6, 1); dummy.rotation.set(0, 0, 0); dummy.updateMatrix(); tr.setMatrixAt(i, dummy.matrix);
       dummy.position.set(t.x, 26 + t.r*.9, t.y); dummy.scale.set(t.r*1.15, t.r*1.05, t.r*1.15); dummy.rotation.set(0, t.x, 0); dummy.updateMatrix(); lf.setMatrixAt(i, dummy.matrix); });
     cityGroup.add(tr, lf);
+<<<<<<< HEAD
     // Offset crown lobes and forked branches replace the spherical lollipop silhouette.
     for(let side=-1;side<=1;side+=2){
       const crown=new THREE.InstancedMesh(new THREE.IcosahedronGeometry(1,1),lam(side<0?'#355b35':'#486a3b'),normal.length);
@@ -391,6 +435,8 @@ function buildCity(){
         dummy.position.set(t.x,17+t.r*.3,t.y);dummy.rotation.set(0,t.y*.1,-side*.6);dummy.scale.set(1,t.r*1.4,1);dummy.updateMatrix();branch.setMatrixAt(i,dummy.matrix);
       });cityGroup.add(crown,branch);
     }
+=======
+>>>>>>> main
   }
   if (palms.length){
     const tr = new THREE.InstancedMesh(new THREE.CylinderGeometry(1, 1.6, 1, 6).translate(0, .5, 0), MAT.trunk, palms.length);
@@ -400,14 +446,22 @@ function buildCity(){
     cityGroup.add(tr, lf);
   }
   // street lamps + light pools + street signs at intersections
+<<<<<<< HEAD
   const lamps = [];city.lightPoleSolids=[];
+=======
+  const lamps = [];
+>>>>>>> main
   for (let i=0;i<ROADS.length;i++) for (let j=0;j<ROADS.length;j++){
     const t = city.get(ROADS[i]+1, ROADS[j]+1); if (t!==T_ROAD && t!==T_BRIDGE) continue;
     const lx = ROADS[i]*TILE - 8, lz = ROADS[j]*TILE - 8;
     if (city.get(ROADS[i]-1, ROADS[j]-1)===T_WALK) lamps.push([lx, lz]);
     const sx = (ROADS[i]+3)*TILE + 8, sz = (ROADS[j]+3)*TILE + 8;
     if (city.get(ROADS[i]+3, ROADS[j]+3)===T_WALK){
+<<<<<<< HEAD
       city.lightPoleSolids.push({x:sx-1.5,y:sz-1.5,w:3,h:3});const pole = new THREE.Mesh(new THREE.CylinderGeometry(.8, .8, 40, 6), MAT.pole); pole.position.set(sx, 20, sz); cityGroup.add(pole);
+=======
+      const pole = new THREE.Mesh(new THREE.CylinderGeometry(.8, .8, 40, 6), MAT.pole); pole.position.set(sx, 20, sz); cityGroup.add(pole);
+>>>>>>> main
       const a = new THREE.Mesh(new THREE.PlaneGeometry(36, 7), new THREE.MeshLambertMaterial({ map: signTexFor(D.v[i]), side: THREE.DoubleSide })); a.position.set(sx, 38, sz); a.rotation.y = Math.PI/2; cityGroup.add(a);
       const b = new THREE.Mesh(new THREE.PlaneGeometry(36, 7), new THREE.MeshLambertMaterial({ map: signTexFor(D.h[j]), side: THREE.DoubleSide })); b.position.set(sx, 31, sz); cityGroup.add(b);
     }
@@ -415,7 +469,11 @@ function buildCity(){
   const lp = new THREE.InstancedMesh(new THREE.CylinderGeometry(.9, 1.2, 52, 6).translate(0, 26, 0), MAT.pole, lamps.length);
   const lh = new THREE.InstancedMesh(new THREE.BoxGeometry(10, 2, 4), MAT.lamp, lamps.length);
   const pools = new THREE.InstancedMesh(new THREE.PlaneGeometry(1, 1).rotateX(-Math.PI/2), MAT.pool, lamps.length);
+<<<<<<< HEAD
   lamps.forEach(([x, z], i) => { city.lightPoleSolids.push({x:x-1.5,y:z-1.5,w:3,h:3}); dummy.rotation.set(0, Math.PI/4, 0); dummy.scale.set(1, 1, 1); dummy.position.set(x, 0, z); dummy.updateMatrix(); lp.setMatrixAt(i, dummy.matrix);
+=======
+  lamps.forEach(([x, z], i) => { dummy.rotation.set(0, Math.PI/4, 0); dummy.scale.set(1, 1, 1); dummy.position.set(x, 0, z); dummy.updateMatrix(); lp.setMatrixAt(i, dummy.matrix);
+>>>>>>> main
     dummy.position.set(x + 5, 52, z + 5); dummy.updateMatrix(); lh.setMatrixAt(i, dummy.matrix);
     dummy.rotation.set(0, 0, 0); dummy.position.set(x + 12, .7, z + 12); dummy.scale.set(170, 1, 170); dummy.updateMatrix(); pools.setMatrixAt(i, dummy.matrix); });
   cityGroup.add(lp, lh, pools); lampPools = pools;
@@ -472,6 +530,7 @@ function buildViewModel(){
   const gauge = new THREE.Mesh(new THREE.CircleGeometry(2.6, 24), new THREE.MeshBasicMaterial({ color: 0x0f2a18 })); gauge.position.set(-5.5, -7.6, -12.5); gauge.rotation.x = -.35; dash.add(gauge);
   wheel = new THREE.Mesh(new THREE.TorusGeometry(4.2, .55, 8, 28), lam('#101010')); wheel.position.set(-5.5, -7.2, -9.5); wheel.rotation.x = -.45; dash.add(wheel);
   const spoke = box(8, .6, .6, lam('#1b1b1b')); wheel.add(spoke); const hub = new THREE.Mesh(new THREE.CylinderGeometry(1.1, 1.1, .8, 12), lam('#1b1b1b')); hub.rotation.x = Math.PI/2; wheel.add(hub);
+<<<<<<< HEAD
   // Cockpit furnishings use the view-model camera, so they remain readable in first person.
   const trim=lam('#647078'),accent=new THREE.MeshStandardMaterial({color:'#353c41',roughness:.45,metalness:.35});dash.userData.accent=accent;
   const part=(w,h,d,x,y,z,mat)=>{const o=box(w,h,d,mat);o.position.set(x,y,z);dash.add(o);return o;};
@@ -490,12 +549,19 @@ function buildViewModel(){
   for(const x of [1.7,4.3]){const knob=new THREE.Mesh(new THREE.CylinderGeometry(.3,.3,.4,10),trim);knob.rotation.x=Math.PI/2;knob.position.set(x,-10,-10.8);dash.add(knob);}
   part(.5,2,.5,3,-12,-8,trim);part(1,.5,1,3,-11,-8,lam('#232a2e'));
   part(9,2,.5,0,5,-18,lam('#253036'));part(7.5,1.3,.1,0,5,-17.7,lam('#9caeae'));
+=======
+>>>>>>> main
   vmScene.add(dash);
 }
 
 // ---------- Input: look ----------
 function turnView(dx, dy){
   if (state!=='play' || !player || player.dead || typeof wheelOpen!=='undefined'&&wheelOpen) return;
+<<<<<<< HEAD
+  if (state!=='play' || !player || player.dead || typeof wheelOpen!=='undefined'&&wheelOpen) return;
+=======
+  if (state!=='play' || !player || player.dead) return;
+>>>>>>> main
   if (player.car){ view.look = clamp(view.look + dx, -2.4, 2.4); view.lookIdle = 0; }
   else view.yaw += dx;
   view.pitch = clamp(view.pitch - dy, -.75, .6);
@@ -597,7 +663,10 @@ function syncDynamic(){
       m.scale.setScalar(z.type==='brute' ? 1.6 : z.type==='runner' ? .95 : 1);
       u.eyes.visible = true;
     }
+<<<<<<< HEAD
     m.scale.setScalar(z.storyScale||(z.type==='brute'?1.6:z.type==='runner'?.95:1));
+=======
+>>>>>>> main
     poseFigure(m, z.x, z.y, z.a, z.anim, 'zombie');
     if (z.type==='runner') u.body.rotation.z = -.35;
     u.shirt.emissive.setRGB(z.flash > 0 ? .9 : 0, z.flash > 0 ? .9 : 0, z.flash > 0 ? .9 : 0);
@@ -642,7 +711,11 @@ function syncDynamic(){
   kPool.begin();
   for (const k of pickups){
     const [m, fresh] = kPool.get(k), mm = m.userData.m, P = PICK[k.kind] || PICK.cash;
+<<<<<<< HEAD
     if (fresh){ if(m.userData.healthCross)m.userData.healthCross.visible=k.kind==='health'; mm.visible=k.kind!=='health'&&!(m.userData.cashStack&&k.kind==='cash');if(m.userData.cashStack)m.userData.cashStack.visible=k.kind==='cash'; mm.material.color.set(P[0]); mm.material.emissive.setHex(P[1]); mm.scale.setScalar(k.kind==='crate' ? 2.2 : k.kind==='power' ? 1.6 : 1); }
+=======
+    if (fresh){ if(m.userData.cashStack){m.userData.cashStack.visible=k.kind==='cash';mm.visible=k.kind!=='cash';} mm.material.color.set(P[0]); mm.material.emissive.setHex(P[1]); mm.scale.setScalar(k.kind==='crate' ? 2.2 : k.kind==='power' ? 1.6 : 1); }
+>>>>>>> main
     m.position.set(k.x, (k.kind==='cash' ? 2.3 : k.kind==='crate' ? 9 : 8) + Math.sin(frame * .08 + k.x) * 1.5, k.y); m.rotation.y = k.kind==='cash' ? k.x*.017 : frame * .03;
   }
   kPool.end();
@@ -698,7 +771,10 @@ function syncViewModel(){
   const inCar = show && p.car;
   gun.visible = !!(show) && (!inCar || (mouse.down || keys['f'] || keys['j'] || touch.shoot)) && !view.chase && (typeof curW === 'undefined' || curW === 'm240' || (!!inCar && curW === 'bat'));
   dash.visible = !!inCar && !view.chase;
+<<<<<<< HEAD
   if(inCar){const ratio=Math.min(1,Math.abs(p.car.v||0)/(p.car.spec.max||6));for(const [i,n]of (dash.userData.needles||[]).entries())n.rotation.z=2.1-ratio*(i?3.8:4.2);if(dash.userData.accent)dash.userData.accent.color.set(window.level29Trading?.color||'#353c41');}
+=======
+>>>>>>> main
   if (!show) return;
   if (p.flash > 0 && p.flash === 3){ view.kick = 1; }
   view.kick *= .72;
@@ -722,7 +798,11 @@ function render(){
   syncLights(yaw);
   syncViewModel();
   document.getElementById('gl').style.filter = state==='dead' ? 'grayscale(1) contrast(1.1)' : '';
+<<<<<<< HEAD
   renderer.info.reset(); renderer.clear(); if(window.level29Cinematic)level29Cinematic.drawWorld();else renderer.render(scene, camera);
+=======
+  renderer.info.reset(); renderer.clear(); renderer.render(scene, camera);
+>>>>>>> main
   renderer.clearDepth(); renderer.render(vmScene, vmCam);
   if (view.hit > 0) view.hit--;
   cx.setTransform(DPR, 0, 0, DPR, 0, 0); cx.clearRect(0, 0, SW, SH);

@@ -12,12 +12,19 @@ const specs=[
  {id:'fire',name:'LEVEL 29 FIRE & RESCUE',short:'FIRE STATION',letter:'R',col:'#ed9465'}
 ];
 VENUE_TYPES.push(...specs);
+<<<<<<< HEAD
 const roles={fire:['FIRE CAPTAIN','#bd5033','#373d3f'],bank:['BANK TELLER','#3d5366','#263542'],grocery:['MARKET CLERK','#638b51','#343e30'],gym:['FITNESS COACH','#b64f35','#252b31'],hospital:['MEDICAL TEAM','#b5d3d5','#657f89'],police:['CAPTAIN SMITH','#171b22','#212936'],gas:['STATION ATTENDANT','#b27339','#333b45']};
+=======
+const roles={fire:['FIRE CAPTAIN','#bd5033','#373d3f'],bank:['BANK TELLER','#3d5366','#263542'],grocery:['MARKET CLERK','#638b51','#343e30'],gym:['FITNESS COACH','#b64f35','#252b31'],hospital:['MEDICAL TEAM','#b5d3d5','#657f89'],police:['DESK SERGEANT','#31496d','#23344c'],gas:['STATION ATTENDANT','#b27339','#333b45']};
+>>>>>>> main
 let saved={bank:0,cardio:0,conditioning:0,owned:[],income:0,at:Date.now()};
 try{Object.assign(saved,JSON.parse(localStorage.getItem('level29.places.v1')||'{}'));}catch(_){}
 function persist(){try{localStorage.setItem('level29.places.v1',JSON.stringify(saved));}catch(_){}}
 function speak(name,txt,col){subtitle={name,txt,t:Math.max(240,txt.length*4),col};}
+<<<<<<< HEAD
 const smithPortrait=new Image();smithPortrait.src='characters/captain-smith.jpg?v=2';
+=======
+>>>>>>> main
 const portrait=new Image();portrait.crossOrigin='anonymous';portrait.src='ronnie.png';
 const faces=new Map();
 function face(name,col){if(faces.has(name))return faces.get(name);const c=document.createElement('canvas');c.width=c.height=80;const g=c.getContext('2d');g.fillStyle='#24313a';g.fillRect(0,0,80,80);g.fillStyle=col||'#74968a';g.fillRect(9,52,62,28);g.fillStyle='#b88767';g.beginPath();g.ellipse(40,32,17,22,0,0,7);g.fill();g.fillStyle='#27251f';g.fillRect(22,11,36,12);g.fillStyle='#222';g.fillRect(30,30,4,3);g.fillRect(46,30,4,3);g.fillStyle='#704a39';g.fillRect(36,43,9,2);faces.set(name,c);return c;}
@@ -29,15 +36,25 @@ window.drawCharacterCaption=function(s){
  if(stereoUp&&lines.length>5){lines.length=5;lines[4]+='…';}
  const h=Math.max(sz+20,36+lines.length*(font+6)),y=mobile&&SH>=600?(stereoUp?(expanded?426:230):134):Math.max(110,SH-(mobile?190:135)-h),x=(SW-w)/2;
  cx.fillStyle='rgba(8,14,19,.94)';cx.fillRect(x,y,w,h);cx.fillStyle=s.col||'#e5bd63';cx.fillRect(x,y,3,h);
+<<<<<<< HEAD
  const im=/CAPTAIN SMITH/i.test(s.name)&&smithPortrait.complete&&smithPortrait.naturalWidth?smithPortrait:/RONNIEBABY/.test(s.name)&&portrait.complete&&portrait.naturalWidth?portrait:face(s.name,s.col);cx.drawImage(im,x+12,y+10,sz,sz);
+=======
+ const im=/RONNIEBABY/.test(s.name)&&portrait.complete&&portrait.naturalWidth?portrait:face(s.name,s.col);cx.drawImage(im,x+12,y+10,sz,sz);
+>>>>>>> main
  cx.textAlign='left';cx.textBaseline='top';cx.fillStyle=s.col||'#e5bd63';cx.font="800 "+(mobile?13:16)+"px 'Barlow Condensed'";cx.fillText(s.name,tx,y+10,max);
  cx.font="500 "+font+"px 'IBM Plex Mono'";cx.fillStyle='#f6f2e6';lines.forEach((l,i)=>cx.fillText(l,tx,y+33+i*(font+6)));cx.restore();
 };
 // Actual voice captions remain visible over Ronniebaby's conversation panel.
 const voiceCaption=document.createElement('div');voiceCaption.id='voiceCaption';voiceCaption.style.cssText='display:none;position:fixed;z-index:65;left:50%;bottom:16px;transform:translateX(-50%);width:min(680px,calc(100% - 32px));background:#0b1319f5;border-left:3px solid #d4b266;padding:10px 14px;box-sizing:border-box;color:#f3eddb;font:13px/1.5 "IBM Plex Mono",monospace;pointer-events:none';document.body.appendChild(voiceCaption);
+<<<<<<< HEAD
 // Recorded Ronnie captions are emitted on the media 'playing' event by dialogue-sequencer.
 // Concrete blocks are reserved before the existing renderer builds the city.
 const sites=[['bank',7,1,8,7],['bank',5,7,8,7],['bank',4,4,8,7],['grocery',6,4,8,7],['gym',4,5,8,7],['police',4,6,8,7],['hospital',5,6,9,8],['bank',6,6,8,7],['gas',3,6,7,4],['gas',5,2,7,4],['fire',6,2,8,7]];
+=======
+const oldRbSay=rbSay;rbSay=function(key,next){const out=oldRbSay(key,next);if(RB_TEXT[key])speak('RONNIEBABY',RB_TEXT[key]);return out;};
+// Concrete blocks are reserved before the existing renderer builds the city.
+const sites=[['bank',4,4,8,7],['grocery',6,4,8,7],['gym',4,5,8,7],['police',4,6,8,7],['hospital',5,6,9,8],['bank',6,6,8,7],['gas',3,6,7,4],['gas',5,2,7,4],['fire',6,2,8,7]];
+>>>>>>> main
 function walls(v){const b=v.b,t=3;v.colliderWalls=[{x:b.x,y:b.y,w:b.w,h:t},{x:b.x,y:b.y,w:t,h:b.h},{x:b.x+b.w-t,y:b.y,w:t,h:b.h},{x:b.x,y:b.y+b.h-t,w:(b.w-v.doorW)/2,h:t},{x:v.doorX+v.doorW/2,y:b.y+b.h-t,w:(b.w-v.doorW)/2,h:t}];v.colliderDoor={x:v.doorX-v.doorW/2,y:v.doorY-t,w:v.doorW,h:t};}
 const oldGen=genCity;genCity=function(di){const c=oldGen(di);c.fortressWalls=[];c.fortressGates=[];
  if(!c.world)return c;
@@ -70,11 +87,19 @@ function overlap(a,b){return a.x<b.x+b.w&&a.x+a.w>b.x&&a.y<b.y+b.h&&a.y+a.h>b.y;
 const oldBlocked=blockedCircle;blockedCircle=function(x,y,r){if(city&&city.world){for(const b of city.fortressWalls||[])if(hitRect(x,y,r,b))return true;if(moverCtx&&moverCtx.alive!==undefined){for(const b of city.fortressGates||[])if(hitRect(x,y,r,b))return true;}
  const h=city.hospital;if(h&&h.floor>0&&inside(player.x,player.y,h.b)&&moverCtx===player&&!inside(x,y,{x:h.b.x+4,y:h.b.y+4,w:h.b.w-8,h:h.b.h-8}))return true;}
  return oldBlocked(x,y,r);};
+<<<<<<< HEAD
 const oldHeight=terrainHeight;terrainHeight=function(x,y){const h=city&&city.hospital;if(h&&h.floor>0&&inside(x,y,h.b))return (h.baseY||0)+h.floor*56;return oldHeight(x,y);};
 function staff(v,g,x,y,z,role){const m=v.id==='police'?level29CaptainSmith.create():makeFigure(false),job=roles[v.id];if(v.id!=='police')setFigureColors(m,'#b17c59',job[1],job[2],'#252320');poseFigure(m,x,y,Math.PI/2,0,'stand');m.position.y=z;g.add(m);const label=new THREE.Sprite(new THREE.SpriteMaterial({map:signTex(role||job[0],'#17232b',v.col,512,72)}));label.scale.set(52,7,1);label.position.y=28;m.add(label);v.staff.push({m,x,y,z,role:role||job[0],floor:Math.round(z/56)});v.furniture.push({x:x-5,y:y-5,w:10,h:10});return m;}
 const wallStyle={fire:['#af725e','brick'],bank:['#b8a58b','brick'],grocery:['#d6cca4','stucco'],gym:['#9c6e56','brick'],police:['#8f9aa8','brick'],hospital:['#e6e2d6','stucco'],gas:['#d7c8a5','stucco']};
 function fw(g,w,h,d,x,y,z,mat){const geo=new THREE.BoxGeometry(w,h,d),uv=geo.attributes.uv,rx=Math.max(1,Math.round(Math.max(w,d)/95)),ry=Math.max(1,Math.round(h/52));for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*rx,uv.getY(i)*ry);const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);g.add(m);return m;}
 function shell(v,g,q,base,level){const b=v.b,st=wallStyle[v.id],fm=facade(st[0],st[1]),trim=material('#425560',.35),floor=v.id==='hospital'?level29SurfaceDetail.apply(new THREE.MeshStandardMaterial({color:level%2?'#6c7f7d':'#7d8279',roughness:.78}),'tile'):material(level%2?'#6c7f7d':'#7d8279'),cap=material('#cfc9b8');
+=======
+const oldHeight=terrainHeight;terrainHeight=function(x,y){const h=city&&city.hospital;if(h&&h.floor>0&&inside(x,y,h.b))return h.floor*56;return oldHeight(x,y);};
+function staff(v,g,x,y,z,role){const m=makeFigure(false),job=roles[v.id];setFigureColors(m,'#b17c59',job[1],job[2],'#252320');poseFigure(m,x,y,Math.PI/2,0,'stand');m.position.y=z;g.add(m);const label=new THREE.Sprite(new THREE.SpriteMaterial({map:signTex(role||job[0],'#17232b',v.col,512,72)}));label.scale.set(52,7,1);label.position.y=28;m.add(label);v.staff.push({m,x,y,z,role:role||job[0],floor:Math.round(z/56)});v.furniture.push({x:x-5,y:y-5,w:10,h:10});return m;}
+const wallStyle={fire:['#af725e','brick'],bank:['#b8a58b','brick'],grocery:['#d6cca4','stucco'],gym:['#9c6e56','brick'],police:['#8f9aa8','brick'],hospital:['#e6e2d6','stucco'],gas:['#d7c8a5','stucco']};
+function fw(g,w,h,d,x,y,z,mat){const geo=new THREE.BoxGeometry(w,h,d),uv=geo.attributes.uv,rx=Math.max(1,Math.round(Math.max(w,d)/95)),ry=Math.max(1,Math.round(h/52));for(let i=0;i<uv.count;i++)uv.setXY(i,uv.getX(i)*rx,uv.getY(i)*ry);const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);g.add(m);return m;}
+function shell(v,g,q,base,level){const b=v.b,st=wallStyle[v.id],fm=facade(st[0],st[1]),trim=material('#425560',.35),floor=material(level%2?'#6c7f7d':'#7d8279'),cap=material('#cfc9b8');
+>>>>>>> main
  q.box(b.w,.8,b.h,b.x+b.w/2,base+.4,b.y+b.h/2,floor);q.box(b.w+6,4,b.h+6,b.x+b.w/2,base+54,b.y+b.h/2,trim);if(level===4||v.id!=='hospital')q.box(b.w+9,4,b.h+9,b.x+b.w/2,base+58.5,b.y+b.h/2,cap);
  fw(g,b.w,52,3,b.x+b.w/2,base+26,b.y+1.5,fm);for(const x of [b.x+1.5,b.x+b.w-1.5])fw(g,3,52,b.h,x,base+26,b.y+b.h/2,fm);
  if(level===0){const sw=(b.w-v.doorW)/2;for(const x of [b.x+sw/2,b.x+b.w-sw/2])fw(g,sw,52,3,x,26,v.doorY-1.5,fm);fw(g,v.doorW,10,3,v.doorX,47,v.doorY-1.5,fm);v.door=addPart(g,v.doorW-1,41,1.5,v.doorX,20.5,v.doorY-1,material('#3c646b',.3));}
@@ -101,23 +126,35 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
   staff(v,g,b.x+b.w/2,b.y+22,base);for(const [label,x]of [['DRINKS',b.x+38],['FOOD',b.x+b.w-38]])sign(label,x,b.y+5,55);
  }else if(v.id==='bank'){
   item(b.x+b.w/2,b.y+65,b.w-70,14,20,wood);sign('TELLER · ACCOUNTS / VAULT',b.x+b.w/2,b.y+4,180);staff(v,g,b.x+b.w/2,b.y+42,base);
+<<<<<<< HEAD
   v.furniture.push({x:b.x+14,y:b.y+114,w:42,h:38});sign('VAULT',b.x+35,b.y+112,40);for(let k=0;k<3;k++){q.box(8,3,9,b.x+25+k*9,base+21,b.y+147,green);}
+=======
+  item(b.x+35,b.y+130,38,36,30,steel);sign('VAULT',b.x+35,b.y+112,40);for(let k=0;k<3;k++){q.box(8,3,9,b.x+25+k*9,base+21,b.y+147,green);}
+>>>>>>> main
   for(const x of [b.x+b.w-35,b.x+b.w-65])item(x,b.y+b.h-50,20,9,22,dark);
  }else if(v.id==='gym'){
   for(const x of [b.x+35,b.x+b.w-35])for(const y of [b.y+60,b.y+120]){item(x,y,28,3,40,dark);q.box(3,19,3,x+12,base+11,y-16,steel);q.box(28,2,3,x,base+21,y-16,steel);}
   for(const y of [b.y+40,b.y+95]){item(b.x+90,y,26,8,45,steel);q.box(45,2,3,b.x+90,base+24,y,steel);for(const x of [b.x+70,b.x+110])q.box(4,14,14,x,base+24,y,dark);}
   sign('CARDIO · STRENGTH · CONDITIONING',b.x+b.w/2,b.y+4,180);staff(v,g,b.x+b.w*.66,b.y+b.h*.4,base);
  }else if(v.id==='police'){
+<<<<<<< HEAD
   item(b.x+b.w/2,b.y+65,b.w-65,14,24,dark);sign('CAPTAIN SMITH · U',b.x+b.w/2,b.y+4,155);staff(v,g,b.x+b.w/2,b.y+35,base);
   for(const x of [b.x+40,b.x+b.w-40]){item(x,b.y+120,35,25,22,steel);q.box(26,1,1,x,base+27,b.y+132,white);}
   sign('EVIDENCE',b.x+42,b.y+103,60);sign('EQUIPMENT',b.x+b.w-42,b.y+103,64);
 
+=======
+  item(b.x+b.w/2,b.y+65,b.w-65,14,24,dark);sign('DESK SERGEANT · U',b.x+b.w/2,b.y+4,155);staff(v,g,b.x+b.w/2,b.y+35,base);
+  for(const x of [b.x+40,b.x+b.w-40]){item(x,b.y+120,35,25,22,steel);q.box(26,1,1,x,base+27,b.y+132,white);}
+  sign('EVIDENCE',b.x+42,b.y+103,60);sign('EQUIPMENT',b.x+b.w-42,b.y+103,64);
+  for(let k=0;k<5;k++)q.box(2,39,2,b.x+b.w*.68+k*8,base+20,b.y+b.h-45,steel);
+>>>>>>> main
  }else if(v.id==='fire'){
   item(b.x+b.w/2,b.y+58,84,13,22,dark);sign('FIRE CAPTAIN · PAID RESCUE JOBS',b.x+b.w/2,b.y+4,190);staff(v,g,b.x+b.w/2,b.y+30,base);
   for(let k=0;k<4;k++){const x=b.x+36+k*26;item(x,b.y+112,20,36,18,steel);q.box(13,18,2,x,base+22,b.y+122,material('#bd5033'));}
   for(const x of [b.x+38,b.x+b.w-38]){item(x,b.y+b.h-55,24,6,30,wood);q.box(9,14,9,x,base+13,b.y+b.h-55,material('#e5c24b'));}
   sign('RESCUE GEAR / DISPATCH',b.x+b.w/2,b.y+94,170);
  }else if(v.id==='hospital'){
+<<<<<<< HEAD
   level29HospitalDepartments.build(v,g,q,base,level,staff);
  }
 }
@@ -126,6 +163,22 @@ const oldVenue=buildVenue;buildVenue=function(v){if(!v.extended)return oldVenue(
  v.furniture=v.floorFurniture[v.floor];q.finish();addSign(g,v.name,Math.min(250,v.b.w),15,v.doorX,levels*56+10,v.doorY,v.col);v.labelH=levels*56+34;addSign(g,'WALK IN · AUTO DOOR',150,8,v.doorX,46,v.doorY+1,v.col);
  const tq=batch(g);if(v.id==='gas'){const b=v.b,zz=b.y+b.h-22;tq.box(b.w-16,3,32,b.x+b.w/2,42,zz,material('#d2c3a1'));for(const x of [b.x+20,b.x+b.w-20]){tq.box(2,40,2,x,20,zz,material('#9b7548'));tq.box(12,19,10,x,9.5,zz,material('#c7b696'));tq.box(9,5,1,x,14,zz+5.1,material('#24343d'));tq.box(1,10,1,x+7,11,zz,material('#252d32'));v.furniture.push({x:x-9,y:zz-6,w:18,h:12});}addSign(g,'LEVEL 29 · FUEL',Math.min(150,b.w-20),8,b.x+b.w/2,39,b.y+b.h-5,v.col);}
 
+=======
+  const labels=['1 · EMERGENCY / RECEPTION','2 · PHARMACY / WARDS','3 · SURGERY / TRAUMA','4 · DIAGNOSTICS / LAB','5 · RECOVERY / DISPATCH'];
+  sign(labels[level],b.x+b.w/2,b.y+4,220);
+  item(b.x+b.w/2,b.y+53,90,12,18,white);q.box(18,10,2,b.x+b.w/2,base+19,b.y+54,dark);
+  staff(v,g,b.x+b.w/2,b.y+33,base,['ER NURSE','PHARMACIST','SURGEON','LAB TECHNICIAN','RECOVERY DOCTOR'][level]);
+  for(const x of [b.x+40,b.x+b.w-40])for(const y of [b.y+110,b.y+180]){item(x,y,28,8,45,white);q.box(25,3,36,x,base+10,y,material('#83aeb6'));q.box(20,4,10,x,base+13,y-14,white);q.box(2,30,2,x+20,base+15,y-15,steel);q.box(12,12,2,x+20,base+30,y-15,dark);q.box(8,1,2,x+20,base+30,y-13,green);}
+  const ex=b.x+b.w/2,ey=b.y+b.h-24;item(ex,ey,50,1,30,steel,false);sign('U · ELEVATOR / FLOOR '+(level+1),ex,b.y+b.h-4,150);
+  if(level===1)for(let k=0;k<5;k++){q.box(7,5,6,b.x+38+k*12,base+17,b.y+69,material(k%2?'#e3e8d4':'#789cb6'));}
+  if(level===2){item(b.x+b.w*.6,b.y+130,35,12,55,steel);q.box(36,1,25,b.x+b.w*.6,base+42,b.y+130,white);}
+ }
+}
+const oldVenue=buildVenue;buildVenue=function(v){if(!v.extended)return oldVenue(v);const g=new THREE.Group();g.name='level29-'+v.id;v.mesh=g;cityGroup.add(g);v.floorFurniture=[];const q=batch(g),levels=v.id==='hospital'?5:1;
+ for(let l=0;l<levels;l++){v.furniture=[];shell(v,g,q,l*56,l);furnish(v,g,q,l*56,l);v.floorFurniture.push(v.furniture);}
+ v.furniture=v.floorFurniture[v.floor];q.finish();addSign(g,v.name,Math.min(250,v.b.w),15,v.doorX,levels*56+10,v.doorY,v.col);v.labelH=levels*56+34;addSign(g,'WALK IN · AUTO DOOR',150,8,v.doorX,46,v.doorY+1,v.col);
+ const tq=batch(g);if(v.id==='gas'){const b=v.b,zz=b.y+b.h+58;tq.box(b.w+30,5,65,b.x+b.w/2,46,zz,material('#d2c3a1'));for(const x of [b.x+25,b.x+b.w-25]){tq.box(3,46,3,x,23,zz,material('#9b7548'));tq.box(15,22,13,x,11,zz,material('#c7b696'));tq.box(11,7,1,x,16,zz+7,material('#24343d'));tq.box(2,12,2,x+10,13,zz,material('#252d32'));}addSign(g,'LEVEL 29 · FUEL',170,10,b.x+b.w/2,44,zz+33,v.col);}
+>>>>>>> main
  if(v.id==='hospital'){const b=v.b;tq.box(8,35,2,b.x+20,170,v.doorY+2,material('#cf5551'));tq.box(25,8,2,b.x+20,170,v.doorY+2,material('#cf5551'));}
  tq.finish();
 };
@@ -200,25 +253,42 @@ function buildFortresses(){guards=[];const g=new THREE.Group();g.name='level29-m
 }
 const oldBuild=buildCity;buildCity=function(){oldBuild();if(!city.world)return;const g=buildFortresses();const keep=guards.map(q=>q.m);window.level29BatchStatic(g,keep);};
 // Every worker can be spoken to, not only the marked service desk.
+<<<<<<< HEAD
 const oldNear=nearStation;nearStation=function(){if(player&&city){for(const v of city.venues||[]){if(!v.extended||!insideVenue(v,player))continue;const st=v.staff.filter(s=>s.floor===v.floor);if(st.some(s=>dist(player.x,player.y,s.x,s.y)<48)||dist(player.x,player.y,v.stationX,v.stationY)<50||v.id==='hospital'&&dist(player.x,player.y,v.elevatorPoint.x,v.elevatorPoint.y)<38)return v;}
  for(const v of city.venues||[]){if(v.worker&&insideVenue(v,player)&&dist(player.x,player.y,v.workerX,v.workerY)<38)return v;}}
  return oldNear();};
 const greetings={fire:'Fire and rescue is hiring. Open the jobs board for paid fire calls and rescue work.',safe:'Welcome home. The perimeter is guarded. Rest here and save your progress.',garage:'Pull your vehicle into the marked bay and I will get it running again.',armory:'You need gear? Take a look at the weapons and body armor.',spray:'Bring your ride into the wash bay for repairs and a fresh coat.',business:'Welcome to the office. Buy this business or collect your income.',bank:'Welcome to Level 29 Trust. Deposit cash for safekeeping or withdraw it whenever you need it.',grocery:'Fresh food and cold drinks. What can I get you?',gym:'Ready to work? Cardio improves your movement. Conditioning builds your maximum health.',hospital:'You are safe here. We have reception, X-ray imaging, a morgue, patient wards and recovery. Use the elevator to visit all five floors.',police:'Captain Smith here. Welcome to the station. Settle your heat, collect armor or requisition a cruiser.',gas:'Fuel, snacks, repairs and station income. What do you need?'};
+=======
+const oldNear=nearStation;nearStation=function(){if(player&&city){for(const v of city.venues||[]){if(!v.extended||!insideVenue(v,player))continue;const st=v.staff.filter(s=>s.floor===v.floor);if(st.some(s=>dist(player.x,player.y,s.x,s.y)<48)||dist(player.x,player.y,v.stationX,v.stationY)<50||v.id==='hospital'&&dist(player.x,player.y,v.b.x+v.b.w/2,v.b.y+v.b.h-24)<38)return v;}
+ for(const v of city.venues||[]){if(v.worker&&insideVenue(v,player)&&dist(player.x,player.y,v.workerX,v.workerY)<38)return v;}}
+ return oldNear();};
+const greetings={fire:'Fire and rescue is hiring. Open the jobs board for paid fire calls and rescue work.',safe:'Welcome home. The perimeter is guarded. Rest here and save your progress.',garage:'Pull your vehicle into the marked bay and I will get it running again.',armory:'You need gear? Take a look at the weapons and body armor.',spray:'Bring your ride into the wash bay for repairs and a fresh coat.',business:'Welcome to the office. Buy this business or collect your income.',bank:'Welcome to Level 29 Trust. Deposit cash for safekeeping or withdraw it whenever you need it.',grocery:'Fresh food and cold drinks. What can I get you?',gym:'Ready to work? Cardio improves your movement. Conditioning builds your maximum health.',hospital:'You are safe here. We have emergency care, pharmacy, surgery, diagnostics and recovery. Use the elevator to visit all five floors.',police:'Welcome to the station. Settle your heat, collect armor or requisition a cruiser.',gas:'Fuel, snacks, repairs and station income. What do you need?'};
+>>>>>>> main
 const panel=document.createElement('div');panel.id='placePanel';document.body.appendChild(panel);let active=null,robbery=null,robCooldown={};
 const moneyText=n=>'$'+Math.floor(n).toLocaleString();
 function close(){panel.style.display='none';if(state==='shop')state='play';for(const k in keys)keys[k]=false;mouse.down=false;active=null;}
 function row(title,desc,label,act,disabled=false){return '<div class="item"><div><b>'+title+'</b><span>'+desc+'</span></div><button data-place="'+act+'" '+(disabled?'disabled':'')+'>'+label+'</button></div>';}
 function show(v){active=v;state='shop';mouse.down=false;for(const k in keys)keys[k]=false;if(player.car)player.car.v=0;
+<<<<<<< HEAD
  let h='',id=v.id;if(id==='police')h+='<img src="characters/captain-smith.jpg?v=2" alt="Captain Smith" style="width:100px;height:132px;object-fit:cover;float:right;margin:0 0 12px 14px"><p>Captain Smith · Station Commander</p>';
+=======
+ let h='',id=v.id;
+>>>>>>> main
  if(id==='grocery'||id==='gas'){h+=row('Hot meal','Restore 50 health.','BUY · $60','food');h+=row('Energy drink','Move faster for 90 seconds.','BUY · $90','drink');}
  if(id==='bank'){h+=row('Deposit $1,000','Banked balance: '+moneyText(saved.bank)+'. Your account stays safe in the vault.','DEPOSIT','deposit',cash<1000);h+=row('Withdraw $1,000','Move banked money into your wallet.','WITHDRAW','withdraw',saved.bank<1000);}
  if(id==='gas'){h+=row('Repair nearby vehicle','Restore the closest vehicle parked outside.','REPAIR · $150','repair');h+=row('Station investment','Own this station for $8,000. Earn $220 per minute.','INVEST / COLLECT','invest');}
  if(id==='gym'){h+=row('Cardio training','+5% walking speed per session. Level '+saved.cardio+'/4.','TRAIN · $800','cardio',saved.cardio>=4);h+=row('Conditioning','+25 maximum health per session. Level '+saved.conditioning+'/4.','TRAIN · $1,200','conditioning',saved.conditioning>=4);}
  if(id==='police'){h+=row('Settle heat','Clear your current wanted heat.','SETTLE · $750','heat');h+=row('Protective vest','Refill body armor to at least 100.','BUY · $400','armor');h+=row('Cruiser requisition','A repaired police cruiser is delivered outside.','BUY · $4,500','cruiser');}
+<<<<<<< HEAD
  if(id==='hospital'){const f=v.floor;h+=row('Current department',level29HospitalDepartments.DEPARTMENTS[f],'FLOOR '+(f+1),'noop',true);
  const treatments=[['Emergency care','Restore all health.','TREAT · $200','heal'],['X-Ray diagnostics','Full heal and two minutes of regeneration.','SCAN · $500','lab'],['Forensic check-in','Morgue access and cold-storage department information.','CHECK IN','morgue'],['Ward treatment','Increase maximum health by 25, up to 500.','TREAT · $2,000','surgery'],['Recovery ward','Full heal and clear heat.','REST · $250','recovery']];h+=row(...treatments[f]);
  for(let i=0;i<5;i++)h+=row('Elevator · Floor '+(i+1),level29HospitalDepartments.DEPARTMENTS[i],i===f?'CURRENT':'GO TO FLOOR '+(i+1),'floor-'+i,i===f);
  if(f===3)h+=row('Ward pharmacy pack','Full heal and 90 seconds of regeneration.','BUY · $300','pharmacy');
+=======
+ if(id==='hospital'){const f=v.floor;h+=row('Current department',['Emergency and reception','Pharmacy and patient wards','Surgery and trauma','Diagnostics and laboratory','Recovery and medical dispatch'][f],'FLOOR '+(f+1),'noop',true);
+ const treatments=[['Emergency care','Restore all health.','TREAT · $200','heal'],['Pharmacy pack','Full heal and 90 seconds of regeneration.','BUY · $300','pharmacy'],['Trauma surgery','Increase maximum health by 25, up to 500.','OPERATE · $2,000','surgery'],['Diagnostic treatment','Full heal and two minutes of regeneration.','SCAN · $500','lab'],['Recovery ward','Full heal and clear heat.','REST · $250','recovery']];h+=row(...treatments[f]);
+ for(let i=0;i<5;i++)h+=row('Elevator · Floor '+(i+1),['Emergency / reception','Pharmacy / wards','Surgery / trauma','Diagnostics / lab','Recovery / dispatch'][i],i===f?'CURRENT':'GO TO FLOOR '+(i+1),'floor-'+i,i===f);
+>>>>>>> main
  if(f===4)h+=row('Medical transport','Travel to the current chapter mansion.','DISPATCH · $500','medevac');}
  if(['fire','police','gas','hospital','grocery','bank','gym'].includes(id))h+=row('Paid jobs / careers','Clock in for '+({fire:'firefighter',police:'police',gas:'gas station',hospital:'hospital',grocery:'market',bank:'bank',gym:'gym trainer'}[id])+' shifts, build your rank and earn a paycheck.','VIEW JOBS','career');
  if(id==='bank'||id==='gas')h+=row('Mission robbery',mission&&mission.phase==='active'&&mission.info.type==='rob'&&mission.robVenue===v?'This is your mission target. Start the robbery, stay at the counter, then escape to the mansion.':'Robberies unlock when Ronniebaby assigns this location as a mission target.','START ROBBERY','rob',!(mission&&mission.phase==='active'&&mission.info.type==='rob'&&mission.robVenue===v));
@@ -227,8 +297,12 @@ function show(v){active=v;state='shop';mouse.down=false;for(const k in keys)keys
 function pay(n){if(cash<n){toast('NOT ENOUGH CASH · '+moneyText(n)+' NEEDED');return false;}cash-=n;sfx('cash');return true;}
 let drinkT=0,regenT=0;
 panel.addEventListener('click',e=>{const b=e.target.closest('[data-place]');if(!b||!active)return;const a=b.dataset.place,v=active;if(a==='career'){close();if(window.level29Jobs)level29Jobs.open(v.id,v);return;}if(a==='close')return close();if(a==='rob'){close();return startRob(v);}
+<<<<<<< HEAD
  if(a.startsWith('floor-')){v.floor=+a.split('-')[1];v.furniture=v.floorFurniture[v.floor];player.x=v.elevatorLanding.x;player.y=v.elevatorLanding.y;player.z=0;close();snapCamera();speak('HOSPITAL ELEVATOR','Floor '+(v.floor+1)+'. '+level29HospitalDepartments.DEPARTMENTS[v.floor],v.col);return;}
  if(a==='morgue'){close();speak('MORGUE ATTENDANT','You are in the forensic cold-storage department. Patient care is upstairs in the wards.',v.col);return;}
+=======
+ if(a.startsWith('floor-')){v.floor=+a.split('-')[1];v.furniture=v.floorFurniture[v.floor];player.x=v.b.x+v.b.w/2;player.y=v.b.y+v.b.h-37;player.z=0;close();snapCamera();speak('HOSPITAL ELEVATOR','Floor '+(v.floor+1)+'. '+['Emergency and reception.','Pharmacy and wards.','Surgery and trauma.','Diagnostics and laboratory.','Recovery and medical dispatch.'][v.floor],v.col);return;}
+>>>>>>> main
  if(a==='food'&&pay(60))player.hp=Math.min(player.maxHp,player.hp+50);
  if(a==='drink'&&pay(90))drinkT=5400;
  if(a==='deposit'&&pay(1000))saved.bank+=1000;
@@ -249,7 +323,11 @@ panel.addEventListener('click',e=>{const b=e.target.closest('[data-place]');if(!
  saved.maxHp=player.maxHp;persist();show(v);
 });
 addEventListener('keydown',e=>{if(panel.style.display!=='none'&&e.key==='Escape'){e.preventDefault();e.stopImmediatePropagation();close();}},true);
+<<<<<<< HEAD
 const oldService=serviceVenue;serviceVenue=function(){const v=nearStation();if(v){speak(roles[v.id]?roles[v.id][0]:window.level29World.jobs[v.id]?.[0]||'STAFF',greetings[v.id]||'Welcome. How can I help?',v.col);if(v.extended){if(player.car)return toast('ENTER ON FOOT TO TALK TO STAFF');return show(v);}}return oldService();};
+=======
+const oldService=serviceVenue;serviceVenue=function(){const v=nearStation();if(v){speak(roles[v.id]?roles[v.id][0]:window.level29World.jobs[v.id][0],greetings[v.id]||'Welcome. How can I help?',v.col);if(v.extended){if(player.car)return toast('ENTER ON FOOT TO TALK TO STAFF');return show(v);}}return oldService();};
+>>>>>>> main
 const touch=document.getElementById('venueAction');if(touch)touch.onclick=()=>serviceVenue();
 // Bank / gas jobs appear in each chapter, retaining boss and original mission slots.
 const OPS=[
@@ -268,7 +346,11 @@ const oldInfo=missionInfo;missionInfo=function(i){const v=oldInfo(i);const slot=
  const k=OP_SLOTS.indexOf(slot);if(k>=0){const op=OPS[(k+v.di)%OPS.length];v.type='op';v.op=op;v.title=op.t;}
  return v;};
 const oldBrief=briefing;briefing=function(info){if(info.type==='op')return info.op.line+' Zombies cannot follow you inside, so use the buildings. Do not run out of time.';if(info.type==='rob')return 'We need that money to keep the city alive. Head inside the marked '+(info.robKind==='gas'?'gas station':'bank')+', talk to the attendant, then start the robbery. Stay at the counter until the bag is full. Get back to our guarded mansion before time runs out. No shooting the staff.';return oldBrief(info);};
+<<<<<<< HEAD
 const oldBegin=beginMission;beginMission=function(){if(mission&&mission.info.type==='op')return beginOp();if(!mission||mission.info.type!=='rob')return oldBegin();const m=mission,v=city.venues.filter(v=>v.id===m.info.robKind).sort((a,b)=>a.doorX-b.doorX||a.doorY-b.doorY)[Math.floor(m.info.i/5)%city.venues.filter(v=>v.id===m.info.robKind).length];m.phase='active';m.robVenue=v;m.timer=60*300;m.step='enter';m.targets=[{x:v.stationX,y:v.stationY}];m.drop={x:city.safe.x,y:city.safe.y};const rp=window.level29Save&&level29Save.resume(m.info.i);if(rp&&rp.kind==='rob'){m.step='escape';robbery={v,t:0,loot:rp.loot,phase:'escape',mission:m};m.timer=60*150;toast('RESUMED WITH THE LOOT · GET TO THE MANSION');}objective='Enter '+v.name+'. Press U at the counter to start the mission robbery.';banner={big:m.info.title.toUpperCase(),small:'MISSION '+(m.info.i+1)+' · ENTER THE MARKED BUSINESS',t:180};speak('RONNIEBABY',briefing(m.info));sfx('missionstart');};
+=======
+const oldBegin=beginMission;beginMission=function(){if(mission&&mission.info.type==='op')return beginOp();if(!mission||mission.info.type!=='rob')return oldBegin();const m=mission,v=city.venues.filter(v=>v.id===m.info.robKind).sort((a,b)=>dist(player.x,player.y,a.doorX,a.doorY)-dist(player.x,player.y,b.doorX,b.doorY))[0];m.phase='active';m.robVenue=v;m.timer=60*300;m.step='enter';m.targets=[{x:v.stationX,y:v.stationY}];m.drop={x:city.safe.x,y:city.safe.y};const rp=window.level29Save&&level29Save.resume(m.info.i);if(rp&&rp.kind==='rob'){m.step='escape';robbery={v,t:0,loot:rp.loot,phase:'escape',mission:m};m.timer=60*150;toast('RESUMED WITH THE LOOT · GET TO THE MANSION');}objective='Enter '+v.name+'. Press U at the counter to start the mission robbery.';banner={big:m.info.title.toUpperCase(),small:'MISSION '+(m.info.i+1)+' · ENTER THE MARKED BUSINESS',t:180};speak('RONNIEBABY',briefing(m.info));sfx('missionstart');};
+>>>>>>> main
 function startRob(v){if(robbery||!mission||mission.info.type!=='rob'||mission.robVenue!==v||mission.phase!=='active')return;if(robCooldown[v.key]>frame){toast('THIS LOCATION IS LOCKED DOWN');return;}
  robbery={v,t:v.id==='bank'?480:240,loot:v.id==='bank'?8500:1800,phase:'take',mission};heat=5;mission.step='take';speak(roles[v.id][0],'The alarm is active. Take the money and leave. Please do not hurt anyone.',v.col);spawnHordeAround(v.doorX,v.doorY+30,8,230,420);sfx('fail');}
 const oldTarget=missionTarget;missionTarget=function(){const m=mission;if(m&&m.info.type==='op'&&m.phase==='active')return opTarget(m);if(m&&m.info.type==='rob'&&m.phase==='active'){const t=m.step==='escape'?m.drop:{x:m.robVenue.doorX,y:m.robVenue.doorY};return {...t,col:m.step==='escape'?'#6fd49c':'#e3be68',label:m.step==='escape'?'S':'$'};}return oldTarget();};
@@ -279,7 +361,11 @@ const oldMissionUpdate=updateMission;updateMission=function(){const m=mission;if
 };
 
 function beginOp(){const m=mission,op=m.info.op;let at={x:player.x,y:player.y},len=0;const stops=[];
+<<<<<<< HEAD
  for(const id of op.stops){const named=op.storyStops?.[stops.length],v=city.storySites?.[named]||city.venues.filter(v=>v.id===id).sort((a,b)=>a.doorX-b.doorX||a.doorY-b.doorY)[(m.info.i+stops.length)%city.venues.filter(v=>v.id===id).length];len+=dist(at.x,at.y,v.doorX,v.doorY);at={x:v.doorX,y:v.doorY};stops.push({v,id});}
+=======
+ for(const id of op.stops){const v=city.venues.filter(v=>v.id===id).sort((a,b)=>dist(at.x,at.y,a.doorX,a.doorY)-dist(at.x,at.y,b.doorX,b.doorY))[0];len+=dist(at.x,at.y,v.doorX,v.doorY);at={x:v.doorX,y:v.doorY};stops.push({v,id});}
+>>>>>>> main
  const home=city.safe;len+=dist(at.x,at.y,home.x,home.y);m.phase='active';m.opStops=stops;m.si=0;m.holdT=0;m.drop={x:home.x,y:home.y};m.timer=Math.round(len/3.2*1.7)+2400+op.hold*stops.length;m.step='go';m.carry=0;
  const rp=window.level29Save&&level29Save.resume(m.info.i);if(rp&&rp.kind==='op'&&rp.si>0&&rp.si<=stops.length){m.si=rp.si;toast('RESUMED FROM STAGE CHECKPOINT · STOP '+(m.si+1)+' OF '+stops.length);}
  objective=m.si<stops.length?'Go to the '+stops[m.si].v.short+'. Enter and stay at the counter.':'Return to the mansion.';banner={big:op.t.toUpperCase(),small:'MISSION '+(m.info.i+1)+' · '+stops.length+' STOP'+(stops.length>1?'S':'')+' · RETURN TO THE MANSION',t:200};speak('RONNIEBABY',briefing(m.info));sfx('missionstart');if(op.heat)heat=Math.max(heat,op.heat-1);}
@@ -287,9 +373,15 @@ function opTarget(m){if(!m.opStops||m.si>=m.opStops.length)return {...m.drop,col
 function updateOp(m){const op=m.info.op;if(--m.timer<=0)return failMission('THE CLOCK RAN OUT');
  if(m.si>=m.opStops.length){const p=player.car||player;objective='Return to the mansion with '+(m.opStops.length>1?'the packages':'the package')+'.';if(dist(p.x,p.y,m.drop.x,m.drop.y)<65){cash+=(op.loot||0)+m.opStops.length*600;heat=Math.max(0,heat-2);passMission();}return;}
  const s=m.opStops[m.si],v=s.v;if(!insideVenue(v,player)||dist(player.x,player.y,v.stationX,v.stationY)>105){m.holdT=Math.max(0,m.holdT-2);objective='Stop '+(m.si+1)+' of '+m.opStops.length+': go inside the '+v.short+' and stay at the counter.';return;}
+<<<<<<< HEAD
  if(m.holdT===0&&!s.alarm){s.alarm=1;heat=Math.max(heat,op.heat||2);spawnHordeAround(v.doorX,v.doorY+30,4+Math.min(10,Math.round(m.info.di*1.5)+m.si*2),230,430);speak(roles[v.id]?.[0]||v.short,'Pickup is ready. Stay with me for a moment while it is prepared.',v.col);}
  m.holdT++;objective='Preparing pickup '+Math.max(0,Math.ceil((op.hold-m.holdT)/60))+' s. Stay at the counter.';
  if(m.holdT>=op.hold){speak(roles[v.id]?.[0]||v.short,op.say,v.col);sfx('pickup');m.si++;m.holdT=0;if(window.level29Save)level29Save.partial({idx:m.info.i,kind:'op',si:m.si});toast(m.si<m.opStops.length?'STOP COMPLETE · NEXT: '+m.opStops[m.si].v.short:'ALL STOPS DONE · GET HOME');}}
+=======
+ if(m.holdT===0&&!s.alarm){s.alarm=1;heat=Math.max(heat,op.heat||2);spawnHordeAround(v.doorX,v.doorY+30,4+Math.min(10,Math.round(m.info.di*1.5)+m.si*2),230,430);speak(roles[v.id][0],'Pickup is ready. Stay with me for a moment while it is prepared.',v.col);}
+ m.holdT++;objective='Preparing pickup '+Math.max(0,Math.ceil((op.hold-m.holdT)/60))+' s. Stay at the counter.';
+ if(m.holdT>=op.hold){speak(roles[v.id][0],op.say,v.col);sfx('pickup');m.si++;m.holdT=0;if(window.level29Save)level29Save.partial({idx:m.info.i,kind:'op',si:m.si});toast(m.si<m.opStops.length?'STOP COMPLETE · NEXT: '+m.opStops[m.si].v.short:'ALL STOPS DONE · GET HOME');}}
+>>>>>>> main
 const oldNew=newPlayer;newPlayer=function(x,y){let fr=null;const sf=city&&city.safe;if(sf&&sf.front&&x===sf.x&&y===sf.y+30){fr=sf.front;x=fr.x;y=fr.y;}const p=oldNew(x,y);if(fr){p.a=fr.a;p.aim=fr.a;view.yaw=fr.a;view.pitch=0;view.look=0;view.lastPlayer=p;}p.maxHp=Math.max(p.maxHp,saved.maxHp||100);p.hp=p.maxHp;return p;};
 // Security is physical: walls stop everyone, the open resident gate stops only zombies.
 let currentVenue=null,lastFrame=-1;
@@ -297,13 +389,21 @@ const oldUpdate=update;update=function(){const ox=player&&player.x,oy=player&&pl
  if(drinkT>0)drinkT--;if(regenT>0){regenT--;if(frame%60===0)player.hp=Math.min(player.maxHp,player.hp+4);}
  if(!player.car&&!player.dead&&Number.isFinite(ox)){const boost=saved.cardio*.05+(drinkT>0?.15:0);if(boost)moveCircle(player,(player.x-ox)*boost,(player.y-oy)*boost,player.r);}
  if(saved.owned.length&&frame%60===0){saved.income+=saved.owned.length*220/60;persist();}
+<<<<<<< HEAD
  const now=city.penthouse&&city.penthouse.active?null:city.venues.find(v=>insideVenue(v,player));if(now!==currentVenue){if(now)speak(roles[now.id]?roles[now.id][0]:window.level29World.jobs[now.id]?.[0]||'STAFF',greetings[now.id]||'Welcome inside. Approach the service station and press U or USE.',now.col);currentVenue=now;}
+=======
+ const now=city.penthouse&&city.penthouse.active?null:city.venues.find(v=>insideVenue(v,player));if(now!==currentVenue){if(now)speak(roles[now.id]?roles[now.id][0]:window.level29World.jobs[now.id]?.[0]||'STAFF',greetings[now.id],now.col);currentVenue=now;}
+>>>>>>> main
  // Remove any migrated/spawned zombie from protected interiors, without a kill reward.
  for(const z of zombies){if(!z.alive)continue;let protectedArea=false;for(const v of city.venues){if(inside(z.x,z.y,v.b)){protectedArea=true;break;}}if(!protectedArea)for(const sf of city.safes){if(sf.fort&&inside(z.x,z.y,sf.fort)){protectedArea=true;break;}}if(protectedArea){z.alive=false;z.hp=0;z.deathT=60;}}
  if(player.dead&&robbery)robbery=null;
  for(const a of guards){const near=dist(player.x,player.y,a.x,a.y)<850;a.m.visible=near;if(!near)continue;a.cool=Math.max(0,a.cool-1);let target=null,d=310;for(const z of zombies){if(!z.alive)continue;const dd=dist(z.x,z.y,a.x,a.y);if(dd<d){d=dd;target=z;}}let mv=false;if(a.pts){const t=a.pts[a.pi],dx=t[0]-a.x,dy=t[1]-a.y,dd=Math.hypot(dx,dy);if(dd<3)a.pi=(a.pi+1)%a.pts.length;else{a.x+=dx/dd*.55;a.y+=dy/dd*.55;mv=true;if(!target)a.a=Math.atan2(dy,dx);}}
   if(target)a.a=Math.atan2(target.y-a.y,target.x-a.x);else if(!a.pts&&a.z>0)a.a=frame*.007;
+<<<<<<< HEAD
   poseFigure(a.m,a.x,a.y,a.a,mv?frame*.18:0,'stand');a.m.position.y=a.z;{const u=a.m.userData;if(u.aim){u.armR.rotation.set(.12,0,1.2);u.armL.rotation.set(-.38,0,1.38);}}if(target&&a.cool===0){a.cool=45;target.hp-=45;target.flash=4;if(target.hp<=0){target.killSource='guard';target.lastHit=0;killZombie(target,Math.cos(a.a)*3,Math.sin(a.a)*3);}parts.push({k:'spark',x:a.x,y:a.y,vx:Math.cos(a.a)*2,vy:Math.sin(a.a)*2,t:8});}}
+=======
+  poseFigure(a.m,a.x,a.y,a.a,mv?frame*.18:0,'stand');a.m.position.y=a.z;{const u=a.m.userData;if(u.aim){u.armR.rotation.set(.12,0,1.2);u.armL.rotation.set(-.38,0,1.38);}}if(target&&a.cool===0){a.cool=45;target.hp-=45;target.flash=4;if(target.hp<=0)killZombie(target,Math.cos(a.a)*3,Math.sin(a.a)*3);parts.push({k:'spark',x:a.x,y:a.y,vx:Math.cos(a.a)*2,vy:Math.sin(a.a)*2,t:8});}}
+>>>>>>> main
 };
 const oldRender=render;render=function(){oldRender();if(panel.style.display!=='none'&&state!=='shop')close();const show=state==='talk'&&subtitle;voiceCaption.style.display=show?'block':'none';if(show)voiceCaption.textContent=subtitle.name+' — '+subtitle.txt;};
 const oldText=window.render_game_to_text;window.render_game_to_text=()=>{const x=JSON.parse(oldText());x.caption=subtitle&&{name:subtitle.name,text:subtitle.txt};x.hospitalFloor=city?.hospital?.floor+1;x.businesses=city?.venues?.filter(v=>v.extended).map(v=>({type:v.id,x:v.doorX,y:v.doorY,open:v.open}));x.fortressGuards=guards.length;x.robbery=robbery&&{phase:robbery.phase,seconds:Math.ceil(robbery.t/60),loot:robbery.loot};return JSON.stringify(x);};

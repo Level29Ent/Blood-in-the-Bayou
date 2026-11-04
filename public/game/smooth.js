@@ -82,7 +82,11 @@
   // ---------- Adaptive resolution ----------
   const MIN_RATIO = isTouch ? .7 : 1;
   let ratio = 0, avg = 16.7, lastFrame = 0, lastChange = 0, slowFor = 0, fastFor = 0;
+<<<<<<< HEAD
   function capRatio(){ return mpRole ? Math.min(1, devicePixelRatio || 1) : Math.min(isTouch?1:1.5, devicePixelRatio || 1); }
+=======
+  function capRatio(){ return mpRole ? Math.min(1, devicePixelRatio || 1) : Math.min(1.5, devicePixelRatio || 1); }
+>>>>>>> main
   function adaptResolution(now, dt){
     if (!renderer || state !== 'play') return;
     const cap = capRatio();
@@ -94,7 +98,10 @@
     else { slowFor = fastFor = 0; }
     if (now - lastChange < 2000) return;
     let next = ratio;
+<<<<<<< HEAD
     if(isTouch&&slowFor>2500&&window.level29Graphics?.quality!=='low')window.level29Graphics.setQuality('low');
+=======
+>>>>>>> main
     if (slowFor > 1500 && ratio > MIN_RATIO) next = Math.max(MIN_RATIO, ratio - .15);
     else if (fastFor > 5000 && ratio < cap) next = Math.min(cap, ratio + .1);
     if (next !== ratio){
