@@ -3,6 +3,8 @@
 function territoryAt(zones,x,y){return zones.find(z=>x>=z.x&&x<=z.x+z.w&&y>=z.y&&y<=z.y+z.h)||null;}
 function limits(stars){return {cruisers:stars<2?0:Math.min(3,stars-1),roadblocks:stars>=4?1:0};}
 if(typeof module!=='undefined')module.exports={territoryAt,limits};if(typeof window==='undefined')return;
+// Disabled by owner: no gangs, drive-bys, territory signs or hostile cruisers.
+window.level29Territories={territories:[],gangs:[],cruisers:[],roadblocks:[]};return;
 let forCity=null,gangs=[],cruisers=[],blockades=[],territories=[],last=0,warned=null;function clean(){for(const g of gangs)g.mesh.parent?.remove(g.mesh);for(const c of [...cruisers,...blockades]){c.dead=true;c.gone=true;c.ai=null;}gangs=[];cruisers=[];blockades=[];warned=null;}
 function create(){clean();forCity=city;const candidates=city.venues.filter(v=>['business','nightclub','studio','cafe'].includes(v.id)&&!v.storyRole).slice(0,3);territories=candidates.map((v,i)=>({name:['PURPLE CROWN','RIVER GOLD','BAYOU GREEN'][i],color:['#724487','#b39a4d','#41795b'][i],x:v.b.x-180,y:v.b.y-180,w:v.b.w+360,h:v.b.h+360,venue:v}));
  for(const z of territories){const p=z.venue,root=new THREE.Group();root.name='Territory: '+z.name;cityGroup.add(root);addSign(root,z.name+' · KEEP OUT',90,8,p.doorX,17,p.doorY+4,z.color);for(let i=0;i<3;i++){const point=randomRoadPoint(p.doorX,p.doorY,90,220);if(!point)continue;const mesh=makeFigure(false);setFigureColors(mesh,['#986947','#c19875','#684633'][i],z.color,'#29323a','#172122');mesh.traverse(o=>o.userData.noBatch=true);mesh.name=z.name+' patrol';scene.add(mesh);gangs.push({mesh,x:point.x,y:point.y,home:point,zone:z,hp:60,cool:2});}}

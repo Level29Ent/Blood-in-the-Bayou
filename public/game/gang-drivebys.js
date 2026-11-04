@@ -4,6 +4,8 @@ const WARNINGS=['This is our block! Get the hell out. You have been warned!','Ba
 function canShoot(a,p,blocked){const d=Math.hypot(a.x-p.x,a.y-p.y);return d>45&&d<300&&!blocked(a.x,a.y,p.x,p.y);}
 function lifecycle(s,dt,hostile){s.age+=dt;s.cool=Math.max(0,s.cool-dt);if(!hostile||s.age>32)s.retreat=true;return s.age<50&&!s.dead;}
 if(typeof module!=='undefined')module.exports={WARNINGS,canShoot,lifecycle};if(typeof window==='undefined')return;
+// Disabled by owner: no gangs, drive-bys, territory signs or hostile cruisers.
+window.level29Drivebys={active:null,cleanup(){}};return;
 let active=null,forCity=null,last=0,cooldown=0,warning=null,subtitleUntil=0,utterance=null;const traceGeo=new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(),new THREE.Vector3()]),trace=new THREE.Line(traceGeo,new THREE.LineBasicMaterial({color:'#ffd376',transparent:true,opacity:.9}));trace.name='Gang passenger gunfire';trace.visible=false;let traceUntil=0;
 const caption=document.createElement('div');caption.id='gangWarning';caption.style.cssText='display:none;position:fixed;left:50%;bottom:21%;transform:translateX(-50%);max-width:80vw;padding:12px;background:rgba(0,0,0,.85);border-left:3px solid #ca9b40;color:#f3dfae;font:14px monospace;z-index:38;pointer-events:none';document.body.appendChild(caption);
 function stopVoice(){if(utterance&&window.speechSynthesis){utterance.onend=null;speechSynthesis.cancel();}utterance=null;caption.style.display='none';}
