@@ -2,11 +2,11 @@
 // LEVEL 29 expansion: deterministic 80x80 biomes, enterable venues, detailed vehicles.
 // Load LAST, after joy.js. All existing campaign, weapon and multiplayer hooks are preserved.
 const VENUE_TYPES = [
-  {id:'safe',name:'LEVEL 29 SAFE HOUSE',short:'SAFE HOUSE',letter:'S',col:'#6ecf96'},
-  {id:'garage',name:'LEVEL 29 GARAGE',short:'GARAGE',letter:'G',col:'#e8bc64'},
-  {id:'armory',name:'LEVEL 29 ARMORY',short:'ARMORY',letter:'A',col:'#e58e72'},
+  {id:'safe',name:'SAFE HOUSE',short:'SAFE HOUSE',letter:'S',col:'#6ecf96'},
+  {id:'garage',name:'GARAGE',short:'GARAGE',letter:'G',col:'#e8bc64'},
+  {id:'armory',name:'ARMORY',short:'ARMORY',letter:'A',col:'#e58e72'},
   {id:'spray',name:"BAYOU SHINE AUTO SPA",short:'BAYOU SHINE',letter:'P',col:'#73bddd'},
-  {id:'business',name:'LEVEL 29 BUSINESS',short:'BUSINESS',letter:'B',col:'#bea0dd'}
+  {id:'business',name:'BUSINESS',short:'BUSINESS',letter:'B',col:'#bea0dd'}
 ];
 const expansionSaveKey='level29.venues.v1';
 let venueSave={owned:[],balance:0,accruedAt:Date.now(),checkpoint:null};

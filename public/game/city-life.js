@@ -4,7 +4,7 @@ const TYPES=[
  {id:'showroom',name:'BONNIE DE VETTE MOTORS',short:'SHOWROOM',letter:'V',col:'#ebc17a'},
  {id:'nightclub',name:'THE VELVET JESTER',short:'DANCE CLUB',letter:'D',col:'#b487db'},
  {id:'casino',name:'BOOMCITY CASINO',short:'CASINO',letter:'C',col:'#e9b75c'},
- {id:'terminal',name:'LEVEL 29 AIR TERMINAL',short:'AIR TERMINAL',letter:'T',col:'#a3c6d5'},
+ {id:'terminal',name:'AIR TERMINAL',short:'AIR TERMINAL',letter:'T',col:'#a3c6d5'},
  {id:'classroom',name:'BAYOU STATE UNIVERSITY',short:'CLASSROOM',letter:'U',col:'#beaa7e'},
  {id:'retail',name:'CROWN RETAIL',short:'RETAIL',letter:'R',col:'#afc28b'},
  {id:'cafe',name:'BAYOU CORNER CAFE',short:'CAFE',letter:'C',col:'#b9ca8e'},

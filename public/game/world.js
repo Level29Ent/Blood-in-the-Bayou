@@ -202,7 +202,7 @@ function amenities(group){
     const xx=x+24+col*(w-48)/Math.max(1,cols-1),zz=z+28+row*(d-90)/Math.max(1,rows-1);
     cq.box(25,19,38,xx,10,zz,white);cq.box(29,3,42,xx,21,zz,concrete);cq.box(13,5,1,xx,13,zz+19.6,iron);cq.box(1,8,1,xx,27,zz,white);cq.box(5,1,1,xx,28.5,zz,white);
    }
-   addSign(plot,'LEVEL 29 · OLD TOWN CEMETERY',Math.min(190,w-24),12,x+w/2,24,z+d-6,'#d5c7a4');cq.finish();
+   addSign(plot,'OLD TOWN CEMETERY',Math.min(190,w-24),12,x+w/2,24,z+d-6,'#d5c7a4');cq.finish();
   }
   if(f.kind==='market'){
    q.box(w,1,d,x+w/2,.55,z+d/2,material('#8b826c'));
@@ -211,7 +211,7 @@ function amenities(group){
     q.box(57,2,43,xx,31,zz,canopy);q.box(57,7,1,xx,28,zz+21,canopy);q.box(46,9,17,xx,4.5,zz+8,wood);
     for(let i=0;i<5;i++)q.box(6,3,8,xx-17+i*8,11,zz+8,material(i%2?'#c4b463':'#77814c'));
    }
-   addSign(group,D.id==='nola'?'FRENCH MARKET · LEVEL 29':'LEVEL 29 · COMMUNITY MARKET',190,12,x+w/2,42,z+d,'#e0c186');
+   addSign(group,D.id==='nola'?'FRENCH MARKET · LEVEL 29':'COMMUNITY MARKET',190,12,x+w/2,42,z+d,'#e0c186');
   }
   if(f.kind==='basketball'){
    const tex=canvasTex(512,512,g=>{g.fillStyle='#466a5d';g.fillRect(0,0,512,512);g.fillStyle='#af6c44';g.fillRect(30,30,452,452);g.strokeStyle='#ece5c9';g.lineWidth=4;g.strokeRect(30,30,452,452);g.beginPath();g.moveTo(30,256);g.lineTo(482,256);g.stroke();g.beginPath();g.arc(256,256,42,0,7);g.stroke();for(const yy of [30,482]){g.strokeRect(182,yy===30?30:376,148,106);g.beginPath();g.arc(256,yy===30?136:376,75,0,7);g.stroke();}});
@@ -319,6 +319,6 @@ function makeLevel29Superdome(b){
   for(let j=0;j<6;j++)addPart(entrance,50,1+j*.7,3,0,(1+j*.7)/2,R*1.01+22-j*3,new THREE.MeshStandardMaterial({color:'#abae9f',roughness:1}));
  }
  // Roof lettering is placed on the forward slope instead of a floating roadside sign.
-  addSign(g,'CAESARS SUPERDOME',R*1.2,10,0,19,R*1.03+8,'#e2d9bf');
+  addSign(g,'SUPERDOME',R*1.2,10,0,19,R*1.03+8,'#e2d9bf');
  return g;
 }

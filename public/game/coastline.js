@@ -109,7 +109,7 @@ genCity=function(){
     strip=layoutStrip(c,(pier?[pier.rect]:[]).concat(DL?Object.values(DL).filter(l=>l.id!=='airport').map(tileRect):[]));
     if(strip&&DL){
       if(old)for(let y=old.y0;y<=old.y1;y++)for(let x=old.x0;x<=old.x1;x++)if(!flats.some(f=>inRect((x+.5)*T,(y+.5)*T,f)))c.g[y*c.width+x]=T_GRASS;
-      DL.airport=Object.assign({id:'airport',w:21,h:11,name:'LEVEL 29 AIRSTRIP'},old||{},{w:21,h:11,x0:strip.x0,y0:strip.y0,x1:strip.x1,y1:strip.y1,fb:strip.fb,door:strip.door,name:'LEVEL 29 AIRSTRIP'});
+      DL.airport=Object.assign({id:'airport',w:21,h:11,name:'AIRSTRIP'},old||{},{w:21,h:11,x0:strip.x0,y0:strip.y0,x1:strip.x1,y1:strip.y1,fb:strip.fb,door:strip.door,name:'AIRSTRIP'});
       c.airportParcel=tileRect(strip);c.airportAccess=[];
       const ax=strip.x0+5,ay=strip.y0+5;
       for(let y=strip.y0;y<=ay;y++){c.g[y*c.width+ax]=T_ROAD;c.airportAccess.push({x:(ax+.5)*T,y:(y+.5)*T});}
@@ -278,7 +278,7 @@ function buildCourt(g){
   for(const z of [r.y-6,r.y+r.h+6])box(grp,r.w,10,1.5,cx,5,z,new THREE.MeshStandardMaterial({color:'#b9a0d8',wireframe:true}));
   const headM=new THREE.MeshStandardMaterial({color:'#fffbe8',emissive:'#fff2c0',emissiveIntensity:1.3});
   for(const [px,pz] of [[r.x-8,r.y-10],[r.x+r.w+8,r.y-10],[r.x-8,r.y+r.h+10],[r.x+r.w+8,r.y+r.h+10]]){cyl(grp,1.4,1.8,66,px,33,pz,pole);box(grp,12,4,6,px,67,pz,headM);}
-  sign(grp,'LEVEL 29 COURTS · 2v2 · NO ENEMIES',r.w*.5,10,cx+20,12,r.y+r.h+7,L29.gold,'#1d1030');
+  sign(grp,'COURTS · 2v2 · NO ENEMIES',r.w*.5,10,cx+20,12,r.y+r.h+7,L29.gold,'#1d1030');
   // Scoreboard over the far sideline.
   const bc=document.createElement('canvas');bc.width=512;bc.height=160;const bt=new THREE.CanvasTexture(bc);
   board={draw(you,them,msg){const b=bc.getContext('2d');b.fillStyle='#0b0612';b.fillRect(0,0,512,160);b.strokeStyle=L29.gold;b.lineWidth=6;b.strokeRect(3,3,506,154);
@@ -413,7 +413,7 @@ function spots(){const out=[];const add=(p,label,act)=>{if(p)out.push({x:p.x,y:p
     add(F.toWorld(0,1.7*T),'FISH OFF THE END OF THE PIER',()=>{const O=window.level29OpenWorld;if(O&&O.startFishing)O.startFishing();});
     add(F.toWorld(2*T,(pier.water-1.2)*T),'PHOTO · END OF THE TRAIL',()=>toast('ROUTE 66 · END OF THE TRAIL · SANTA MONICA'));}
   if(court)add({x:court.r.x+court.r.w/2,y:court.r.y+court.r.h+20},'PLAY 2v2 BASKETBALL',openHoops);
-  const res=city&&city.residence;if(res)add(res.lobby,'ENTER LEVEL 29 RESIDENCE · SAFEHOUSE',enterResidence);
+  const res=city&&city.residence;if(res)add(res.lobby,'ENTER RESIDENCE · SAFEHOUSE',enterResidence);
   return out;}
 function enterResidence(){const O=window.level29OpenWorld;if(!O||!O.save)return;if(player.car)return toast('STEP OUT OF YOUR VEHICLE FIRST');
   if(!O.save.apartment){O.save.apartment=true;toast('RESIDENCE SAFEHOUSE UNLOCKED');}
@@ -463,7 +463,7 @@ function hact(a,v){if(!bb)return;
     bb.msg=(off<=10?'Great contest. ':off<=20?'Hand in the face. ':'Too late on the closeout. ')+(made?'They score '+(three?3:2)+'.':'They miss.');
     if(made&&score('them',three?3:2))return hdraw();bb.poss='you';bb.phase='choose';return hdraw();}
 }
-function hdraw(){if(!bb)return;let h='<div class="bx"><h2>Level 29 Courts · 2v2</h2><div class="roster"><div><b style="color:#2fae66">LEVEL 29</b><br>You + J. Boudreaux (AI)</div><div><b style="color:#f2c14e">BAYOU BALLERS</b><br>2 AI players</div></div>';
+function hdraw(){if(!bb)return;let h='<div class="bx"><h2>Courts · 2v2</h2><div class="roster"><div><b style="color:#2fae66">LEVEL 29</b><br>You + J. Boudreaux (AI)</div><div><b style="color:#f2c14e">BAYOU BALLERS</b><br>2 AI players</div></div>';
   h+='<p style="font-size:13px;color:#a89fb0;margin:6px 0">2v2 max · 4 players per game · no zombies or gators can enter the court · first to 21</p>';
   h+='<div class="sb"><span>LEVEL 29 '+bb.you+'</span><span>'+bb.them+' BALLERS</span></div><p role="status" aria-live="polite" style="font-size:18px;min-height:24px">'+bb.msg+'</p>';
   if(bb.phase==='choose')h+='<p>Your possession. Pick a play:</p>'+Object.keys(SHOTS).map(k=>'<button data-h="'+k+'">'+SHOTS[k].n+' ('+SHOTS[k].pts+')</button>').join('')+'<button class="alt" data-h="pass">Pass to teammate</button>';

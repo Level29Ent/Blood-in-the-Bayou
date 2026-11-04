@@ -366,7 +366,7 @@ function buildCity(){
     if (b.kind==='safe'){
       const signC = document.createElement('canvas'); signC.width = 512; signC.height = 128; const g = signC.getContext('2d');
       g.fillStyle = '#12261a'; g.fillRect(0, 0, 512, 128); g.strokeStyle = '#3cc86e'; g.lineWidth = 6; g.strokeRect(6, 6, 500, 116);
-      g.fillStyle = '#3cc86e'; g.font = "900 58px 'Barlow Condensed', sans-serif"; g.textBaseline = 'middle'; g.fillText('LEVEL 29 SAFEHOUSE', 128, 68);
+      g.fillStyle = '#3cc86e'; g.font = "900 58px 'Barlow Condensed', sans-serif"; g.textBaseline = 'middle'; g.fillText('SAFEHOUSE', 128, 68);
       const tex = new THREE.CanvasTexture(signC); const sm = new THREE.Mesh(new THREE.PlaneGeometry(130, 32), new THREE.MeshBasicMaterial({ map: tex }));
       sm.position.set(b.x + b.w/2, h - 22, b.y + b.h + .6); cityGroup.add(sm);
       const drawHead = () => { try { g.drawImage(headImg, 22, 10, 96, 108); tex.needsUpdate = true; } catch(e){} };

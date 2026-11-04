@@ -3,13 +3,13 @@
 (function(){
 const {batch,material,facade}=window.level29World;
 const specs=[
- {id:'bank',name:'LEVEL 29 TRUST BANK',short:'TRUST BANK',letter:'$',col:'#e4c479'},
- {id:'grocery',name:'LEVEL 29 FRESH MARKET',short:'GROCERY',letter:'F',col:'#a8d18b'},
- {id:'gym',name:'LEVEL 29 IRON GYM',short:'IRON GYM',letter:'Y',col:'#ec9a6b'},
- {id:'hospital',name:'LEVEL 29 GENERAL HOSPITAL',short:'HOSPITAL · 5 FLOORS',letter:'+',col:'#9adbe0'},
- {id:'police',name:'LEVEL 29 POLICE STATION',short:'POLICE STATION',letter:'L',col:'#98b7f0'},
- {id:'gas',name:'LEVEL 29 GAS & GO',short:'GAS & GO',letter:'Q',col:'#efbd65'},
- {id:'fire',name:'LEVEL 29 FIRE & RESCUE',short:'FIRE STATION',letter:'R',col:'#ed9465'}
+ {id:'bank',name:'TRUST BANK',short:'TRUST BANK',letter:'$',col:'#e4c479'},
+ {id:'grocery',name:'FRESH MARKET',short:'GROCERY',letter:'F',col:'#a8d18b'},
+ {id:'gym',name:'IRON GYM',short:'IRON GYM',letter:'Y',col:'#ec9a6b'},
+ {id:'hospital',name:'GENERAL HOSPITAL',short:'HOSPITAL · 5 FLOORS',letter:'+',col:'#9adbe0'},
+ {id:'police',name:'POLICE STATION',short:'POLICE STATION',letter:'L',col:'#98b7f0'},
+ {id:'gas',name:'GAS & GO',short:'GAS & GO',letter:'Q',col:'#efbd65'},
+ {id:'fire',name:'FIRE & RESCUE',short:'FIRE STATION',letter:'R',col:'#ed9465'}
 ];
 VENUE_TYPES.push(...specs);
 const roles={fire:['FIRE CAPTAIN','#bd5033','#373d3f'],bank:['BANK TELLER','#3d5366','#263542'],grocery:['MARKET CLERK','#638b51','#343e30'],gym:['FITNESS COACH','#b64f35','#252b31'],hospital:['MEDICAL TEAM','#b5d3d5','#657f89'],police:['CAPTAIN SMITH','#171b22','#212936'],gas:['STATION ATTENDANT','#b27339','#333b45']};
@@ -124,7 +124,7 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
 const oldVenue=buildVenue;buildVenue=function(v){if(!v.extended)return oldVenue(v);const g=new THREE.Group();g.name='level29-'+v.id;v.mesh=g;cityGroup.add(g);v.floorFurniture=[];const q=batch(g),levels=v.id==='hospital'?5:1;if(v.id==='hospital'){v.patientBeds=[];v.careNurses=[];}
  for(let l=0;l<levels;l++){v.furniture=[];shell(v,g,q,l*56,l);furnish(v,g,q,l*56,l);v.floorFurniture.push(v.furniture);}
  v.furniture=v.floorFurniture[v.floor];q.finish();addSign(g,v.name,Math.min(250,v.b.w),15,v.doorX,levels*56+10,v.doorY,v.col);v.labelH=levels*56+34;addSign(g,'WALK IN · AUTO DOOR',150,8,v.doorX,46,v.doorY+1,v.col);
- const tq=batch(g);if(v.id==='gas'){const b=v.b,zz=b.y+b.h-22;tq.box(b.w-16,3,32,b.x+b.w/2,42,zz,material('#d2c3a1'));for(const x of [b.x+20,b.x+b.w-20]){tq.box(2,40,2,x,20,zz,material('#9b7548'));tq.box(12,19,10,x,9.5,zz,material('#c7b696'));tq.box(9,5,1,x,14,zz+5.1,material('#24343d'));tq.box(1,10,1,x+7,11,zz,material('#252d32'));v.furniture.push({x:x-9,y:zz-6,w:18,h:12});}addSign(g,'LEVEL 29 · FUEL',Math.min(150,b.w-20),8,b.x+b.w/2,39,b.y+b.h-5,v.col);}
+ const tq=batch(g);if(v.id==='gas'){const b=v.b,zz=b.y+b.h-22;tq.box(b.w-16,3,32,b.x+b.w/2,42,zz,material('#d2c3a1'));for(const x of [b.x+20,b.x+b.w-20]){tq.box(2,40,2,x,20,zz,material('#9b7548'));tq.box(12,19,10,x,9.5,zz,material('#c7b696'));tq.box(9,5,1,x,14,zz+5.1,material('#24343d'));tq.box(1,10,1,x+7,11,zz,material('#252d32'));v.furniture.push({x:x-9,y:zz-6,w:18,h:12});}addSign(g,'FUEL',Math.min(150,b.w-20),8,b.x+b.w/2,39,b.y+b.h-5,v.col);}
 
  if(v.id==='hospital'){const b=v.b;tq.box(8,35,2,b.x+20,170,v.doorY+2,material('#cf5551'));tq.box(25,8,2,b.x+20,170,v.doorY+2,material('#cf5551'));}
  tq.finish();
@@ -190,7 +190,7 @@ function buildFortresses(){guards=[];const g=new THREE.Group();g.name='level29-m
    q.box(40,.6,f.y+f.h-(b.y+b.h),f.gateX,.5,(b.y+b.h+f.y+f.h)/2,material('#6d6a60'));}
   for(const x of [f.gateX-54,f.gateX+54]){q.box(14,56,14,x,28,f.y+f.h-5,cap);q.box(18,4,18,x,58,f.y+f.h-5,iron);q.box(24,3,26,x,5,f.y+f.h-24,sand);q.box(24,3,26,x,8,f.y+f.h-24,sand);q.box(24,3,26,x,11,f.y+f.h-24,sand);q.box(10,3,3,x,17,f.y+f.h-24,iron);}
   q.box(112,5,6,f.gateX,66,f.y+f.h-4,iron);
-  addSign(g,'LEVEL 29 · GUARDED MANSION',200,12,f.gateX,54,f.y+f.h-3,'#e3cc8f');addSign(g,'SECURE CHECKPOINT · RESIDENT ACCESS',165,7,f.gateX,41,f.y+f.h-2,'#b5cdad');
+  addSign(g,'GUARDED MANSION',200,12,f.gateX,54,f.y+f.h-3,'#e3cc8f');addSign(g,'SECURE CHECKPOINT · RESIDENT ACCESS',165,7,f.gateX,41,f.y+f.h-2,'#b5cdad');
   q.box(b.w,43,b.h,b.x+b.w/2,76,b.y+b.h/2,facade('#c2b99e','stucco'));q.box(b.w+12,6,b.h+12,b.x+b.w/2,101,b.y+b.h/2,iron);q.box(b.w+10,3,38,b.x+b.w/2,56,b.y+b.h+12,cap);
   for(const x of [b.x+10,b.x+b.w-10]){q.box(5,48,5,x,25,b.y+b.h+24,white);q.box(10,4,10,x,50,b.y+b.h+24,cap);}
   for(let k=0;k<14;k++)q.box(1.3,13,1.3,b.x+5+k*(b.w-10)/13,64,b.y+b.h+30,iron);q.box(b.w,1.5,1.5,b.x+b.w/2,71,b.y+b.h+30,iron);
@@ -203,7 +203,7 @@ const oldBuild=buildCity;buildCity=function(){oldBuild();if(!city.world)return;c
 const oldNear=nearStation;nearStation=function(){if(player&&city){for(const v of city.venues||[]){if(!v.extended||!insideVenue(v,player))continue;const st=v.staff.filter(s=>s.floor===v.floor);if(st.some(s=>dist(player.x,player.y,s.x,s.y)<48)||dist(player.x,player.y,v.stationX,v.stationY)<50||v.id==='hospital'&&dist(player.x,player.y,v.elevatorPoint.x,v.elevatorPoint.y)<38)return v;}
  for(const v of city.venues||[]){if(v.worker&&insideVenue(v,player)&&dist(player.x,player.y,v.workerX,v.workerY)<38)return v;}}
  return oldNear();};
-const greetings={fire:'Fire and rescue is hiring. Open the jobs board for paid fire calls and rescue work.',safe:'Welcome home. The perimeter is guarded. Rest here and save your progress.',garage:'Pull your vehicle into the marked bay and I will get it running again.',armory:'You need gear? Take a look at the weapons and body armor.',spray:'Bring your ride into the wash bay for repairs and a fresh coat.',business:'Welcome to the office. Buy this business or collect your income.',bank:'Welcome to Level 29 Trust. Deposit cash for safekeeping or withdraw it whenever you need it.',grocery:'Fresh food and cold drinks. What can I get you?',gym:'Ready to work? Cardio improves your movement. Conditioning builds your maximum health.',hospital:'You are safe here. We have reception, X-ray imaging, a morgue, patient wards and recovery. Use the elevator to visit all five floors.',police:'Captain Smith here. Welcome to the station. Settle your heat, collect armor or requisition a cruiser.',gas:'Fuel, snacks, repairs and station income. What do you need?'};
+const greetings={fire:'Fire and rescue is hiring. Open the jobs board for paid fire calls and rescue work.',safe:'Welcome home. The perimeter is guarded. Rest here and save your progress.',garage:'Pull your vehicle into the marked bay and I will get it running again.',armory:'You need gear? Take a look at the weapons and body armor.',spray:'Bring your ride into the wash bay for repairs and a fresh coat.',business:'Welcome to the office. Buy this business or collect your income.',bank:'Welcome to Trust. Deposit cash for safekeeping or withdraw it whenever you need it.',grocery:'Fresh food and cold drinks. What can I get you?',gym:'Ready to work? Cardio improves your movement. Conditioning builds your maximum health.',hospital:'You are safe here. We have reception, X-ray imaging, a morgue, patient wards and recovery. Use the elevator to visit all five floors.',police:'Captain Smith here. Welcome to the station. Settle your heat, collect armor or requisition a cruiser.',gas:'Fuel, snacks, repairs and station income. What do you need?'};
 const panel=document.createElement('div');panel.id='placePanel';document.body.appendChild(panel);let active=null,robbery=null,robCooldown={};
 const moneyText=n=>'$'+Math.floor(n).toLocaleString();
 function close(){panel.style.display='none';if(state==='shop')state='play';for(const k in keys)keys[k]=false;mouse.down=false;active=null;}
@@ -274,7 +274,7 @@ function startRob(v){if(robbery||!mission||mission.info.type!=='rob'||mission.ro
 const oldTarget=missionTarget;missionTarget=function(){const m=mission;if(m&&m.info.type==='op'&&m.phase==='active')return opTarget(m);if(m&&m.info.type==='rob'&&m.phase==='active'){const t=m.step==='escape'?m.drop:{x:m.robVenue.doorX,y:m.robVenue.doorY};return {...t,col:m.step==='escape'?'#6fd49c':'#e3be68',label:m.step==='escape'?'S':'$'};}return oldTarget();};
 const oldMissionUpdate=updateMission;updateMission=function(){const m=mission;if(m&&m.info.type==='op'&&m.phase==='active')return updateOp(m);if(!m||m.info.type!=='rob'||m.phase!=='active')return oldMissionUpdate();if(--m.timer<=0){robbery=null;return failMission('THE ROBBERY CLOCK RAN OUT');}
  if(m.step==='enter')objective='Enter '+m.robVenue.short+'. Press U at the counter, then START ROBBERY.';
- if(m.step==='take'&&robbery){const r=robbery;if(!insideVenue(r.v,player)||dist(player.x,player.y,r.v.stationX,r.v.stationY)>105){objective='Stay near the counter to collect the bag.';return;}if(--r.t<=0){r.phase='escape';m.step='escape';if(window.level29Save)level29Save.partial({idx:m.info.i,kind:'rob',loot:r.loot});objective='Bag secured. Escape to the guarded Level 29 mansion.';speak('RONNIEBABY','You got the bag. Get back to the mansion. Our guards will cover you.');sfx('pickup');}else objective='Collecting cash · '+Math.ceil(r.t/60)+' seconds. Stay at the counter.';}
+ if(m.step==='take'&&robbery){const r=robbery;if(!insideVenue(r.v,player)||dist(player.x,player.y,r.v.stationX,r.v.stationY)>105){objective='Stay near the counter to collect the bag.';return;}if(--r.t<=0){r.phase='escape';m.step='escape';if(window.level29Save)level29Save.partial({idx:m.info.i,kind:'rob',loot:r.loot});objective='Bag secured. Escape to the guarded mansion.';speak('RONNIEBABY','You got the bag. Get back to the mansion. Our guards will cover you.');sfx('pickup');}else objective='Collecting cash · '+Math.ceil(r.t/60)+' seconds. Stay at the counter.';}
  if(m.step==='escape'&&robbery){const p=player.car||player;if(dist(p.x,p.y,m.drop.x,m.drop.y)<65){cash+=robbery.loot;robCooldown[robbery.v.key]=frame+3600;robbery=null;heat=0;passMission();}}
 };
 
