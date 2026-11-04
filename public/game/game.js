@@ -1543,7 +1543,7 @@ function loop(now){
   requestAnimationFrame(loop);
   if (window.bayouAdActive) { last = now; accT = 0; return; }
   // Avoid a catch-up spiral on a slow phone: at most three simulation steps per rendered frame.
-  accT = Math.min(50, accT + Math.min(50, now - last)); last = now;
+  accT = Math.min(50, accT + Math.min(50, now - last)*(mpRole?1:(window.level29TimeScale||1))); last = now;
   let stepped = false;
   while (accT >= 1000/60){
     accT -= 1000/60; stepped = true;

@@ -102,22 +102,22 @@ function openWheel(on,commit=true){
 function wheelPointer(e){if(!wheelOpen)return;
  if(document.pointerLockElement===cv){wheelCursor.x=clamp(wheelCursor.x+(e.movementX||0),-SW/2,SW/2);wheelCursor.y=clamp(wheelCursor.y+(e.movementY||0),-SH/2,SH/2);}
  else{const r=cv.getBoundingClientRect();wheelCursor.x=(e.clientX-r.left)*SW/r.width-SW/2;wheelCursor.y=(e.clientY-r.top)*SH/r.height-SH/2;}
- if(Math.hypot(wheelCursor.x,wheelCursor.y)<30)return;const a=Math.atan2(wheelCursor.y,wheelCursor.x),n=WORDER.length;wheelSel=((Math.round((a+Math.PI/2)/(Math.PI*2/n))%n)+n)%n;
+ if(Math.hypot(wheelCursor.x,wheelCursor.y)<30)return;const page=Math.floor(wheelSel/10),n=Math.min(10,WORDER.length-page*10),a=Math.atan2(wheelCursor.y,wheelCursor.x);wheelSel=page*10+((Math.round((a+Math.PI/2)/(Math.PI*2/n))%n)+n)%n;
 }
 function drawWheel(){
   if (!wheelOpen) return;if(state!=='play'){openWheel(false,false);return;}
   cx.fillStyle = 'rgba(8,10,12,.55)'; cx.fillRect(0, 0, SW, SH);
-  const R=Math.min(SW,SH)*.34,X=SW/2,Y=SH/2,bubble=Math.min(44,R*Math.sin(Math.PI/WORDER.length)-4),font=Math.max(8,Math.min(13,bubble*.35));
-  WORDER.forEach((w, i) => {
-    const a = -Math.PI/2 + i * Math.PI*2/WORDER.length, x = X + Math.cos(a) * R, y = Y + Math.sin(a) * R, sel = i === wheelSel, own = hasW(w);
+  const R=Math.min(SW,SH)*.34,X=SW/2,Y=SH/2,bubble=Math.min(44,R*Math.sin(Math.PI/Math.min(10,WORDER.length))-4),font=Math.max(8,Math.min(13,bubble*.35));
+  const page=Math.floor(wheelSel/10),visibleWeapons=WORDER.slice(page*10,page*10+10);visibleWeapons.forEach((w, slot) => {
+    const i=page*10+slot,a = -Math.PI/2 + slot * Math.PI*2/visibleWeapons.length, x = X + Math.cos(a) * R, y = Y + Math.sin(a) * R, sel = i === wheelSel, own = hasW(w);
     cx.fillStyle = sel ? 'rgba(244,195,85,.92)' : 'rgba(18,24,28,.88)'; cx.beginPath(); cx.arc(x, y, bubble, 0, 7); cx.fill();
     cx.strokeStyle = own ? WEAPONS[w].col : '#555'; cx.lineWidth = 3; cx.stroke();
     const words=WEAPONS[w].name.split(' '),cut=Math.ceil(words.length/2);for(const [j,line]of [words.slice(0,cut).join(' '),words.slice(cut).join(' ')].entries())hudText(line,x,y-14+j*font,font,sel?'#13191d':own?'#f6f3e6':'#666','center','900 ');
     const am = own ? (arsenal[w] === Infinity ? '∞' : arsenal[w] + '') : 'LOCKED';
     hudText(am, x, y + bubble*.5, font, sel ? '#13191d' : own ? '#c9d1d4' : '#666', 'center', '700 ');
   });
-  hudText('WEAPON WHEEL', X, Y - 22, 26, '#f4c355', 'center', '900 ');
-  hudText('move mouse or arrows · release Q · number keys also work', X, Y + 10, 12, '#c9d1d4', 'center', '600 ');
+  hudText('WEAPON WHEEL · '+(page+1)+'/'+Math.ceil(WORDER.length/10), X, Y - 22, 26, '#f4c355', 'center', '900 ');
+  hudText('mouse/arrows · scroll pages · release Q', X, Y + 10, 12, '#c9d1d4', 'center', '600 ');
 }
 function drawWeaponPanel(R, bw, y){
   const p = player, W = WEAPONS[curW];
@@ -464,7 +464,7 @@ addEventListener('keydown', e => {
   if (k.length === 1 && /[a-z0-9]/.test(k)){ typed = (typed + k).slice(-12).toUpperCase(); for (const c of [...Object.keys(CHEATS), 'KILO3028']) if (typed.endsWith(c)){ applyCheat(c); typed = ''; } }
 }, true);
 addEventListener('keyup', e => { if (e.key.toLowerCase() === 'q' && wheelOpen) openWheel(false); });
-addEventListener('wheel', e => { if (state !== 'play'||wheelOpen) return; const owned = WORDER.filter(hasW); const i = owned.indexOf(curW); selectW(owned[(i + (e.deltaY > 0 ? 1 : -1) + owned.length) % owned.length]); }, { passive: true });
+addEventListener('wheel', e => { if (state !== 'play')return;if(wheelOpen){const pages=Math.ceil(WORDER.length/10),page=(Math.floor(wheelSel/10)+(e.deltaY>0?1:pages-1))%pages;wheelSel=page*10;return;} const owned = WORDER.filter(hasW); const i = owned.indexOf(curW); selectW(owned[(i + (e.deltaY > 0 ? 1 : -1) + owned.length) % owned.length]); }, { passive: true });
 cv.addEventListener('mousemove',wheelPointer);
 addEventListener('blur',()=>openWheel(false,false));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)openWheel(false,false);});
