@@ -1,4 +1,4 @@
-const CACHE = 'level29-v3'
+const CACHE = 'level29-startup-repair-v6'
 const CORE = ['/', '/game/index.html', '/game/three.min.js', '/game/logo.png', '/icons/icon-192.png']
 
 self.addEventListener('install', (event) => {
@@ -29,6 +29,10 @@ self.addEventListener('fetch', (event) => {
         }
         return res
       })
-      .catch(() => caches.match(req).then((hit) => hit || caches.match('/game/index.html'))),
+      .catch(() => caches.match(req).then(async (hit) => {
+        if (hit) return hit
+        if (req.mode === 'navigate') return (await caches.match('/game/index.html')) || Response.error()
+        return Response.error()
+      })),
   )
 })
