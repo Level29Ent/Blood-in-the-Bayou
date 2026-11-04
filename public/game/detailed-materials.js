@@ -9,6 +9,7 @@ function textures(kind){if(sets.has(kind))return sets.get(kind);const n=256,heig
  if(kind==='wood')h=.5+.13*Math.sin(x*.35+Math.sin(y*.045)*2)+.035*(grain-.5);
  if(kind==='metal')h=.5+(grain-.5)*.055+.035*Math.sin(y*2.3);
  if(kind==='fabric')h=.5+.07*Math.sin(x*Math.PI/2)*Math.cos(y*Math.PI/2);
+ if(kind==='plaster'){const pore=Math.sin(x*19.7+y*73.1)*43758.54;h-=pore-Math.floor(pore)>.975?.14:0;h+=.022*Math.sin(x*.09)*Math.cos(y*.11);}
  height[k]=h;const value=Math.round(218+(h-.5)*38),rv=kind==='metal'?150:kind==='tile'?170:kind==='wood'?210:235;
  rgb.set([value,value,value,255],k*4);rough.set([rv,rv,rv,255],k*4);
  }

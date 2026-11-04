@@ -42,8 +42,8 @@ function setup(){
  try{
  aoSupported=renderer.capabilities.isWebGL2||(renderer.extensions.has('WEBGL_depth_texture')&&renderer.extensions.has('OES_texture_float'));
  const A=window.BayouPost;composer=new A.EffectComposer(renderer);renderPass=new A.RenderPass(scene,camera);ssao=new A.SSAOPass(scene,camera,256,256);ssao.needsSwap=true;ssao.kernelRadius=7;ssao.minDistance=.001;ssao.maxDistance=.035;
- const shader={uniforms:{tDiffuse:{value:null},contrast:{value:1},saturation:{value:1}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:`uniform sampler2D tDiffuse;uniform float contrast;uniform float saturation;varying vec2 vUv;
- void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;float l=dot(c,vec3(.2126,.7152,.0722));c=mix(vec3(l),c,saturation);c=(c-.18)*contrast+.18;gl_FragColor=LinearTosRGB(vec4(max(c,vec3(0.)),1.));
+ const shader={uniforms:{tDiffuse:{value:null},contrast:{value:1},saturation:{value:1},grain:{value:0},clock:{value:0}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:`uniform sampler2D tDiffuse;uniform float contrast;uniform float saturation;uniform float grain;uniform float clock;varying vec2 vUv;
+ void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;float l=dot(c,vec3(.2126,.7152,.0722));c=mix(vec3(l),c,saturation);c=(c-.18)*contrast+.18;c+=vec3(.012,.006,-.008)*smoothstep(.1,.7,l);float edge=dot(vUv-.5,vUv-.5);c*=1.-edge*.16;float n=fract(sin(dot(vUv+clock*.001,vec2(12.9898,78.233)))*43758.5453)-.5;c+=n*grain;gl_FragColor=LinearTosRGB(vec4(max(c,vec3(0.)),1.));
 }`};
  grade=new A.ShaderPass(shader);grade.material.toneMapped=false;composer.addPass(renderPass);composer.addPass(ssao);composer.addPass(grade);makeEnvironment();
  }catch(e){failed=true;dispose();console.warn('Cinematic pipeline unavailable; using direct renderer',e);}
@@ -59,7 +59,7 @@ function configure(){
 function beforeWorld(){
  if(quality()==='low'&&composer)dispose();setup();if(!scene)return;
  if(!composer&&mode!==quality()){mode=quality();prepared=new WeakSet();converted=new WeakMap();ticks=0;scene.traverse(o=>{for(const m of (Array.isArray(o.material)?o.material:[o.material]))if(m?.isMeshPhysicalMaterial&&!['vehiclePaint','boatPaint'].includes(m.name)){m.transmission=0;m.opacity=.27;m.needsUpdate=true;}});}
- if(composer)configure();if(ssao?.ssaoMaterial){const u=ssao.ssaoMaterial.uniforms;u.cameraProjectionMatrix.value.copy(camera.projectionMatrix);u.cameraInverseProjectionMatrix.value.copy(camera.projectionMatrixInverse);u.cameraNear.value=camera.near;u.cameraFar.value=camera.far;}ticks++;if(preparedCity!==(typeof city==='undefined'?null:city)||ticks===1){prepare(scene);prepare(vmScene);preparedCity=typeof city==='undefined'?null:city;}
+ if(composer){configure();if(grade){grade.uniforms.contrast.value=1.035;grade.uniforms.saturation.value=1.03;grade.uniforms.grain.value=quality()==='high'?.003:0;grade.uniforms.clock.value=frame/60;}}if(ssao?.ssaoMaterial){const u=ssao.ssaoMaterial.uniforms;u.cameraProjectionMatrix.value.copy(camera.projectionMatrix);u.cameraInverseProjectionMatrix.value.copy(camera.projectionMatrixInverse);u.cameraNear.value=camera.near;u.cameraFar.value=camera.far;}ticks++;if(preparedCity!==(typeof city==='undefined'?null:city)||ticks===1){prepare(scene);prepare(vmScene);preparedCity=typeof city==='undefined'?null:city;}
  // Retain only distant depth haze; no nearby gray veil.
  if(scene.fog){scene.fog.near=lightMode==='night'?400:1000;scene.fog.far=lightMode==='night'?1400:2400;}
  renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;
