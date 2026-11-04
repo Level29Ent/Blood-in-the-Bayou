@@ -1409,6 +1409,7 @@ function hudText(t, x, y, size, col, align, font){
 function drawHUD(){
   const p = player, small = SW < 700 || SH < 500;
   // top right: cash + health + armor + heat skulls + weapon
+  const mobileHUD=small&&SH>SW;const topInset=mobileHUD?30:0;cx.save();cx.translate(0,topInset);
   const R = SW - 18;
   hudText(money(cash), R, 14, small ? 26 : 34, '#7fe08a', 'right');
   const bw = small ? 140 : 190, bx = R - bw;
@@ -1438,12 +1439,13 @@ function drawHUD(){
   if (mission){
     const info = mission.info;
     hudText('MISSION ' + (info.i+1) + ' / ' + CAMPAIGN_TOTAL, 18, 14, 14, '#f4c355');
-    hudText(info.title.toUpperCase(), 18, 30, small ? 22 : 28, '#fff');
+    const title=info.title.toUpperCase();hudText(title.length>22&&small?title.slice(0,21)+'…':title,18,30,small?18:28,'#fff');
     cx.font = "600 " + (small ? 12 : 14) + "px 'IBM Plex Mono'";
-    const lines = wrap(objective, small ? SW - 200 : 430);
+    const lines = wrap(objective, small ? Math.max(90,SW-190) : 430);
     lines.forEach((l, i) => { cx.fillStyle = 'rgba(0,0,0,.7)'; cx.fillText(l, 20, (small ? 58 : 66) + i*18 + 2); cx.fillStyle = '#d7dde0'; cx.fillText(l, 18, (small ? 58 : 66) + i*18); });
     if (mission.phase==='active' && mission.timer > 0 && !(info.type==='race' && !mission.started)){ const s = Math.ceil(mission.timer / 60); hudText(Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'), 18, (small ? 62 : 72) + lines.length*18, small ? 22 : 30, s < 20 && frame % 30 < 15 ? '#ff5a4a' : '#fff'); }
   }
+  cx.restore();
   // boss bar
   if (boss && !boss.dead){ const w = Math.min(560, SW - 60), x = (SW - w)/2, by = SH - (small ? 150 : 58); cx.fillStyle = 'rgba(0,0,0,.7)'; cx.fillRect(x - 4, by - 22, w + 8, 38); hudText(boss.name, SW/2, by - 20, 14, '#ff8a8a', 'center'); cx.fillStyle = '#3a0a0a'; cx.fillRect(x, by - 2, w, 10); cx.fillStyle = boss.hp < boss.maxHp*.4 ? '#ffea00' : '#e83a3a'; cx.fillRect(x, by - 2, w * boss.hp / boss.maxHp, 10); }
   // minimap
