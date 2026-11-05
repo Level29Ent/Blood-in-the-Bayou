@@ -1,0 +1,22 @@
+# Pause navigation and experimental desktop lighting
+
+Journal has no HUD button. Pause owns CITY JOURNAL/ROUTES; closing from Pause
+returns to Pause. F4 play shortcut retained. MobileMENUhasPAUSE/CONTROLS. Jump
+usesexistingtouchgroup/stableID/clickhandler,nofixedoverlappingfloater. Itworks
+whenbodyis-touchfallbackeveniffinepointermediaquery(manyhybridbrowsers).
+Ronniecanvaslabelhiddenwithin160unitswhenidentityspriteexists;singlelabel.
+
+Opt-inSettingscheckboxisNOTpersisted. Highdesktoponly;touch/Medium/Lowallocates
+zeroextraeffecttargets. TwoCSMcascades512²,maxFar450;waterplanarreflection256²,
+noMSAA,1/8frames. Oneexistingrenderer/composer. Reflectionextendswaternormal/
+ripplematerial,notSSRormultipleper-watercameras. Noaddedrendereronphones.
+
+Preservematerialcustomshaderhooksandrestoreonoff;cascadebuffers,lighthandlesand
+reflectiontargetdisposeonoff,city/waterchange,pagehide,contextloss. Reusesingle
+engine,rate-limittraversalto120ticks.Protectedfallbackrestoresrenderstate/water
+visibilityiftargetdrawthrows. Existingnearbyshadowsremainforotherqualitytiers.
+
+Full-world source smoke,unit suite/build/typecheck/browserresultsinPR. Isolated
+GPUfixturetestsrealCSM/Reflector,notfullcityFPSproof. RealSafariendurance/notall
+crashfix. Nativearchiveunchanged. Mainmap/shaderassetsremainstylized;cannotfinish
+photorealisticreplacementwithoutbettermodels/rigging. Noallmodelreplacementclaim.
