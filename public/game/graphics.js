@@ -6,8 +6,8 @@
   let quality='low'; // Safe initial frame; explicit menu choice can opt in later.
 
   const SHADOW = {
-    high:   { size: 2048, extent: 260, every: 1 },
-    medium: { size: 1024, extent: 200, every: 2 },
+    high:   { size: 1024, extent: 220, every: 4 },
+    medium: { size: 512, extent: 170, every: 8 },
     low:    null,
   };
 
@@ -156,7 +156,7 @@
     if (ready || !renderer) return;
     ready = true;
     renderer.outputEncoding = THREE.sRGBEncoding;
-    renderer.toneMapping = THREE.NoToneMapping;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     sunDir.copy(sun.position).normalize();
