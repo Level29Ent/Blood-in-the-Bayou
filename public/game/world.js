@@ -189,7 +189,7 @@ const oldVenue=buildVenue;buildVenue=function(v){oldVenue(v);const b=v.b,g=v.mes
 function amenities(group){
  const q=batch(group),concrete=material('#a7a99b'),iron=material('#343f3c',.4),wood=material('#8b6242'),white=material('#e4dec8'),green=material('#467958');
  for(const f of city.features){const x=f.x,z=f.y,w=f.w,d=f.h;
-  if(f.kind==='cemetery'){
+  if(f.kind==='cemetery'&&!f.noirCemetery){
    const plot=new THREE.Group();plot.name='dedicated-cemetery';plot.position.y=city.heightAt?city.heightAt(x+w/2,z+d/2):0;group.add(plot);
    const cq=batch(plot),stone=material('#8b8472');
    cq.box(w,1,d,x+w/2,.55,z+d/2,stone);

@@ -1,7 +1,7 @@
 'use strict';
 // r149 composer, SSAO, PBR lighting and grading. World-only: HUD and weapon remain crisp.
 (function(){
-let composer=null,ssao=null,renderPass=null,grade=null,width=0,height=0,failed=false,mode='',env=null,aoSupported=false;
+let composer=null,ssao=null,renderPass=null,grade=null,width=0,height=0,failed=false,mode='',env=null,aoSupported=false,bloom=null,bokeh=null,hdrLoading=false,exposure=1.05;
 let prepared=new WeakSet(),converted=new WeakMap(),ticks=0,preparedCity=null;
 const quality=()=>window.level29Graphics?.quality||localStorage.getItem('l29_gfx_quality')|| (matchMedia('(pointer: coarse)').matches?'low':'medium');
 const glassCache=new WeakMap();
@@ -23,19 +23,16 @@ function standard(m){
 function prepare(root){if(!root)return;root.traverse(o=>{
  if(!o.isMesh||prepared.has(o))return;prepared.add(o);
  o.material=Array.isArray(o.material)?o.material.map(standard):standard(o.material);
- const surfaces=Array.isArray(o.material)?o.material:[o.material];for(const m of surfaces)if(m?.isMeshStandardMaterial&&!m.map)level29SurfaceDetail.apply(m,level29SurfaceDetail.kind(m.color,m.metalness));
+ const surfaces=Array.isArray(o.material)?o.material:[o.material];for(const m of surfaces)if(m?.isMeshStandardMaterial)level29SurfaceDetail.apply(m,level29SurfaceDetail.kind(m.color,m.metalness),false);
  const mats=Array.isArray(o.material)?o.material:[o.material];
  for(const m of mats)if(m?.isMeshPhysicalMaterial&&m.transmission>0&&quality()!=='high'){m.transmission=0;if(!['vehiclePaint','boatPaint'].includes(m.name))m.opacity=.27;m.needsUpdate=true;}
  o.castShadow=mats.some(m=>m?.isMeshStandardMaterial&&!m.transparent&&!(m.transmission>0));o.receiveShadow=mats.some(m=>m?.isMeshStandardMaterial);
  if(o.geometry?.type==='PlaneGeometry'&&mats.some(m=>m?.transparent))o.castShadow=false;
  });}
 function makeEnvironment(){
- if(env||!THREE.PMREMGenerator)return;
- const s=new THREE.Scene(),geo=new THREE.SphereGeometry(50,24,12),p=geo.attributes.position,colors=[];
- for(let i=0;i<p.count;i++){const h=(p.getY(i)/50+1)/2;colors.push(.18+.38*h,.2+.43*h,.22+.5*h);}
- geo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));const mat=new THREE.MeshBasicMaterial({vertexColors:true,side:THREE.BackSide});s.add(new THREE.Mesh(geo,mat));
- const sunCard=new THREE.Mesh(new THREE.CircleGeometry(5,16),new THREE.MeshBasicMaterial({color:'#fff2db'}));sunCard.position.set(-20,30,12);sunCard.lookAt(0,0,0);s.add(sunCard);
- const pm=new THREE.PMREMGenerator(renderer);const target=pm.fromScene(s,.03);env=target;scene.environment=target.texture;vmScene.environment=target.texture;pm.dispose();s.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});
+ if(env||hdrLoading||quality()==='low'||!THREE.PMREMGenerator||!window.BayouPost?.RGBELoader)return;
+ hdrLoading=true;const owner=renderer;
+ new BayouPost.RGBELoader().setDataType(THREE.HalfFloatType).load('/game/environments/southern-dusk.hdr',texture=>{hdrLoading=false;if(renderer!==owner||quality()==='low'){texture.dispose();return;}texture.mapping=THREE.EquirectangularReflectionMapping;const pm=new THREE.PMREMGenerator(owner);try{env=pm.fromEquirectangular(texture);scene.environment=env.texture;if(vmScene)vmScene.environment=env.texture;}finally{texture.dispose();pm.dispose();}},undefined,()=>{hdrLoading=false;console.warn('HDR environment unavailable; retaining direct lighting');});
 }
 function setup(){
  if(quality()==='low'||composer||failed||!window.BayouPost||!renderer)return;
@@ -45,10 +42,10 @@ function setup(){
  const shader={uniforms:{tDiffuse:{value:null},contrast:{value:1},saturation:{value:1},grain:{value:0},clock:{value:0}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:`uniform sampler2D tDiffuse;uniform float contrast;uniform float saturation;uniform float grain;uniform float clock;varying vec2 vUv;
  void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;float l=dot(c,vec3(.2126,.7152,.0722));c=mix(vec3(l),c,saturation);c=(c-.18)*contrast+.18;c+=vec3(.012,.006,-.008)*smoothstep(.1,.7,l);float edge=dot(vUv-.5,vUv-.5);c*=1.-edge*.16;float n=fract(sin(dot(vUv+clock*.001,vec2(12.9898,78.233)))*43758.5453)-.5;c+=n*grain;gl_FragColor=LinearTosRGB(vec4(max(c,vec3(0.)),1.));
 }`};
- grade=new A.ShaderPass(shader);grade.material.toneMapped=false;composer.addPass(renderPass);composer.addPass(ssao);composer.addPass(grade);makeEnvironment();
+ bloom=new A.UnrealBloomPass(new THREE.Vector2(256,256),.16,.35,.85);bokeh=new A.BokehPass(scene,camera,{focus:80,aperture:.000015,maxblur:.003,width:256,height:256});bokeh.enabled=false;grade=new A.ShaderPass(shader);grade.material.toneMapped=false;composer.addPass(renderPass);composer.addPass(ssao);composer.addPass(bokeh);composer.addPass(bloom);composer.addPass(grade);makeEnvironment();
  }catch(e){failed=true;dispose();console.warn('Cinematic pipeline unavailable; using direct renderer',e);}
 }
-function dispose(){if(composer){ssao?.dispose();grade?.material.dispose();grade?.fsQuad.dispose();renderPass?.dispose();composer.dispose();}composer=ssao=renderPass=grade=null;width=height=0;}
+function dispose(){if(composer){ssao?.dispose();bloom?.dispose();bokeh?.dispose();grade?.material.dispose();grade?.fsQuad.dispose();renderPass?.dispose();composer.dispose();}composer=ssao=renderPass=grade=bloom=bokeh=null;width=height=0;}
 function configure(){
  const q=quality();if(q!==mode){mode=q;scene.traverse(o=>{for(const m of (Array.isArray(o.material)?o.material:[o.material]))if(m?.isMeshPhysicalMaterial&&m.name!=='vehiclePaint'&&m.name!=='boatPaint'){m.transmission=q==='high'?.78:0;m.opacity=q==='high'?1:.27;m.needsUpdate=true;}});prepared=new WeakSet();converted=new WeakMap();ticks=0;if(ssao)ssao.enabled=q!=='low'&&aoSupported;if(renderPass)renderPass.enabled=q==='low'||!aoSupported;}
  // Follow adaptive pixel ratio and resize; AO renders at capped resolution to bound mobile GPU cost.
@@ -57,12 +54,12 @@ function configure(){
  if(w!==width||h!==height){width=w;height=h;composer.setPixelRatio(1);composer.setSize(w,h);}
 }
 function beforeWorld(){
- if(quality()==='low'&&composer)dispose();setup();if(!scene)return;
+ if(quality()==='low'){if(composer)dispose();if(env){scene.environment=null;if(vmScene)vmScene.environment=null;env.dispose();env=null;}}setup();if(!scene)return;
  if(!composer&&mode!==quality()){mode=quality();prepared=new WeakSet();converted=new WeakMap();ticks=0;scene.traverse(o=>{for(const m of (Array.isArray(o.material)?o.material:[o.material]))if(m?.isMeshPhysicalMaterial&&!['vehiclePaint','boatPaint'].includes(m.name)){m.transmission=0;m.opacity=.27;m.needsUpdate=true;}});}
- if(composer){configure();if(grade){grade.uniforms.contrast.value=1.035;grade.uniforms.saturation.value=1.03;grade.uniforms.grain.value=quality()==='high'?.003:0;grade.uniforms.clock.value=frame/60;}}if(ssao?.ssaoMaterial){const u=ssao.ssaoMaterial.uniforms;u.cameraProjectionMatrix.value.copy(camera.projectionMatrix);u.cameraInverseProjectionMatrix.value.copy(camera.projectionMatrixInverse);u.cameraNear.value=camera.near;u.cameraFar.value=camera.far;}ticks++;if(preparedCity!==(typeof city==='undefined'?null:city)||ticks===1){prepare(scene);prepare(vmScene);preparedCity=typeof city==='undefined'?null:city;}
+ if(composer){configure();if(bloom)bloom.enabled=true;if(bokeh){const cinematic=state==='talk'||!!window.level29CityStories?.cutscene;bokeh.enabled=quality()==='high'&&cinematic;bokeh.uniforms.focus.value=80;}if(grade){grade.uniforms.contrast.value=1.035;grade.uniforms.saturation.value=1.03;grade.uniforms.grain.value=quality()==='high'?.003:0;grade.uniforms.clock.value=frame/60;}}if(ssao?.ssaoMaterial){const u=ssao.ssaoMaterial.uniforms;u.cameraProjectionMatrix.value.copy(camera.projectionMatrix);u.cameraInverseProjectionMatrix.value.copy(camera.projectionMatrixInverse);u.cameraNear.value=camera.near;u.cameraFar.value=camera.far;}ticks++;if(preparedCity!==(typeof city==='undefined'?null:city)||ticks===1){prepare(scene);prepare(vmScene);preparedCity=typeof city==='undefined'?null:city;}
  // Retain only distant depth haze; no nearby gray veil.
  if(scene.fog){scene.fog.near=lightMode==='night'?400:1000;scene.fog.far=lightMode==='night'?1400:2400;}
- renderer.toneMapping=THREE.NoToneMapping;renderer.toneMappingExposure=1;
+ renderer.toneMapping=THREE.ACESFilmicToneMapping;exposure=lightMode==='night'?1.2:lightMode==='dusk'?1.08:1;renderer.toneMappingExposure=exposure;
  // One lighting palette for direct rendering and postprocessing; avoid bleaching dark albedo.
  sun.intensity=lightMode==='day'?.8:lightMode==='dusk'?.65:.2;hemi.intensity=lightMode==='night'?.3:.45;
  scene.environment=env?.texture||scene.environment;if(vmScene)vmScene.environment=scene.environment;
@@ -79,6 +76,6 @@ const make=makeCarMesh;makeCarMesh=function(c){const g=make.apply(this,arguments
  g.traverse(o=>{if(!o.isMesh)return;const m=o.material;if(m?.isMeshPhysicalMaterial&&!['vehiclePaint','boatPaint'].includes(m.name)&&(m.transparent||m.name==='buildingGlass'||m.name==='boatGlass'))o.material=physicalGlass(m);});prepare(g);return g;};
 const sync=syncCars;
 syncCars=function(){sync.apply(this,arguments);for(const[c,m]of carMeshes){if(!c.boat||c.dead||!m.visible)continue;const t=frame/60;m.position.y=(c.z||0)+Math.sin(t*1.4+c.x*.015)*.65;m.rotation.x=Math.sin(t*1.1+c.y*.02)*.018;m.rotation.z=Math.sin(t*1.6+c.x*.01)*.014-clamp(c.v*.003,-.025,.025);}};
-window.level29Cinematic={drawWorld,physicalGlass,prepare,get composer(){return composer;},get ssao(){return ssao;},get quality(){return mode;},get size(){return {width,height};},get failed(){return failed;}};
-addEventListener('webglcontextlost',()=>{failed=true;dispose();},{capture:true});
+window.level29Cinematic={drawWorld,physicalGlass,prepare,get composer(){return composer;},get ssao(){return ssao;},get quality(){return mode;},get size(){return {width,height};},get failed(){return failed;},get bloom(){return bloom;},get bokeh(){return bokeh;},get environment(){return env;},get exposure(){return exposure;}};
+addEventListener('webglcontextlost',()=>{failed=true;dispose();if(env){env.dispose();env=null;}},{capture:true});
 })();

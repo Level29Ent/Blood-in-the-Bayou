@@ -89,7 +89,7 @@ buildVenue=function(v){
  if(v.id==='casino'){
   level29RetailCasino.casino(v,g); }else if(v.id==='nightclub'){
   part(b.w-30,2,28,b.x+b.w/2,1,b.y+16,dark);part(25,12,8,b.x+b.w/2,8,b.y+18,gold);
-  for(let i=0;i<9;i++){const x=b.x+20+(i%3)*Math.max(12,(b.w-40)/3),y=b.y+28+Math.floor(i/3)*Math.max(6,(b.h-38)/3),m=makeFigure(false);setFigureColors(m,['#986d50','#c3946a','#6e4939'][i%3],['#87539b','#d5b568','#4c8491'][i%3],'#28313b','#272322');m.traverse(o=>{if(o.isMesh)o.userData.noBatch=true;});g.add(m);dancers.push({m,x,y});}
+  for(let i=0;i<(v.southern?3:9);i++){const x=b.x+20+(i%3)*Math.max(12,(b.w-40)/3),y=b.y+28+Math.floor(i/3)*Math.max(6,(b.h-38)/3),m=makeFigure(false);setFigureColors(m,['#986d50','#c3946a','#6e4939'][i%3],['#87539b','#d5b568','#4c8491'][i%3],'#28313b','#272322');m.traverse(o=>{if(o.isMesh)o.userData.noBatch=true;});g.add(m);dancers.push({m,x,y});}
  }else if(v.id==='terminal'){
   part(b.w-24,12,12,b.x+b.w/2,6,b.y+14,dark);addSign(g,'CHECK IN · AIR TOURS',90,9,b.x+b.w/2,30,b.y+4,v.col);
   for(let i=0;i<3;i++)part(28,7,10,b.x+24+i*32,3.5,b.y+45,gold);
