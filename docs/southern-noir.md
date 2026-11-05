@@ -46,7 +46,7 @@ simulation or motioncapture/takedown character replacement. Xmelee:infront48unit
 LOS,2damage/stagger;unalerted rear attack is silentlethal. F8flash/F9smoke:2each
 perpage,max6on$300supplykit;nearbyzombiestuns,smokehas7svisiblecloud/localAIreset.
 Not a general physics/AI LOS rewrite;nohostilepolice/gangs. UI buttonsdesktoponly;
-keyboard works/mobile touch mapping for newutilities remains unfinished.
+keyboard and mobile action drawer supported.
 
 Breakable approachcrates,lightpoles and fuelpumps(two selectednewsites),precisegun
 ray vspropbox andocclusioncheck. Fuelpumps small player-attributedexplosion.
@@ -70,6 +70,6 @@ checks recordedinPR. Newtests originalHDRdecode,sharedPBRmaps,parcelprotection,
 magazinecapacities,meleecones,ACES/bloom/DOFquality/disposal. ActualnonGPU scene
 checks fiveentrances,manorpurchaseandcellarroundtrip;61venues;geometryattribute
 bytes≈145MB vs prior137MB,NOTGPUMemory/RAMusage. Fullcity12kmeshes is stillheavy.
-Repeatedallchapterregencheck aborted for longruntime;notmarkedaspassed. GPU
+Initial repeated generation cost8seconds;validated parcel reuse reduces the measured repeat to0.44seconds. Allchapter playthrough not verified. GPU
 review /game/expansion-demo/southern-noir.html uses actualcinematicpipeline in a
 smallfixture;no fullworld/deviceFPSclaim. SeePRforrenderedverificationandgaps.
