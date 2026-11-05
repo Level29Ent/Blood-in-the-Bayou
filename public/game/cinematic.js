@@ -2,6 +2,7 @@
 // r149 composer, SSAO, PBR lighting and grading. World-only: HUD and weapon remain crisp.
 (function(){
 let composer=null,ssao=null,renderPass=null,grade=null,width=0,height=0,failed=false,mode='',env=null,aoSupported=false,bloom=null,bokeh=null,hdrLoading=false,exposure=1.05;
+let envPhase='',envBases=new WeakMap();function environmentStrength(m){if(!m?.isMeshStandardMaterial)return;if(!envBases.has(m))envBases.set(m,m.envMapIntensity??1);m.envMapIntensity=envBases.get(m)*(lightMode==='night'?.08:lightMode==='dusk'?.5:1);}
 let prepared=new WeakSet(),converted=new WeakMap(),ticks=0,preparedCity=null;
 const quality=()=>window.level29Graphics?.quality||localStorage.getItem('l29_gfx_quality')|| (matchMedia('(pointer: coarse)').matches?'low':'medium');
 const glassCache=new WeakMap();
@@ -26,7 +27,7 @@ function prepare(root){if(!root)return;root.traverse(o=>{
  const surfaces=Array.isArray(o.material)?o.material:[o.material];for(const m of surfaces)if(m?.isMeshStandardMaterial)level29SurfaceDetail.apply(m,level29SurfaceDetail.kind(m.color,m.metalness),false);
  const mats=Array.isArray(o.material)?o.material:[o.material];
  for(const m of mats)if(m?.isMeshPhysicalMaterial&&m.transmission>0&&quality()!=='high'){m.transmission=0;if(!['vehiclePaint','boatPaint'].includes(m.name))m.opacity=.27;m.needsUpdate=true;}
- o.castShadow=mats.some(m=>m?.isMeshStandardMaterial&&!m.transparent&&!(m.transmission>0));o.receiveShadow=mats.some(m=>m?.isMeshStandardMaterial);
+ for(const m of mats)environmentStrength(m);o.castShadow=mats.some(m=>m?.isMeshStandardMaterial&&!m.transparent&&!(m.transmission>0));o.receiveShadow=mats.some(m=>m?.isMeshStandardMaterial);
  if(o.geometry?.type==='PlaneGeometry'&&mats.some(m=>m?.transparent))o.castShadow=false;
  });}
 function makeEnvironment(){
@@ -65,7 +66,7 @@ function beforeWorld(){
  scene.environment=env?.texture||scene.environment;if(vmScene)vmScene.environment=scene.environment;
 }
 function drawWorld(){
- beforeWorld();
+ beforeWorld();if(envPhase!==lightMode){envPhase=lightMode;for(const root of [scene,vmScene])root?.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])environmentStrength(m);});}
  if(!composer||failed||renderer.getContext().isContextLost()){renderer.render(scene,camera);return;}
  // Render targets receive linear output; ACES is applied by beauty materials once. Only grade encodes sRGB.
  const encoding=renderer.outputEncoding;
