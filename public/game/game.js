@@ -1049,7 +1049,7 @@ function update(){
   // bullets
   for (const b of bullets){
     const previousX=b.x,previousY=b.y;b.x += b.vx; b.y += b.vy; b.life--;
-    if (level29GameplayMath.blockedSegment(previousX,previousY,b.x,b.y,(x,y)=>solidAt(x,y)&&tileAt(x,y)===T_BLD)){ b.life = 0; parts.push({ k:'spark', x:b.x - b.vx*.5, y:b.y - b.vy*.5, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); continue; }
+    if (level29GameplayMath.blockedSegment(previousX,previousY,b.x,b.y,(x,y)=>solidAt(x,y)&&tileAt(x,y)===T_BLD)){ if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('level29:impact',{detail:{kind:'concrete',x:b.x,y:b.y}}));b.life = 0; parts.push({ k:'spark', x:b.x - b.vx*.5, y:b.y - b.vy*.5, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); continue; }
     for (const z of zombies){
       if (!z.alive || b.hit.has(z)) continue;
       if (level29GameplayMath.segmentDistance2(z.x,z.y,previousX,previousY,b.x,b.y) < (z.r + 3)**2){
@@ -1060,7 +1060,7 @@ function update(){
       }
     }
     if (b.life > 0 && boss && !boss.dead && (b.x - boss.x)**2 + (b.y - boss.y)**2 < boss.r**2){ damageBoss(b.dmg); view.hit = 7; b.life = 0; gore(b.x, b.y, 2); if (frame % 3 === 0) snd('bosshit'); }
-    if (b.life > 0) for (const c of cars){ if (c.dead || c === p.car) continue; if ((b.x - c.x)**2 + (b.y - c.y)**2 < (c.r*.8)**2){ damageCar(c, .8,b.owner?'remote':'player',b.owner); b.life = 0; parts.push({ k:'spark', x:b.x, y:b.y, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); break; } }
+    if (b.life > 0) for (const c of cars){ if (c.dead || c === p.car) continue; if ((b.x - c.x)**2 + (b.y - c.y)**2 < (c.r*.8)**2){ damageCar(c, .8,b.owner?'remote':'player',b.owner);if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('level29:impact',{detail:{kind:'metal',x:b.x,y:b.y}})); b.life = 0; parts.push({ k:'spark', x:b.x, y:b.y, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); break; } }
   }
   bullets = bullets.filter(b => b.life > 0);
   // boss + spits
