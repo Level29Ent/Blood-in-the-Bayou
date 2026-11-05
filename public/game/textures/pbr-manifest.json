@@ -1,1 +1,14 @@
-{"building":{},"vehiclePaint":{},"mansion":{},"skin":{}}
+{
+  "concrete": {
+    "normalMap": "/game/textures/production/concrete-normalMap.ktx2",
+    "roughnessMap": "/game/textures/production/concrete-roughnessMap.ktx2"
+  },
+  "wood": {
+    "normalMap": "/game/textures/production/wood-normalMap.ktx2",
+    "roughnessMap": "/game/textures/production/wood-roughnessMap.ktx2"
+  },
+  "fabric": {
+    "normalMap": "/game/textures/production/fabric-normalMap.ktx2",
+    "roughnessMap": "/game/textures/production/fabric-roughnessMap.ktx2"
+  }
+}

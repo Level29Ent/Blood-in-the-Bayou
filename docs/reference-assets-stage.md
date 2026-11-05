@@ -1,0 +1,28 @@
+# Reference-inspired asset and compressed texture stage
+
+Scope: first real production compressed PBR maps and original textured Ronniebaby
+NPC. This is NOT all-map photorealistic asset replacement, not UE5 rendering.
+
+Original GLB generated from repo scripts,22,272triangles,12indexedmaterialgroups,
+4embedded128²PNGtextures,788212bytes. Olive shirt,grayutilitytrousers,brownboots,
+locs,backpack/radio. Static/unrigged;legacywaveanimationnotvisiblewithnewmesh.
+Actorroot/ring/missiondata/collisionspreserved. LazyloadonlyvisibleNPCwithin250
+units,onecachedtemplate,oldmodelremainsifloadfails. Noveljointed/animatedcharacter
+rigandfaciallikenessareNOTprovided. Existingmapmodelsnotreplacedbythispatch.
+
+Six512²UASTCBasisKTX2files,normal+roughnessforconcrete/wood/fabric,withfullmips.
+Encodedusingbasisu1.16.3viaBASISU_BIN,reproduciblescriptbuild-production-pbr.cjs.
+Originalproceduralmicrosurfaces,not4Kphotography. Explicitmaterialtags,notblanket
+albedoreplacement. Preserveexistingpaint,skins,eyes,signs/artwork;allsharedmap
+referencesreleasedthroughexistingmanager. Retainoriginalgeneratedfallbackmaps:
+NOtotalmemorysavingclaim,becauseoriginalfallbacktexturesremaincached. GPUformat
+isdevice-dependent,canfall backRGBA ifnoGPUcompressedformatsupported.
+
+ExistingACES/bloom/DOFremainqualityscaled;Lowstilldirectrenderer.NoSSR/CSMadded
+whilecrashesunresolved. Additionalwaterreflection/high-qualityshadows/fullmodel
+replacementrequireseparateverifiedworkandbetterassets.Thispatchdoesnotfixall
+crashesorclaimlocked60fps.
+
+Reviewpageusesactualasset/KTX2manager/PBRbinding,notfullcity. 448tests/build/type
+checkbeforefinalasyncfallbacktest;finaltotalandbrowserresultsinPR. NativeZIPnot
+rebuilt;installediOSappneedssubsequentsync.
