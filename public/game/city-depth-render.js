@@ -1,6 +1,6 @@
 'use strict';
 (function(){
-function skinShader(shader){shader.fragmentShader=shader.fragmentShader.replace('#include <output_fragment>',`float skinWrap=pow(max(0.,1.-abs(dot(normal,geometryViewDir))),3.);outgoingLight+=diffuseColor.rgb*vec3(1.,.34,.22)*skinWrap*.09;
+function skinShader(shader){shader.fragmentShader=shader.fragmentShader.replace('#include <output_fragment>',`float skinWrap=pow(max(0.,1.-abs(dot(normal,geometry.viewDir))),3.);outgoingLight+=diffuseColor.rgb*vec3(1.,.34,.22)*skinWrap*.09;
 #include <output_fragment>`);return shader;}
 function effectColor(kind){return kind==='metal'?'#ffd888':kind==='wood'?'#a48963':kind==='blood'?'#842b29':'#b7b2a3';}
 if(typeof module!=='undefined')module.exports={skinShader,effectColor};if(typeof window==='undefined')return;if(window.level29CityDepthReview){window.level29CityDepthShaders={skinShader};return;}
