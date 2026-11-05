@@ -307,18 +307,18 @@ function renderGround(){
       const isX = isRoadCol(k);
       // vertical road i: lines along y
       const tV = city.get(ROADS[i]+1, k);
-      if (!isX && (tV===T_ROAD || tV===T_BRIDGE)){
+      if ((!city.world||!window.level29RoadPaint) && !isX && (tV===T_ROAD || tV===T_BRIDGE)){
         g.fillStyle = '#d7b13b'; g.fillRect(c-3, k*TILE + 4, 2, 24); g.fillRect(c+1, k*TILE + 4, 2, 24);
         g.fillStyle = 'rgba(235,235,230,.55)'; g.fillRect(ROADS[i]*TILE + 3, k*TILE, 2, TILE); g.fillRect((ROADS[i]+3)*TILE - 5, k*TILE, 2, TILE);
       }
       const tH = city.get(k, ROADS[i]+1);
-      if (!isX && (tH===T_ROAD || tH===T_BRIDGE)){
+      if ((!city.world||!window.level29RoadPaint) && !isX && (tH===T_ROAD || tH===T_BRIDGE)){
         g.fillStyle = '#d7b13b'; g.fillRect(k*TILE + 4, c-3, 24, 2); g.fillRect(k*TILE + 4, c+1, 24, 2);
         g.fillStyle = 'rgba(235,235,230,.55)'; g.fillRect(k*TILE, ROADS[i]*TILE + 3, TILE, 2); g.fillRect(k*TILE, (ROADS[i]+3)*TILE - 5, TILE, 2);
       }
     }
     // crosswalks
-    for (let j=0;j<ROADS.length;j++){
+    for (let j=0;j<ROADS.length&&(!city.world||!window.level29RoadPaint);j++){
       const ix = ROADS[i]*TILE, iy = ROADS[j]*TILE;
       if (city.get(ROADS[i]+1, ROADS[j]+1)!==T_ROAD) continue;
       g.fillStyle = 'rgba(235,235,230,.7)';
