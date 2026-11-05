@@ -12,7 +12,7 @@ const style=document.createElement('style');style.textContent=`
  #touch{bottom:calc(env(safe-area-inset-bottom,0px) + 70px)!important;right:max(10px,env(safe-area-inset-right))!important;max-width:48vw!important}
  #touch .group{display:grid!important;grid-template-columns:repeat(3,minmax(44px,1fr));width:min(204px,46vw)!important;gap:6px!important}
  #touch .group button{position:static!important;inset:auto!important;transform:none!important;width:100%!important;margin:0!important;
-min-width:44px!important;min-height:44px!important;max-width:70px;font-size:11px!important;padding:8px!important;box-sizing:border-box}
+min-width:44px!important;min-height:44px!important;max-width:70px;font-size:10px!important;letter-spacing:0!important;padding:6px 2px!important;box-sizing:border-box}
  #joy{bottom:calc(env(safe-area-inset-bottom,0px) + 70px)!important;left:max(16px,env(safe-area-inset-left))!important;width:120px!important;height:120px!important}
  #joyKnob{width:48px!important;height:48px!important}
  #hudMapActions{display:none!important}
