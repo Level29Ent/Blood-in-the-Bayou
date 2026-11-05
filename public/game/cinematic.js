@@ -40,7 +40,7 @@ function setup(){
  try{
  aoSupported=renderer.capabilities.isWebGL2||(renderer.extensions.has('WEBGL_depth_texture')&&renderer.extensions.has('OES_texture_float'));
  const A=window.BayouPost;composer=new A.EffectComposer(renderer);renderPass=new A.RenderPass(scene,camera);ssao=new A.SSAOPass(scene,camera,256,256);ssao.needsSwap=true;ssao.kernelRadius=7;ssao.minDistance=.001;ssao.maxDistance=.035;
- if(depth)window.level29DepthVisibility.attachAO(ssao,depth);
+ if(depth){window.level29DepthVisibility.tuneAO(ssao);window.level29DepthVisibility.attachAO(ssao,depth);}
  const shader={uniforms:{tDiffuse:{value:null},contrast:{value:1},saturation:{value:1},grain:{value:0},clock:{value:0}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:`uniform sampler2D tDiffuse;uniform float contrast;uniform float saturation;uniform float grain;uniform float clock;varying vec2 vUv;
  void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;float l=dot(c,vec3(.2126,.7152,.0722));c=mix(vec3(l),c,saturation);c=(c-.18)*contrast+.18;c+=vec3(.012,.006,-.008)*smoothstep(.1,.7,l);float edge=dot(vUv-.5,vUv-.5);c*=1.-edge*.16;float n=fract(sin(dot(vUv+clock*.001,vec2(12.9898,78.233)))*43758.5453)-.5;c+=n*grain;gl_FragColor=LinearTosRGB(vec4(max(c,vec3(0.)),1.));
 }`};
