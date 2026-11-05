@@ -13,6 +13,7 @@ const style=document.createElement('style');style.textContent=`
  #touch .group{display:grid!important;grid-template-columns:repeat(3,minmax(44px,1fr));width:min(204px,46vw)!important;gap:6px!important}
  #touch .group button{position:static!important;inset:auto!important;transform:none!important;width:100%!important;margin:0!important;
 min-width:44px!important;min-height:44px!important;max-width:70px;font-size:10px!important;letter-spacing:0!important;padding:6px 2px!important;box-sizing:border-box}
+ #touch .group #wbtn{font-size:9px!important;padding:6px 0!important;letter-spacing:-.2px!important}
  #joy{bottom:calc(env(safe-area-inset-bottom,0px) + 70px)!important;left:max(16px,env(safe-area-inset-left))!important;width:120px!important;height:120px!important}
  #joyKnob{width:48px!important;height:48px!important}
  #hudMapActions{display:none!important}
