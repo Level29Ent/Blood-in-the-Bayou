@@ -1,0 +1,81 @@
+# Interior systems / articulated physics: implemented scope and limits
+
+## Room scale/zoning and cover
+10units/meter. Shared library sizes:sofa2.2m,counter.9mhigh,bed1.6×2.2m,desk1.4×.7m.
+Gridwallstrips,living/kitchen/bedroom or businessservice/stock/work zones,center2.6–3.2m
+corridor,door/stationbuffers,existingfurnitureoverlaprejection. Roles:home,diner,shop,
+workshop,office. Props are originalmulti-partprocedural—notphotorealasset replacements.
+Generatedbottles/boxes useInstancedMesh. Newroomprops loadnearplayer,atmost1roomper
+halfsecond,hideoutside500,unloadownednewgeometryafter15sout600units. 256unitchunkindex.
+Existingcityshells still globallyresident;this is NOTfullworldchunkstreaming.
+
+75venue-catalogentriesexceptspecialmall/base registerinruntime,plus streamedfloors.
+Eligiblelegacyfurniture recoveredfromstaticbatchtriangles insideactualv.furniture
+boxes,up to16perroom,≤20kvertices/sourcemesh,single-material/noninstanced/nonskinned
+only. Remainingarraysreindexed,originalsharedmaterialsnotdisposed. Generated and
+recoveredfurnituregetsHP/damagedtint/destruction+colliderremoval. Existingbatched
+specialprops,multimaterial/giantbatches,oversizedfixtures andspecialmallstores are
+NOTallconverted. EveryinteriorfurnitureacrossthemapisNOTyetuniversallydestructible.
+No structuralwallshattering. Olddécornotglobalresized;newcataloguseshuman-scale.
+
+Bulletsinterceptcover beforezombies/wallprocessing;camera-heightapproximationfor
+2Dbullets,scopedraycoverfirst. Colorstate/visiblefragments,notrigidbodyfurniture
+debris. Coverdamagepersistswithinworldsession/unload;notpersistedacrossnewworld.
+Extractedlegacycoverremainsresidentbutculled;onlynewgeneratedpropresourcesunload.
+InitialextractioncanstillcostCPU;notproof60fpsorabsenceofspikes.
+
+## UI / triggers / campaign
+F2/mobileinventory grid:ownedweapons includingempty,inspect/explicitequip,noammo
+fabrication. Registerrayinteractionwithin45units,shop/health/ammo,3sopeningprogress
+anddraweranimation,$80onceperregisterstoredlocalkey;Closecancels,panelinputisolated.
+Notglobalautomaticloot/physicalrobberyreaction/weaponshopcatalogreplacement.
+
+Volumetricx/y/zentry/exiteventsforvenues pluscampaigncontext;noautolaunchingor
+silentlyreplacingcurrentmissions. Eventhooks for scripting—not210newbespoketargetNPC
+spawns/cutscenes upon allentries. ExistingmissionNPCs/scriptsremainauthoritative.
+ObjectiveMachineadaptscampaignbegin/fail/pass/objectivechanges,HUDchecklist/events.
+Idempotentpassboundarypreventduplicateexistingcampaignreward;210IDs testedstate
+transitions. Notrewriting210missionstagesintoanewstoredFSMorplaytesting210missions.
+
+## Memory / compressed textures
+Streamedoffice/apartmentfloors cap2residentfloorsperbuilding;onLRUevictionowned
+floorgeometrydisposed,roomrecordsforgotten. Sharedmaterial/texturemapsretained.
+Newgeneratedprops/materialclonesdisposedwithownershipflags,neversharedtextures.
+KTX2Loader r149 optionalbundle,BasisJS/WASMselfhosted,1worker,GLTFloaderintegration.
+Supportonly:existingPNG/JPEGassetsNOTactuallyBasiscompressed;needofflineconverted
+.ktx2assets. OversizedordinaryphotoTextureLoaderimages downscale512Low/768Med/1024High,
+no upscaling,specialnormal/metal/font/sign/logomapignored,Lowmipmapsoff. No global
+DataTexture/GLTFembeddedcanvasrewrite. No renderer.dispose duringroomtransition;
+wouldkillactivecanvas. No automaticGCforcing;no guaranteeiOS/Android60fpsorOOMfix.
+NativeiOSarchiveNOTrebuiltorprofiled;websourceadaptationonly.
+
+## Physics / estate / missions
+cannon-es0.20.0 MITlocalbundle. True11rigidbody+10ConeTwistConstraintarticulated
+ragdolls,terrainplatform/nearbuildingcontacts,1Low/2higher,6slifetime,sleeping,
+fixed60Hz,max2substeps,6solveriterations,≤16staticobstacles.Sharedoriginalboxlimb
+visuals,NOTtheoriginalriggedcharacterlimbmeshes/anatomicalragdolltuning. Replacesold
+wholebodyfallclonewhenmodulepresent. Liveenemymovement/vehiclesstayexisting2D
+simulation;notAAAfullrigidbodyvehiclesandcontacts.
+
+ApacheTmissilelaunchesvisibleprojectilewithvelocity/gravity,≤4active,6slifetime,
+sweptbuilding/zombie/terraincontacts,80unitLOSblastfalloff,cleanup. Notinstant ray
+missile. No fullhoming/guidance/realballisticpayloadsimulation. Gunremainsrayfire.
+AircraftQ/R/Tkeyconflictsfixed;newtouchflightbuttons. Aerodynamicsremainbounded
+arcademodel—notfullyphysical6DOFhelicopter.
+
+Mansionbothwidth/depth1.2→44%morefootprintinsideexistingfortress,noexternalgrounds
+expansion. Onlyifneighbors/parcelclear;privateflag/mission/liftpreserved. Original
+penthousebuilderusesnewsharedBmetadata.Safefallbackifblocked(notbulldozevenues).
+Mission-onlychaserpolicecars2max+roadblockcars2max foracceptedoverpass/shakedown/
+courier/stakeout/roofcontracts,targetsteering/roadscan,cleanupend/death/mapchange.
+No free-roamhostility. Contactdamageonly,no completecorruptsquad3Dgunfight/speedboat
+pursuit/automaticdirector/cinematiccamera-sequencecompletion. Newcallbacksarestill
+approximatecontracts. No claimfullpriorAAA/cinematicrequestisfinished.
+
+## Evidence
+406source tests/build/TypeScriptpassbeforelastregistervisual;finalnumbersinPR.
+Localactualmenuworldbuildpasses;expandedsourcebuild~6s,13965meshes beforelazyprops.
+Donutloadextracts9legacycovers;breakworks,floorcache2,articulatedspawn12bodiesincl
+floor. Estatearea1.44andprivate-liftup/downpassed. All18floor spawnchecks and
+Apacheboard/lift/land/exitstillpass. Broadmobilewrapper/GPUMemory/60FPSand210missions
+notplayedthrough. GPUreview/fullcityresultsrecordedinPR. No universalcrashfixclaim.
