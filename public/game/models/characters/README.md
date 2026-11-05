@@ -3,8 +3,8 @@
 Original procedural asset, not a photographic scan, not an Unreal Engine export.
 Reference direction: locs, olive shirt, gray utility trousers, brown boots,
 olivemilitary-style backpack,radio. No external proprietary meshes/textures.
-Static/unrigged; no skeletal animation clips. 22,272 triangles,12indexedmaterial
-batches,4embedded128²PNGtextures;788212bytes. Uses metre units,Yup,+Zforward.
+Static/unrigged; no skeletal animation clips. 21,792 triangles,12indexedmaterial
+batches,4embedded128²PNGtextures;770032bytes. Uses metre units,Yup,+Zforward.
 Gameadapter12units/metre and+90°Y maps +Z to existing rig's+X,retainsmission
 root/ringandlegacydata,buthidesoldvisuals onlyafterloadsuccess. Loadfailurekeeps
 oldactor. Singlecachedtemplate;nomodeldownloads beforeentry/whileNPCfaraway.

@@ -3,8 +3,8 @@
 Scope: first real production compressed PBR maps and original textured Ronniebaby
 NPC. This is NOT all-map photorealistic asset replacement, not UE5 rendering.
 
-Original GLB generated from repo scripts,22,272triangles,12indexedmaterialgroups,
-4embedded128²PNGtextures,788212bytes. Olive shirt,grayutilitytrousers,brownboots,
+Original GLB generated from repo scripts,21,792triangles,12indexedmaterialgroups,
+4embedded128²PNGtextures,770032bytes. Olive shirt,grayutilitytrousers,brownboots,
 locs,backpack/radio. Static/unrigged;legacywaveanimationnotvisiblewithnewmesh.
 Actorroot/ring/missiondata/collisionspreserved. LazyloadonlyvisibleNPCwithin250
 units,onecachedtemplate,oldmodelremainsifloadfails. Noveljointed/animatedcharacter

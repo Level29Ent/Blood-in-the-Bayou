@@ -21,7 +21,7 @@ def texture(name,base,normal=False):
  for y in range(128):
   for x in range(128):
    r=random.random();grain=math.sin(x*1.7)*math.sin(y*2.1)
-   c=(int(128+grain*8),int(128+math.sin(y*1.9)*7),253) if normal else tuple(max(0,min(255,int(v+(r-.5)*12+grain*3))) for v in base)
+   c=(int(128+grain*3),int(128+math.sin(y*1.9)*3),255) if normal else tuple(max(0,min(255,int(v+(r-.5)*12+grain*3))) for v in base)
    p.extend(c)
  images.append({'name':name,'bufferView':buffer(png(p,128,128)),'mimeType':'image/png'});textures.append({'source':len(images)-1,'sampler':0});return len(textures)-1
 skin=texture('Skin microtexture',(111,72,49));fabric=texture('Olive woven cotton',(93,103,61));denim=texture('Dark denim weave',(76,80,82));normal=texture('Embedded fine surface normal',(0,0,0),True)
@@ -32,7 +32,7 @@ def material(name,color,rough=.8,metal=0,tex=None,norm=True):
  m={'name':name,'pbrMetallicRoughness':p}
  if norm:m['normalTexture']={'index':normal,'scale':.22}
  materials.append(m);return len(materials)-1
-S=material('Warm skin with embedded albedo',[1,1,1],.78,tex=skin);C=material('Olive shirt / woven texture',[1,1,1],.93,tex=fabric);P=material('Gray utility trousers',[1,1,1],.96,tex=denim);H=material('Dark brown modeled locs',[.028,.018,.012],.9);E=material('Eye whites',[.64,.58,.48],.45,norm=False);I=material('Brown irises',[.075,.035,.012],.36,norm=False);B=material('Pupil',[.012,.016,.019],.67,norm=False);L=material('Lip tone',[.20,.095,.065],.8);G=material('Brushed brass jewelry',[.55,.37,.13],.35,.75);F=material('Canvas strap',[.16,.18,.13],.9); BOOT=material('Weathered brown boots',[.16,.12,.075],.9); PACK=material('Olive tactical canvas',[.29,.32,.19],.94)
+S=material('Warm skin with embedded albedo',[1,1,1],.78,tex=skin);C=material('Olive shirt / woven texture',[1,1,1],.93,tex=fabric);P=material('Gray utility trousers',[1,1,1],.96,tex=denim);H=material('Dark brown modeled locs',[.004,.003,.002],.9);E=material('Eye whites',[.64,.58,.48],.45,norm=False);I=material('Brown irises',[.075,.035,.012],.36,norm=False);B=material('Pupil',[.012,.016,.019],.67,norm=False);L=material('Lip tone',[.20,.095,.065],.8);G=material('Brushed brass jewelry',[.55,.37,.13],.35,.75);F=material('Canvas strap',[.16,.18,.13],.9); BOOT=material('Weathered brown boots',[.06,.04,.022],.9); PACK=material('Olive tactical canvas',[.29,.32,.19],.94)
 def ell(name,center,scale,mat,seg=12,rings=8):
  pos=[];nor=[];uv=[];ind=[]
  for j in range(rings+1):
@@ -47,11 +47,23 @@ def ell(name,center,scale,mat,seg=12,rings=8):
  meshes.append({'name':name,'primitives':[{'attributes':{'POSITION':pa,'NORMAL':na,'TEXCOORD_0':ua},'indices':ia,'material':mat}]});nodes.append({'name':name,'mesh':len(meshes)-1,'translation':list(center)});return len(nodes)-1
 def limb(name,a,b,r,mat):
  mid=[(a[k]+b[k])/2 for k in range(3)];d=[b[k]-a[k] for k in range(3)];length=math.sqrt(sum(x*x for x in d));idx=ell(name,mid,(r,length/2+r*.2,r),mat,8,5);n=[x/length for x in d];q=[n[2],0,-n[0],1+n[1]];mag=math.sqrt(sum(x*x for x in q));nodes[idx]['rotation']=[x/mag for x in q] if mag>1e-8 else [1,0,0,0];return idx
+def profile(name,rings,mat,seg=16):
+ # Continuous elliptical cross sections: no gaps at knees/elbows or trouser seams.
+ pos=[];nor=[];uv=[];ind=[]
+ for j,(x,y,z,rx,rz) in enumerate(rings):
+  for i in range(seg+1):
+   a=2*math.pi*i/seg;c=math.cos(a);v=math.sin(a);pos.extend((x+c*rx,y,z+v*rz));n=(c/rx,0,v/rz);d=math.hypot(n[0],n[2]);nor.extend((n[0]/d,0,n[2]/d));uv.extend((i/seg,j/(len(rings)-1)))
+ for j in range(len(rings)-1):
+  for i in range(seg):
+   a=j*(seg+1)+i;b=a+seg+1;ind.extend((a,b,a+1,b,b+1,a+1))
+ pack=lambda a:struct.pack('<'+'f'*len(a),*a)
+ pa=attr(pack(pos),'VEC3',len(pos)//3,limits={'min':[min(pos[i::3]) for i in range(3)],'max':[max(pos[i::3]) for i in range(3)]});na=attr(pack(nor),'VEC3',len(nor)//3);ua=attr(pack(uv),'VEC2',len(uv)//2);ia=attr(struct.pack('<'+'H'*len(ind),*ind),'SCALAR',len(ind),5123)
+ meshes.append({'name':name,'primitives':[{'attributes':{'POSITION':pa,'NORMAL':na,'TEXCOORD_0':ua},'indices':ia,'material':mat}]});nodes.append({'name':name,'mesh':len(meshes)-1,'translation':[0,0,0]})
 # Feet planted at Y0, forward +Z. Height ~1.86m.
-ell('Shirt torso',(0,1.19,0),(.245,.315,.14),C,16,10);ell('Trouser hips',(0,.89,0),(.20,.14,.135),P)
+profile('Cotton shirt',[(0,.94,0,.19,.125),(0,1.03,0,.19,.13),(0,1.20,0,.21,.135),(0,1.35,0,.235,.13),(0,1.42,0,.19,.10),(0,1.46,0,.08,.065)],C);profile('Trouser waist',[(0,.83,0,.185,.12),(0,.92,0,.19,.13),(0,.96,0,.18,.12)],P)
 for s in [-1,1]:
- limb('Denim thigh',(s*.11,.9,0),(s*.12,.52,0),.102,P);limb('Denim calf',(s*.12,.5,0),(s*.12,.12,.015),.078,P);ell('Boot',(s*.12,.07,.058),(.088,.07,.16),BOOT)
- ell('Sleeve',(s*.25,1.37,0),(.108,.14,.105),C);limb('Upper arm',(s*.28,1.31,0),(s*.32,1.08,.012),.072,S);limb('Forearm',(s*.32,1.08,.012),(s*.33,.86,.04),.059,S);ell('Palm',(s*.33,.81,.045),(.055,.075,.032),S)
+ profile('Continuous cargo leg',[(s*.12,.12,.015,.075,.075),(s*.12,.25,.01,.08,.08),(s*.12,.40,0,.09,.09),(s*.12,.52,0,.09,.095),(s*.11,.66,0,.105,.10),(s*.11,.82,0,.108,.11),(s*.105,.91,0,.10,.11)],P);ell('Boot',(s*.12,.07,.058),(.088,.07,.16),BOOT)
+ profile('Short cotton sleeve',[(s*.28,1.24,0,.09,.09),(s*.255,1.35,0,.10,.10),(s*.22,1.43,0,.08,.08)],C);profile('Continuous arm',[(s*.33,.86,.04,.047,.04),(s*.33,.94,.03,.055,.05),(s*.32,1.03,.02,.061,.052),(s*.315,1.09,.012,.06,.055),(s*.30,1.19,0,.072,.065),(s*.28,1.28,0,.076,.065)],S);ell('Palm',(s*.33,.81,.045),(.055,.075,.032),S)
  for f in range(4):limb('Individual finger',(s*.33+(f-1.5)*.022,.79,.054),(s*.33+(f-1.5)*.022,.70+abs(f-1.5)*.012,.065),.012,S)
  limb('Thumb',(s*.30,.83,.055),(s*.275,.765,.085),.018,S)
  ell('Ear',(s*.118,1.655,.005),(.027,.048,.021),S);ell('Ear inner',(s*.134,1.655,.019),(.008,.028,.009),L)
