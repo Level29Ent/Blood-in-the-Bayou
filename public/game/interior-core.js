@@ -1,0 +1,20 @@
+'use strict';
+(function(root){
+const METRE=10;
+const LIBRARY={sofa:{w:22,d:9,h:8,hp:75,material:'fabric'},bed:{w:16,d:22,h:6,hp:65,material:'fabric'},counter:{w:22,d:6,h:9,hp:100,material:'wood'},desk:{w:14,d:7,h:7.5,hp:65,material:'wood'},shelf:{w:16,d:5,h:19,hp:90,material:'wood'},booth:{w:18,d:10,h:10,hp:85,material:'fabric'},display:{w:16,d:7,h:9,hp:60,material:'metal'},register:{w:5,d:4,h:4,hp:35,material:'metal'},cabinet:{w:10,d:6,h:15,hp:110,material:'metal'}};
+function overlap(a,b,p=0){return a.x<b.x+b.w+p&&a.x+a.w>b.x-p&&a.y<b.y+b.h+p&&a.y+a.h>b.y-p;}
+function category(v){if(v.apartment||['safe','shelter'].includes(v.id))return 'home';if(v.id==='cafe'||/diner|donut|food|juke/.test(v.depth||v.southern||''))return 'diner';if(['garage','spray'].includes(v.id))return 'workshop';if(v.id==='studio'||v.id==='business'||v.id==='office')return 'office';return 'shop';}
+const SETS={home:['sofa','counter','bed','desk','cabinet'],diner:['booth','counter','booth','shelf'],shop:['display','counter','shelf','display'],workshop:['cabinet','desk','shelf'],office:['desk','cabinet','desk','shelf']};
+function plan(v){const b=v.b,kind=category(v),corridorWidth=Math.min(32,Math.max(26,b.w*.18)),corridor={x:b.x+b.w/2-corridorWidth/2,y:b.y,w:corridorWidth,h:b.h},door={x:(v.doorX??b.x+b.w/2)-25,y:(v.doorY??b.y+b.h)-40,w:50,h:60},station=Number.isFinite(v.stationX)?{x:v.stationX-24,y:v.stationY-24,w:48,h:48}:null,zones=[{name:kind==='home'?'living':'service',x:b.x+5,y:b.y+5,w:(b.w-corridorWidth)/2-5,h:b.h*.48},{name:kind==='home'?'kitchen':'stock',x:b.x+b.w/2+corridorWidth/2,y:b.y+5,w:(b.w-corridorWidth)/2-5,h:b.h*.48},{name:kind==='home'?'bedroom':'work',x:b.x+5,y:b.y+b.h*.52,w:(b.w-corridorWidth)/2-5,h:b.h*.43}];const props=[];
+ for(const [i,name]of SETS[kind].entries()){const spec=LIBRARY[name];let found=null;search:for(let row=0;row<Math.floor((b.h-16)/12);row++)for(const side of [-1,1]){const r={x:side<0?b.x+6:b.x+b.w-6-spec.d,y:b.y+10+row*12,w:spec.d,h:spec.w};if(r.y+r.h>b.y+b.h-8||overlap(r,corridor,4)||overlap(r,door,8)||station&&overlap(r,station,8)||(v.furniture||[]).some(f=>overlap(r,f,5))||props.some(f=>overlap(r,f,8)))continue;found={...r,kind:name,zone:zones.find(z=>overlap(r,z))?.name||'service',height:spec.h,hp:spec.hp,material:spec.material,angle:side<0?Math.PI/2:-Math.PI/2};break search;}if(found)props.push(found);}
+ return {category:kind,metresPerUnit:.1,zones,corridor,props};}
+function damage(prop,n){if(prop.destroyed||!Number.isFinite(n)||n<=0)return false;prop.hp=Math.max(0,prop.hp-n);prop.state=prop.hp===0?'destroyed':prop.hp<prop.maxHp*.5?'damaged':'intact';prop.destroyed=prop.hp===0;return true;}
+function buildProp(T,kind,palette){const s=LIBRARY[kind],g=new T.Group();g.name='Cover · '+kind;const mat=palette[s.material],box=(w,h,d,x,y,z,m=mat)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);g.add(o);};
+ if(kind==='sofa'||kind==='booth'){box(s.w,3,s.d,0,3,0);box(s.w,6,2,0,6,-s.d/2+1);for(const x of [-s.w/2+1,s.w/2-1])box(2,6,s.d,x,5,0);for(const x of [-s.w/4,s.w/4])box(s.w/2-2,1,s.d-2,x,5,1);}
+ else if(kind==='bed'){box(s.w,3,s.d,0,2,0);box(s.w-1,2,s.d-1,0,4,0,palette.fabric);for(const x of [-4,4])box(6,1,4,x,6,-s.d/2+3,palette.paper);}
+ else if(kind==='desk'){box(s.w,1,s.d,0,s.h,0);for(const x of [-s.w/2+1,s.w/2-1])for(const z of [-s.d/2+1,s.d/2-1])box(1,s.h,1,x,s.h/2,z);}
+ else if(kind==='shelf'){for(const x of [-s.w/2+.5,s.w/2-.5])box(1,s.h,s.d,x,s.h/2,0);for(const y of [2,8,14,19])box(s.w,1,s.d,0,y,0);}
+ else {box(s.w,s.h,s.d,0,s.h/2,0);box(s.w+1,.7,s.d+1,0,s.h+.35,0,palette.metal);if(kind==='counter')for(const x of [-6,6])box(7,5,.5,x,4,s.d/2+.2,palette.wood);if(kind==='display')box(s.w-2,1,s.d-2,0,s.h+1,0,palette.paper);}
+ return g;}
+const api={METRE,LIBRARY,SETS,plan,category,damage,overlap,buildProp};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29InteriorCore=api;
+})(typeof window!=='undefined'?window:globalThis);

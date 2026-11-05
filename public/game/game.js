@@ -1049,6 +1049,7 @@ function update(){
   // bullets
   for (const b of bullets){
     const previousX=b.x,previousY=b.y;b.x += b.vx; b.y += b.vy; b.life--;
+    if(window.level29InteriorRuntime?.segmentBullet(b,previousX,previousY,b.x,b.y)){b.life=0;continue;}
     if (level29GameplayMath.blockedSegment(previousX,previousY,b.x,b.y,(x,y)=>solidAt(x,y)&&tileAt(x,y)===T_BLD)){ if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('level29:impact',{detail:{kind:'concrete',x:b.x,y:b.y}}));b.life = 0; parts.push({ k:'spark', x:b.x - b.vx*.5, y:b.y - b.vy*.5, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); continue; }
     for (const z of zombies){
       if (!z.alive || b.hit.has(z)) continue;
