@@ -1,0 +1,71 @@
+# Managed PBR maps, room masks and floor-aware rooftop objective
+
+## Production PBR setup
+The existing renderer/KTX2manager are reused. No secondrenderer,duplicateassetloader
+or globalTexture.dispose on sharedmaps. PBRBindings.apply(material,maps)acquires
+allmaps and assigns onlyifall succeed;failure releases/keepsoriginals. Material
+mustbeStandard/Physical. Albedo/emissive explicitlysRGB,data maps linear;flipY
+preservedunless explicitlyoverridden. release restoresoriginals,returnsmanager
+references;disposeMaterial releasesbindingsthenmaterial only,nototherownersmaps.
+Pendingroomreleasecannotapplylatetextures. build/pagehide releasesbindings.
+
+```js
+const bindings=level29PBRBindings.get();
+await bindings.apply(material,{
+  map:'/game/textures/building_diffuse.ktx2',
+  normalMap:'/game/textures/building_normal.ktx2',
+  roughnessMap:'/game/textures/building_roughness.ktx2'
+});
+// When this material owner retires:
+bindings.disposeMaterial(material);
+```
+
+`/game/textures/pbr-manifest.json` has building/vehiclePaint/mansion/skin profiles.
+FillwithactualauthorizedKTX2maps tobindeligiblematerialsonperiodicworld/character
+scan. Emptybydefault:no actualproductioncompressedmapassets supplied/converted.
+UnlitBasic sign/penthousepaintmaterialsareintentionallynotconvertedbehindtheowner's
+back. Existingprocedural/authoredalbedo/normalmaps stayuntilmanifestprofiledefined.
+Profiles coarsegrained,not perassetUVauthoring. Float0.4metalnessisNOTforcedonstone/
+skin;existingphysicalscalarsretained. No VRAMsavingsclaim.
+ReviewusesoriginaltinyRGBAuncompressedKTX2diffuse+normalfixtures,notBasiscompressed
+productionassets. `node scripts/build-pbr-review-fixtures.cjs` rebuildsfixtures.
+
+## Room masks
+RoomDecorator integeroccupancygrid(default5units=.5m),safeareareserve/occupy/reject
+outofbounds,100kcellsafetycap. Existingsharedplanuses4unitcells,explicitliving/
+kitchen/bedroomzonecontainment forhomefurniture. Door/station/corridor/existingcover
+reserved. Sofas/desksliving,counterskitchen,beds/cabinetsbedroom. Existinginstanced
+clutter/material/coverhealthpipelinepreserved;floorcache2residentunchanged. Legacy
+furniture/oldfloorpropsnotallreplaced;smallrooms maynotfit everycatalogitem. This
+is originalproceduralart,notrealisticnewtexturepacks orlocked60fpsguarantee.
+
+## Floor mission
+OnlyacceptedRoofExtractioncontract createsfloorcombat. Twoarmedmissiondefenders
+onactiveofficefloor,roomgridBFSavoidswalls/desks/loadedcover,LOS/rangefire. Saved
+floorHP/clearedstatewithincontract preventsresetspawning/farming onfloorrevisit.
+Oneflooractorsvisible/active;nosimultaneous10floorAI. Floortransitioncannotascend
+untildefenderscleared;selectedfloorchange emitslevel29:floor-transition event.
+PlayerexplicitU/UP/DOWNstairtransitionskept—notautomaticteleportonproximity or
+continuousphysicalstairs. Enemiesreinforceeachselectedfloor,NOTcontinuousAItracking
+betweenunloadedfloors. Defendersdon'tinvadeapartments/free-roam/campaignorrewire210.
+No automaticplayerpositionUpdateemitter added;gameusesexistingupdateloop.
+
+Combatusescamera-centeredray/spherecandidateandwalls/coverocclusion,notconsolefake
+splatter. Normalfloorfire removesnew2Dworldbullets so groundzombiescannotbehitthrough
+floor. Scopefloorfiredoesn'tscanworldzombiesatfakefloorheight. Existingweaponammo/
+reloadfiresfirst;scopewind/sway isboundedcameraoffset—notwindbulletdrop/fullballistic
+simulation.Missiongunposes/flash retained,notnewrealisticcharacterassets.
+
+Floor10clearrequired beforedata/extraction;goldextractionringatfloor10spawn,within
+20units,correctextractstage,zerodefenders. Existing8slinearzipreturnanddirtycash
+rewarddispatcherkept. Thisstillisindoorfloor10renderingwithmarkedextraction,not a
+newfullymodeledopen-airhelipad/chopper/ziplinevehicle. RespectoldprivateRonniehome.
+
+## Evidence/limits
+422sourceunitchecks/build/TypeScriptpassed beforelastownershiptest;finaltotalinPR.
+Testsatomicmapassignment,rollback,lateunload,sharedmapownership;roomzoneplacement;
+BFSdoorwayroute/scopebounds/extractionconditions. ActualnonGPUworldtesttwoactors,
+ascensionblockeduntilclear,10floorsclearedusingdirectdamagecalls,cache2,data/extract
+stageunlocks. Thisislogicintegration,NOTcombataimplaytest.Freetypephotoassetsnot
+converted,noactualBasisblockcompressedpayloadtested.NativeiOSZIPnotrebuilt.
+GPU/livecityresultsinPR; noSafari/AndroidFPS/crashfixorcomplete210missionclaim.

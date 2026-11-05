@@ -1,0 +1,3 @@
+// Original tiny RGBA KTX2 containers; NOT compressed production textures.
+const fs=require('node:fs'),path=require('node:path'),{pathToFileURL}=require('node:url');
+(async()=>{const k=await import(pathToFileURL(path.resolve('node_modules/three/examples/jsm/libs/ktx-parse.module.js')).href);for(const [name,pixels]of [['pbr-diffuse',[176,155,112,255,74,104,90,255,74,104,90,255,176,155,112,255]],['pbr-normal',[128,128,255,255,140,128,254,255,128,140,254,255,128,128,255,255]]]){const c=new k.KTX2Container();c.vkFormat=k.VK_FORMAT_R8G8B8A8_UNORM;c.pixelWidth=c.pixelHeight=2;c.levels=[{levelData:new Uint8Array(pixels),uncompressedByteLength:16}];fs.writeFileSync('public/game/textures/fixtures/'+name+'.ktx2',k.write(c));}})();
