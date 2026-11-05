@@ -1054,7 +1054,7 @@ function update(){
       if (!z.alive || b.hit.has(z)) continue;
       if (level29GameplayMath.segmentDistance2(z.x,z.y,previousX,previousY,b.x,b.y) < (z.r + 3)**2){
         z.hp -= b.dmg; z.flash = 4; b.hit.add(z); z.lastHit = b.owner || 0; z.killSource=b.owner?'remote':'player'; z.alert = true; z.stun = z.type==='brute' ? 2 : 6;
-        moveCircle(z, b.vx*.12, b.vy*.12, z.r*.8); gore(b.x, b.y, 2);
+        z.impulseX=clamp((z.impulseX||0)+b.vx*.06,-3,3);z.impulseY=clamp((z.impulseY||0)+b.vy*.06,-3,3);moveCircle(z, b.vx*.06, b.vy*.06, z.r*.8); gore(b.x, b.y, 2);
         if (!b.owner){view.hit = 7;window.level29GameFeel?.hit(z.hp<=0);} if (z.hp <= 0) killZombie(z, b.vx, b.vy); else snd('zhit');
         if (b.pierce-- <= 0){ b.life = 0; break; }
       }
