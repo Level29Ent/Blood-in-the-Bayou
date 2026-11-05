@@ -119,7 +119,9 @@ buildCity=function(){farmGPS=false;farmButton.textContent='MAP';dancers=[];anima
   cFarmEntrance(r);
   addSign(root,'LEVEL 29 BAYOU FARM',150,14,r.x+r.w/2,base+48,r.y,'#d3c38c');
   for(let x=r.x;x<=r.x+r.w;x+=24)for(const y of [r.y,r.y+r.h]){if(y===r.y+r.h&&Math.abs(x-(r.x+r.w/2))<40)continue;part(2,16,2,x,8,y,'#96774e');part(23,2,2,x,11,y,'#ad9268');}
-  for(let i=0;i<12;i++){const kind=i<4?'cow':i<8?'pig':'chicken',g=level29FarmModels.create(kind,i);root.add(g);animals.push({g,kind,x:r.x+35+(i%4)*40,y:r.y+82+Math.floor(i/4)*43,seed:i});}
+  const species=city.relocation?['cow','pig','chicken','goat','sheep','duck']:['cow','pig','chicken'];city.farmExhibits=[];
+  for(const [j,kind]of species.entries()){const col=j%3,row=Math.floor(j/3),width=city.relocation?102:58,x=r.x+14+col*(city.relocation?120:76),y=r.y+84+row*65;city.farmExhibits.push({kind,x,y,w:width,h:51});for(let i=0;i<4;i++){const g=level29FarmModels.create(kind,j*4+i);g.scale.multiplyScalar(.65);root.add(g);animals.push({g,kind,x:x+18+(i%2)*(width-36),y:y+14+Math.floor(i/2)*22,seed:j*4+i});}}
+
  }
  for(let i=0;i<4;i++){const c=makeCar((122+i*3)*TILE,(58+i*9)*TILE,Math.PI/2,i%2?'skiff':'cabinboat');c.ambientBoat=true;cars.push(c);const m=makeFigure(false);setFigureColors(m,'#b48a66','#c2a36e','#35485d','#352d29');scene.add(m);if(i%2){const rod=addPart(m.userData.armR,.25,22,.25,0,-7,0,new THREE.MeshStandardMaterial({color:'#6e604b'}));rod.rotation.z=.55;}crew.push({m,c,kind:i%2?'fish':'helm'});}
 };

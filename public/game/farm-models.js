@@ -28,5 +28,7 @@ function create(kind,seed){const g=new THREE.Group();g.name='farm-'+kind;const s
  // Merge static anatomy per material before animation moves the whole animal.
  for(const l of legs)l.userData.noBatch=true;const scale=g.scale.x;g.scale.setScalar(1);if(window.level29BatchStatic)level29BatchStatic(g,legs);g.scale.setScalar(scale);g.userData.kind=kind;g.userData.legs=legs;g.userData.variant=seed;g.scale.multiplyScalar(.94+(seed%4)*.035);return g;
 }
-window.level29FarmModels={create};
+const originalCreate=create;
+function visitorAnimal(kind,seed){if(!['goat','sheep','duck'].includes(kind))return originalCreate(kind,seed);const base=originalCreate(kind==='duck'?'chicken':'cow',seed);base.name='farm-'+kind;base.userData.kind=kind;if(kind==='duck'){base.scale.multiplyScalar(.85);const beak=new THREE.Mesh(new THREE.BoxGeometry(4,.8,2.5),level29World.material('#cb9c3c'));beak.position.set(7,7,0);base.add(beak);}else if(kind==='goat'){base.scale.multiplyScalar(.7);for(const side of [-1,1]){const horn=new THREE.Mesh(new THREE.ConeGeometry(.8,6,8),level29World.material('#cbbfa4'));horn.position.set(6,18,side*2);horn.rotation.z=-.4;base.add(horn);}}else{base.scale.multiplyScalar(.7);const wool=new THREE.Mesh(new THREE.SphereGeometry(1,12,8),level29World.material('#d7d2bb'));wool.scale.set(9,6.5,5.7);wool.position.set(0,9,0);base.add(wool);}return base;}
+window.level29FarmModels={create:visitorAnimal};
 })();
