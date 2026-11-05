@@ -19,7 +19,7 @@ function tank(g,x,y,z,width=30){const root=new THREE.Group();root.name='Living a
  const glass=new THREE.MeshStandardMaterial({color:'#a1e5ee',transparent:true,opacity:.15,roughness:.12,metalness:.1,depthWrite:false});box(root,width,20,18,0,12,0,glass);box(root,width+2,2,20,0,23,0,steel);
  const glow=new THREE.MeshBasicMaterial({color:'#76d8ed'});box(root,width-2,.35,1,0,21,7.8,glow);
  for(let i=0;i<6;i++){const plant=material(i%2?'#467e60':'#5f9662','plaster');const blade=mesh(root,new THREE.ConeGeometry(1,7+i%3,6),plant,-width*.4+i*width*.16,6,-5);blade.rotation.z=(i%2?.2:-.2);}
- const kinds=['koi','goldfish','angelfish','freshwater shrimp','snail'];kinds.forEach((kind,i)=>{const o=fish(kind);o.scale.setScalar(.65);o.position.set(-width*.32+i*width*.16,i<3?7+i*3:3,0);o.userData.origin=o.position.clone();o.userData.phase=i*1.3;o.traverse(n=>{n.userData.noBatch=true;});root.add(o);});return root;}
+ const kinds=['koi','goldfish','angelfish','freshwater shrimp','snail'];kinds.forEach((kind,i)=>{const o=fish(kind);o.scale.setScalar(.65);o.position.set(-width*.32+i*width*.16,i<3?7+i*3:3,0);o.userData.origin=o.position.clone();o.userData.phase=i*1.3;o.traverse(n=>{n.userData.noBatch=true;});root.add(o);});invalidateAnimation(g);return root;}
 function props(kind){const g=new THREE.Group();g.name='Detailed retail props: '+kind;const oak=material('#8b6749'),steel=material('#acb5b9','metal',.7),cloth=material('#48596b','fabric'),cream=material('#e4d8c1','fabric'),dark=material('#26363d','metal');
  const chair=()=>{mesh(g,new THREE.CylinderGeometry(5,6,1,16),steel,0,1,0);rod(g,[0,1,0],[0,7,0],.8,steel);ball(g,0,8,0,6,2,5,cloth);ball(g,0,13,-4,6,5,1.5,cloth);for(const side of [-1,1])rod(g,[side*5,8,-3],[side*5,11,3],.6,steel);};
  if(/BARBER/.test(kind)){chair();mesh(g,new THREE.CircleGeometry(7,24),new THREE.MeshStandardMaterial({color:'#b4d1da',metalness:.9,roughness:.08}),0,18,-8);for(let i=0;i<4;i++)box(g,.5,4,1,-7+i*2,5,6,steel);}
@@ -35,6 +35,8 @@ function props(kind){const g=new THREE.Group();g.name='Detailed retail props: '+
  else if(/EXECUTIVE/.test(kind)){chair();box(g,24,2,10,0,8,8,oak);box(g,9,6,.6,0,13,8,dark);rod(g,[0,8,8],[0,11,8],.4,steel);}
  else{for(let i=0;i<7;i++){const cover=material(['#774b4b','#436c77','#b59652'][i%3],'fabric');box(g,2,8+i%3,5,-12+i*4,6,0,cover);for(let n=0;n<3;n++)box(g,2.05,.15,4.7,-12+i*4,4+n*2,0,cream);}}
  return g;}
-function animate(root,t){root.traverse(o=>{if(o.userData.species){const p=o.userData.origin;if(!p)return;if(['koi','goldfish','angelfish'].includes(o.userData.species)){o.position.x=p.x+Math.sin(t*.5+o.userData.phase)*1.5;o.position.z=p.z+Math.cos(t*.5+o.userData.phase)*2;o.rotation.y=Math.sin(t*.5+o.userData.phase)*.4;if(o.userData.tail)o.userData.tail.rotation.y=Math.sin(t*4+o.userData.phase)*.3;}else o.position.x=p.x+Math.sin(t*.1+o.userData.phase)*.6;}});}
-window.level29InteriorModels={material,mesh,box,ball,rod,fish,tank,props,animate};
+const animationCache=new WeakMap();
+function invalidateAnimation(root){for(let p=root;p;p=p.parent)animationCache.delete(p);}
+function animate(root,t){let actors=animationCache.get(root);if(!actors){actors=[];root.traverse(o=>{if(o.userData.species)actors.push(o);});animationCache.set(root,actors);}for(const o of actors){const p=o.userData.origin;if(!p)continue;if(['koi','goldfish','angelfish'].includes(o.userData.species)){o.position.x=p.x+Math.sin(t*.5+o.userData.phase)*1.5;o.position.z=p.z+Math.cos(t*.5+o.userData.phase)*2;o.rotation.y=Math.sin(t*.5+o.userData.phase)*.4;if(o.userData.tail)o.userData.tail.rotation.y=Math.sin(t*4+o.userData.phase)*.3;}else o.position.x=p.x+Math.sin(t*.1+o.userData.phase)*.6;}}
+window.level29InteriorModels={material,mesh,box,ball,rod,fish,tank,props,animate,invalidateAnimation};
 })();
