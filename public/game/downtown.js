@@ -181,7 +181,7 @@ function buildLots(g){
       const pb=planeMesh(true);pb.position.set((L.x0+(L.x1-L.x0+1)*.8)*T,16,(L.y0+2.5)*T);pb.rotation.y=-Math.PI/2;g.add(pb);
       sign(g,'BOMBER RIDE '+money(BOMBER_COST)+' · 29 SEC',120,18,(L.x0+(L.x1-L.x0+1)*.8)*T,8,(L.y0+4.3)*T,'#ff6b6b','#1a0808');
       const additions=[];for(const [i,label]of ['LEVEL 29 · BAYOU AIR','LEVEL 29 · GULF EXPRESS'].entries()){
-       const p=planeMesh(false);p.name=label;p.position.set((L.x0+7+i*5)*T,14,(L.y0+6)*T);p.rotation.y=-Math.PI/2;
+       const p=planeMesh(false);p.name=label;p.position.set((L.x0+9+i*5)*T,14,(L.y0+6)*T);p.rotation.y=-Math.PI/2;
        for(const side of [-1,1]){const badge=sign(p,label,50,4,-4,0,side*6.9,'#e4c071','#24374a',side<0?Math.PI:0);badge.name='aircraft-brand';}
        const stripe=new THREE.Mesh(new THREE.BoxGeometry(48,.8,13.8),lam(i?'#d4ab50':'#5b4096'));stripe.position.set(-6,-1,0);p.add(stripe);g.add(p);additions.push(p);
        box(g,110,.2,115,p.position.x,.9,p.position.z,lam('#333b40'));sign(g,label,100,5,p.position.x,7,p.position.z+57,'#e4c071','#24374a');
