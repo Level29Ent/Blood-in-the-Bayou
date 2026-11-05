@@ -1,0 +1,9 @@
+'use strict';
+(function(){
+function install(THREE,actor,template){if(!actor?.userData?.body||actor.userData.referenceModel)return false;const model=template.clone(true);model.name='Ronniebaby reference-inspired static GLB';model.scale.setScalar(12);model.rotation.y=Math.PI/2;model.traverse(o=>{if(o.isMesh){o.userData.noBatch=true;o.frustumCulled=true;o.castShadow=false;}});const hidden=[];for(const child of actor.children)if(child!==actor.userData.ring){hidden.push([child,child.visible]);child.visible=false;}actor.add(model);actor.userData.referenceModel=model;actor.userData.referenceHidden=hidden;return true;}
+if(typeof module!=='undefined')module.exports={install};if(typeof window==='undefined')return;
+let pending=null,template=null,failed=false;function load(){if(template)return Promise.resolve(template);if(failed)return Promise.reject(Error('Reference character unavailable'));if(pending)return pending;if(!window.BayouAssets?.GLTFLoader)return Promise.reject(Error('GLTFLoader unavailable'));const loader=new BayouAssets.GLTFLoader(THREE.DefaultLoadingManager);pending=loader.loadAsync('/game/models/characters/ronniebaby.glb').then(g=>{template=g.scene;return template;}).catch(e=>{failed=true;throw e;});return pending;}
+// Keep legacy rig/data for mission scripts, but use only the original model or GLB visually.
+const sync=syncRonnie;syncRonnie=function(){const result=sync.apply(this,arguments);if(!rbMesh?.visible||!player||state==='menu'||!scene)return result;const actor=rbMesh;if(Math.hypot(player.x-ronnie.x,player.y-ronnie.y)>250)return result;if(template)install(THREE,actor,template);else if(!pending&&!failed)load().then(t=>{if(rbMesh===actor)install(THREE,actor,t);}).catch(e=>console.warn('Ronnie model fallback: '+e.message));return result;};
+window.level29RonnieReference={install,load,get loaded(){return !!template;},get failed(){return failed;}};
+})();
