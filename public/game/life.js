@@ -397,9 +397,8 @@ function rebuild(){
  try{spawnGators();spawnBirds();spawnScrap();buildChop();}catch(e){console.warn('life',e);}
  root.children.forEach(c=>{if(!c.isInstancedMesh)noShadow(c);});
  rebuildDecor();
- // Compile shaders for robbery cash, the bag and pets up front so they don't stall play the first time they appear.
- try{const warm=[cashStack(),bagMesh(),...Object.keys(PETS).map(k=>petMesh(k,PET_COLORS[k]))];warm.forEach(w=>{noShadow(w);w.position.set(0,-400,0);root.add(w);});
-  if(typeof renderer!=='undefined'&&renderer&&camera)renderer.compile(scene,camera);warm.forEach(w=>root.remove(w));}catch(e){console.warn('life warmup',e);}
+ // Do not compile the entire city on the first simulation tick.
+ // Shared prop meshes/materials are created on demand by their existing pools.
 }
 const prevUpdate=update;
 update=function(){
