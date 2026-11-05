@@ -64,6 +64,7 @@ function beforeWorld(){
  renderer.toneMapping=THREE.ACESFilmicToneMapping;exposure=lightMode==='dusk'?1.1:1.2;renderer.toneMappingExposure=exposure;
  // One lighting palette for direct rendering and postprocessing; avoid bleaching dark albedo.
  sun.intensity=lightMode==='day'?.8:lightMode==='dusk'?.65:.2;hemi.intensity=lightMode==='night'?.3:.45;
+ if(window.level29AdvancedLighting?.engine.stats.cascades){sun.intensity=0;sun.castShadow=false;}
  scene.environment=env?.texture||scene.environment;if(vmScene)vmScene.environment=scene.environment;
 }
 function drawWorld(){

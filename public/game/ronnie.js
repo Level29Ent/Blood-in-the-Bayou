@@ -279,6 +279,7 @@ fpHUD = function(small){
   if (!ronnie.active || !mission || mission.phase !== 'start' || !player || state === 'talk') return;
   const px = player.car ? player.car.x : player.x, py = player.car ? player.car.y : player.y, d = dist(px, py, ronnie.x, ronnie.y);
   if (d > 700) return;
+  if(d<160&&rbMesh?.userData.nameplate)return; // One nearby identity label, not canvas + sprite.
   const pr = project(ronnie.x, ronnie.y, 30); if (!pr || pr.x < 0 || pr.x > SW || pr.y < 0 || pr.y > SH) return;
   cx.globalAlpha = clamp(1.5 - d / 700, 0, 1);
   hudText('RONNIEBABY', pr.x, pr.y - 18, small ? 15 : 18, '#f4c355', 'center', '900 ');
