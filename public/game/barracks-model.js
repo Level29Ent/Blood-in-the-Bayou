@@ -9,6 +9,6 @@ function build(T,D,b){const p=layout(b),g=new T.Group();g.name='Camp Lejeune-ins
  box(28,101,8,b.x+b.w/2,50.5,b.y+b.h-3,stone);for(const y of [18,52,86])box(8,19,1,b.x+b.w/2,y,b.y+b.h+1.2,glass);for(const side of [-1,1])box(7,25,1,b.x+b.w/2+side*4,12.5,b.y+b.h+1.2,door);box(28,2,12,b.x+b.w/2,28,b.y+b.h-6,roof);
  // Standing-seam roof; geometry stays within the old barracks parcel.
  const half=b.h/2,rise=12,slope=Math.atan2(rise,half);for(const side of [-1,1]){const panel=new T.Mesh(new T.BoxGeometry(b.w,1.5,Math.hypot(half,rise)),roof);panel.position.set(b.x+b.w/2,106,b.y+b.h/2+side*half/2);panel.rotation.x=side*slope;g.add(panel);}for(let x=b.x+6;x<b.x+b.w;x+=10)for(const side of [-1,1]){const seam=new T.Mesh(new T.BoxGeometry(.45,1.8,Math.hypot(half,rise)),roof);seam.position.set(x,107,b.y+b.h/2+side*half/2);seam.rotation.x=side*slope;g.add(seam);}box(b.w,2,2,b.x+b.w/2,113,b.y+b.h/2,roof);
- box(18,3,10,b.x+22,105,b.y+18,dark);box(18,3,10,b.x+b.w-22,105,b.y+18,dark);g.userData.barracksLayout=p;return g;}
+ box(18,3,10,b.x+22,105,b.y+18,dark);box(18,3,10,b.x+b.w-22,105,b.y+18,dark);g.userData.barracksLayout=p;if(typeof window!=='undefined'&&window.level29RoomPerformance?.mergeStatic){const meshes=[];g.traverse(o=>{if(o.isMesh)meshes.push(o);});window.level29RoomPerformance.mergeStatic(T,g,meshes);}return g;}
 if(typeof module!=='undefined')module.exports={layout,build};if(typeof window!=='undefined')window.level29BarracksModel={layout,build};
 })();
