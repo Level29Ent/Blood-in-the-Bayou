@@ -1,0 +1,3 @@
+// Original RGBA container fixture: validates loader/upload, NOT Basis compression or savings.
+const {pathToFileURL}=require('node:url'),fs=require('node:fs'),path=require('node:path');
+(async()=>{const k=await import(pathToFileURL(path.resolve('node_modules/three/examples/jsm/libs/ktx-parse.module.js')).href);const c=new k.KTX2Container();c.vkFormat=k.VK_FORMAT_R8G8B8A8_UNORM;c.pixelWidth=2;c.pixelHeight=2;c.levels=[{levelData:new Uint8Array([210,170,80,255,45,105,90,255,45,105,90,255,210,170,80,255]),uncompressedByteLength:16}];fs.writeFileSync('public/game/textures/fixtures/loader-check.ktx2',k.write(c));})();
