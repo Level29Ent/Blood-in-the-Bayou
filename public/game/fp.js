@@ -321,14 +321,14 @@ function buildingBox(b, h){
   const m = new THREE.Mesh(geo, [fm, fm, rm, rm, fm, fm]); m.position.set(b.x + b.w/2, h/2, b.y + b.h/2); return m;
 }
 function buildCity(){
-  if (cityGroup){ scene.remove(cityGroup); cityGroup.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
+  if (cityGroup){window.level29GroundMemory?.releaseGround(cityGroup,groundCv); scene.remove(cityGroup); cityGroup.traverse(o => { if (o.geometry) o.geometry.dispose(); }); }
   for (const m of carMeshes.values()) scene.remove(m); carMeshes.clear();
   zPool.clear(); sPool.clear(); cPool.clear(); kPool.clear();
   if (bossMesh){ scene.remove(bossMesh); bossMesh = null; }
   decalN = 0; decalMesh.count = 0;
   builtCity = city; cityGroup = new THREE.Group(); scene.add(cityGroup);
   // ground
-  const gt = new THREE.CanvasTexture(groundCv); gt.encoding=THREE.sRGBEncoding;gt.anisotropy = Math.min(4,renderer.capabilities.getMaxAnisotropy());
+  const gt = new THREE.CanvasTexture(groundCv); gt.encoding=THREE.sRGBEncoding;gt.anisotropy = 1;gt.generateMipmaps=false;gt.minFilter=THREE.LinearFilter;
   const ground = new THREE.Mesh(new THREE.PlaneGeometry(WORLD, WORLD), new THREE.MeshStandardMaterial({name:'worldGround',map:gt,roughness:1,metalness:0,envMapIntensity:0}));
   ground.rotation.x = -Math.PI/2; ground.position.set(WORLD/2, 0, WORLD/2); cityGroup.add(ground);
   const sea = new THREE.Mesh(new THREE.PlaneGeometry(9000, 9000), lam(D.id==='pi' ? '#35574f' : '#1f4b66')); sea.rotation.x = -Math.PI/2; sea.position.set(WORLD/2, -1, WORLD/2); cityGroup.add(sea);

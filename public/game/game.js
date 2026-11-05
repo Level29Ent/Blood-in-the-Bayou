@@ -282,7 +282,8 @@ function shade(hex, f){
 }
 function renderGround(){
   const DG = city.world ? WORLD_D : D;
-  GS = WORLD > 4000 ? .75 : 1;
+  const groundBudget=window.level29GroundMemory?level29GroundMemory.groundSize(WORLD,window.level29Graphics?.quality||'low',typeof renderer!=='undefined'&&renderer?renderer.capabilities.maxTextureSize:4096):null;
+  GS = groundBudget?groundBudget.scale:(WORLD > 4000 ? .75 : 1);
   groundCv = document.createElement('canvas'); groundCv.width = Math.round(WORLD*GS); groundCv.height = Math.round(WORLD*GS);
   const g = groundCv.getContext('2d'); g.scale(GS, GS);
   for (let ty=0; ty<MH; ty++) for (let tx=0; tx<MW; tx++){
@@ -1537,12 +1538,13 @@ const loopErrors = new Map();
 function reportLoopError(where, e){
   const key = where + ':' + (e && e.message);
   const n = (loopErrors.get(key) || 0) + 1; loopErrors.set(key, n);
+  window.level29CrashGuard?.report(where,e);
   if (n === 1 || n % 600 === 0) console.error('[loop] ' + where + ' failed (x' + n + '):', e);
 }
 function loop(now){
   // Schedule first so a thrown error in one frame can never stop the game permanently.
   requestAnimationFrame(loop);
-  if (window.bayouAdActive || document.hidden) { last = now; accT = 0; return; }
+  if (window.level29CrashGuard?.halted || window.bayouAdActive || document.hidden) { last = now; accT = 0; return; }
   // Avoid a catch-up spiral on a slow phone: at most three simulation steps per rendered frame.
   accT = Math.min(50, accT + Math.min(50, now - last)*(mpRole?1:(window.level29TimeScale||1))); last = now;
   let stepped = false; const stepStart=performance.now(); let steps=0;
