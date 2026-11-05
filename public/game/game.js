@@ -1235,7 +1235,7 @@ function drawBuilding(b){
     for (const f of [.2, .5, .8]){ const sx = rX0 + rw*f, sy = rY0 + rh*.2; cx.fillStyle = '#2b2e33'; cx.beginPath(); cx.moveTo(sx - 12, sy); cx.lineTo(sx, sy - 22); cx.lineTo(sx + 12, sy); cx.closePath(); cx.fill(); cx.fillStyle = '#c9a43a'; cx.fillRect(sx - 1, sy - 30, 2, 8); }
     return;
   }
-  if (b.kind==='safe'){ cx.fillStyle = '#3cc86e'; cx.font = "900 18px 'Barlow Condensed'"; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText('LEVEL 29 SAFEHOUSE', rX0 + rw/2, rY0 + rh/2); return; }
+  if (b.kind==='safe'){ cx.fillStyle = '#3cc86e'; cx.font = "900 18px 'Barlow Condensed'"; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText('SAFEHOUSE', rX0 + rw/2, rY0 + rh/2); return; }
   if (b.kind==='helipad'){ cx.fillStyle = '#3b4148'; cx.beginPath(); cx.arc(rX0 + rw/2, rY0 + rh/2, Math.min(rw, rh)*.36, 0, 7); cx.fill(); cx.strokeStyle = '#f4c355'; cx.lineWidth = 3; cx.stroke(); cx.fillStyle = '#f4f4f0'; cx.font = "900 " + Math.round(Math.min(rw,rh)*.34) + "px 'Barlow Condensed'"; cx.textAlign = 'center'; cx.textBaseline = 'middle'; cx.fillText('H', rX0 + rw/2, rY0 + rh/2 + 2); return; }
   // AC units / vents
   const n = 2 + Math.floor(hash(b.seed) * 4);

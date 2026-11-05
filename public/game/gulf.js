@@ -293,7 +293,7 @@ function tower(c){
   for(const x of [b.x+2,b.x+b.w/2,b.x+b.w-2])part(g,5,fl+294,b.h+2,x,(fl+294)/2,b.y+b.h/2,'#b4a17e',.45);
   // Porte-cochere and warm brass signage; dark marble foyer and a separate vehicle bay.
   frameRoom(g,b,1,'#262b2d');  for(const x of [b.x-10,b.x+b.w+10])part(g,4,43,4,x,21,b.y+b.h+48,'#bca56c',.6);
-  addSign(g,'LEVEL 29 RESIDENCES',b.w-18,18,b.x+b.w/2,36,b.y+b.h+59,'#d9ba78');
+  addSign(g,'RESIDENCES',b.w-18,18,b.x+b.w/2,36,b.y+b.h+59,'#d9ba78');
   const gapC=b.x+b.w*.24,lobbyR=b.x+b.w*.48;
   resident.lobbyWalls=[{x:b.x,y:b.y,w:b.w,h:4},{x:b.x,y:b.y,w:4,h:b.h},{x:b.x+b.w-4,y:b.y,w:4,h:b.h},
     {x:lobbyR,y:b.y,w:4,h:b.h-45},{x:b.x,y:b.y+b.h-4,w:gapC-22-b.x,h:4},{x:gapC+22,y:b.y+b.h-4,w:lobbyR-gapC-22,h:4}];
@@ -337,7 +337,7 @@ function marina(c){
   part(g,96,2.4,288,p.x0-16,1.4,p.y+16,'#897654');
   for(let x=p.x0;x<p.x1;x+=32){part(g,1,1,p.width,x,3,p.y+16,'#4a4438');for(const z of [p.y-p.width/2+16,p.y+p.width/2+16]){part(g,4,17,4,x,5,z,'#554a36');}}
   addSign(g,'THE BAYOU',250,28,p.x1-82,54,p.y+70,'#91d3dd').rotation.y=Math.PI/2;
-  addSign(g,'LEVEL 29 MARINA · E BOARD · I FISH',290,17,p.x1-85,27,p.y+72,'#ddc080').rotation.y=Math.PI/2;
+  addSign(g,'MARINA · E BOARD · I FISH',290,17,p.x1-85,27,p.y+72,'#ddc080').rotation.y=Math.PI/2;
   // Sign posts sit directly under the rotated BAYOU sign so they never land on the road when the pier moves.
   for(const dz of [-110,110]){const px=p.x1-82,pz=p.y+70+dz;if(!(isRoadCol(Math.floor(px/TILE))||isRoadCol(Math.floor(pz/TILE))))part(g,6,48,6,px,23,pz,'#686554');}
   // Mooring cleats, life rings, shaded fishing deck.
@@ -499,7 +499,7 @@ function applyVehicleTuning(c){const q=c.custom||{},base=CAR_SPECS[c.type]||CAR_
   c.maxHp=base.hp*(1+(q.armor||0)*.25);c.hp=Math.min(c.maxHp,c.hp);
 }
 function saveCar(){if(!save.apartment){toast('BUY AN APARTMENT FIRST');return;}const c=player.car;if(!c||c.boat||c.dead){toast('DRIVE A LAND VEHICLE TO YOUR GARAGE');return;}
-  if(Math.abs(c.v)>1){toast('STOP YOUR VEHICLE BEFORE STORING IT');return;}if(dist(c.x,c.y,resident.garage.x,resident.garage.y)>210){toast('DRIVE TO THE PRIVATE GARAGE AT LEVEL 29 RESIDENCES');return;}
+  if(Math.abs(c.v)>1){toast('STOP YOUR VEHICLE BEFORE STORING IT');return;}if(dist(c.x,c.y,resident.garage.x,resident.garage.y)>210){toast('DRIVE TO THE PRIVATE GARAGE AT RESIDENCES');return;}
   const rec=carRecord(c),idx=save.garage.findIndex(q=>q.id===rec.id);if(idx<0&&save.garage.length>=12){toast('GARAGE FULL · 12 VEHICLE SLOTS');return;}if(idx<0)save.garage.push(rec);else save.garage[idx]=rec;
   player.car=null;cars=cars.filter(q=>q!==c);player.x=resident.lobby.x;player.y=resident.lobby.y;c.driven=false;customCar=null;persist();toast('VEHICLE STORED · CUSTOMIZATIONS SAVED');showStore('garage');
 }
@@ -533,10 +533,10 @@ function showStore(tab='home'){
   openTab=tab;state='shop';mouse.down=false;for(const k in keys)keys[k]=false;
   let html='';
   if(tab==='home'){
-    html=card('LEVEL 29 RESIDENCES','Floor 29 · One bedroom, living room, kitchen, bathroom and Gulf views. Includes a private 12-vehicle garage. All purchases use earned in-game cash.',save.apartment?'ENTER APARTMENT':'BUY APARTMENT · $25,000',save.apartment?'enter-home':'buy-home',!save.apartment&&cash<25000);
+    html=card('RESIDENCES','Floor 29 · One bedroom, living room, kitchen, bathroom and Gulf views. Includes a private 12-vehicle garage. All purchases use earned in-game cash.',save.apartment?'ENTER APARTMENT':'BUY APARTMENT · $25,000',save.apartment?'enter-home':'buy-home',!save.apartment&&cash<25000);
     html+=card('Your private garage','Keep your saved vehicles and their custom parts. Use the motorcourt garage downstairs to store or retrieve a vehicle.','OPEN GARAGE','tab-garage',!save.apartment);
     if(interior==='apartment')html+=card('Elevator','Return to the lobby and private garage.','GO DOWNSTAIRS','leave-home');
-    else html+=card('Find the tower','Level 29 Residences is in the Marina District, east of the Gulf pier. The H marker on the map shows the lobby, and the F marker shows the fishing pier.','CLOSE AND EXPLORE','close');
+    else html+=card('Find the tower','Residences is in the Marina District, east of the Gulf pier. The H marker on the map shows the lobby, and the F marker shows the fishing pier.','CLOSE AND EXPLORE','close');
   }
   if(tab==='garage'){
     html=card('Store current vehicle','Stop at the private garage. Vehicles stay here with every customization. Up to 12 saved cars.','STORE VEHICLE','store-car',!save.apartment||!player.car);

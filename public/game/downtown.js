@@ -23,7 +23,7 @@ CAR_SPECS.slab={name:'HOUSTON SLAB',len:62,wid:25,max:6.8,acc:.14,grip:.78,hp:18
 
 // ---------------------------------------------------------------- lots on the open-world map
 const LOTS=[
-  {id:'airport',w:12,h:11,name:'LEVEL 29 INTERNATIONAL'},
+  {id:'airport',w:12,h:11,name:'INTERNATIONAL'},
   {id:'stadium',w:10,h:8,name:'JESTER STADIUM'},
   {id:'university',w:9,h:6,name:'BAYOU STATE UNIVERSITY'},
   {id:'dealer',w:12,h:10,name:'BONNIE DE VETTE SLAB MOTORS'},
@@ -175,7 +175,7 @@ function buildLots(g){
       for(let k=0;k<12;k++)box(g,T*.6,.3,3,L.x0*T+T*1.4+k*(w-2*T)/12,1,(L.y1-1.5)*T,lam('#f4f1e6'));
       const fb=L.fb,hw=(fb.x1-fb.x0+1)*T,hd=(fb.y1-fb.y0+1)*T;
       if(L.venue)buildVenue(L.venue);else{const hang=cyl(g,hd/2,hd/2,hw-6,fb.x0*T+hw/2,0,fb.y0*T+hd/2,lam('#8d8c96'),20);hang.rotation.z=Math.PI/2;hang.scale.set(1,1,.9);}
-      sign(g,'LEVEL 29 INTERNATIONAL',hw-14,26,fb.x0*T+hw/2,hd*.42,fb.y0*T+hd-2,COL.gold,'#24103a');
+      sign(g,'INTERNATIONAL',hw-14,26,fb.x0*T+hw/2,hd*.42,fb.y0*T+hd-2,COL.gold,'#24103a');
       const towerX=(L.x1+.2)*T,towerZ=(L.y0+1.5)*T;cyl(g,8,10,90,towerX,45,towerZ,lam('#d9d4c4'));cyl(g,16,14,18,towerX,99,towerZ,lam('#2a6a8a',0x062030));
       const p1=planeMesh(false);p1.position.set((L.x0+(L.x1-L.x0+1)*.5)*T,14,(L.y0+2.5)*T);p1.rotation.y=-Math.PI/2;g.add(p1);
       const pb=planeMesh(true);pb.position.set((L.x0+(L.x1-L.x0+1)*.8)*T,16,(L.y0+2.5)*T);pb.rotation.y=-Math.PI/2;g.add(pb);
@@ -588,7 +588,7 @@ function shopPanel(id){const S=SHOPS[id];let m='';return{
   act(a,v){if(a!=='buy')return;const it=S.items[+v];if(cash<it[1])return;cash-=it[1];sfx('cash');if(it[2])player.hp=Math.min(player.maxHp||100,player.hp+it[2]);m='Bought '+it[0]+'.';}};}
 
 // ---------------------------------------------------------------- airport, Bonnie, university, stadium, fishing
-const airportPanel={render(){return '<div class="eb">Level 29 International</div><h2>Airport terminal</h2>'+wallet()+
+const airportPanel={render(){return '<div class="eb">International</div><h2>Airport terminal</h2>'+wallet()+
   '<div class="grid"><div class="card"><b>Jester One</b><p>Purple and gold jet with the Level 29 logo on the tail. Always flying over the city.</p></div><div class="card"><b>Jester Two</b><p>Parked on the apron for display.</p></div><div class="card"><b>B-29 Jester Bomber</b><p>Ride the .50 cal gunner seat for 29 seconds and shoot zombies from the sky. $15 bounty per kill.</p><button class="g" data-a="bomb" '+(cash<BOMBER_COST?'disabled':'')+'>Fly · '+money(BOMBER_COST)+'</button></div></div>'+
   '<p style="color:#a89fb0">Move the mouse, drag the view, or use the right stick to aim the center crosshair. Hold the mouse button, Space, FIRE, or RT to shoot. Hits require a visible zombie under the crosshair; buildings block shots. You can\'t be hurt while you\'re in the air.</p>';},act(a){if(a==='bomb')startBomber();}};
 const bonniePanel={render(){const L=lots.dealer;return '<div class="eb">Owner · in-game cash</div><h2>Bonnie De Vette</h2><button data-a=story>RECOVERY MISSIONS · TALK TO BONNIE</button>'+wallet()+'<p>Welcome to Slab Motors. Choose your ride; I will deliver it to the front lot.</p><div class="grid">'+(L?.inventory||[]).map((r,i)=>'<div class="card"><b>'+CAR_SPECS[r.type].name+'</b><p>'+money(r.price)+'</p><button data-a="vehicle" data-v="'+i+'" '+(cash<r.price?'disabled':'')+'>PURCHASE</button></div>').join('')+'</div><p>Owned vehicles are stored in your local garage.</p>'+((window.level29OpenWorld?.save.dealerGarage)||[]).map((r,i)=>'<button data-a=recall data-v='+i+'>DELIVER OWNED '+CAR_SPECS[r.type].name+'</button>').join('');},act(a,v){
