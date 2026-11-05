@@ -1,0 +1,12 @@
+'use strict';
+(function(){
+const VIDEO_ID='jy8lyAr8620';function embedURL(id){return /^[a-zA-Z0-9_-]{11}$/.test(id)?'https://www.youtube-nocookie.com/embed/'+id+'?autoplay=0&rel=0':null;}
+if(typeof module!=='undefined')module.exports={VIDEO_ID,embedURL};if(typeof window==='undefined')return;
+const panel=document.createElement('section');panel.id='trailerScreen';panel.style.cssText='display:none;position:fixed;inset:0;z-index:125;background:rgba(0,0,0,.95);padding:4vh 4vw;box-sizing:border-box;color:#ecd59c;font:14px monospace';panel.innerHTML='<h2>STUDIO SCREENING · OFFICIAL TRAILER</h2><p>YouTube loads only after you choose Play. Playback depends on the video owner’s embedding permissions.</p><button type="button" id="loadOfficialTrailer">PLAY TRAILER</button> <button type="button" id="closeOfficialTrailer">RETURN TO GAME</button><div id="trailerMount"></div><p><a target="_blank" rel="noopener noreferrer" href="https://www.youtube.com/watch?v=jy8lyAr8620">Open trailer on YouTube</a></p>';document.body.appendChild(panel);let previous=null;
+for(const name of ['click','pointerdown','pointerup','touchstart','touchend','wheel','keydown','keyup'])panel.addEventListener(name,e=>e.stopPropagation());
+function open(){if(!player||player.dead||!['play','shop'].includes(state))return;previous=state;state='shop';mouse.down=false;for(const k in keys)keys[k]=false;document.exitPointerLock?.();panel.style.display='block';}
+function close(){document.getElementById('trailerMount').replaceChildren();panel.style.display='none';if(state==='shop')state=previous||'play';}
+document.getElementById('closeOfficialTrailer').onclick=close;document.getElementById('loadOfficialTrailer').onclick=()=>{const mount=document.getElementById('trailerMount');if(mount.children.length)return;const iframe=document.createElement('iframe');iframe.src=embedURL(VIDEO_ID);iframe.title='Official studio movie trailer';iframe.allow='accelerometer; encrypted-media; gyroscope; picture-in-picture; web-share';iframe.allowFullscreen=true;iframe.referrerPolicy='strict-origin-when-cross-origin';iframe.style.cssText='width:min(960px,92vw);aspect-ratio:16/9;max-height:65vh;border:0;margin-top:14px';mount.appendChild(iframe);};
+addEventListener('keydown',e=>{if(e.key==='Escape'&&panel.style.display==='block'){e.preventDefault();e.stopImmediatePropagation();close();}},true);
+window.level29Trailer={open,close,embedURL,VIDEO_ID};
+})();
