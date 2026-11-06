@@ -255,7 +255,7 @@ function laneDir(c){ // which axis + direction a lane drives, right-hand traffic
 function spawnTraffic(){
   if (state !== 'play' || !player) return;
   const live = cars.filter(c => c.ai && !c.dead);
-  if (live.length >= TRAFFIC_MAX || frame % (live.length < 4 ? 12 : 40)) return;
+  if (live.length >= (window.level29OriginalCity?.trafficLimit(window.level29Graphics?.quality)||TRAFFIC_MAX) || frame % (live.length < 4 ? 12 : 40)) return;
   const px = player.car ? player.car.x : player.x, py = player.car ? player.car.y : player.y;
   const rng = Math.random;
   for (let t=0;t<60;t++){
