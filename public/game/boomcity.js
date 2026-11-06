@@ -26,7 +26,7 @@ CAR_SPECS.steamboat={name:'NATCHEZ STEAMBOAT',len:130,wid:42,max:4.8,acc:.08,gri
 // ---------------------------------------------------------------- map
 const prevGen=genCity;
 genCity=function(di){
-  Object.assign(CAPTAIN,{x:119*T,y:81.5*T});Object.assign(DOCK,{x:123.3*T,y:81.5*T});Object.assign(PIER,{x0:118,x1:120,y0:80,y1:82});Object.assign(BAY,{x0:118,x1:135,y0:54,y1:114});const c=prevGen(di);if(!isEastCity(c))return c;
+  Object.assign(DOOR,{x:(CASINO.x0+CASINO.x1+1)/2*T,y:(CASINO.y1+1)*T+20});Object.assign(CAPTAIN,{x:119*T,y:81.5*T});Object.assign(DOCK,{x:123.3*T,y:81.5*T});Object.assign(PIER,{x0:118,x1:120,y0:80,y1:82});Object.assign(BAY,{x0:118,x1:135,y0:54,y1:114});const c=prevGen(di);if(!isEastCity(c))return c;
   const W=c.width,set=(x,y,t)=>{if(x>=0&&y>=0&&x<W&&y<c.height)c.g[y*W+x]=t;};
   for(let y=BAY.y0;y<=BAY.y1;y++)for(let x=BAY.x0;x<=BAY.x1;x++)set(x,y,T_WATER);
   for(let y=PIER.y0;y<=PIER.y1;y++)for(let x=PIER.x0;x<=PIER.x1;x++)set(x,y,T_BRIDGE);
