@@ -12,7 +12,7 @@ function buildLandmark(T,site,kind,options={}){
   box(w,76,3,cx,38,back,cream,true);for(const s of [-1,1])box(3,76,d,cx+s*w/2,38,back+d/2,cream,true);
   for(const s of [-1,1]){box(66,76,3,cx+s*57,38,back+d,cream,true);box(44,95,42,cx+s*70,47.5,back+d-12,cream,true);part('cone',[29,58,4],roof,cx+s*70,120,back+d-12,[1,1,1],[0,Math.PI/4,0]);box(1.4,22,1.4,cx+s*70,157,back+d-12,iron);box(11,1.5,1.5,cx+s*70,161,back+d-12,iron);}
   box(48,28,4,cx,75,back+d,cream);part('cone',[25,82,4],roof,cx,139,back+d-4,[1,1,1],[0,Math.PI/4,0]);box(1.4,24,1.4,cx,189,back+d-4,iron);box(12,1.4,1.4,cx,194,back+d-4,iron);
-  box(w+8,3,d+8,cx,78,back+d/2,roof);
+  box(w+8,3,d+8,cx,78,back+d/2,roof);for(const side of [-1,1]){const px=cx+side*70;for(const yy of [34,65]){box(13,20,1,px,yy,back+d+10,glass);box(2,20,1.4,px,yy,back+d+10.8,cream);}box(40,2,44,px,92,back+d-12,cream);}part('cyl',[9,9,1,20],cream,cx,98,back+d+3,[1,1,1],[Math.PI/2,0,0]);box(1,6,1,cx,100,back+d+4,iron);box(6,1,1,cx+2,98,back+d+4,iron);for(const side of [-1,1])for(let k=0;k<4;k++){const px=cx+side*40;box(1,32,1,px,54,back+d+3,cream);}box(43,2,4,cx,68,back+d+3,cream);
   for(const side of [-1,1])for(let i=0;i<4;i++){const px=cx+side*52,pz=back+22+i*23;box(32,6,5,px,3,pz,wood,true);box(32,10,1,px,8,pz-2,wood);}
   // Jackson Square pathways and artist fence leave a48unit opening through the south gate.
   for(const side of [-1,1])box(site.w/2-24,1,28,cx+side*(site.w/4+12),.9,z+site.h-20,cream);
