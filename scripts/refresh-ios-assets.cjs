@@ -21,7 +21,7 @@ with zipfile.ZipFile(out) as source:
         for file in sorted((app/'www').rglob('*')):
             if file.is_file():put('www/'+file.relative_to(app/'www').as_posix(),file.read_bytes())
 with zipfile.ZipFile(tmp) as verify:
-    for file in (root/'public/game/models').rglob('*.glb'):
-        if verify.read('www/'+file.relative_to(root/'public/game').as_posix())!=file.read_bytes():raise RuntimeError('Archived model differs from source')
+    for file in (app/'www/models').rglob('*.glb'):
+        if verify.read('www/'+file.relative_to(app/'www').as_posix())!=file.read_bytes():raise RuntimeError('Archived model differs from source')
 os.replace(tmp,out);print('Refreshed iOS game assets; retained native Xcode scaffold. Not compiled/signed.')
 `],{stdio:'inherit'});
