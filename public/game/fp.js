@@ -419,7 +419,7 @@ function buildCity(){
   lamps.forEach(([x, z], i) => { city.lightPoleSolids.push({x:x-1.5,y:z-1.5,w:3,h:3}); dummy.rotation.set(0, Math.PI/4, 0); dummy.scale.set(1, 1, 1); dummy.position.set(x, 0, z); dummy.updateMatrix(); lp.setMatrixAt(i, dummy.matrix);
     dummy.position.set(x + 5, 52, z + 5); dummy.updateMatrix(); lh.setMatrixAt(i, dummy.matrix);
     dummy.rotation.set(0, 0, 0); dummy.position.set(x + 12, .7, z + 12); dummy.scale.set(170, 1, 170); dummy.updateMatrix(); pools.setMatrixAt(i, dummy.matrix); });
-  cityGroup.add(lp, lh, pools); lampPools = pools;
+  pools.userData.lampPoints=lamps;pools.userData.lastSelection=null;cityGroup.add(lp, lh, pools); lampPools = pools;
   lightMode = '';
 }
 const signCache = new Map();
@@ -685,6 +685,9 @@ function syncDynamic(){
 // ---------- Lights that follow the player ----------
 function syncLights(yaw){
   const p = player, night = isNight() && state!=='menu';
+  // Transparent pools are an instance batch: the GPU cannot cull individual distant quads.
+  if(lampPools&&window.level29StreetLighting){const cp=camera.position,q=window.level29Graphics?.quality||'low',key=[Math.floor(cp.x/32),Math.floor(cp.z/32),q,lightMode].join(':');if(lampPools.userData.lastSelection!==key){lampPools.userData.lastSelection=key;const points=lightMode==='day'?[]:level29StreetLighting.nearbyPools(lampPools.userData.lampPoints||[],cp.x,cp.z,q),m=new THREE.Matrix4(),r=new THREE.Quaternion(),scale=new THREE.Vector3(170,1,170),pos=new THREE.Vector3();points.forEach(([x,z],i)=>{pos.set(x+12,.7,z+12);m.compose(pos,r,scale);lampPools.setMatrixAt(i,m);});lampPools.count=points.length;lampPools.instanceMatrix.needsUpdate=true;}}
+
   const cp = camera.position, dir = new THREE.Vector3(); camera.getWorldDirection(dir);
   flash.intensity = night && p && !p.car && !p.dead ? 2.4 : 0;
   flash.position.copy(cp).addScaledVector(dir, -2); flash.position.y -= 2; flash.target.position.copy(cp).addScaledVector(dir, 100);
