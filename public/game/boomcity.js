@@ -71,6 +71,7 @@ function signTex(text,w,h,fg,bg,glow){const cv=document.createElement('canvas');
 function signPlane(g,text,w,h,x,y,z,ry,fg,bg,glow){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:signTex(text,1024,Math.max(128,Math.round(1024*h/w)),fg,bg,glow),transparent:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));m.position.set(x,y,z);m.rotation.y=ry||0;g.add(m);return m;}
 
 function buildCasino(){
+  if(city.riverboatHub)return new THREE.Group();
   const v=city.casinoVenue,b=v?.frontage?.canonical||v?.b||{x:CASINO.x0*T,y:CASINO.y0*T,w:7*T,h:6*T};
   const g=new THREE.Group(),x0=b.x,z0=b.y,w=b.w,d=b.h,cxp=x0+w/2,czp=z0+d/2,front=z0+d;
   const body=lam('#1b1420'),trim=basic('#f2c14e'),pink=basic('#ff3d8b'),cyan=basic('#3de0ff');
