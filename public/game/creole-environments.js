@@ -3,7 +3,7 @@
   function contains(r,x,y,p=0){return r&&x>=r.x-p&&x<=r.x+r.w+p&&y>=r.y-p&&y<=r.y+r.h+p;}
   function waveStep(s,dt,alive){if(s.failed||s.done)return null;s.time-=Math.max(0,Math.min(.1,dt));if(s.hp<=0||s.time<=0){s.failed=true;return 'failed';}if(alive===0){s.wave++;if(s.wave>3){s.done=true;return 'complete';}return 'wave';}return null;}
   function buildRegion(T,site,kind,options={}){
-    const root=new T.Group();root.name='Creole environment · '+kind;const solids=[],decks=[],waters=[],buckets=new Map(),palette=new Map();
+    const root=new T.Group();root.name='Creole environment · '+kind;const solids=[],decks=[],waters=[],buckets=new Map(),palette=new Map(),shapes=[];
     const mat=(c,metal=0,rough=.85)=>{const k=c+metal+rough;if(!palette.has(k))palette.set(k,options.material?options.material(c,metal,rough):new T.MeshStandardMaterial({color:c,metalness:metal,roughness:rough}));return palette.get(k);};
     const wood=mat('#71543d'),iron=mat('#25363a',.6,.5),brick=mat('#8e4f40'),trim=mat('#dfcfb1'),leaf=mat('#344e3c'),moss=mat('#718069'),dark=mat('#253b46',.25,.4),glow=new T.MeshBasicMaterial({color:'#ffcc84'}),neon=new T.MeshBasicMaterial({color:'#ef9fc8'});
     function box(w,h,d,x,y,z,m){if(!buckets.has(m))buckets.set(m,[]);buckets.get(m).push([w,h,d,x,y,z]);}
@@ -35,7 +35,7 @@
       for(let row=0;row<2;row++)for(const side of [-1,1]){const x=site.x+site.w/2+side*82,z=site.y+64+row*126;deck(Math.min(x,site.x+site.w/2),z,82,22,3);for(const dx of [-26,26])for(const dz of [-23,23])box(3,28,3,x+dx,2,z+dz,wood);
         if(row===1&&side===1){deck(x-30,z-26,60,52,3);box(60,32,2,x,20,z-25,wood);box(2,32,52,x+29,20,z,wood);box(2,32,12,x-29,20,z-20,wood);box(2,32,12,x-29,20,z+20,wood);solid(x-30,z-26,60,2);solid(x+28,z-26,2,52);solid(x-30,z-26,2,12);solid(x-30,z+14,2,12);box(20,9,8,x+13,7,z-15,wood);solid(x+3,z-19,20,8);box(50,4,1,x,31,z+27,neon);sign('CYPRESS AFTER HOURS',x,30,z+28,65);}else{box(60,32,52,x,20,z,wood);box(16,21,1,x,15,z+26.1,dark);solid(x-30,z-26,60,52);sign('FISHERMAN '+(row*2+(side>0?2:1)),x,30,z+27,50);}box(66,3,60,x,38,z,iron);
       }
-      const positions=[];for(let i=0;i<18;i++){const x=site.x+30+(i%2)*(site.w-60),z=site.y+22+Math.floor(i/2)*32;positions.push([x,z]);box(5,46,5,x,20,z,wood);box(14,6,12,x,1,z,wood);solid(x-8,z-7,16,14);for(const side of [-1,1]){box(26,6,21,x+side*10,45,z,leaf);box(1,19,1,x+side*14,32,z+6,moss);}}
+      const positions=[];for(let i=0;i<18;i++){const x=site.x+30+(i%2)*(site.w-60),z=site.y+22+Math.floor(i/2)*32;positions.push([x,z]);shapes.push({kind:'trunk',x,y:20,z,scale:[3,46,3],m:wood});shapes.push({kind:'roots',x,y:1,z,scale:[8,6,7],m:wood});solid(x-8,z-7,16,14);for(const side of [-1,1]){shapes.push({kind:'leaf',x:x+side*8,y:45,z,scale:[19,9,16],m:leaf});box(1,19,1,x+side*14,32,z+6,moss);}}
       sign('DEEP CYPRESS BAYOU · BOARDWALK',site.x+site.w/2,28,site.y+site.h,170);
     }else if(kind==='waterfront'){
       // Broad grassy mound beside the existing timber dock, not across its boarding aisle.
@@ -43,8 +43,8 @@
       for(let i=0;i<3;i++){const x=site.x-6,y=site.y-30+i*18;box(12,10,12,x,7,y,wood);solid(x-6,y-6,12,12);for(const d of [-4,4])box(.6,10,12.5,x+d,7,y,iron);}
       sign('MISSISSIPPI RIVERFRONT · SHRIMP LOADING',site.x+30,36,site.y-40,180);
     }
-    const geo=new T.BoxGeometry(),dummy=new T.Object3D();for(const [m,list]of buckets){const mesh=new T.InstancedMesh(geo,m,list.length);list.forEach((p,i)=>{dummy.position.set(p[3],p[4],p[5]);dummy.scale.set(p[0],p[1],p[2]);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});mesh.frustumCulled=true;mesh.castShadow=false;root.add(mesh);}
-    root.userData={solids,decks,waters,neon};return root;
+    const geo=new T.BoxGeometry(),dummy=new T.Object3D();for(const [m,list]of buckets){const mesh=new T.InstancedMesh(geo.clone(),m,list.length),bounds=new T.Box3();list.forEach((p,i)=>{dummy.position.set(p[3],p[4],p[5]);dummy.scale.set(p[0],p[1],p[2]);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);bounds.union(new T.Box3(new T.Vector3(-.5,-.5,-.5),new T.Vector3(.5,.5,.5)).applyMatrix4(dummy.matrix));});mesh.geometry.boundingSphere=bounds.getBoundingSphere(new T.Sphere());mesh.frustumCulled=true;mesh.castShadow=false;root.add(mesh);}
+    for(const kind of ['trunk','roots','leaf']){const list=shapes.filter(p=>p.kind===kind);if(!list.length)continue;const g=kind==='leaf'?new T.SphereGeometry(1,10,7):new T.CylinderGeometry(kind==='trunk'?.65:.35,1,1,8),mesh=new T.InstancedMesh(g,list[0].m,list.length),bounds=new T.Box3();g.computeBoundingBox();list.forEach((p,i)=>{dummy.position.set(p.x,p.y,p.z);dummy.scale.set(...p.scale);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);bounds.union(g.boundingBox.clone().applyMatrix4(dummy.matrix));});g.boundingSphere=bounds.getBoundingSphere(new T.Sphere());mesh.frustumCulled=true;root.add(mesh);}root.userData={solids,decks,waters,neon};return root;
   }
   if(typeof module!=='undefined')module.exports={contains,waveStep,buildRegion};if(typeof window==='undefined')return;
   if(window.level29CreoleReview){window.level29CreoleReview={contains,waveStep,buildRegion};return;}
