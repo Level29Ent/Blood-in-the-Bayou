@@ -6,22 +6,32 @@
   },
   "abandoned": {
     "url": "/game/models/optimized/abandoned-lod.glb",
-    "bytes": 84464,
-    "triangles": 1585
+    "bytes": 84888,
+    "triangles": 1597
   },
   "warehouse": {
     "url": "/game/models/optimized/warehouse-lod.glb",
-    "bytes": 175172,
-    "triangles": 3296
+    "bytes": 172204,
+    "triangles": 3222
   },
   "modern-house": {
     "url": "/game/models/optimized/modern-house-lod.glb",
-    "bytes": 44936,
-    "triangles": 1757
+    "bytes": 32908,
+    "triangles": 1316
   },
   "wooden-house": {
     "url": "/game/models/optimized/wooden-house-lod.glb",
     "bytes": 201940,
     "triangles": 3737
+  },
+  "upload-2cd": {
+    "url": "/game/models/optimized/upload-2cd-lod.glb",
+    "bytes": 745112,
+    "triangles": 2929
+  },
+  "upload-bf86": {
+    "url": "/game/models/optimized/upload-bf86-lod.glb",
+    "bytes": 172652,
+    "triangles": 3282
   }
 }
