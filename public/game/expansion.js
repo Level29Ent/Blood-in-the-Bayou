@@ -419,8 +419,8 @@ function serviceVenue(){
     if(p.car){toast('ENTER THE BUSINESS OFFICE ON FOOT');return;}
     accrueIncome();
     if(!venueSave.owned.includes(v.key)){
-      if(cash<2000){toast('BUSINESS PURCHASE COSTS $2,000');return;}
-      cash-=2000;venueSave.owned.push(v.key);saveVenues();toast('BUSINESS OWNED · EARNS $150 / MINUTE');
+      const cost=window.level29BusinessEconomy.quote(v,venueSave.owned);const bought=window.level29BusinessEconomy.purchase(v,venueSave,cash);if(!bought){toast('BUSINESS PURCHASE COSTS $'+cost.toLocaleString());return;}
+      cash=bought.balance;saveVenues();window.level29Save?.save();toast('BUSINESS OWNED · -$'+bought.cost.toLocaleString()+' · EARNS $150 / MINUTE');
     }else{
       const amount=Math.floor(venueSave.balance);if(amount<1){toast('INCOME ACCUMULATING · $150 / MINUTE PER BUSINESS');return;}
       cash+=amount;venueSave.balance-=amount;saveVenues();toast('BUSINESS INCOME COLLECTED · +$'+amount);
@@ -527,7 +527,7 @@ fpHUD=function(small){
     hudText(v.short,pr.x,pr.y,size,v.col,'center','800 ');
   }
   const station=nearStation(),door=nearDoor();let text='';
-  if(station)text=station.serviceLabel|| (station.id==='garage'?'U · REPAIR CAR $150':station.id==='spray'?(station.wash?'WASHING + RESPRAYING…':'U · WASH + RESPRAY $250'):station.id==='safe'?'U · REST / SAVE CHECKPOINT':station.id==='armory'?'U · BUY WEAPONS / ARMOR':venueSave.owned.includes(station.key)?'U · COLLECT BUSINESS INCOME':'U · BUY BUSINESS $2,000');
+  if(station)text=station.serviceLabel|| (station.id==='garage'?'U · REPAIR CAR $150':station.id==='spray'?(station.wash?'WASHING + RESPRAYING…':'U · WASH + RESPRAY $250'):station.id==='safe'?'U · REST / SAVE CHECKPOINT':station.id==='armory'?'U · BUY WEAPONS / ARMOR':venueSave.owned.includes(station.key)?'U · COLLECT BUSINESS INCOME':'U · BUY BUSINESS $'+window.level29BusinessEconomy.quote(station,venueSave.owned).toLocaleString());
   else if(door)text='E · '+(door.open?'CLOSE':'OPEN')+' '+door.short;
   if(text){const w=Math.min(SW-24,small?310:400),x=(SW-w)/2,y=SH*(small?.73:.78);cx.fillStyle='rgba(9,18,19,.88)';cx.fillRect(x,y,w,34);hudText(text,SW/2,y+8,small?13:16,station?station.col:door.col,'center','800 ');}
 };
