@@ -22,7 +22,7 @@ function standard(m){
  const n=new THREE.MeshStandardMaterial({color:m.color,map:m.map,emissive:m.emissive,emissiveMap:m.emissiveMap,emissiveIntensity:Math.min(m.emissiveIntensity||0,.18),roughness:.72,metalness:.08,side:m.side,vertexColors:m.vertexColors,alphaTest:m.alphaTest||0,normalMap:m.normalMap,bumpMap:m.bumpMap,bumpScale:m.bumpScale,envMapIntensity:.45});n.color=m.color;if(m.emissive)n.emissive=m.emissive;converted.set(m,n);return n;
 }
 function prepare(root){if(!root)return;root.traverse(o=>{
- if(!o.isMesh||prepared.has(o))return;prepared.add(o);
+ if(!o.isMesh||prepared.has(o))return;for(let p=o;p;p=p.parent)if(p.userData.importedPBR)return;prepared.add(o);
  o.material=Array.isArray(o.material)?o.material.map(standard):standard(o.material);
  const surfaces=Array.isArray(o.material)?o.material:[o.material];for(const m of surfaces)if(m?.isMeshStandardMaterial)level29SurfaceDetail.apply(m,level29SurfaceDetail.kind(m.color,m.metalness),false);
  const mats=Array.isArray(o.material)?o.material:[o.material];

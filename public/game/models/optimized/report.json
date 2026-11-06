@@ -55,7 +55,7 @@
     "source": "public/game/models/military tank 3d model.fbx",
     "url": "/game/models/optimized/tank.glb",
     "beforeBytes": 973344,
-    "afterBytes": 456220,
+    "afterBytes": 456204,
     "beforeTriangles": 42725,
     "afterTriangles": 21846,
     "matchedTextureSlots": 0,
@@ -66,7 +66,7 @@
     "source": "public/game/models/modern house 3d model.fbx",
     "url": "/game/models/optimized/modern-house.glb",
     "beforeBytes": 659520,
-    "afterBytes": 501372,
+    "afterBytes": 501356,
     "beforeTriangles": 26889,
     "afterTriangles": 21983,
     "matchedTextureSlots": 0,
@@ -77,7 +77,7 @@
     "source": "public/game/models/pickup truck 3d model.fbx",
     "url": "/game/models/optimized/pickup.glb",
     "beforeBytes": 235472,
-    "afterBytes": 187492,
+    "afterBytes": 187480,
     "beforeTriangles": 9792,
     "afterTriangles": 9792,
     "matchedTextureSlots": 0,
@@ -132,7 +132,7 @@
     "source": "traditional wooden house 3d model/wooden table 3d model.fbx",
     "url": "/game/models/optimized/table.glb",
     "beforeBytes": 492720,
-    "afterBytes": 392632,
+    "afterBytes": 392616,
     "beforeTriangles": 24596,
     "afterTriangles": 22000,
     "matchedTextureSlots": 0,
@@ -149,5 +149,35 @@
     "matchedTextureSlots": 0,
     "maxTexture": 512,
     "runtimeExcluded": true
+  },
+  {
+    "id": "box-truck",
+    "source": "public/game/models/box truck 3d model.glb",
+    "url": "/game/models/optimized/box-truck.glb",
+    "beforeBytes": 9693500,
+    "afterBytes": 1050824,
+    "beforeTriangles": 103195,
+    "afterTriangles": 19260,
+    "maxTexture": 256
+  },
+  {
+    "id": "upload-2cd",
+    "source": "public/game/models/tripo_convert_2cd653c0-b6d2-40ae-abf1-8d023de54f7e.glb",
+    "url": "/game/models/optimized/upload-2cd.glb",
+    "beforeBytes": 3856692,
+    "afterBytes": 994024,
+    "beforeTriangles": 67393,
+    "afterTriangles": 20203,
+    "maxTexture": 512
+  },
+  {
+    "id": "upload-bf86",
+    "source": "public/game/models/tripo_convert_bf86d584-49de-4696-8dff-eeb6e7afe4e7.glb",
+    "url": "/game/models/optimized/upload-bf86.glb",
+    "beforeBytes": 1937540,
+    "afterBytes": 318028,
+    "beforeTriangles": 6600,
+    "afterTriangles": 6600,
+    "maxTexture": 512
   }
 ]

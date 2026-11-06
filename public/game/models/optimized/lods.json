@@ -1,0 +1,27 @@
+{
+  "apartment": {
+    "url": "/game/models/optimized/apartment-lod.glb",
+    "bytes": 702444,
+    "triangles": 13199
+  },
+  "abandoned": {
+    "url": "/game/models/optimized/abandoned-lod.glb",
+    "bytes": 84464,
+    "triangles": 1585
+  },
+  "warehouse": {
+    "url": "/game/models/optimized/warehouse-lod.glb",
+    "bytes": 175172,
+    "triangles": 3296
+  },
+  "modern-house": {
+    "url": "/game/models/optimized/modern-house-lod.glb",
+    "bytes": 44936,
+    "triangles": 1757
+  },
+  "wooden-house": {
+    "url": "/game/models/optimized/wooden-house-lod.glb",
+    "bytes": 201940,
+    "triangles": 3737
+  }
+}
