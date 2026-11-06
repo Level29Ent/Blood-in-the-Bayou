@@ -82,7 +82,7 @@ genCity=function(di){
   const h0=c.heightAt;if(typeof h0==='function')c.heightAt=(x,y)=>hits(x,y,0)?0:h0(x,y);
   if(typeof indexTrees==='function')indexTrees(c);
   const D=lots.dealer;
-  if(D)D.inventory=['lowrider','slab','sedan','suv'].filter(type=>CAR_SPECS[type]).map((type,k)=>({type,price:4500+k*2000,x:(D.x0+1+k*1.9)*T,y:(D.y0+5.4)*T}));
+  if(D)D.inventory=['lowrider','slab','sedan','suv','muscle','pickup','coupe','roadster','wagon','offroad','supercar','van'].filter(type=>CAR_SPECS[type]).map((type,k)=>({type,price:4500+k*2000,x:(D.x0+1+k*1.9)*T,y:(D.y0+5.4)*T}));
   return c;
 };
 
@@ -203,9 +203,10 @@ function buildLots(g){
     }
     else if(id==='dealer'){
       genericBuilding(g,L,48,'#efeae0','#ffffff','#5b2a86');
-      const cols=['#6a1fb0','#c21f6a','#1f9e5a','#d9a520'];
-      cols.forEach((c,k)=>{const pad=new THREE.Group();pad.position.set((L.x0+1+k*(L.x1-L.x0-1)/3)*T,0,(L.y0+5)*T);g.add(pad);
-        cyl(pad,30,32,3,0,1.5,0,lam('#1a1424'));const rec=L.inventory[k],sample=rec?makeCar(0,0,0,rec.type):null;if(sample)sample.col=c;const car=sample?makeCarMesh(sample):lowriderMesh(c);car.position.set(0,3,0);car.rotation.y=Math.PI/2;pad.add(car);spins.push(car);if(rec)priceLabel(pad,CAR_SPECS[rec.type].name+' · '+money(rec.price),0,35,27);});
+      const cols=['#6a1fb0','#c21f6a','#1f9e5a','#d9a520','#356b9e','#e3ddd0','#713d38','#424a55'];
+      const slots=window.level29OriginalCity?level29OriginalCity.dealerSpots(L,T):cols.slice(0,4).map((_,i)=>({x:(L.x0+1+i*(L.x1-L.x0-1)/3)*T,y:(L.y0+5)*T}));
+      slots.forEach((p,k)=>{const pad=new THREE.Group();pad.position.set(p.x,0,p.y);g.add(pad);
+        cyl(pad,25,27,3,0,1.5,0,lam('#1a1424'));const rec=L.inventory[k],sample=rec?makeCar(0,0,0,rec.type):null;if(sample)sample.col=cols[k%cols.length];const car=sample?makeCarMesh(sample):lowriderMesh(cols[k%cols.length]);car.position.set(0,3,0);car.rotation.y=Math.PI/2;pad.add(car);if(rec)priceLabel(pad,CAR_SPECS[rec.type].name+' · '+money(rec.price),0,35,27);});
       const fig=bonnieMesh(),bp=window.level29Frontage?level29Frontage.lotPoint(L,{x:(L.x0+2)*T,y:(L.y0+1.2)*T}):{x:(L.x0+2)*T,y:(L.y0+1.2)*T};fig.position.set(bp.x,L.venue?.baseY||0,bp.y);g.add(fig);dealerFig=fig;
       const bb=new THREE.Mesh(new THREE.PlaneGeometry(56,32),new THREE.MeshBasicMaterial({map:getBonnie(),side:THREE.DoubleSide}));bb.position.set((L.x0+6.6)*T,62,(L.y0+.5)*T);g.add(bb);
       cyl(g,1.5,1.5,46,(L.x0+6.6)*T,23,(L.y0+.5)*T,lam('#333'));
