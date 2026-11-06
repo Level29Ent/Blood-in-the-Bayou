@@ -8,7 +8,7 @@
 - Modern and traditional wooden houses: two existing residential scenery homes.
 - Rusted car: scrap-yard container stacks (existing collision footprint).
 - Pickup: existing pickup vehicle cosmetic body only. Driving/collision unchanged.
-- Rifle: existing carbine view model only; ammo, aiming and damage unchanged.
+- Rifle: existing M240 view model and armory stand; ammo, aiming and damage unchanged. Although the upload is named assault rifle, its rendered mesh is belt-fed with a bipod, so it is matched to M240 rather than changing carbine identity.
 - Tank: safe motor-pool courtyard location if clearance test succeeds. Static prop,
   not a new drivable combat vehicle.
 - King / armor: studio costume displays if safe placement succeeds, not replacement
