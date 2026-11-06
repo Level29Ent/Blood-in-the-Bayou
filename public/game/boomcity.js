@@ -26,7 +26,7 @@ CAR_SPECS.steamboat={name:'NATCHEZ STEAMBOAT',len:130,wid:42,max:4.8,acc:.08,gri
 // ---------------------------------------------------------------- map
 const prevGen=genCity;
 genCity=function(di){
-  const c=prevGen(di);if(!isEastCity(c))return c;
+  Object.assign(CAPTAIN,{x:119*T,y:81.5*T});Object.assign(DOCK,{x:123.3*T,y:81.5*T});Object.assign(PIER,{x0:118,x1:120,y0:80,y1:82});Object.assign(BAY,{x0:118,x1:135,y0:54,y1:114});const c=prevGen(di);if(!isEastCity(c))return c;
   const W=c.width,set=(x,y,t)=>{if(x>=0&&y>=0&&x<W&&y<c.height)c.g[y*W+x]=t;};
   for(let y=BAY.y0;y<=BAY.y1;y++)for(let x=BAY.x0;x<=BAY.x1;x++)set(x,y,T_WATER);
   for(let y=PIER.y0;y<=PIER.y1;y++)for(let x=PIER.x0;x<=PIER.x1;x++)set(x,y,T_BRIDGE);
@@ -345,5 +345,5 @@ drawHUD=function(){prevHUD();if(!player||state==='menu'||!isEastCity(city))retur
 };
 const prevText=window.render_game_to_text;
 window.render_game_to_text=()=>{const x=JSON.parse(prevText?prevText():'{}');x.shrimp=shift&&{contract:shift.def.id,phase:shift.phase,ground:shift.idx,lbs:Math.round(shift.lbs),seconds:Math.ceil(shift.t/60)};x.boomPanel=panelKind;return JSON.stringify(x);};
-window.boomCity={DOOR,CAPTAIN,DOCK,BAY,CONTRACTS,get shift(){return shift;},get save(){return save;},get lastResult(){return lastResult;},openPanel,closePanel,beginShift,endShift,slotPayout};
+window.boomCity={DOOR,CAPTAIN,DOCK,BAY,PIER,CONTRACTS,get shift(){return shift;},get save(){return save;},get lastResult(){return lastResult;},openPanel,closePanel,beginShift,endShift,slotPayout};
 })();

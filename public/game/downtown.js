@@ -170,6 +170,7 @@ function buildLots(g){
   spins=[];
   for(const id in lots){const L=lots[id];
     if(id==='airport'){
+      if(city.relocatedAirport)continue;
       const w=(L.x1-L.x0+1)*T;
       const run=new THREE.Mesh(new THREE.PlaneGeometry(w-T,2.6*T),lam('#2b2b30'));run.rotation.x=-Math.PI/2;run.position.set(L.x0*T+w/2+T/2,.8,(L.y1-1.5)*T);g.add(run);
       for(let k=0;k<12;k++)box(g,T*.6,.3,3,L.x0*T+T*1.4+k*(w-2*T)/12,1,(L.y1-1.5)*T,lam('#f4f1e6'));
@@ -644,5 +645,5 @@ drawFullMap=function(){prevFullMap.apply(this,arguments);if(!isWorld(city))retur
   for(const id in lots){const L=lots[id],x=(L.x0+L.x1+1)/2*T,y=(L.y0+L.y1+1)/2*T;cx.font="800 12px 'Barlow Condensed'";cx.textAlign='center';cx.textBaseline='middle';const w=cx.measureText(L.name).width+10;
     cx.fillStyle='rgba(8,10,12,.8)';cx.fillRect(X+x*sc-w/2,Y+y*sc-8,w,16);cx.fillStyle=COL.gold;cx.fillText(L.name,X+x*sc,Y+y*sc);}}catch(_){}};
 
-window.level29Downtown={get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},get birdTargets(){return birds;},hitBird,startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
+window.level29Downtown={planeMesh,get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},get birdTargets(){return birds;},hitBird,startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
 })();

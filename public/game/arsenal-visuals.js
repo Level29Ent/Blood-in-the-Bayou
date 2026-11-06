@@ -58,7 +58,7 @@ function plate(g,tex,w,h,x,y,z){
 // Combine static parts by material. A detailed package draws in a handful of calls, not dozens.
 function bake(g){
  g.updateMatrixWorld(true);const buckets=new Map(),old=[];
- g.traverse(o=>{if(!o.isMesh||o.userData.keep)return;old.push(o);const mat=o.material,key=mat.uuid+'|'+!!o.userData.firstPersonOnly;if(!buckets.has(key))buckets.set(key,{mat,geos:[],firstPersonOnly:!!o.userData.firstPersonOnly});const a=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();a.applyMatrix4(o.matrixWorld);buckets.get(key).geos.push(a);});
+ g.traverse(o=>{if(!o.isMesh||o.userData.keep)return;for(let p=o.parent;p&&p!==g;p=p.parent)if(p.userData.keep)return;old.push(o);const mat=o.material,key=mat.uuid+'|'+!!o.userData.firstPersonOnly;if(!buckets.has(key))buckets.set(key,{mat,geos:[],firstPersonOnly:!!o.userData.firstPersonOnly});const a=o.geometry.index?o.geometry.toNonIndexed():o.geometry.clone();a.applyMatrix4(o.matrixWorld);buckets.get(key).geos.push(a);});
  for(const o of old)o.parent.remove(o);
  for(const {mat,geos,firstPersonOnly}of buckets.values()){
   const result=new THREE.BufferGeometry();
@@ -121,11 +121,8 @@ function buildM240(){
  rb(g,.45,1.15,.25,metal,.15,-1.8,1.1,.05);
  rb(g,3.1,3.3,3.5,cloth,-2.7,-1.7,-.5,.25);
  for(const z of [-1.7,.7])rb(g,3.25,.24,.26,olive,-2.7,-.4,z,.06);
- for(let i=0;i<8;i++){
-  const x=-3.2+i*.43,y=.35+Math.sin(i*.52)*.26;
-  cy(g,.17,.17,1.3,brass,x,y,-.95);cy(g,.16,.035,.58,copper,x,y,-1.88);
-  rb(g,.22,.15,.45,metal,x,y-.12,-.5,.02);
- }
+ const belt=new THREE.Group();belt.name='M240 feed belt';belt.userData.keep=true;g.add(belt);const cartridges=[];for(let i=0;i<9;i++){const round=new THREE.Group();round.userData.keep=true;const x=-3.2+i*.43,y=.35+Math.sin(i*.52)*.26;cy(round,.17,.17,1.3,brass,0,0,-.95);cy(round,.16,.035,.58,copper,0,0,-1.88);rb(round,.22,.15,.45,metal,0,-.12,-.5,.02);round.position.set(x,y,0);round.userData.restX=x;cartridges.push(round);belt.add(round);}g.userData.feedBelt=cartridges;
+
  for(const s of [-1,1]){const bipod=rb(g,.18,.24,6.8,dark,s*.63,-.7,-11,.05);bipod.rotation.y=s*.075;cy(g,.18,.18,.45,edge,s*.65,-.7,-7.9,'x');}
  screws(g,1.04,.25,-2,4);rb(g,.35,.32,2.2,metal,1.3,.3,1,.08);
  sights(g,-12.8,1.1,2.05);arms(g);
@@ -219,6 +216,7 @@ function supplyCase(){
  halo.rotation.x=-Math.PI/2;halo.position.y=.3;root.add(halo);root.userData.halo=halo;
  return root;
 }
+if(window.level29ArsenalReview){window.level29ArsenalReview={buildM240,buildShotgun,buildRPG,buildBat};return;}
 const oldBuild=buildGtaMeshes;
 buildGtaMeshes=function(){
  oldBuild();
