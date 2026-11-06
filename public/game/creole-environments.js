@@ -40,7 +40,7 @@
     }else if(kind==='waterfront'){
       // Broad grassy mound beside the existing timber dock, not across its boarding aisle.
       box(22,4,110,site.x-32,0,site.y,mat('#526b46'));box(14,7,100,site.x-32,1,site.y,mat('#668155'));
-      for(let i=0;i<3;i++){const x=site.x-6,y=site.y-30+i*18;box(12,10,12,x,7,y,wood);solid(x-6,y-6,12,12);for(const d of [-4,4])box(.6,10,12.5,x+d,7,y,iron);}
+      for(let i=0;i<3;i++){const x=site.x-30,y=site.y-30+i*18;box(12,10,12,x,7,y,wood);solid(x-6,y-6,12,12);for(const d of [-4,4])box(.6,10,12.5,x+d,7,y,iron);}
       sign('MISSISSIPPI RIVERFRONT · SHRIMP LOADING',site.x+30,36,site.y-40,180);
     }
     const geo=new T.BoxGeometry(),dummy=new T.Object3D();for(const [m,list]of buckets){const mesh=new T.InstancedMesh(geo.clone(),m,list.length),bounds=new T.Box3();list.forEach((p,i)=>{dummy.position.set(p[3],p[4],p[5]);dummy.scale.set(p[0],p[1],p[2]);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);bounds.union(new T.Box3(new T.Vector3(-.5,-.5,-.5),new T.Vector3(.5,.5,.5)).applyMatrix4(dummy.matrix));});mesh.geometry.boundingSphere=bounds.getBoundingSphere(new T.Sphere());mesh.frustumCulled=true;mesh.castShadow=false;root.add(mesh);}
