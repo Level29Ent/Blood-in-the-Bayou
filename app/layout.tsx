@@ -52,12 +52,7 @@ export default function RootLayout({
       <body className="antialiased">
         {children}
         {process.env.NODE_ENV === 'production' && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html:
-                "if (typeof navigator.serviceWorker !== 'undefined') { navigator.serviceWorker.register('/sw.js') }",
-            }}
-          />
+          <script src="/offline-registration.js" />
         )}
         {process.env.NODE_ENV === 'production' && <Analytics />}
       </body>

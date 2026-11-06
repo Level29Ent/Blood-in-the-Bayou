@@ -1,15 +1,15 @@
-const CACHE = 'level29-restored-world-v9'
+const CACHE = 'level29-offline-v10'
 const CORE = ['/', '/game/index.html', '/game/three.min.js', '/game/logo.png', '/icons/icon-192.png']
 
 self.addEventListener('install', (event) => {
-  event.waitUntil(caches.open(CACHE).then((c) => c.addAll(CORE)).then(() => self.skipWaiting()))
+  event.waitUntil(caches.open(CACHE).then((c) => Promise.allSettled(CORE.map((url) => c.add(url)))).then(() => self.skipWaiting()))
 })
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches
       .keys()
-      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then((keys) => Promise.all(keys.filter((k) => k.startsWith('level29-') && k !== CACHE).map((k) => caches.delete(k))))
       .then(() => self.clients.claim()),
   )
 })
@@ -25,7 +25,7 @@ self.addEventListener('fetch', (event) => {
       .then((res) => {
         if (res.ok && (url.pathname.startsWith('/game/') || url.pathname.startsWith('/icons/') || url.pathname === '/')) {
           const copy = res.clone()
-          caches.open(CACHE).then((c) => c.put(req, copy))
+          event.waitUntil(caches.open(CACHE).then((c) => c.put(req, copy)).catch(() => {}))
         }
         return res
       })
