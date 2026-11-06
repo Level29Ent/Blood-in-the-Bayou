@@ -26,7 +26,7 @@ CAR_SPECS.steamboat={name:'NATCHEZ STEAMBOAT',len:130,wid:42,max:4.8,acc:.08,gri
 // ---------------------------------------------------------------- map
 const prevGen=genCity;
 genCity=function(di){
-  Object.assign(CAPTAIN,{x:119*T,y:81.5*T});Object.assign(DOCK,{x:123.3*T,y:81.5*T});Object.assign(PIER,{x0:118,x1:120,y0:80,y1:82});Object.assign(BAY,{x0:118,x1:135,y0:54,y1:114});const c=prevGen(di);if(!isEastCity(c))return c;
+  Object.assign(DOOR,{x:(CASINO.x0+CASINO.x1+1)/2*T,y:(CASINO.y1+1)*T+20});Object.assign(CAPTAIN,{x:119*T,y:81.5*T});Object.assign(DOCK,{x:123.3*T,y:81.5*T});Object.assign(PIER,{x0:118,x1:120,y0:80,y1:82});Object.assign(BAY,{x0:118,x1:135,y0:54,y1:114});const c=prevGen(di);if(!isEastCity(c))return c;
   const W=c.width,set=(x,y,t)=>{if(x>=0&&y>=0&&x<W&&y<c.height)c.g[y*W+x]=t;};
   for(let y=BAY.y0;y<=BAY.y1;y++)for(let x=BAY.x0;x<=BAY.x1;x++)set(x,y,T_WATER);
   for(let y=PIER.y0;y<=PIER.y1;y++)for(let x=PIER.x0;x<=PIER.x1;x++)set(x,y,T_BRIDGE);
@@ -71,6 +71,7 @@ function signTex(text,w,h,fg,bg,glow){const cv=document.createElement('canvas');
 function signPlane(g,text,w,h,x,y,z,ry,fg,bg,glow){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:signTex(text,1024,Math.max(128,Math.round(1024*h/w)),fg,bg,glow),transparent:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1}));m.position.set(x,y,z);m.rotation.y=ry||0;g.add(m);return m;}
 
 function buildCasino(){
+  if(city.riverboatHub)return new THREE.Group();
   const v=city.casinoVenue,b=v?.frontage?.canonical||v?.b||{x:CASINO.x0*T,y:CASINO.y0*T,w:7*T,h:6*T};
   const g=new THREE.Group(),x0=b.x,z0=b.y,w=b.w,d=b.h,cxp=x0+w/2,czp=z0+d/2,front=z0+d;
   const body=lam('#1b1420'),trim=basic('#f2c14e'),pink=basic('#ff3d8b'),cyan=basic('#3de0ff');

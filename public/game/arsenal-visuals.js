@@ -82,10 +82,10 @@ function arms(g,one=false){
   m.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),v.normalize());m.position.copy(start.add(end).multiplyScalar(.5));g.add(m);
  };
  const hand=(x,y,z,a)=>{
-  const palm=rb(g,1.65,1.8,2.2,glove,x,y,z,.25);palm.rotation.z=a;
-  rb(g,1.8,.65,1.9,cuff,x,y-.85,z+.6,.18);
-  for(let k=0;k<4;k++){rb(g,.34,.65,1.1,glove,x-.62+k*.4,y+.16,z-.95,.14);rb(g,.27,.13,.65,seam,x-.62+k*.4,y+.54,z-1,.05);}
-  const thumb=rb(g,.55,.7,1.15,glove,x+.94,y-.05,z-.25,.2);thumb.rotation.z=-.55;
+  const palm=rb(g,1.35,1.45,1.85,glove,x,y,z,.25);palm.rotation.z=a;
+  rb(g,1.5,.55,1.65,cuff,x,y-.85,z+.6,.18);
+  for(let k=0;k<4;k++){rb(g,.3,.6,.95,glove,x-.5+k*.33,y+.16,z-.95,.14);rb(g,.23,.12,.5,seam,x-.5+k*.33,y+.54,z-1,.05);}
+  const thumb=rb(g,.45,.65,1,glove,x+.75,y-.05,z-.25,.2);thumb.rotation.z=-.55;
  };
  hand(.6,-2.3,2.5,-.12);
  sleeve([.7,-3.2,3.1],[2.8,-5.4,10.3]);

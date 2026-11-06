@@ -1,0 +1,60 @@
+BLOOD IN THE BAYOU — SURVIVOR STORY RADIO CUES
+Text ready to record; no recorded or synthesized speech is included.
+Delivery: urgent, grounded survivor radio voice. Record separately; leave half a second silence at each end.
+
+RONNIE · STOLEN EQUIPMENT
+equipment_0.wav
+“Warehouse ahead. Find our marked equipment crate.”
+
+equipment_1.wav
+“They heard you. Hold the yard until the lane clears.”
+
+equipment_2.wav
+“Bring the case back to the survivor radio.”
+
+CATHEDRAL · THE HIDDEN KEY
+crypt_0.wav
+“Check the cathedral aisles for the crypt key.”
+
+crypt_1.wav
+“The key fits the buried vault door.”
+
+crypt_2.wav
+“Secure the upgrade case. Do not stay underground.”
+
+crypt_3.wav
+“Return to Jackson Square.”
+
+CITY PARK · LAST SIGNAL
+beacon_0.wav
+“Power the shortwave beacon.”
+
+beacon_1.wav
+“Hold for three minutes. Keep the mounted gun supplied.”
+
+beacon_2.wav
+“The airboat is at the landing. Board to evacuate.”
+
+UNIVERSITY · SAMPLE ZERO
+lab_0.wav
+“Science hall is locked down. Find the containment case.”
+
+lab_1.wav
+“Take the cure sample. The lockdown clock is still running.”
+
+lab_2.wav
+“Leave the lab and return to the quad exit.”
+
+RIVERBOAT · EMERGENCY POWER
+river_0.wav
+“Clear the lower gaming deck.”
+
+river_1.wav
+“Move upstairs. Heavy infected are on the armory deck.”
+
+river_2.wav
+“Restart the marked generator.”
+
+river_3.wav
+“Secure the weapon blueprint.”
+
