@@ -34,7 +34,7 @@ const gen=genCity;genCity=function(){const c=gen.apply(this,arguments);if(!c.wor
  c.trees=c.trees.filter(t=>![T_ROAD,T_BRIDGE].includes(c.get(Math.floor(t.x/TILE),Math.floor(t.y/TILE))));indexTrees(c);return c;
 };
 function build(){const c=city;if(!c?.neighborhood)return;const root=new THREE.Group();root.name='Decatur Bayou neighborhood and outer highway';cityGroup.add(root);const D=level29InteriorModels,M=D.material,brick=M('#bfa88d','brick'),roof=M('#4a5055','metal'),wood=M('#805d42'),glass=M('#456d80','metal',.3),paint=M('#e6d6b4','plaster'),q=level29World.batch(root);const box=(w,h,d,x,y,z,m)=>q.box(w,h,d,x,y+(city.interstateSurface?.(x,z)||0),z,m);
- for(const h of c.neighborhood.homes){const cx=h.x+h.w/2,cz=h.y+h.h/2;box(h.w,h.H,h.h,cx,h.H/2,cz,brick);box(h.w+6,3,h.h+6,cx,h.H+1.5,cz,roof);
+ for(const h of c.neighborhood.homes){if(h.uploadAsset)continue;const cx=h.x+h.w/2,cz=h.y+h.h/2;box(h.w,h.H,h.h,cx,h.H/2,cz,brick);box(h.w+6,3,h.h+6,cx,h.H+1.5,cz,roof);
   if(!h.apartment){const tri=new THREE.Mesh(new THREE.ConeGeometry(h.w*.6,20,4),roof);tri.rotation.y=Math.PI/4;tri.scale.z=h.h/h.w;tri.position.set(cx,h.H+12,cz);root.add(tri);}
   for(let y=15;y<h.H;y+=30)for(const dx of [-h.w*.3,h.w*.3]){box(19,16,1,cx+dx,y,h.y+h.h+.7,glass);box(1,16,1.2,cx+dx,y,h.y+h.h+1,paint);}
   box(14,25,1,cx,12.5,h.y+h.h+1,wood);box(25,2,16,cx,1,h.y+h.h+9,paint);for(const side of [-1,1]){box(1,10,h.h+30,cx+side*(h.w/2+10),5,cz,wood);}box(h.w+20,10,1,cx,5,h.y-12,wood);

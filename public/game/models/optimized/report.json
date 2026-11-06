@@ -1,0 +1,183 @@
+[
+  {
+    "id": "apartment",
+    "source": "public/game/models/apartment building 3d model-2.glb",
+    "url": "/game/models/optimized/apartment.glb",
+    "beforeBytes": 9769216,
+    "afterBytes": 1317812,
+    "beforeTriangles": 100636,
+    "afterTriangles": 25159,
+    "maxTexture": 512
+  },
+  {
+    "id": "wreck",
+    "source": "public/game/models/rusted car 3d model.glb",
+    "url": "/game/models/optimized/wreck.glb",
+    "beforeBytes": 21495896,
+    "afterBytes": 785256,
+    "beforeTriangles": 502152,
+    "afterTriangles": 20080,
+    "maxTexture": 512
+  },
+  {
+    "id": "abandoned",
+    "source": "traditional wooden house 3d model/abandoned brick building 3d model.glb",
+    "url": "/game/models/optimized/abandoned.glb",
+    "beforeBytes": 1897644,
+    "afterBytes": 529508,
+    "beforeTriangles": 45962,
+    "afterTriangles": 16085,
+    "maxTexture": 512
+  },
+  {
+    "id": "rifle",
+    "source": "traditional wooden house 3d model/assault rifle 3d model.glb",
+    "url": "/game/models/optimized/rifle.glb",
+    "beforeBytes": 1867272,
+    "afterBytes": 464872,
+    "beforeTriangles": 10374,
+    "afterTriangles": 7780,
+    "maxTexture": 512
+  },
+  {
+    "id": "warehouse",
+    "source": "public/game/models/concrete warehouse 3d model/tripo_convert_4810b703-934a-4165-9bd2-292f27c7388d.fbx",
+    "url": "/game/models/optimized/warehouse.glb",
+    "beforeBytes": 314476,
+    "afterBytes": 440208,
+    "beforeTriangles": 9958,
+    "afterTriangles": 9958,
+    "matchedTextureSlots": 3,
+    "maxTexture": 512
+  },
+  {
+    "id": "tank",
+    "source": "public/game/models/military tank 3d model.fbx",
+    "url": "/game/models/optimized/tank.glb",
+    "beforeBytes": 973344,
+    "afterBytes": 456204,
+    "beforeTriangles": 42725,
+    "afterTriangles": 21846,
+    "matchedTextureSlots": 0,
+    "maxTexture": 512
+  },
+  {
+    "id": "modern-house",
+    "source": "public/game/models/modern house 3d model.fbx",
+    "url": "/game/models/optimized/modern-house.glb",
+    "beforeBytes": 659520,
+    "afterBytes": 501356,
+    "beforeTriangles": 26889,
+    "afterTriangles": 21983,
+    "matchedTextureSlots": 0,
+    "maxTexture": 512
+  },
+  {
+    "id": "pickup",
+    "source": "public/game/models/pickup truck 3d model.fbx",
+    "url": "/game/models/optimized/pickup.glb",
+    "beforeBytes": 235472,
+    "afterBytes": 187480,
+    "beforeTriangles": 9792,
+    "afterTriangles": 9792,
+    "matchedTextureSlots": 0,
+    "maxTexture": 512
+  },
+  {
+    "id": "king",
+    "source": "public/game/models/royal king 3d model/tripo_convert_c530afd4-6ace-44d2-8c26-435ca8a3d752.fbx",
+    "url": "/game/models/optimized/king.glb",
+    "beforeBytes": 3504988,
+    "afterBytes": 975424,
+    "beforeTriangles": 95250,
+    "afterTriangles": 22000,
+    "matchedTextureSlots": 1,
+    "maxTexture": 512
+  },
+  {
+    "id": "armor",
+    "source": "traditional wooden house 3d model/fantasy armored suit 3d model/tripo_convert_ac38c779-45a0-4b95-8f10-2465f2a1fe4a.fbx",
+    "url": "/game/models/optimized/armor.glb",
+    "beforeBytes": 1391276,
+    "afterBytes": 875252,
+    "beforeTriangles": 45528,
+    "afterTriangles": 21999,
+    "matchedTextureSlots": 1,
+    "maxTexture": 512
+  },
+  {
+    "id": "wooden-house",
+    "source": "traditional wooden house 3d model/tripo_convert_5d925133-642b-461d-8519-193addea061b.fbx",
+    "url": "/game/models/optimized/wooden-house.glb",
+    "beforeBytes": 424508,
+    "afterBytes": 567028,
+    "beforeTriangles": 13546,
+    "afterTriangles": 13546,
+    "matchedTextureSlots": 3,
+    "maxTexture": 512
+  },
+  {
+    "id": "road-segment",
+    "source": "traditional wooden house 3d model/urban road segment 3d model/tripo_convert_123ce287-27be-4315-9c32-bb40fcd835cf.fbx",
+    "url": "/game/models/optimized/road-segment.glb",
+    "beforeBytes": 262332,
+    "afterBytes": 288348,
+    "beforeTriangles": 8775,
+    "afterTriangles": 8775,
+    "matchedTextureSlots": 1,
+    "maxTexture": 512
+  },
+  {
+    "id": "table",
+    "source": "traditional wooden house 3d model/wooden table 3d model.fbx",
+    "url": "/game/models/optimized/table.glb",
+    "beforeBytes": 492720,
+    "afterBytes": 392616,
+    "beforeTriangles": 24596,
+    "afterTriangles": 22000,
+    "matchedTextureSlots": 0,
+    "maxTexture": 512
+  },
+  {
+    "id": "unidentified",
+    "source": "tripo_convert_9102b093-ab96-4ace-b410-3c311230c373.fbx",
+    "url": null,
+    "beforeBytes": 25686828,
+    "afterBytes": 19427040,
+    "beforeTriangles": 938312,
+    "afterTriangles": 390138,
+    "matchedTextureSlots": 0,
+    "maxTexture": 512,
+    "runtimeExcluded": true
+  },
+  {
+    "id": "box-truck",
+    "source": "public/game/models/box truck 3d model.glb",
+    "url": "/game/models/optimized/box-truck.glb",
+    "beforeBytes": 9693500,
+    "afterBytes": 1050824,
+    "beforeTriangles": 103195,
+    "afterTriangles": 19260,
+    "maxTexture": 256
+  },
+  {
+    "id": "upload-2cd",
+    "source": "public/game/models/tripo_convert_2cd653c0-b6d2-40ae-abf1-8d023de54f7e.glb",
+    "url": "/game/models/optimized/upload-2cd.glb",
+    "beforeBytes": 3856692,
+    "afterBytes": 994024,
+    "beforeTriangles": 67393,
+    "afterTriangles": 20203,
+    "maxTexture": 512
+  },
+  {
+    "id": "upload-bf86",
+    "source": "public/game/models/tripo_convert_bf86d584-49de-4696-8dff-eeb6e7afe4e7.glb",
+    "url": "/game/models/optimized/upload-bf86.glb",
+    "beforeBytes": 1937540,
+    "afterBytes": 318028,
+    "beforeTriangles": 6600,
+    "afterTriangles": 6600,
+    "maxTexture": 512
+  }
+]
