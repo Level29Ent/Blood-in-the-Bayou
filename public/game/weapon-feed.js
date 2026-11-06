@@ -1,7 +1,7 @@
 'use strict';
 (function(){
 function casingStep(c,dt){c.age+=Math.min(.05,Math.max(0,dt));c.vy-=28*dt;c.x+=c.vx*dt;c.y+=c.vy*dt;c.z+=c.vz*dt;return c.age<.7;}
-if(typeof module!=='undefined')module.exports={casingStep};if(typeof window==='undefined')return;
+if(typeof module!=='undefined')module.exports={casingStep};if(typeof window==='undefined')return;if(window.level29WeaponFeedReview){window.level29WeaponFeedReview={casingStep};return;}
 let pool=null,owner=null,clock=0,last=0,feed=0,model=null;const shells=[];
 function setup(){pool?.parent?.remove(pool);pool?.geometry.dispose();pool?.material.dispose();pool=new THREE.InstancedMesh(new THREE.CylinderGeometry(.12,.12,.7,8),new THREE.MeshStandardMaterial({color:'#b49a59',metalness:.65,roughness:.35}),12);pool.count=0;pool.frustumCulled=false;vmScene.add(pool);owner=vmScene;shells.length=0;}
 const fired=fireWeapon;fireWeapon=function(){const n=bullets.length,result=fired.apply(this,arguments);if(curW==='m240'&&bullets.length>n){if(vmScene&&owner!==vmScene)setup();if(model!==gun){model=gun;feed=0;}feed+=.43;if(shells.length>=12)shells.shift();shells.push({x:3,y:-3,z:-12,vx:8+Math.random()*3,vy:5,vz:2,age:0});}return result;};
