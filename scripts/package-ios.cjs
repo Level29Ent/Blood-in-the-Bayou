@@ -14,6 +14,7 @@ for (const icon of ['bayou-32.png', 'bayou-apple-180.png']) {
 }
 const html = fs.readFileSync(path.join(www, 'index.html'), 'utf8')
   .replace(/src="\/game\/ads\.js(\?[^"]*)?"/, 'src="ads.js$1"')
+  .replace('<script src="/offline-registration.js"></script>', '')
   .replace(/<script> if \(typeof navigator.serviceWorker[^\n]*<\/script>/, '')
   .replace('</body>', '<script src="native-ads.js"></script></body>');
 fs.writeFileSync(path.join(www, 'index.html'), html);

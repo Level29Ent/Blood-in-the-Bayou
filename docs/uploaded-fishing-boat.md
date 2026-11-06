@@ -1,0 +1,22 @@
+# Uploaded fishing boat and optional offline caching
+
+User-supplied Tripo GLB, SHA256a641ab57d971a08b6ade1710b0317c78bab860340886b2ec7880ea6b637a5288,
+993192bytes/40022triangles,embeddedgeometry,noUVs/images/textures/animations.
+No invented photorealistic texture or licensing claims. Rawsourcepreserved.
+Skiff boat type nowusesuploadedmesh. Rotate+90Y(longZ→gameX),uniformscaletocollision
+length,centerXZ/feetY0. Collider/boarding/fishing/ammo/missionlogicunchanged;
+proceduralskiffonloadfailure.Otherboats/RonnieGLBsretained.
+
+Offline registration moved to shared guarded helper;Promise rejection is consumed,
+one registration per navigator context;native schemes excluded. Headerbanner
+previouslyreportedunhandledswregistrationasGAMEERROR. Serviceworkerinstallnow
+permitsmissingoptionalcorefiles(rootstaticdeploymentsmaynotinclude/gamepath),
+keepsnetworkfirst/offlineexactmatchandneverreturnsHTMLforscriptrequests.
+Cachecleanuprestrictedtolevel29-prefixedcaches. No deletionoflocalStorage/saves.
+ThisdoesnotprovePREPARINGCITYstallcausedbyserviceworker. Cloudflarepages.dev
+hostingnotconfiguredfromthissession;deploycurrentstaticfilesincludingroot
+sw.js+offline-registration.js there separately ifthatdeploymentisstillused.
+
+NativeZIPrefreshedcurrent7models/review/scripts,scaffold/consentpreserved;
+Xcode/iPhonetestandrebuildrequired. Newdownloadisnotinstallednativeupdate.
+ModelreviewusesactualGLTFLoader,notfullgame/FPSproof.Tests/build/browserinPR.
