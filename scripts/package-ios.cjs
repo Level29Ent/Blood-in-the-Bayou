@@ -13,7 +13,7 @@ for (const icon of ['bayou-32.png', 'bayou-apple-180.png']) {
   fs.copyFileSync(path.join(root, 'public/icons', icon), path.join(www, 'icons', icon));
 }
 const html = fs.readFileSync(path.join(www, 'index.html'), 'utf8')
-  .replace('src="/game/ads.js"', 'src="ads.js"')
+  .replace(/src="\/game\/ads\.js(\?[^"]*)?"/, 'src="ads.js$1"')
   .replace(/<script> if \(typeof navigator.serviceWorker[^\n]*<\/script>/, '')
   .replace('</body>', '<script src="native-ads.js"></script></body>');
 fs.writeFileSync(path.join(www, 'index.html'), html);
