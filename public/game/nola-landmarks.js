@@ -77,14 +77,15 @@
         box(48, .6, 350, ox + 224, .5, oz + 192, concrete);
         box(416, .6, 36, ox + 224, .6, oz + 192, concrete);
         for (const r of data.rooms) {
-          const cx = ox + r.x + r.w / 2, cz = oz + r.y + r.h / 2, height = 48, side = (r.w - 40) / 2;
+          const cx = ox + r.x + r.w / 2, cz = oz + r.y + r.h / 2, height = 48, side = (r.w - 40) / 2, wall = r.role === 'library' ? concrete : brick;
           box(r.w, .6, r.h, cx, .5, cz, concrete);
-          box(r.w, height, 3, cx, 24, oz + r.y + 1.5, brick);
-          box(3, height, r.h, ox + r.x + 1.5, 24, cz, brick);
-          box(3, height, r.h, ox + r.x + r.w - 1.5, 24, cz, brick);
-          for (const s of [-1, 1]) box(side, height, 3, cx + s * (20 + side / 2), 24, oz + r.y + r.h - 1.5, brick);
+          box(r.w, height, 3, cx, 24, oz + r.y + 1.5, wall);
+          box(3, height, r.h, ox + r.x + 1.5, 24, cz, wall);
+          box(3, height, r.h, ox + r.x + r.w - 1.5, 24, cz, wall);
+          for (const s of [-1, 1]) box(side, height, 3, cx + s * (20 + side / 2), 24, oz + r.y + r.h - 1.5, wall);
           box(40, 10, 3, cx, 43, oz + r.y + r.h - 1.5, concrete);
           box(r.w + 4, 3, r.h + 4, cx, 50, cz, slate);
+          if (r.role === 'library') for (const s of [-1, 1]) { box(side - 6, 28, .8, cx + s * (20 + side / 2), 23, oz + r.y + r.h + .1, glass); for (let k = 0; k < 3; k++) box(1, 28, 1, cx + s * (25 + k * 15), 23, oz + r.y + r.h + .8, iron); }
           for (const w of [{ x: r.x, y: r.y, w: r.w, h: 3 }, { x: r.x, y: r.y, w: 3, h: r.h }, { x: r.x + r.w - 3, y: r.y, w: 3, h: r.h }, { x: r.x, y: r.y + r.h - 3, w: side, h: 3 }, { x: r.x + r.w / 2 + 20, y: r.y + r.h - 3, w: side, h: 3 }]) solid(site, w);
           doors.push({ x: cx, y: oz + r.y + r.h, room: r.role });
           if (r.role === 'admin') {
