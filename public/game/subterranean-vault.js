@@ -10,7 +10,7 @@
     solids.push({x:7,y:57,w:24,h:98},{x:209,y:57,w:24,h:98});
     const glow=new T.MeshBasicMaterial({color:'#e95a55',transparent:true,opacity:.65,depthWrite:false});for(let i=0;i<4;i++){const m=new T.Mesh(new T.BoxGeometry(160,.4,.4),glow);m.position.set(120,base+9+i*6,92);root.add(m);lasers.push(m);}
     for(let i=0;i<7;i++){box(7,1.2,4,100+i%3*10,base+3+Math.floor(i/3)*1.2,142,mat('#789772'));}
-    const geo=new T.BoxGeometry(),dummy=new T.Object3D();for(const [m,list]of buckets){const mesh=new T.InstancedMesh(geo,m,list.length);list.forEach((p,i)=>{dummy.position.set(p[3],p[4],p[5]);dummy.scale.set(p[0],p[1],p[2]);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});root.add(mesh);}root.userData={doors,solids,lasers,base};return root;
+    const geo=new T.BoxGeometry(),dummy=new T.Object3D();for(const [m,list]of buckets){const mesh=new T.InstancedMesh(geo.clone(),m,list.length),bounds=new T.Box3();list.forEach((p,i)=>{dummy.position.set(p[3],p[4],p[5]);dummy.scale.set(p[0],p[1],p[2]);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);bounds.union(new T.Box3(new T.Vector3(-.5,-.5,-.5),new T.Vector3(.5,.5,.5)).applyMatrix4(dummy.matrix));});mesh.geometry.boundingSphere=bounds.getBoundingSphere(new T.Sphere());mesh.frustumCulled=true;root.add(mesh);}root.userData={doors,solids,lasers,base};return root;
   }
   if(typeof module!=='undefined')module.exports={loot,buildVault};if(typeof window==='undefined')return;if(window.level29VaultReview){window.level29VaultReview={buildVault};return;}
   const ORIGIN={x:8900,y:8900};let root=null,rooms=[],active=null,forCity=null,bank=null,unlock=[false,false],last=0,clock=0,picked=[];try{const x=JSON.parse(localStorage.getItem('level29.bank-sublevels.v1')||'[]');if(Array.isArray(x))picked=x;}catch(_){}
