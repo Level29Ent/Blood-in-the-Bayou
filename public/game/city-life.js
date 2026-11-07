@@ -169,6 +169,8 @@ serviceVenue=function(){if(city?.farm&&!player.car){const r=city.farm;if(player.
 // Successive mission briefings visit successive districts instead of always forcing the mansion.
 const start=placeMissionStart;
 placeMissionStart=function(){start.apply(this,arguments);if(!city?.world||!mission||missionIdx===0||mpRole==='client')return;
+ // The outer campaign router supplies cached connected destinations; do not rescan every map tile.
+ if(window.level29CampaignMap)return;
  const points=[];const prior=moverCtx;moverCtx=player;
  try{for(let y=2;y<MH-2;y++)for(let x=GULF_X+2;x<MW-2;x++){const px=(x+.5)*TILE,py=(y+.5)*TILE;if([T_WALK,T_PLAZA,T_ROAD].includes(city.g[y*MW+x])&&!blockedCircle(px,py,player.r)&&!city.venues.some(v=>insideVenue(v,{x:px,y:py})))points.push({x:px,y:py});}}finally{moverCtx=prior;}
  if(!points.length)return;const p=points[(missionIdx*37)%points.length];mission.start=p;ronnie.x=p.x;ronnie.y=p.y;objective='Meet Ronniebaby at dispatch checkpoint '+(missionIdx+1)+'. Follow the gold beam and map marker.';
