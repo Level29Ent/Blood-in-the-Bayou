@@ -7,3 +7,5 @@ The old direct-render Low path retains desktop fog distances (day2400units/night
 Full generated-world nonGPU camera audit at starting safehouse: estimated visible static mesh/material submissions1433→643. This is a source-frustum estimate,not actualWebGLcalls or measuredSafariFPS. World still constructs14,857meshes eagerly; culling does not unload memory or shorten construction. Static index may need rebuilding for future mutableworldfeatures. Existing new streamed rooms stay under their own culler. Long-session/physicaliPhone verification remains required.
 
 Performance logger now waits for a measured frame interval and includes mobile-visible-world-1,hidden-islandcount. Initial0frame entries are not labeled0FPS anymore. No allissues/crashfree/60FPS claim. Native source archive updated,not built/signed/released. Rendering and tests recorded in PR.
+
+For a desktop-pointer preview browser, `?mobilePreview=1` explicitly opts into the same mobile renderer budget (not touch/input emulation, auth bypass, or physical iPhone testing). Normal phone detection is unchanged. Desktop testing without this flag does not verify the mobile culler.
