@@ -34,7 +34,7 @@
  syncDynamic=function(){sync.apply(this,arguments);if(!camera)return;
   const pos=new THREE.Vector3();
   for(const actor of actors){let root=actor;while(root.parent)root=root.parent;
-   if(root!==scene){if(actor.parent===null)continue;actors.delete(actor);continue;}
+   if(root!==scene){actors.delete(actor);continue;}
    actor.getWorldPosition(pos);const distance=pos.distanceTo(camera.position);
    actor.userData.nameplate.visible=actor.visible&&state!=='menu'&&distance<160&&distance>12;
   }

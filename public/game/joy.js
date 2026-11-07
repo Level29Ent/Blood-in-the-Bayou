@@ -76,6 +76,13 @@ if (coarse){
   }
 }
 
+// Interrupted OS gestures may never deliver pointerup to the original control.
+function releaseTouchGesture(){releaseStick();runHeld=false;document.getElementById('runBtn')?.classList.remove('held');gp.fire=gp.sprint=gp.brake=false;for(const k in touch)touch[k]=false;mouse.down=false;lookTouch=null;}
+addEventListener('blur',releaseTouchGesture);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)releaseTouchGesture();});
+addEventListener('pagehide',releaseTouchGesture);
+addEventListener('webglcontextlost',releaseTouchGesture,true);
+addEventListener('orientationchange',releaseTouchGesture);
 // ---------- Game controller ----------
 let padPrev = [], padName = '';
 addEventListener('gamepadconnected', e => { padName = e.gamepad.id; toast('CONTROLLER CONNECTED · LEFT STICK MOVE · RIGHT STICK LOOK · RT FIRE · A RIDE'); });
@@ -118,7 +125,7 @@ update = function(){
   const live = state === 'play' && player && !player.dead && !showMap;
   if (coarse){ if (zone) zone.classList.toggle('live', live); joyEl.style.display = live ? 'block' : 'none'; }
   else joyEl.style.display = live ? 'block' : 'none';
-  if (!live) releaseStick();
+  if (!live){ releaseStick();runHeld=false;document.getElementById('runBtn')?.classList.remove('held'); }
   if (!padActive) gp.sprint = runHeld && state === 'play';
   if (state !== 'play' && joyPtr == null && !padActive){ stick.x = 0; stick.y = 0; }
   _updJoy();

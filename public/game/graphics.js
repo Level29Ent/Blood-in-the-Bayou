@@ -115,6 +115,7 @@
     const cfg = SHADOW[quality];
     renderer.shadowMap.enabled = !!cfg;
     sun.castShadow = !!cfg;
+    if(!cfg)window.level29MobileBudget?.releaseShadow(sun);
     if (cfg){
       const sh = sun.shadow;
       if (sh.mapSize.x !== cfg.size){
@@ -184,5 +185,5 @@
     baseRender.apply(this, arguments);
   };
 
-  window.level29Graphics={get quality(){return quality;},setQuality(q){if(!['low','medium','high'].includes(q))return;quality=q;try{localStorage.setItem('level29.graphics.stage1',q);}catch(_){}if(typeof renderer!=='undefined'&&renderer&&ready)applyQuality();}};
+  window.level29Graphics={get quality(){return quality;},setQuality(q){if(!['low','medium','high'].includes(q))return;quality=window.level29MobileBudget?.quality(q)||q;try{localStorage.setItem('level29.graphics.stage1',quality);}catch(_){}if(typeof renderer!=='undefined'&&renderer&&ready)applyQuality();}};
 })();

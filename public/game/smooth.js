@@ -80,9 +80,9 @@
   document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
 
   // ---------- Adaptive resolution ----------
-  const MIN_RATIO = isTouch ? .7 : 1;
+  const MIN_RATIO = isTouch ? .45 : 1;
   let ratio = 0, avg = 16.7, lastFrame = 0, lastChange = 0, slowFor = 0, fastFor = 0;
-  function capRatio(){ return mpRole ? Math.min(1, devicePixelRatio || 1) : Math.min(isTouch?1:1.5, devicePixelRatio || 1); }
+  function capRatio(){ if(window.level29MobileBudget?.mobile)return window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio);return mpRole ? Math.min(1, devicePixelRatio || 1) : Math.min(isTouch?1:1.5, devicePixelRatio || 1); }
   function adaptResolution(now, dt){
     if (!renderer || state !== 'play') return;
     const cap = capRatio();
@@ -95,7 +95,7 @@
     if (now - lastChange < 2000) return;
     let next = ratio;
     if(isTouch&&slowFor>2500&&window.level29Graphics?.quality!=='low')window.level29Graphics.setQuality('low');
-    if (slowFor > 1500 && ratio > MIN_RATIO) next = Math.max(MIN_RATIO, ratio - .15);
+    if (slowFor > 1500 && ratio > Math.min(MIN_RATIO,cap)) next = Math.max(Math.min(MIN_RATIO,cap), ratio - .15);
     else if (fastFor > 5000 && ratio < cap) next = Math.min(cap, ratio + .1);
     if (next !== ratio){
       ratio = Math.round(next * 100) / 100;
