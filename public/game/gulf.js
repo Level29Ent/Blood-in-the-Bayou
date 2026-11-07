@@ -207,7 +207,7 @@ blockedCircle=function(x,y,r){
   if(!city||!city.world)return prevBlocked(x,y,r);
   const isZ=!!(moverCtx&&moverCtx.alive!==undefined);
   // Businesses: zombies are locked out completely.
-  for(const v of city.venues){const b=v.b;if(x+r<b.x||x-r>b.x+b.w||y+r<b.y||y-r>b.y+b.h)continue;
+  for(const v of (window.level29Navigation?.nearVenues(x,y,r)||city.venues)){const b=v.b;if(x+r<b.x||x-r>b.x+b.w||y+r<b.y||y-r>b.y+b.h)continue;
     if(isZ)return true; // zombies can never enter any business, safehouse or fortress
     if(v.colliderWalls.some(q=>hitRect(x,y,r,q))||(!v.open&&!isZ&&hitRect(x,y,r,v.colliderDoor))||(!v.open&&isZ&&!v.zOpen&&hitRect(x,y,r,v.colliderDoor))||v.furniture.some(q=>hitRect(x,y,r,q)))return true;
   }
