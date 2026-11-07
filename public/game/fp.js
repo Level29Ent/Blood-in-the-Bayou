@@ -89,7 +89,7 @@ function initGL(){
   const slam = new THREE.Mesh(new THREE.RingGeometry(160, 170, 48).rotateX(-Math.PI/2), new THREE.MeshBasicMaterial({ color: 0xffc850, transparent: true, opacity: .6, depthWrite: false, side: THREE.DoubleSide })); slam.name = 'slam'; slam.position.y = .9;
   bossFx.add(tele, slam); scene.add(bossFx);
   buildViewModel();
-  addEventListener('resize', () => { renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); vmCam.aspect = camera.aspect; vmCam.updateProjectionMatrix(); });
+  addEventListener('resize', () => { if(window.level29MobileBudget?.mobile)renderer.setPixelRatio(Math.min(renderer.getPixelRatio(),window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio)));renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); vmCam.aspect = camera.aspect; vmCam.updateProjectionMatrix(); });
 }
 
 // ---------- Generic object pool ----------
@@ -587,7 +587,7 @@ function syncDynamic(){
   // zombies
   zPool.begin();
   for (const z of zombies){
-    if (!z.alive || dist(z.x, z.y, camP.x, camP.z) > far) continue;
+    if (!z.alive || window.level29MobileHordeSelection?.has(z) || dist(z.x, z.y, camP.x, camP.z) > far) continue;
     const [m, fresh] = zPool.get(z), u = m.userData;
     if (fresh){
       const skin = z.type==='runner' ? '#a3bc6c' : z.type==='brute' ? '#6f8a58' : '#86a46e';

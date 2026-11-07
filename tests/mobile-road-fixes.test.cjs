@@ -1,0 +1,21 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm'),T=require('three');
+const {selectMobile,createHorde,pose}=require('../public/game/survival-instances.js'),{repair}=require('../public/game/road-water-gaps.js');
+test('actual multiplayer render wrapper never overwrites adaptive solo ratio and caps multiplayer mobile',()=>{
+ const s=fs.readFileSync('public/game/mp.js','utf8'),a=s.indexOf('const _renderMP = render;'),b=s.indexOf('const _fpHUDmp',a);let ratio=.65,calls=0;const c={renderer:{getPixelRatio:()=>ratio,setPixelRatio:r=>{ratio=r;calls++;}},MP:{renderScale:1},mpRole:null,window:{level29MobileBudget:{mobile:true,pixelRatio:()=>.85}},innerWidth:390,innerHeight:844,devicePixelRatio:3,render(){},syncTeam(){}};vm.createContext(c);vm.runInContext(s.slice(a,b),c);for(let i=0;i<120;i++)c.render();assert.equal(ratio,.65);assert.equal(calls,0);c.mpRole='host';ratio=1;c.render();assert.equal(ratio,.85);ratio=.6;c.render();assert.equal(ratio,.6);
+});
+test('mobile LOD caps distant ordinary actors without hiding close, brute, story or military models',()=>{
+ const zs=Array.from({length:70},(_,i)=>({alive:true,x:180+i*3,y:0,type:i%2?'runner':'walker',hp:7})),near={alive:true,x:50,y:0},brute={alive:true,x:200,y:0,type:'brute'},story={alive:true,x:200,y:0,storyOperation:'river'},military={alive:true,x:200,y:0,military:true};const drawn=selectMobile([...zs,near,brute,story,military],{x:0,z:0});assert.equal(drawn.length,48);for(const z of [near,brute,story,military])assert.ok(!drawn.includes(z));assert.equal(zs[0].hp,7);const h=createHorde(T,48);pose(T,h,drawn,()=>0);assert.equal(h.children.length,6);assert.ok(h.children.every(m=>m.count===48));
+});
+test('distant actors are selected BEFORE detailed pool creation, share AI objects and clear when absent',()=>{
+ const code=fs.readFileSync('public/game/survival-instances.js','utf8');const c={window:{level29MobileBudget:{mobile:true}},THREE:T,scene:new T.Scene(),city:{world:true},zombies:[{alive:true,x:200,y:0,a:0,anim:0,hp:4}],camera:{position:new T.Vector3()},zPool:{map:new Map()},terrainHeight:()=>0,syncDynamic(){c.skipped=c.window.level29MobileHordeSelection.has(c.zombies[0]);}};vm.createContext(c);vm.runInContext(code,c);c.syncDynamic();assert.equal(c.skipped,true);assert.equal(c.zombies[0].hp,4);assert.equal(c.scene.getObjectByName('Mobile distant zombies').children[0].count,1);c.zombies[0].x=30;c.syncDynamic();assert.equal(c.skipped,false);assert.equal(c.scene.getObjectByName('Mobile distant zombies').children[0].count,0);
+});
+function world(){const width=30,height=20,g=new Uint8Array(width*height);g.fill(4);return {width,height,g,get(x,y){return x<0||y<0||x>=width||y>=height?4:g[y*width+x];},heightAt:()=>0};}
+test('wide straight road interruption receives bridge tiles but single piers and open sea remain water',()=>{
+ const c=world();for(let x=5;x<=11;x++){c.g[5*c.width+x]=1;c.g[9*c.width+x]=1;}c.g[5*c.width+20]=1;c.g[9*c.width+20]=1;const changed=repair(c);assert.equal(changed.length,21);for(let y=6;y<9;y++)for(let x=5;x<=11;x++)assert.equal(c.get(x,y),9);assert.equal(c.get(20,7),4);assert.equal(c.get(2,2),4);assert.equal(repair(c).length,0);
+});
+test('bridge repairs respect protected footprints, gap limit and elevation mismatch',()=>{
+ const c=world();for(const x of [5,6]){c.g[5*c.width+x]=1;c.g[9*c.width+x]=1;}assert.equal(repair(c,{protectedRects:[{x:5*32,y:6*32,w:64,h:96}]}).length,0);assert.equal(repair(c,{maxGap:2}).length,0);c.heightAt=(x,y)=>y>250?40:0;assert.equal(repair(c).length,0);
+});
+test('performance JSON retains build and ratio evidence without diagnostic truncation',()=>{
+ const source=fs.readFileSync('public/game/session-recovery.js','utf8'),a=source.indexOf('function record('),b=source.indexOf("addEventListener('error'",a),c={log:[],boundedLog:(log,item)=>[...log,item].slice(-24),write(){}};vm.createContext(c);vm.runInContext(source.slice(a,b),c);const payload={frames:200,fps:20,frameMs:50,renderCpuMs:30,worstFrameMs:1000,quality:'low',textures:242,geometries:3017,pixelRatio:.65,drawCalls:999,profile:'mobile-road-fix-1',distantZombies:48};c.record('performance',JSON.stringify(payload));assert.equal(JSON.parse(c.log[0].message).profile,'mobile-road-fix-1');c.record('error','x'.repeat(1000));assert.equal(c.log[1].message.length,200);
+});
