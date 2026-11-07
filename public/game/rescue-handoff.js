@@ -1,0 +1,12 @@
+'use strict';
+(function(){
+function handoff(safe,nav,clear,height){if(!safe||!nav)return null;const seed=safe.front||{x:safe.x,y:safe.y},k=nav.nearest(seed.x,seed.y,12);if(k<0)return null;const p=nav.point(k);if(!Number.isFinite(p.x)||!Number.isFinite(p.y)||Math.hypot(p.x-seed.x,p.y-seed.y)>160||!clear(p)||Math.abs(height(p.x,p.y))>5)return null;return {x:p.x,y:p.y,name:'SAFEHOUSE GATE · SURVIVOR HANDOFF'};}
+function arrived(s,p,drop){return !!s&&s.hp>0&&s.following&&!!drop&&Math.hypot(s.x-drop.x,s.y-drop.y)<60&&Math.hypot(p.x-drop.x,p.y-drop.y)<85;}
+if(typeof module!=='undefined')module.exports={handoff,arrived};if(typeof window==='undefined')return;
+function repair(m){if(!city?.world||!m||m.phase!=='active'||m.info.type!=='rescue'||m.extra||m.rescueHandoff)return;const nav=window.level29Navigation?.graph;if(!nav)return;const target=handoff(city.safe,nav,p=>!blockedCircle(p.x,p.y,12),(x,y)=>city.heightAt(x,y));if(!target)return;m.drop=target;m.rescueHandoff=true;const s=survivors[0];if(s){const distance=Math.hypot(s.x-target.x,s.y-target.y);m.timer+=Math.min(60*240,Math.ceil(distance/100)*60);}if(m.step==='escort')objective='Escort the survivor to the marked safehouse gate. Stop near them to let them board your vehicle.';}
+const begin=beginMission;beginMission=function(){if(mission?.phase==='active'||mission?.phase==='done'||mission?.phase==='failed')return;const result=begin.apply(this,arguments);repair(mission);return result;};
+const tick=updateMission;updateMission=function(){repair(mission);const m=mission,s=survivors[0];if(m?.phase==='active'&&m.info.type==='rescue'&&!m.extra&&m.step==='escort'&&s?.hp>0){const p=player.car||player;if(s.inCar){s.x=p.x;s.y=p.y;}if(dist(p.x,p.y,m.drop.x,m.drop.y)<85&&!arrived(s,p,m.drop))objective='SURVIVOR STILL OUTSIDE · Return to their marker; stop to let them board. The gate pays only after their safe arrival.';}
+ return tick.apply(this,arguments);};
+const finish=passMission;passMission=function(){const m=mission;if(m?.phase==='active'&&m.info.type==='rescue'&&!m.extra){const s=survivors[0],p=player.car||player;if(!arrived(s,p,m.drop))return;const result=finish.apply(this,arguments);if(m.extra&&!m.extra.done){m.rescueDelivered=true;objective='SURVIVOR SAFE · Recover their medical kit at the blue F marker, then hold the green extraction zone to finish and earn payment.';toast('SURVIVOR DELIVERED · MEDICAL KIT + EXTRACTION REMAIN');}return result;}return finish.apply(this,arguments);};
+window.level29RescueHandoff={handoff,arrived,repair};
+})();

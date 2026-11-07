@@ -456,10 +456,10 @@ function updateMission(){
   const t = m.info.type;
   if (m.timer > 0 && !(t==='defend' && m.step==='hold') && !(t==='race' && !m.started)){ m.timer--; if (m.timer <= 0) return failMission('OUT OF TIME'); }
   if (t==='rescue'){
-    const s = survivors[0]; if (!s) return;
+    const s = survivors[0]; if (!s) return failMission('SURVIVOR UNAVAILABLE · RETRY THE RESCUE');
     if (s.hp <= 0) return failMission('THE SURVIVOR WAS EATEN');
     if (m.step==='reach' && dist(px, py, s.x, s.y) < 60){ m.step = 'escort'; s.following = true; objective = 'Get the survivor to the safehouse.'; sfx('pickup'); say('Thank god! Get me out of here!'); }
-    if (m.step==='escort' && dist(s.x, s.y, m.drop.x, m.drop.y) < 60) passMission();
+    if (m.step==='escort' && s.following && dist(s.x, s.y, m.drop.x, m.drop.y) < 60 && dist(px,py,m.drop.x,m.drop.y)<85) passMission();
   } else if (t==='clear'){
     objective = 'Clear zombies near ' + streetAt(m.targets[0].x, m.targets[0].y) + ': ' + m.kills + ' / ' + m.need;
     if (frame % 90 === 0 && zombiesNear(m.targets[0].x, m.targets[0].y, 400) < 8) spawnHordeAround(m.targets[0].x, m.targets[0].y, 4);
@@ -1090,7 +1090,11 @@ function update(){
   for (const s of survivors){
     s.anim += .2;
     if (!s.following || mpRole === 'client') continue;
-    if (p.car){ if (dist(s.x, s.y, p.car.x, p.car.y) < 70 || s.inCar){ s.inCar = true; s.x = p.car.x; s.y = p.car.y; } }
+    if (p.car){
+      const d=dist(s.x,s.y,p.car.x,p.car.y);
+      if (d < 70 || s.inCar){ s.inCar = true; s.x = p.car.x; s.y = p.car.y; }
+      else if(d<500){const a=Math.atan2(p.car.y-s.y,p.car.x-s.x);moveCircle(s,Math.cos(a)*3,Math.sin(a)*3,9);}
+    }
     else {
       if (s.inCar){ s.inCar = false; s.x = p.x + 20; s.y = p.y; }
       const d = dist(s.x, s.y, p.x, p.y);
