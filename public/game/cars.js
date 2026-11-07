@@ -122,13 +122,13 @@
       if(!buckets.has(o.material))buckets.set(o.material,[]);buckets.get(o.material).push(o);
     }
     for(const[mat,list]of buckets){
-      if(list.length<2)continue;const positions=[],normals=[],uv=[];
-      for(const o of list){let geo=o.geometry.clone();geo.applyMatrix4(o.matrix);if(geo.index){const ex=geo.toNonIndexed();geo.dispose();geo=ex;}
+      if(list.length<2)continue;const positions=[],normals=[],uv=[],indices=[];
+      for(const o of list){let geo=o.geometry.clone();geo.applyMatrix4(o.matrix);const offset=positions.length/3;if(geo.index){for(let i=0;i<geo.index.count;i++)indices.push(offset+geo.index.getX(i));}else for(let i=0;i<geo.attributes.position.count;i++)indices.push(offset+i);
         const p=geo.attributes.position,n=geo.attributes.normal,u=geo.attributes.uv;
         for(let i=0;i<p.count;i++){positions.push(p.getX(i),p.getY(i),p.getZ(i));normals.push(n?n.getX(i):0,n?n.getY(i):1,n?n.getZ(i):0);uv.push(u?u.getX(i):0,u?u.getY(i):0);}
         geo.dispose();group.remove(o);
       }
-      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));mesh(group,geo,mat);
+      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('normal',new THREE.Float32BufferAttribute(normals,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(indices);mesh(group,geo,mat);
     }
   }
   function body(g,L,W,p,paint){

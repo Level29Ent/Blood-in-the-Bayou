@@ -401,9 +401,9 @@ function batchStatic(root,skip,target){
   function ancestorKept(o){for(let p=o;p&&p!==root;p=p.parent)if(keep.has(p))return true;return false;}
   function add(geo,matrix,material,cx,cz){
     const sig=matSig(material);if(!rep.has(sig))rep.set(sig,material);
-    const key=sig+'#'+Math.floor(cx/1100)+','+Math.floor(cz/1100);let b=buckets.get(key);if(!b){b={sig,pos:[],nor:[],uv:[]};buckets.set(key,b);}
+    const key=sig+'#'+Math.floor(cx/1100)+','+Math.floor(cz/1100);let b=buckets.get(key);if(!b){b={sig,pos:[],nor:[],uv:[],indices:[]};buckets.set(key,b);}
     const p=geo.attributes.position,nr=geo.attributes.normal,uv=geo.attributes.uv,idx=geo.index;_n.getNormalMatrix(matrix);
-    const emit=(i)=>{_v.fromBufferAttribute(p,i).applyMatrix4(matrix);b.pos.push(_v.x,_v.y,_v.z);if(nr){_v.fromBufferAttribute(nr,i).applyMatrix3(_n).normalize();b.nor.push(_v.x,_v.y,_v.z);}else b.nor.push(0,1,0);if(uv)b.uv.push(uv.getX(i),uv.getY(i));else b.uv.push(0,0);};
+    const vertices=new Map();const emit=(i)=>{if(vertices.has(i)){b.indices.push(vertices.get(i));return;}const next=b.pos.length/3;vertices.set(i,next);b.indices.push(next);_v.fromBufferAttribute(p,i).applyMatrix4(matrix);b.pos.push(_v.x,_v.y,_v.z);if(nr){_v.fromBufferAttribute(nr,i).applyMatrix3(_n).normalize();b.nor.push(_v.x,_v.y,_v.z);}else b.nor.push(0,1,0);if(uv)b.uv.push(uv.getX(i),uv.getY(i));else b.uv.push(0,0);};
     return emit;
   }
   root.traverse(o=>{
@@ -429,7 +429,7 @@ function batchStatic(root,skip,target){
   });
   for(const o of remove){if(o.parent)o.parent.remove(o);}
   const out=new THREE.Group();out.name='level29-batched';let n=0;
-  for(const [key,b] of buckets){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(b.pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(b.nor,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));g.computeBoundingSphere();
+  for(const [key,b] of buckets){const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(b.pos,3));g.setAttribute('normal',new THREE.Float32BufferAttribute(b.nor,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(b.uv,2));g.setIndex(b.indices);g.computeBoundingSphere();
     const m=new THREE.Mesh(g,rep.get(b.sig));m.matrixAutoUpdate=false;out.add(m);n++;}
   (target||root).add(out);out.userData.count=n;return out;
 }
