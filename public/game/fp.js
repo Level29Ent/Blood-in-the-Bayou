@@ -48,7 +48,7 @@ function signTex(text, bg, fg, w, h){
 function initGL(){
   const glCv = document.getElementById('gl');
   renderer = new THREE.WebGLRenderer({ canvas: glCv, antialias: false, powerPreference: 'default' });
-  renderer.setPixelRatio(Math.min(1, devicePixelRatio || 1));
+  renderer.setPixelRatio(window.level29MobileBudget?.pixelRatio(innerWidth,innerHeight,devicePixelRatio)||Math.min(1, devicePixelRatio || 1));
   renderer.setSize(innerWidth, innerHeight, false);
   renderer.autoClear = false; renderer.info.autoReset = false;
   scene = new THREE.Scene();

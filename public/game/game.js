@@ -282,7 +282,7 @@ function shade(hex, f){
 }
 function renderGround(){
   const DG = city.world ? WORLD_D : D;
-  const groundBudget=window.level29GroundMemory?level29GroundMemory.groundSize(WORLD,window.level29Graphics?.quality||'low',typeof renderer!=='undefined'&&renderer?renderer.capabilities.maxTextureSize:4096):null;
+  const groundBudget=window.level29GroundMemory?level29GroundMemory.groundSize(WORLD,window.level29Graphics?.quality||'low',typeof renderer!=='undefined'&&renderer?Math.min(renderer.capabilities.maxTextureSize||4096,window.level29MobileBudget?.groundLimit||4096):(window.level29MobileBudget?.groundLimit||4096)):null;
   GS = groundBudget?groundBudget.scale:(WORLD > 4000 ? .75 : 1);
   groundCv = document.createElement('canvas'); groundCv.width = Math.round(WORLD*GS); groundCv.height = Math.round(WORLD*GS);
   const g = groundCv.getContext('2d'); g.scale(GS, GS);
