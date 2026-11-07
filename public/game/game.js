@@ -1061,8 +1061,8 @@ function update(){
         if (b.pierce-- <= 0){ b.life = 0; break; }
       }
     }
-    if (b.life > 0 && boss && !boss.dead && (b.x - boss.x)**2 + (b.y - boss.y)**2 < boss.r**2){ damageBoss(b.dmg); view.hit = 7; b.life = 0; gore(b.x, b.y, 2); if (frame % 3 === 0) snd('bosshit'); }
-    if (b.life > 0) for (const c of cars){ if (c.dead || c === p.car) continue; if ((b.x - c.x)**2 + (b.y - c.y)**2 < (c.r*.8)**2){ damageCar(c, .8,b.owner?'remote':'player',b.owner);if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('level29:impact',{detail:{kind:'metal',x:b.x,y:b.y}})); b.life = 0; parts.push({ k:'spark', x:b.x, y:b.y, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); break; } }
+    if (b.life > 0 && boss && !boss.dead && level29GameplayMath.segmentDistance2(boss.x,boss.y,previousX,previousY,b.x,b.y) < boss.r**2){ damageBoss(b.dmg); view.hit = 7; b.life = 0; gore(b.x, b.y, 2); if (frame % 3 === 0) snd('bosshit'); }
+    if (b.life > 0) for (const c of cars){ if (c.dead || c === p.car) continue; if (level29GameplayMath.segmentDistance2(c.x,c.y,previousX,previousY,b.x,b.y) < (c.r*.8)**2){ damageCar(c, .8,b.owner?'remote':'player',b.owner);if(typeof window!=='undefined')window.dispatchEvent(new CustomEvent('level29:impact',{detail:{kind:'metal',x:b.x,y:b.y}})); b.life = 0; parts.push({ k:'spark', x:b.x, y:b.y, vx:rnd(-1,1), vy:rnd(-1,1), t:8 }); break; } }
   }
   bullets = bullets.filter(b => b.life > 0);
   // boss + spits
