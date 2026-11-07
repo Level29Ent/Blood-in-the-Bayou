@@ -404,8 +404,8 @@ function syncTeam(){
 }
 const _renderMP = render;
 render = function(){ if (renderer){
-  const ratio=mpRole?Math.min(1,devicePixelRatio||1):Math.min(matchMedia('(pointer: coarse)').matches?1:1.5,devicePixelRatio||1);
-  if(MP.renderScale!==ratio){MP.renderScale=ratio;renderer.setPixelRatio(ratio);}
+  // Solo resolution belongs to the adaptive/mobile controller, not this multiplayer wrapper.
+  if(mpRole){const cap=window.level29MobileBudget?.mobile?window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio):Math.min(1,devicePixelRatio||1);if(renderer.getPixelRatio()>cap){MP.renderScale=cap;renderer.setPixelRatio(cap);}}
   syncTeam();
 } _renderMP(); };
 

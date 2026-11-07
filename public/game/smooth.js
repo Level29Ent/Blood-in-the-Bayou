@@ -86,7 +86,7 @@
   function adaptResolution(now, dt){
     if (!renderer || state !== 'play') return;
     const cap = capRatio();
-    if (!ratio) ratio = renderer.getPixelRatio();
+    ratio = renderer.getPixelRatio();
     if (ratio > cap){ ratio = cap; renderer.setPixelRatio(ratio); }
     avg += (dt - avg) * .05;
     if (avg > 24) { slowFor += dt; fastFor = 0; }
@@ -98,7 +98,7 @@
     if (slowFor > 1500 && ratio > Math.min(MIN_RATIO,cap)) next = Math.max(Math.min(MIN_RATIO,cap), ratio - .15);
     else if (fastFor > 5000 && ratio < cap) next = Math.min(cap, ratio + .1);
     if (next !== ratio){
-      ratio = Math.round(next * 100) / 100;
+      ratio = Math.min(cap,Math.round(next * 100) / 100);
       renderer.setPixelRatio(ratio);
       if (typeof MP !== 'undefined') MP.renderScale = capRatio();
       lastChange = now; slowFor = fastFor = 0;
