@@ -20,7 +20,7 @@ function enable(window) {
 }
 test('owner publisher is configured without enabling live ads or routing the iOS unit to web ads', () => {
   const { window, scripts } = setup();
-  assert.equal(window.bayouAdsConfig.publisherId, 'ca-pub-9730543201329278');
+  assert.equal(window.bayouAdsConfig.publisherId, 'ca-pub-8022731487137227');
   assert.equal(window.bayouAdsConfig.enabled, false);
   assert.equal(window.bayouAdsConfig.testMode, true);
   assert.equal(window.bayouAdsConfig.consentGranted, false);

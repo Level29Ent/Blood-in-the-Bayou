@@ -45,7 +45,7 @@ export default function RootLayout({
             separately consent/approval gated inside the game document. */}
         <script
           async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9730543201329278"
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-8022731487137227"
           crossOrigin="anonymous"
         />
       </head>
