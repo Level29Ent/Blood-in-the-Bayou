@@ -89,7 +89,7 @@ function initGL(){
   const slam = new THREE.Mesh(new THREE.RingGeometry(160, 170, 48).rotateX(-Math.PI/2), new THREE.MeshBasicMaterial({ color: 0xffc850, transparent: true, opacity: .6, depthWrite: false, side: THREE.DoubleSide })); slam.name = 'slam'; slam.position.y = .9;
   bossFx.add(tele, slam); scene.add(bossFx);
   buildViewModel();
-  addEventListener('resize', () => { if(window.level29MobileBudget?.mobile)renderer.setPixelRatio(Math.min(renderer.getPixelRatio(),window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio)));renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); vmCam.aspect = camera.aspect; vmCam.updateProjectionMatrix(); });
+  addEventListener('resize', () => { if(window.level29MobileBudget?.mobile)renderer.setPixelRatio(Math.min(renderer.getPixelRatio(),window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio)));renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); window.level29MobileViewport.fitViewmodel(vmCam,innerWidth,innerHeight); });
 }
 
 // ---------- Generic object pool ----------
@@ -444,6 +444,7 @@ decal = function(x, y, kind, s){
 // ---------- View model (gun + hands, dashboard) ----------
 function buildViewModel(){
   vmScene = new THREE.Scene(); vmCam = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, .1, 100);
+  window.level29MobileViewport.fitViewmodel(vmCam,innerWidth,innerHeight);
   vmScene.add(new THREE.HemisphereLight(0xffffff, 0x404040, .9)); const dl = new THREE.DirectionalLight(0xffffff, .6); dl.position.set(-1, 2, 1); vmScene.add(dl); vmScene.userData.lights = [vmScene.children[0], dl];
   gun = new THREE.Group();
   const blk = lam('#1d1e1f'), gry = lam('#3a3c3e'), olv = lam('#4b5320'), gold = lam('#d4a017', { emissive: 0x2a1c00 }), glove = lam('#2b2620'), sleeve = lam('#0d0d0d');
@@ -774,7 +775,7 @@ function fpHUD(small){
     }
   }
   // compass
-  const CW = small ? 190 : 380, CX = SW/2, CY = small ? SH - 44 : 14, range = 1.9, yaw = p.car ? p.car.a + view.look : view.yaw;
+  const CW = small ? 190 : 380, CX = SW/2, CY = small ? SH - 34 : 14, range = 1.9, yaw = p.car ? p.car.a + view.look : view.yaw;
   cx.fillStyle = 'rgba(0,0,0,.45)'; cx.fillRect(CX - CW/2, CY, CW, 26);
   cx.save(); cx.beginPath(); cx.rect(CX - CW/2, CY, CW, 26); cx.clip();
   const pos = a => CX + angDiff(yaw, a) / (range / 2) * (CW / 2);
@@ -785,7 +786,7 @@ function fpHUD(small){
   if (tg) blipC(tg.x, tg.y, tg.col, tg.label);
   cx.restore();
   cx.fillStyle = '#f4c355'; cx.beginPath(); cx.moveTo(CX - 5, CY + 26); cx.lineTo(CX + 5, CY + 26); cx.lineTo(CX, CY + 21); cx.fill();
-  if (tg) hudText(Math.round(dist(ox, oy, tg.x, tg.y) / 10) + ' M', CX, small ? CY - 16 : CY + 30, 12, tg.col, 'center', '700 ');
+  if (tg && !small) hudText(Math.round(dist(ox, oy, tg.x, tg.y) / 10) + ' M', CX, CY + 30, 12, tg.col, 'center', '700 ');
   // jester portrait by the minimap (desktop)
   if (!small && headImg.complete && headImg.naturalWidth){
     const X = 18, Y = SH - 18 - 180 - 70;

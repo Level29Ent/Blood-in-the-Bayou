@@ -1420,11 +1420,12 @@ function hudText(t, x, y, size, col, align, font){
 }
 function drawHUD(){
   const p = player, small = SW < 700 || SH < 500;
+  const layout=window.level29MobileViewport.hudLayout(SW,SH);
   // top right: cash + health + armor + heat skulls + weapon
   const R = SW - 18;
   if(!window.level29UnifiedHUD){
   hudText(money(cash), R, 14, small ? 26 : 34, '#7fe08a', 'right');
-  const bw = small ? 140 : 190, bx = R - bw;
+  const bw = layout.statusWidth, bx = R - bw;
   let y = small ? 46 : 56;
   cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(bx - 2, y - 2, bw + 4, 12);
   cx.fillStyle = p.hp < 30 && frame % 30 < 15 ? '#ff7a7a' : '#d23a3a'; cx.fillRect(bx, y, bw * Math.max(0, p.hp) / p.maxHp, 8);
@@ -1454,11 +1455,12 @@ function drawHUD(){
   if (mission){
     const info = mission.info;
     hudText('MISSION ' + (info.i+1) + ' / ' + CAMPAIGN_TOTAL, 18, 14, 14, '#f4c355');
-    hudText(info.title.toUpperCase(), 18, 30, small ? 22 : 28, '#fff');
-    cx.font = "600 " + (small ? 12 : 14) + "px 'IBM Plex Mono'";
-    const lines = wrap(objective, small ? SW - 200 : 430);
-    lines.forEach((l, i) => { cx.fillStyle = 'rgba(0,0,0,.7)'; cx.fillText(l, 20, (small ? 58 : 66) + i*18 + 2); cx.fillStyle = '#d7dde0'; cx.fillText(l, 18, (small ? 58 : 66) + i*18); });
-    if (mission.phase==='active' && mission.timer > 0 && !(info.type==='race' && !mission.started)){ const s = Math.ceil(mission.timer / 60); hudText(Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'), 18, (small ? 62 : 72) + lines.length*18, small ? 22 : 30, s < 20 && frame % 30 < 15 ? '#ff5a4a' : '#fff'); }
+    hudText(info.title.toUpperCase(), 18, 30, window.level29MobileViewport.fitText(cx,info.title.toUpperCase(),small?22:28,layout.missionWidth), '#fff');
+    cx.font = "600 " + layout.missionFont + "px 'IBM Plex Mono'";
+    const lines = wrap(objective, layout.missionWidth);
+    lines.forEach((l, i) => { cx.fillStyle = 'rgba(0,0,0,.7)'; cx.fillText(l, 20, (small ? 58 : 66) + i*layout.lineHeight + 2); cx.fillStyle = '#d7dde0'; cx.fillText(l, 18, (small ? 58 : 66) + i*layout.lineHeight); });
+    document.documentElement.style.setProperty('--hud-mission-bottom', ((small ? 58 : 66) + lines.length*layout.lineHeight + (mission.phase==='active' && mission.timer>0 ? 30 : 8)) + 'px');
+    if (mission.phase==='active' && mission.timer > 0 && !(info.type==='race' && !mission.started)){ const s = Math.ceil(mission.timer / 60); hudText(Math.floor(s/60) + ':' + String(s%60).padStart(2,'0'), 18, (small ? 62 : 72) + lines.length*layout.lineHeight, small ? 22 : 30, s < 20 && frame % 30 < 15 ? '#ff5a4a' : '#fff'); }
   }
   // boss bar
   if (boss && !boss.dead){ const w = Math.min(560, SW - 60), x = (SW - w)/2, by = SH - (small ? 150 : 58); cx.fillStyle = 'rgba(0,0,0,.7)'; cx.fillRect(x - 4, by - 22, w + 8, 38); hudText(boss.name, SW/2, by - 20, 14, '#ff8a8a', 'center'); cx.fillStyle = '#3a0a0a'; cx.fillRect(x, by - 2, w, 10); cx.fillStyle = boss.hp < boss.maxHp*.4 ? '#ffea00' : '#e83a3a'; cx.fillRect(x, by - 2, w * boss.hp / boss.maxHp, 10); }
@@ -1466,7 +1468,7 @@ function drawHUD(){
   drawMinimap(small);
   fpHUD(small);
   // area name bottom-right (GTA style)
-  if (areaShow > 0 && !boss){ cx.globalAlpha = Math.min(1, areaShow / 30); if (small && SH >= 600){ hudText(areaName, 18, SH - 350, 17, '#f6f3e6', 'left'); hudText(D.name, 18, SH - 328, 12, '#f4c355', 'left', '600 '); } else { hudText(areaName, SW - 18, SH - (small ? 150 : 104), small ? 20 : 28, '#f6f3e6', 'right'); hudText(D.name, SW - 18, SH - (small ? 124 : 76), 13, '#f4c355', 'right', '600 '); } cx.globalAlpha = 1; }
+  if (areaShow > 0 && !boss){ cx.globalAlpha = Math.min(1, areaShow / 30); if (small && SH >= 600){ hudText(areaName, 18, SH - 350, window.level29MobileViewport.fitText(cx,areaName,17,SW-36), '#f6f3e6', 'left'); hudText(D.name, 18, SH - 328, 12, '#f4c355', 'left', '600 '); } else { hudText(areaName, SW - 18, SH - (small ? 150 : 104), small ? 20 : 28, '#f6f3e6', 'right'); hudText(D.name, SW - 18, SH - (small ? 124 : 76), 13, '#f4c355', 'right', '600 '); } cx.globalAlpha = 1; }
   if (vehShow){ cx.globalAlpha = Math.min(1, vehShow.t / 30); hudText(vehShow.txt, SW - 18, SH - (small ? 176 : 138), 18, '#9fd0ff', 'right'); cx.globalAlpha = 1; }
   // toast
   if (toastQ){ cx.globalAlpha = Math.min(1, toastQ.life / 30); hudText(toastQ.t, SW/2, small ? 120 : 90, 18, '#f4c355', 'center'); cx.globalAlpha = 1; }
@@ -1478,8 +1480,8 @@ function drawHUD(){
     cx.globalAlpha = a;
     const col = banner.good ? '#f4c355' : banner.bad ? '#ff4d4d' : '#f6f3e6';
     cx.fillStyle = 'rgba(0,0,0,.45)'; cx.fillRect(0, SH*.32, SW, small ? 92 : 120);
-    hudText(banner.big, SW/2, SH*.32 + 10, small ? 44 : 68, col, 'center', '900 ');
-    hudText(banner.small, SW/2, SH*.32 + (small ? 62 : 84), small ? 14 : 18, '#e8e8e2', 'center', '600 ');
+    hudText(banner.big, SW/2, SH*.32 + 10, window.level29MobileViewport.fitText(cx,banner.big,small?32:68,SW-32,'900 '), col, 'center', '900 ');
+    hudText(banner.small, SW/2, SH*.32 + (small ? 54 : 84), window.level29MobileViewport.fitText(cx,banner.small,small?12:18,SW-32,'600 '), '#e8e8e2', 'center', '600 ');
     cx.globalAlpha = 1;
   }
   if (state==='pause'){ cx.fillStyle = 'rgba(10,14,18,.7)'; cx.fillRect(0, 0, SW, SH); hudText('PAUSED', SW/2, SH/2 - 60, 72, '#f6f3e6', 'center', '900 '); hudText('P to resume · TAB map · Q weapons · T cheat codes · N music · M mute', SW/2, SH/2 + 24, 16, '#c9d1d4', 'center', '600 '); }
