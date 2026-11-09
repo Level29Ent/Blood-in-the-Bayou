@@ -80,9 +80,9 @@
   document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
 
   // ---------- Adaptive resolution ----------
-  const MIN_RATIO = isTouch ? .45 : 1;
+  const MIN_RATIO = isTouch ? .45 : .5;
   let ratio = 0, avg = 16.7, lastFrame = 0, lastChange = 0, slowFor = 0, fastFor = 0;
-  function capRatio(){ if(window.level29MobileBudget?.mobile)return window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio);return mpRole ? Math.min(1, devicePixelRatio || 1) : Math.min(isTouch?1:1.5, devicePixelRatio || 1); }
+  function capRatio(){ if(window.level29MobileBudget)return window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio);return mpRole ? Math.min(1, devicePixelRatio || 1) : Math.min(isTouch?1:1.5, devicePixelRatio || 1); }
   function adaptResolution(now, dt){
     if (!renderer || state !== 'play') return;
     const cap = capRatio();
@@ -112,7 +112,7 @@
     lastFrame = now;
     try { flushLook(dt); } catch (_) {}
     if (lockable && isLocked() && (state !== 'play' || wheelIsOpen())){ try { document.exitPointerLock(); } catch (_) {} }
-    if (dt < 200) try { adaptResolution(now, dt); } catch (_) {}
+    if (!document.hidden) try { adaptResolution(now, dt); } catch (_) {}
     prevRender();
   };
 
