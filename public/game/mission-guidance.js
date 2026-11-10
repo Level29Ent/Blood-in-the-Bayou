@@ -3,6 +3,7 @@
 function points(m,survivors,boss){if(!m)return [];if(m.phase==='start')return m.start?[{...m.start,label:'MEET CONTACT'}]:[];if(m.phase!=='active')return [];
  const e=m.extra;if(e&&!e.done){const p=e.stage==='field'?e.field:e.extraction;return p?[{...p,label:e.stage==='field'?'FIELD OBJECTIVE':'EXTRACTION ZONE'}]:[];}
  const type=m.info.type;let ps=[];
+ if(type==='prologue')return (m.targets||[]).map(p=>({...p,label:'PROLOGUE OBJECTIVE'})).concat(m.escort?[{...m.escort,label:'AHMAD · ESCORT'}]:[]);
  if(type==='op'&&m.opStops){return (m.opStops.slice(m.si||0).length?m.opStops.slice(m.si||0).map((s,i)=>({x:s.v.stationX,y:s.v.stationY,label:'PICKUP STOP '+((m.si||0)+i+1)})):m.drop?[{...m.drop,label:'RETURN TO MANSION'}]:[]);}
  if(type==='rob'){const p=m.step==='escape'?m.drop:m.robVenue&&{x:m.robVenue.stationX,y:m.robVenue.stationY};return p?[{...p,label:m.step==='escape'?'RETURN TO MANSION':'ROBBERY COUNTER'}]:[];}
  if(type==='rescue'){if(m.step==='reach')ps=survivors.filter(s=>!s.dead).map(s=>({...s,label:'RESCUE SURVIVOR'}));else if(m.drop){ps=[{...m.drop,label:'SAFEHOUSE HANDOFF'}];const trailing=survivors.find(s=>s.hp>0&&!s.inCar);if(trailing)ps.push({...trailing,label:'ESCORT SURVIVOR'});}}

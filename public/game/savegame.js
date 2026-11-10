@@ -8,7 +8,7 @@ const unpack=o=>{const r={};for(const k in o)r[k]=o[k]==='inf'?Infinity:o[k];ret
 function read(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');return s&&s.v===2&&Number.isFinite(s.missionIdx)?s:null;}catch(_){return null;}}
 function snapshot(){const pl=window.level29Places&&level29Places.saved;
  if(partial&&partial.idx!==missionIdx)partial=null;
- return {v:2,at:Date.now(),missionIdx,cash:Math.floor(cash),completed:[...completed],up:{...up},arsenal:pack(arsenal||{}),curW,packages:[...packagesFound],jumps:[...jumpsDone],rampages:[...rampagesDone],maxHp:player&&player.maxHp||100,rest,partial};}
+ return {v:2,at:Date.now(),prologue:window.level29Prologue?.snapshot||null,missionIdx,cash:Math.floor(cash),completed:[...completed],up:{...up},arsenal:pack(arsenal||{}),curW,packages:[...packagesFound],jumps:[...jumpsDone],rampages:[...rampagesDone],maxHp:player&&player.maxHp||100,rest,partial};}
 function save(announce){if(loading||state==='menu'||state==='win'||!player||mpRole==='client')return false;
  try{localStorage.setItem(KEY,JSON.stringify(snapshot()));lastSave=Date.now();refresh();if(announce)toast(announce);return true;}
  catch(_){if(!warned){warned=true;toast('BROWSER STORAGE UNAVAILABLE · PROGRESS CANNOT BE SAVED');}return false;}}
@@ -50,12 +50,12 @@ const oldUpd=updateMission;updateMission=function(){oldUpd();const m=mission;if(
 const row=document.querySelector('#menu .row'),startBtn=document.getElementById('start');
 let cont=document.getElementById('resume');if(!cont){cont=document.createElement('button');cont.id='resume';row&&row.appendChild(cont);}
 const old=cont.onclick;
-function refresh(){const s=read();if(s){cont.style.display='inline-block';const ch=DISTRICTS[Math.min(DISTRICTS.length-1,Math.floor(s.missionIdx/MISSIONS_PER))].name;cont.textContent='CONTINUE · MISSION '+(s.missionIdx+1)+' / '+CAMPAIGN_TOTAL+' · '+ch+' · $'+s.cash.toLocaleString();}else if(old&&typeof venueSave!=='undefined'&&venueSave.checkpoint){cont.style.display='inline-block';cont.textContent='RESUME CHECKPOINT';}else cont.style.display='none';}
+function refresh(){const s=read();if(s){cont.style.display='inline-block';const ch=DISTRICTS[Math.min(DISTRICTS.length-1,Math.floor(s.missionIdx/MISSIONS_PER))].name;cont.textContent=(s.prologue?.v===1&&Number.isInteger(s.prologue.stage)&&s.prologue.stage>=0&&s.prologue.stage<19?'CONTINUE · PROLOGUE CHECKPOINT '+(s.prologue.stage+1):'CONTINUE · MISSION '+(s.missionIdx+1)+' / '+CAMPAIGN_TOTAL+' · '+ch)+' · $'+s.cash.toLocaleString();}else if(old&&typeof venueSave!=='undefined'&&venueSave.checkpoint){cont.style.display='inline-block';cont.textContent='RESUME CHECKPOINT';}else cont.style.display='none';}
 cont.onclick=()=>{const s=read();if(!s){return old&&old();}
- loading=true;try{startGame(s.missionIdx);cash=s.cash;completed=new Set(s.completed||[]);Object.assign(up,s.up||{});if(s.arsenal){arsenal=unpack(s.arsenal);arsenal.m240=Infinity;curW=hasW(s.curW)?s.curW:'m240';}
+ loading=true;try{startGame(s.missionIdx,{resume:true,prologue:s.prologue});cash=s.cash;completed=new Set(s.completed||[]);Object.assign(up,s.up||{});if(s.arsenal){arsenal=unpack(s.arsenal);arsenal.m240=Infinity;curW=hasW(s.curW)?s.curW:'m240';}
   packagesFound=new Set(s.packages||[]);jumpsDone=new Set(s.jumps||[]);rampagesDone=new Set(s.rampages||[]);rest=s.rest||null;partial=s.partial||null;
   const hp=Math.max(100+25*(up.vital||0),s.maxHp||100,window.level29Places&&level29Places.saved.maxHp||0);player.maxHp=hp;player.hp=hp;player.armor=Math.max(player.armor,up.armor*25);
-  if(rest&&rest.x){const q=spot(rest);player.x=q.x;player.y=q.y;player.a=-Math.PI/2;view.yaw=-Math.PI/2;view.lastPlayer=player;snapCamera();}}finally{loading=false;}
+  if(rest&&rest.x&&!window.level29Prologue?.active){const q=spot(rest);player.x=q.x;player.y=q.y;player.a=-Math.PI/2;view.yaw=-Math.PI/2;view.lastPlayer=player;snapCamera();}}finally{loading=false;}
  placeMissionStart();toast('SAVE LOADED · MISSION '+(s.missionIdx+1)+(partial?' · STAGE CHECKPOINT READY':''));};
 startBtn.addEventListener('click',e=>{if(!read())return;if(Date.now()-armed<4500){return;}e.preventDefault();e.stopImmediatePropagation();armed=Date.now();startBtn.dataset.label=startBtn.textContent;startBtn.textContent='ERASES SAVE · CLICK AGAIN';setTimeout(()=>{if(startBtn.dataset.label&&Date.now()-armed>=4400){startBtn.textContent=startBtn.dataset.label;}},4600);},true);
 

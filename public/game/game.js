@@ -1454,7 +1454,7 @@ function drawHUD(){
   // mission panel top-left
   if (mission){
     const info = mission.info;
-    hudText('MISSION ' + (info.i+1) + ' / ' + CAMPAIGN_TOTAL, 18, 14, 14, '#f4c355');
+    hudText(info.prologue?'PROLOGUE · OPENING STORY':'MISSION ' + (info.i+1) + ' / ' + CAMPAIGN_TOTAL, 18, 14, 14, '#f4c355');
     hudText(info.title.toUpperCase(), 18, 30, window.level29MobileViewport.fitText(cx,info.title.toUpperCase(),small?22:28,layout.missionWidth), '#fff');
     cx.font = "600 " + layout.missionFont + "px 'IBM Plex Mono'";
     const lines = wrap(objective, layout.missionWidth);
