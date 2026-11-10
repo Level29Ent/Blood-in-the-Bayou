@@ -20,7 +20,8 @@ function fitText(ctx,text,size,maxWidth,font='800 ',family='Barlow Condensed'){
  ctx.font=font+size+"px '"+family+"'";
  return Math.min(size,size*maxWidth/Math.max(1,ctx.measureText(text).width));
 }
-const api={fitViewmodel,hudLayout,fitText};
+function labelClear(x,y,width,height,missionBottom=160){return x>10&&x<width-10&&y>Math.max(missionBottom+48,height<500?110:190)&&y<height-(height<500?120:230);}
+const api={fitViewmodel,hudLayout,fitText,labelClear};
 if(typeof module!=='undefined')module.exports=api;
 if(typeof window!=='undefined')window.level29MobileViewport=api;
 })();
