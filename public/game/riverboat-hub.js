@@ -8,9 +8,24 @@ else{box(110,.4,110,b.x+b.w/2,.8,b.y+b.h/2,green);box(50,.5,3,b.x+b.w/2,1.2,b.y+
 options.label?.(g,f===2?'ROOF HELIPAD / DEFENSIVE LOOKOUT':f===1?'SURVIVOR ARMORY / GENERATOR':'BOOMCITY RIVERBOAT · GAMING / TRADE',b.w-12,8,b.x+b.w/2,base+28,b.y+5,'#e0c99e');solidFloors.push(solids);}
 const wheel=new T.Group();wheel.position.set(b.x+b.w+18,9,b.y+b.h/2);root.add(wheel);const disk=new T.Mesh(new T.CylinderGeometry(23,23,34,20),mat('#943f34'));disk.rotation.x=Math.PI/2;wheel.add(disk);for(let i=0;i<12;i++){const m=new T.Mesh(new T.BoxGeometry(5,4,38),wood),a=i*Math.PI/6;m.position.set(Math.cos(a)*23,Math.sin(a)*23,0);m.rotation.z=a;wheel.add(m);}const exterior=new T.Group();exterior.name='Riverboat external galleries';root.add(exterior);const gallery=(w,h,d,x,y,z,m)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);exterior.add(o);};for(const height of [45,93]){gallery(b.w+4,2,b.h+4,b.x+b.w/2,height,b.y+b.h/2,white);for(let i=0;i<16;i++)for(const side of [-1,1])gallery(.8,12,.8,b.x+8+i*(b.w-16)/15,height+7,b.y+(side<0?-1:b.h+1),iron);}for(const side of [-1,1]){gallery(12,50,12,b.x+40+side*15,111,b.y+50,iron);gallery(16,3,16,b.x+40+side*15,137,b.y+50,white);}root.userData={floors,solidFloors,wheel,exterior};return root;}
 function buildNatchezExterior(T,entry,options={}){
- const b={x:entry.x+48,y:entry.y-62,w:250,h:124},boat=buildHub(T,b,options);boat.name='NATCHEZ · paddlewheel casino exterior';boat.userData.floors.forEach(g=>g.visible=true);
- options.label?.(boat,'NATCHEZ · RIVERBOAT CASINO',200,13,b.x+b.w/2,84,b.y+b.h+2,'#e9d7a8');
- const gangway=new T.Mesh(new T.BoxGeometry(58,2,24),options.material?options.material('#9a8060'):new T.MeshStandardMaterial({color:'#9a8060'}));gangway.position.set(entry.x+23,1,entry.y);boat.add(gangway);return boat;
+ const boat=new T.Group();boat.name='NATCHEZ · paddlewheel casino exterior';boat.position.set(entry.x+173,0,entry.y);
+ const cache=new Map(),mat=(c,m=0)=>{if(!cache.has(c))cache.set(c,options.material?options.material(c,m):new T.MeshStandardMaterial({color:c,metalness:m,roughness:.75}));return cache.get(c);},white=mat('#f2ebd5'),red=mat('#943a32'),iron=mat('#293b43',.3),wood=mat('#96714e'),glass=mat('#385c70',.35),gold=mat('#c9a04e',.4);
+ const box=(g,w,h,d,x,y,z,m)=>{const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),m);mesh.position.set(x,y,z);g.add(mesh);return mesh;};
+ const shape=new T.Shape();shape.moveTo(-125,-48);shape.lineTo(80,-56);shape.quadraticCurveTo(123,-45,141,0);shape.quadraticCurveTo(123,45,80,56);shape.lineTo(-125,48);shape.closePath();
+ const hullGeo=new T.ExtrudeGeometry(shape,{depth:15,bevelEnabled:false,curveSegments:12});hullGeo.rotateX(-Math.PI/2);const hull=new T.Mesh(hullGeo,iron);hull.position.y=-8;boat.add(hull);
+ box(boat,210,5,97,-12,5,0,red);
+ const floors=[];for(let floor=0;floor<3;floor++){
+  const deck=new T.Group();deck.name='Natchez exterior deck '+(floor+1);boat.add(deck);floors.push(deck);const y=10+floor*30,w=244-floor*16,d=112-floor*8;
+  box(deck,w,2,d,0,y,0,white);box(deck,w-42,25,d-30,-4,y+14,0,white);box(deck,w-36,2,d-24,-4,y+27,0,white);
+  for(const side of [-1,1]){
+   for(let i=0;i<10;i++){const x=-(w-58)/2+i*(w-58)/9;box(deck,10,14,1,x,y+15,side*(d/2-14.4),glass);box(deck,.8,12,.8,x,y+8,side*(d/2-1),white);}
+   box(deck,w-5,1,1,0,y+14,side*(d/2-1),gold);for(const x of [-w/2+4,w/2-4])box(deck,1,14,d-4,x,y+8,0,white);
+  }
+ }
+ for(const z of [-19,19]){box(boat,10,47,10,-45,111,z,iron);box(boat,14,3,14,-45,136,z,white);box(boat,11,2,11,-45,120,z,gold);}
+ const wheel=new T.Group();wheel.name='Natchez stern paddlewheel';wheel.position.set(-140,14,0);boat.add(wheel);for(const z of [-39,39]){const disk=new T.Mesh(new T.CylinderGeometry(22,22,1.5,24),red);disk.rotation.x=Math.PI/2;disk.position.z=z;wheel.add(disk);}for(let i=0;i<12;i++){const a=i*Math.PI/6,m=box(wheel,5,4,82,Math.cos(a)*22,Math.sin(a)*22,0,wood);m.rotation.z=a;}
+ box(boat,60,2,24,-151,2,60,wood);for(const z of [49,71])box(boat,60,.8,.8,-151,12,z,white);
+ options.label?.(boat,'NATCHEZ · CASINO',150,11,0,58,43,'#f3d99a');boat.userData={floors,wheel};return boat;
 }
 if(typeof module!=='undefined')module.exports={buildHub,buildNatchezExterior};if(typeof window==='undefined')return;if(window.level29HubReview){window.level29HubReview={buildHub,buildNatchezExterior};return;}
 let exteriorBoat=null,root=null,active=null,floor=0,returnPoint=null,last=0,clock=0;
