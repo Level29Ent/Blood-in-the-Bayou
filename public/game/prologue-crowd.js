@@ -10,7 +10,7 @@ function advance(a,nav,width,dt,panic=false,zombies=[]){
  a.a=Math.atan2(dy,dx);if(d){a.x+=dx/d*step;a.y+=dy/d*step;a.anim+=step*.15;}
  if(d<=step+.01){a.previous=a.cell;a.cell=a.target.cell;a.target=null;if(!panic&&['talk','rest','shop'].includes(a.activity))a.wait=1+a.id%4;}
 }
-function spectators(route,tileAt,blocked,count=72){const out=[];for(let i=0;i<route.length/2&&out.length<count;i++){const p=route[i],q=route[(i+1)%route.length],dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy)||1;for(const side of [-1,1])for(const off of [24,32,40,48,56,64,72,80]){const x=p.x-dy/len*side*off,y=p.y+dx/len*side*off;if([1,4,9].includes(tileAt(x,y))||blocked(x,y,8)||out.some(a=>Math.hypot(a.x-x,a.y-y)<18))continue;out.push({id:2000+out.length,x,y,a:Math.atan2(p.y-y,p.x-x),anim:0,wait:999,cheer:true});break;}}return out;}
+function spectators(route,tileAt,blocked,count=72){const out=[];for(let i=0;i<route.length/2&&out.length<count;i++){const p=route[i],q=route[(i+1)%route.length],dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy)||1;for(const side of [-1,1])for(const off of [24,32,40,48,56,64,72,80]){const x=p.x-dy/len*side*off,y=p.y+dx/len*side*off;if([1,4,9].includes(tileAt(x,y))||blocked(x,y,8)||out.some(a=>Math.hypot(a.x-x,a.y-y)<18))continue;out.push({id:2000+out.length,x,y,a:Math.atan2(p.y-y,p.x-x),anim:0,wait:999,cheer:true});if(out.length>=count)return out;}}return out;}
 function create(T,capacity=72){
  const root=new T.Group();root.name='Prologue city residents / second line';root.userData.noBatch=true;
  const specs=[['shirt',new T.CylinderGeometry(1,.84,1,10),1],['skin',new T.SphereGeometry(1,10,8),1],['arms',new T.CylinderGeometry(1,.8,1,8),2],['legs',new T.CylinderGeometry(1,.85,1,8),2],['shoes',new T.BoxGeometry(1,1,1),2],['eyes',new T.SphereGeometry(1,6,4),2],['hat',new T.CylinderGeometry(1,1,1,10),1],['brass',new T.CylinderGeometry(.4,1,1,8),1],['parasol',new T.ConeGeometry(1,1,10),1]];
@@ -29,6 +29,7 @@ function pose(T,root,actors,height){
  for(const m of root.children){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;}
 }
 function floatModel(T,index=0){
+ if(typeof window!=='undefined'&&window.level29FestivalSpectacle)return window.level29FestivalSpectacle.floatModel(T,index);
  const g=new T.Group();g.name='Tremé Mardi Gras float '+(index+1);g.userData.noBatch=true;
  const mat=c=>new T.MeshLambertMaterial({color:c}),purple=mat('#70368e'),gold=mat('#d7b43b'),green=mat('#34815f'),dark=mat('#25252c');
  const box=(w,h,d,x,y,z,m)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);g.add(o);};
