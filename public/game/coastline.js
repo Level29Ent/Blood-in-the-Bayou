@@ -512,7 +512,7 @@ function tickMascot(){if(!mascot)return;const m=mascot,t=frame||0,bounce=Math.ab
   const hand=-.45-bounce*.55;if(m.side>0){m.armR.rotation.x=hand;m.armL.rotation.x=.2;}else{m.armL.rotation.x=hand;m.armR.rotation.x=.2;}
   const step=Math.sin(t*.16)*.35;m.legL.rotation.x=step;m.legR.rotation.x=-step;m.g.rotation.y=Math.PI+Math.sin(t*.02)*.3;}
 if(typeof placeCamera==='function'){const basePlace=placeCamera;
-  placeCamera=function(){if(!bb||!hoopsRig||!isWorld(city)){try{vmScene.visible=true;}catch(_){}return basePlace.apply(this,arguments);}
+  placeCamera=function(){if(!bb||!hoopsRig||!isWorld(city)){try{vmScene.visible=!window.level29Prologue?.peaceful;}catch(_){}return basePlace.apply(this,arguments);}
     const H=hoopsRig,me=H.P.you,defending=hAnim?hAnim.who==='o1':bb.phase==='defend';
     const fx=defending?H.P.o1.x:H.rimX,fz=defending?H.P.o1.z:0;let dx=fx-me.x,dz=fz-me.z;const L=Math.hypot(dx,dz)||1;dx/=L;dz/=L;
     const cr=court.r,clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
