@@ -7,7 +7,7 @@ test('mobile profile detects phone/tablet including desktop-mode iPad but not mo
  assert.equal(mobileDevice({},()=>({matches:true})),true);
 });
 test('mobile drawing buffer stays within 750k pixels and rotation keeps the same budget',()=>{
- for(const [w,h]of [[390,844],[844,390],[1366,1024],[1024,1366],[2048,1536]]){const r=pixelRatio(w,h,3,true);assert.ok(r<=.85);assert.ok(w*h*r*r<=750001);assert.equal(r,pixelRatio(h,w,3,true));}
+ for(const [w,h]of [[390,844],[844,390],[1366,1024],[1024,1366],[2048,1536]]){const r=pixelRatio(w,h,3,true);assert.ok(r<=1.5);assert.ok(w*h*r*r<=750001);assert.equal(r,pixelRatio(h,w,3,true));}
  assert.equal(pixelRatio(1280,800,2,false),1);
 });
 test('Low releases both shadow targets once without touching light/shared textures',()=>{
@@ -26,4 +26,24 @@ test('blur, OS tab hide, orientation and GPU loss clear private drag/run and loo
 test('mobile budget loads before canvas allocation and clamps actual ground texture size',()=>{
  const html=fs.readFileSync('public/game/index.html','utf8');assert.ok(html.indexOf('mobile-budget.js')<html.indexOf('game.js?'));
  const source=fs.readFileSync('public/game/game.js','utf8'),a=source.indexOf('const groundBudget='),b=source.indexOf('  GS =',a),c={window:{level29GroundMemory:require('../public/game/ground-memory.js'),level29Graphics:{quality:'high'},level29MobileBudget:{groundLimit:1024}},WORLD:7680,renderer:{capabilities:{maxTextureSize:16384}}};c.level29GroundMemory=c.window.level29GroundMemory;vm.createContext(c);assert.equal(vm.runInContext(source.slice(a,b)+'groundBudget.pixels',c),1024);
+});
+test('phone render buffer starts above CSS resolution without allocating full Retina pixels',()=>{
+ const r=pixelRatio(390,760,3,true);assert.ok(r>=1.25);assert.ok(r<=1.5);assert.ok(390*760*r*r<=750001);
+});
+function adaptivePhone(){
+ let time=0,ratio=pixelRatio(390,760,3,true);const c={window:{level29MobileBudget:{mobile:true,pixelRatio:()=>pixelRatio(390,760,3,true)}},document:{hidden:false,head:{appendChild(){}},createElement:()=>({}),addEventListener(){}},navigator:{maxTouchPoints:5},matchMedia:()=>({matches:true}),addEventListener(){},turnView(){},cv:{},performance:{now:()=>time},innerWidth:390,innerHeight:760,devicePixelRatio:3,mpRole:null,state:'play',renderer:{getPixelRatio:()=>ratio,setPixelRatio:r=>ratio=r},render(){}};
+ vm.createContext(c);vm.runInContext(fs.readFileSync('public/game/smooth.js','utf8'),c);
+ return {frame(dt){time+=dt;c.render();},get ratio(){return ratio}};
+}
+test('steady 30fps mobile play does not repeatedly sacrifice resolution trying to reach 60fps',()=>{
+ const s=adaptivePhone(),initial=s.ratio;for(let i=0;i<600;i++)s.frame(1000/30);assert.equal(s.ratio,initial);
+});
+test('sustained slow phone rendering retains a readable floor and recovers when fast',()=>{
+ const s=adaptivePhone();for(let i=0;i<600;i++)s.frame(60);assert.ok(s.ratio>=.85);assert.ok(s.ratio<1.5);
+ const low=s.ratio;for(let i=0;i<1800;i++)s.frame(16.7);assert.ok(s.ratio>low);assert.ok(s.ratio<=1.5);
+});
+
+test('mobile renderer requests edge smoothing while desktop keeps its existing context',()=>{
+ const source=fs.readFileSync('public/game/fp.js','utf8'),a=source.indexOf('renderer = new THREE.WebGLRenderer('),b=source.indexOf('\n',a);
+ for(const mobile of [true,false]){let options;const c={renderer:null,glCv:{},window:{level29MobileBudget:{mobile}},THREE:{WebGLRenderer:class{constructor(o){options=o;}}}};vm.createContext(c);vm.runInContext(source.slice(a,b),c);assert.equal(options.antialias,mobile);}
 });

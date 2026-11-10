@@ -10,7 +10,12 @@
   sheldon:{name:'Sheldon',role:'SHELDON’S THREADS',width:1,jaw:1.02},
   damion:{name:'Damion',role:'TALENT AGENCY',width:.96,jaw:.94},
  };
- if(typeof module!=='undefined')module.exports={profiles};
+ function nameplateScale(projectionY,depth,width,height,worldScale=1){
+  if(depth<=0)return 0;
+  const pixels=27*worldScale*projectionY*height/(2*depth);
+  return Math.min(1,Math.min(220,width*.48)/Math.max(1,pixels));
+ }
+ if(typeof module!=='undefined')module.exports={profiles,nameplateScale};
  if(typeof window==='undefined')return;
  const labels=new Map(),actors=new Set();
  function label(id){
@@ -32,14 +37,20 @@
  }
  const sync=syncDynamic;
  syncDynamic=function(){sync.apply(this,arguments);if(!camera)return;
-  const pos=new THREE.Vector3();
+  camera.updateMatrixWorld();
+  const pos=new THREE.Vector3(),labelPos=new THREE.Vector3(),worldScale=new THREE.Vector3();
   for(const actor of actors){let root=actor;while(root.parent)root=root.parent;
    if(root!==scene){actors.delete(actor);continue;}
    actor.getWorldPosition(pos);const distance=pos.distanceTo(camera.position);
-   actor.userData.nameplate.visible=actor.visible&&state!=='menu'&&distance<160&&distance>12;
+   const tag=actor.userData.nameplate;
+   tag.getWorldPosition(labelPos).applyMatrix4(camera.matrixWorldInverse);
+   actor.getWorldScale(worldScale);
+   const scale=nameplateScale(camera.projectionMatrix.elements[5],-labelPos.z,innerWidth,innerHeight,worldScale.x);
+   tag.scale.set(27*scale,5.9*scale,1);
+   tag.visible=actor.visible&&state!=='menu'&&distance<160&&distance>12&&scale>0;
   }
  };
  // Neutral expressions and readable eyes retain the original animation/skin hooks.
  // No extra render pass, network asset, skeleton, or per-frame texture generation.
- window.level29People={identify,profiles};
+ window.level29People={identify,profiles,nameplateScale};
 })();
