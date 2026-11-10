@@ -10,6 +10,7 @@ function advance(a,nav,width,dt,panic=false,zombies=[]){
  a.a=Math.atan2(dy,dx);if(d){a.x+=dx/d*step;a.y+=dy/d*step;a.anim+=step*.15;}
  if(d<=step+.01){a.previous=a.cell;a.cell=a.target.cell;a.target=null;if(!panic&&['talk','rest','shop'].includes(a.activity))a.wait=1+a.id%4;}
 }
+function spectators(route,tileAt,blocked,count=72){const out=[];for(let i=0;i<route.length/2&&out.length<count;i++){const p=route[i],q=route[(i+1)%route.length],dx=q.x-p.x,dy=q.y-p.y,len=Math.hypot(dx,dy)||1;for(const side of [-1,1])for(const off of [24,32,40,48,56,64,72,80]){const x=p.x-dy/len*side*off,y=p.y+dx/len*side*off;if([1,4,9].includes(tileAt(x,y))||blocked(x,y,8)||out.some(a=>Math.hypot(a.x-x,a.y-y)<18))continue;out.push({id:2000+out.length,x,y,a:Math.atan2(p.y-y,p.x-x),anim:0,wait:999,cheer:true});break;}}return out;}
 function create(T,capacity=72){
  const root=new T.Group();root.name='Prologue city residents / second line';root.userData.noBatch=true;
  const specs=[['shirt',new T.CylinderGeometry(1,.84,1,10),1],['skin',new T.SphereGeometry(1,10,8),1],['arms',new T.CylinderGeometry(1,.8,1,8),2],['legs',new T.CylinderGeometry(1,.85,1,8),2],['shoes',new T.BoxGeometry(1,1,1),2],['eyes',new T.SphereGeometry(1,6,4),2],['hat',new T.CylinderGeometry(1,1,1,10),1],['brass',new T.CylinderGeometry(.4,1,1,8),1],['parasol',new T.ConeGeometry(1,1,10),1]];
@@ -22,7 +23,7 @@ function pose(T,root,actors,height){
   base.position.set(a.x,height(a.x,a.y),a.y);base.rotation.set(0,-a.a,0);base.scale.setScalar(s);base.updateMatrix();
   const put=(index,p,scale,c,rz=0,rx=0)=>{const m=root.children[index],i=m.count++;dummy.position.set(...p);dummy.scale.set(...scale);dummy.rotation.set(rx,0,rz);dummy.updateMatrix();local.copy(dummy.matrix);matrix.multiplyMatrices(base.matrix,local);m.setMatrixAt(i,matrix);color.set(c);m.setColorAt(i,color);};
   put(0,[0,12.4,0],[2.38,7.2,3.75],shirt);put(1,[.05,18.3,0],[2.05,2.35,1.95],skin);
-  for(const side of [-1,1]){put(2,[a.festival?2.5:sw*side,11,side*4.5],[1.1,8,1.1],skin,a.festival?-1:sw*side*.3);put(3,[sw*side,4.4,side*1.8],[1.5,7.5,1.4],'#34465c',sw*side*.28);put(4,[.7+sw*side,.8,side*1.8],[4,1.4,2.6],'#252324');put(5,[2,18.7,side*.8],[.18,.22,.3],'#241b18');}
+  for(const side of [-1,1]){put(2,a.cheer?[0,20,side*5]:[a.festival?2.5:sw*side,11,side*4.5],[1.1,8,1.1],skin,a.cheer?Math.PI+side*.2+Math.sin(a.anim)*.12:a.festival?-1:sw*side*.3);put(3,[sw*side,4.4,side*1.8],[1.5,7.5,1.4],'#34465c',sw*side*.28);put(4,[.7+sw*side,.8,side*1.8],[4,1.4,2.6],'#252324');put(5,[2,18.7,side*.8],[.18,.22,.3],'#241b18');}
   if(a.festival){put(6,[0,21,0],[3,.7,3],'#dbb747');if(a.id%3===0)put(7,[5,14,-3],[2,6,2],'#caa548',Math.PI/2);if(a.id%3===1)put(8,[0,29,6],[8,4,8],shirt);}
  }
  for(const m of root.children){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;}
@@ -36,5 +37,5 @@ function floatModel(T,index=0){
  for(let i=0;i<5;i++){const crown=new T.Mesh(new T.ConeGeometry(2.5,8,6),gold);crown.position.set(-8+i*4,18,0);g.add(crown);}
  for(const x of [-15,15]){box(.7,20,.7,x,17,0,gold);box(7,5,.5,x+3,25,0,index?green:purple);}return g;
 }
-const api={SKIN,CLOTH,population,advance,create,pose,floatModel};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29PrologueCrowd=api;
+const api={SKIN,CLOTH,population,advance,create,pose,floatModel,spectators};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29PrologueCrowd=api;
 })();

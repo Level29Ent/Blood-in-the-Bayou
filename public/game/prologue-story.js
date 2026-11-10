@@ -51,7 +51,20 @@ function localPath(start,end,blocked,bounds,spacing=8){
  for(let i=0;i<queue.length&&i<12000;i++){const k=queue[i],p=point(k);if(Math.hypot(p.x-end.x,p.y-end.y)<=spacing*1.5){found=k;break;}const x=k%W,y=Math.floor(k/W);for(const n of [x?k-1:-1,x<W-1?k+1:-1,y?k-W:-1,y<H-1?k+W:-1]){if(n<0||prev.has(n))continue;const p=point(n);if(blocked(p.x,p.y,6))continue;prev.set(n,k);queue.push(n);}}
  if(found<0)return null;const out=[];for(let k=found;k!==-1;k=prev.get(k))out.push(point(k));return out.reverse();
 }
-function paradeRoute(nav,start,width,limit=24){const a=nav.nearest(start.x,start.y,10);if(a<0)return [];const visited=new Set([a]),path=[a];for(let n=1;n<limit;n++){const k=path[path.length-1],x=k%width,candidates=[k+width,x<width-1?k+1:-1,k-width,x?k-1:-1].filter(q=>q>=0&&q<nav.mask.length&&nav.mask[q]&&!visited.has(q)&&Math.hypot(nav.point(q).x-start.x,nav.point(q).y-start.y)<=260);if(!candidates.length)break;const q=candidates[(n%5===0?1:0)%candidates.length];visited.add(q);path.push(q);}return path.concat(path.slice(1,-1).reverse()).map(nav.point);}
+function paradeRoute(nav,start,width,limit=24,extraBlocks=0){
+ const a=nav.nearest(start.x,start.y,10);if(a<0)return [];
+ // Keep the original local route, then extend its outward leg by two 256-unit blocks.
+ const visited=new Set([a]),path=[a];
+ for(let n=1;n<limit;n++){const k=path.at(-1),x=k%width,candidates=[k+width,x<width-1?k+1:-1,k-width,x?k-1:-1].filter(q=>q>=0&&q<nav.mask.length&&nav.mask[q]&&!visited.has(q)&&Math.hypot(nav.point(q).x-start.x,nav.point(q).y-start.y)<=260);if(!candidates.length)break;const q=candidates[(n%5===0?1:0)%candidates.length];visited.add(q);path.push(q);}
+ if(extraBlocks){const queue=[a],prev=new Map([[a,-1]]),distance=new Map([[a,0]]),goal=(path.length-1)*32+extraBlocks*256;let best=a;
+  // Search from the start: the original local loop may end at a dead end.
+  for(let i=0;i<queue.length;i++){const k=queue[i],x=k%width,d=distance.get(k);if(d>distance.get(best))best=k;if(d>=goal){best=k;break;}for(const q of [k+width,x<width-1?k+1:-1,k-width,x?k-1:-1])if(q>=0&&q<nav.mask.length&&nav.mask[q]&&!prev.has(q)){prev.set(q,k);distance.set(q,d+32);queue.push(q);}}
+  const extended=[];for(let k=best;k>=0;k=prev.get(k))extended.push(k);path.splice(0,path.length,...extended.reverse());
+ }
+
+ return path.concat(path.slice(1,-1).reverse()).map(nav.point);
+}
+
 function routePoint(route,distance){if(!route.length)return null;let length=0;const edges=route.map((p,i)=>{const q=route[(i+1)%route.length],n=Math.hypot(q.x-p.x,q.y-p.y);length+=n;return n;});if(!length)return {...route[0],a:0};let d=((distance%length)+length)%length;for(let i=0;i<route.length;i++){if(d<=edges[i]&&edges[i]){const p=route[i],q=route[(i+1)%route.length],t=d/edges[i];return {x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t,a:Math.atan2(q.y-p.y,q.x-p.x)};}d-=edges[i];}return {...route[0],a:0};}
 const api={STAGES,fresh,restore,active,peaceful,step,inventory,canInteract,embedURL,videoEnded,nearestOpen,plan,localPath,paradeRoute,routePoint};
 if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29PrologueStory=api;

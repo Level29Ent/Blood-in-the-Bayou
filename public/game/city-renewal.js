@@ -1,0 +1,38 @@
+'use strict';
+(function(){
+function overlap(a,b,p=0){return a.x<b.x+b.w+p&&a.x+a.w>b.x-p&&a.y<b.y+b.h+p&&a.y+a.h>b.y-p;}
+function accessRoad(c,target,reserved,T=32){
+ const W=c.width,H=c.height,blocked=new Uint8Array(W*H);
+ for(const b of reserved)for(let y=Math.max(1,Math.floor((b.y-48)/T));y<Math.min(H-1,Math.ceil((b.y+b.h+48)/T));y++)for(let x=Math.max(1,Math.floor((b.x-48)/T));x<Math.min(W-1,Math.ceil((b.x+b.w+48)/T));x++)blocked[y*W+x]=1;
+ const sx=Math.floor(target.x/T),sy=Math.floor(target.y/T),start=sy*W+sx,queue=[start],prev=new Map([[start,-1]]);let end=-1;
+ for(let i=0;i<queue.length;i++){const k=queue[i],x=k%W,y=Math.floor(k/W);if(k!==start&&[1,9].includes(c.g[k])&&!blocked[k]){end=k;break;}for(const n of [x>2?k-1:-1,x<W-3?k+1:-1,y>2?k-W:-1,y<H-3?k+W:-1])if(n>=0&&!prev.has(n)&&!blocked[n]){prev.set(n,k);queue.push(n);}}
+ if(end<0)return [];const path=[];for(let k=end;k!==-1;k=prev.get(k))path.push({x:(k%W+.5)*T,y:(Math.floor(k/W)+.5)*T});return path;
+}
+function paintRoad(c,path,reserved,T=32){const cells=[];for(const p of path)for(let dy=-1;dy<=1;dy++)for(let dx=-1;dx<=1;dx++){const x=Math.floor(p.x/T)+dx,y=Math.floor(p.y/T)+dy,r={x:x*T,y:y*T,w:T,h:T};if(x<1||y<1||x>=c.width-1||y>=c.height-1||reserved.some(b=>overlap(r,b,6)))continue;const k=y*c.width+x;c.g[k]=[4,9].includes(c.g[k])?9:1;cells.push(k);}return [...new Set(cells)];}
+function parcels(c,reserved,limit=64){
+ const lots=[],walks=[],taken=reserved.slice(),types=['home','apartment','office','tower'];
+ // Each frontage has an authored 32-unit public approach; no roadside collision may consume it.
+ for(let y=256;y<(c.height-8)*32&&lots.length<limit;y+=64)for(let x=256;x<(c.width-8)*32&&lots.length<limit;x+=64){
+  const kind=types[lots.length%4],w=kind==='home'?64:96,h=kind==='home'?64:96,b={x,y,w,h,kind,H:kind==='home'?42:kind==='apartment'?112:kind==='office'?164:240};
+  if(taken.some(r=>overlap(b,r,32)))continue;let valid=true;for(let yy=y;yy<y+h&&valid;yy+=32)for(let xx=x;xx<x+w;xx+=32)if(![0,6].includes(c.get(xx/32,yy/32))||Math.abs(c.heightAt(xx+16,yy+16))>1)valid=false;if(!valid)continue;
+  let approach=null;for(let n=1;n<=4;n++){const p={x:x+w/2,y:y+h+n*32-16},r={x:p.x-16,y:p.y-16,w:32,h:32};if(taken.some(b=>overlap(r,b,4))||Math.abs(c.heightAt(p.x,p.y))>1)break;const tile=c.get(Math.floor(p.x/32),Math.floor(p.y/32));if([1,9].includes(tile)){approach=Array.from({length:n},(_,i)=>({x:p.x,y:y+h+i*32+16}));break;}if(![0,2,6].includes(tile))break;}
+  if(!approach)continue;lots.push(b);walks.push(approach);taken.push({...b,w:b.w+8,h:b.h+8},...approach.map(p=>({x:p.x-16,y:p.y-16,w:32,h:32})));
+ }return {lots,walks};
+}
+function building(T,b,mats){const root=new T.Group();root.name='Roadside '+b.kind;const q=[],box=(w,h,d,x,y,z,m)=>q.push([w,h,d,x,y,z,m]),cx=b.x+b.w/2,cz=b.y+b.h/2,H=b.H;
+ box(b.w,H,b.h,cx,H/2,cz,mats.wall);box(b.w+4,3,b.h+4,cx,H+1.5,cz,mats.trim);box(16,24,1,cx,12,b.y+b.h+1,mats.door);box(26,1,16,cx,.6,b.y+b.h+8,mats.trim);
+ for(let y=18;y<H-6;y+=22)for(const dx of [-b.w*.28,b.w*.28])for(const side of [-1,1]){box(14,12,1,cx+dx,y,cz+side*(b.h/2+.6),mats.window);box(1,12,14,cx+side*(b.w/2+.6),y,cz+dx,mats.window);}
+ if(b.kind==='home'){for(let i=0;i<4;i++)box(b.w+6-i*12,3,b.h+6,cx,H+4+i*3,cz,mats.roof);}else{box(b.w*.65,12,b.h*.65,cx,H+7,cz,mats.roof);if(b.kind==='tower')box(2,35,2,cx,H+30,cz,mats.trim);}
+ const buckets=new Map();for(const r of q){if(!buckets.has(r[6]))buckets.set(r[6],[]);buckets.get(r[6]).push(r);}const geo=new T.BoxGeometry(),dummy=new T.Object3D();for(const [m,list]of buckets){const mesh=new T.InstancedMesh(geo,m,list.length);list.forEach((p,i)=>{dummy.position.set(p[3],p[4],p[5]);dummy.scale.set(p[0],p[1],p[2]);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});mesh.frustumCulled=false;root.add(mesh);}return root;}
+const api={overlap,accessRoad,paintRoad,parcels,building};if(typeof module!=='undefined')module.exports=api;if(typeof window==='undefined')return;window.level29CityRenewal=api;if(window.level29RenewalReview)return;
+const gen=genCity;genCity=function(){const c=gen.apply(this,arguments);if(!c.world||!c.highway)return c;
+ const reserved=[...c.buildings,...c.features,c.farm,c.militaryBase,c.zoo,c.beach,c.themePark?.rect,c.airportParcel,c.recreationParcel,c.mallParcel,c.residence?.b,c.civicLocations?.library,c.civicLocations?.metro,...(c.relocation?.paths||[]).flatMap(r=>r.path.map(p=>({x:p.x-20,y:p.y-20,w:40,h:40})))].filter(r=>r?.w&&r?.h);
+ // The screenshot's empty waterfront sits between the city and the Natchez landing.
+ const landing=c.riverboatHub?.entry||{x:c.natchezParcel.x+32,y:c.natchezParcel.y+32};const path=accessRoad(c,landing,reserved),parking=c.accessLandmarks?.find(v=>v.accessLandmark==='parking'),parkingPath=parking?accessRoad(c,{x:parking.doorX+(parking.frontage?.dx??0)*80,y:parking.doorY+(parking.frontage?.dy??1)*80},reserved):[],paths=[path,parkingPath].filter(p=>p.length),cells=[...new Set(paths.flatMap(p=>paintRoad(c,p,reserved)))];c.waterfrontConnection={path,paths,parkingPath,cells};if(paths.length)c.roadConnectionOpenings=(c.roadConnectionOpenings||[]).concat(paths.flatMap(p=>p.slice(0,6)));
+ if(paths.length){const h=c.heightAt,surface=c.interstateSurface,byCell=new Map();for(const path of paths){const start=h(path[0].x,path[0].y)||0,end=h(path.at(-1).x,path.at(-1).y)||0,length=path.reduce((n,p,i)=>n+(i?Math.hypot(p.x-path[i-1].x,p.y-path[i-1].y):0),0);let d=0;for(let i=0;i<path.length;i++){if(i)d+=Math.hypot(path[i].x-path[i-1].x,path[i].y-path[i-1].y);for(const k of cells){const x=(k%c.width+.5)*32,y=(Math.floor(k/c.width)+.5)*32;if(Math.hypot(x-path[i].x,y-path[i].y)<64)byCell.set(k,start+(end-start)*(length?d/length:0));}}}c.heightAt=(x,y)=>byCell.get(Math.floor(y/32)*c.width+Math.floor(x/32))??h(x,y);c.interstateSurface=(x,y)=>byCell.has(Math.floor(y/32)*c.width+Math.floor(x/32))?c.heightAt(x,y):surface?.(x,y)??null;}
+ const roads=paths.flat().map(p=>({x:p.x-64,y:p.y-64,w:128,h:128}));c.roadsideDistrict=parcels(c,reserved.concat(roads,c.natchezParcel||[]),64);
+ for(const [i,b]of c.roadsideDistrict.lots.entries()){c.buildings.push({...b,H:b.H/2.4,kind:'roadside-renewal',venue:'roadside-residence',baseY:0});for(let y=b.y/32;y<(b.y+b.h)/32;y++)for(let x=b.x/32;x<(b.x+b.w)/32;x++)c.g[y*c.width+x]=T_BLD;for(const p of c.roadsideDistrict.walks[i])if(![1,9].includes(c.get(p.x/32|0,p.y/32|0)))c.g[(p.y/32|0)*c.width+(p.x/32|0)]=T_WALK;}
+ const clear=k=>cells.includes(k)||c.roadsideDistrict.lots.some(b=>overlap({x:(k%c.width)*32,y:(k/c.width|0)*32,w:32,h:32},b,24));for(const key of ['trees','pineTrees','rocks','parked'])if(c[key])c[key]=c[key].filter(p=>!clear((p.y/32|0)*c.width+(p.x/32|0)));indexTrees(c);return c;};
+const build=buildCity;buildCity=function(){const result=build.apply(this,arguments);if(!city?.roadsideDistrict)return result;const root=new THREE.Group();root.name='Roadside homes apartments offices and skyline';cityGroup.add(root);const M=level29World.material,common={trim:M('#c6c4ae'),roof:M('#4c555c'),window:M('#486879',.25,.45),door:M('#614f40')};for(const [i,b]of city.roadsideDistrict.lots.entries()){const g=building(THREE,b,{...common,wall:M(['#b1a18c','#8c9f9f','#a38d84','#788d9c'][i%4])});root.add(g);}
+ const q=level29World.batch(root),stone=M('#8a9b9b'),yellow=M('#d3b85c');for(const k of city.waterfrontConnection.cells){const x=(k%city.width+.5)*32,z=(Math.floor(k/city.width)+.5)*32,h=city.heightAt(x,z)||0;q.box(32,.4,32,x,h-.15,z,stone);}for(const [i,p]of city.waterfrontConnection.paths.flat().entries())if(i%2===0)q.box(1,.1,12,p.x,city.heightAt(p.x,p.y)+.2,p.y,yellow);q.finish();if(window.level29BatchStatic)level29BatchStatic(root,[]);return result;};
+})();
