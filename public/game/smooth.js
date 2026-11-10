@@ -80,25 +80,29 @@
   document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
 
   // ---------- Adaptive resolution ----------
-  const MIN_RATIO = isTouch ? .45 : .5;
+  const mobile = isTouch || !!window.level29MobileBudget?.mobile;
+  const MIN_RATIO = mobile ? .85 : .5;
+  // A stable 30fps is normal on phones; do not downscale it toward a 60fps target.
+  const slowMs = mobile ? 38 : 24, fastMs = mobile ? 30 : 18;
   let ratio = 0, avg = 16.7, lastFrame = 0, lastChange = 0, slowFor = 0, fastFor = 0;
   function capRatio(){ if(window.level29MobileBudget)return window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio);return mpRole ? Math.min(1, devicePixelRatio || 1) : Math.min(isTouch?1:1.5, devicePixelRatio || 1); }
   function adaptResolution(now, dt){
     if (!renderer || state !== 'play') return;
     const cap = capRatio();
     ratio = renderer.getPixelRatio();
-    if (ratio > cap){ ratio = cap; renderer.setPixelRatio(ratio); }
+    const floor = Math.min(MIN_RATIO,cap);
+    if (ratio > cap || ratio < floor){ ratio = Math.max(floor,Math.min(cap,ratio)); renderer.setPixelRatio(ratio); }
     avg += (dt - avg) * .05;
-    if (avg > 24) { slowFor += dt; fastFor = 0; }
-    else if (avg < 18) { fastFor += dt; slowFor = 0; }
+    if (avg > slowMs) { slowFor += dt; fastFor = 0; }
+    else if (avg < fastMs) { fastFor += dt; slowFor = 0; }
     else { slowFor = fastFor = 0; }
     if (now - lastChange < 2000) return;
     let next = ratio;
-    if(isTouch&&slowFor>2500&&window.level29Graphics?.quality!=='low')window.level29Graphics.setQuality('low');
+    if(mobile&&slowFor>2500&&window.level29Graphics?.quality!=='low')window.level29Graphics.setQuality('low');
     if (slowFor > 1500 && ratio > Math.min(MIN_RATIO,cap)) next = Math.max(Math.min(MIN_RATIO,cap), ratio - .15);
     else if (fastFor > 5000 && ratio < cap) next = Math.min(cap, ratio + .1);
     if (next !== ratio){
-      ratio = Math.min(cap,Math.round(next * 100) / 100);
+      ratio = Math.max(floor,Math.min(cap,Math.round(next * 100) / 100));
       renderer.setPixelRatio(ratio);
       if (typeof MP !== 'undefined') MP.renderScale = capRatio();
       lastChange = now; slowFor = fastFor = 0;
