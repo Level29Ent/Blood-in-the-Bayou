@@ -263,7 +263,7 @@ function amenities(group){
    }
    lq.finish();
   }
-  if(f.kind==='riverfront'){
+  if(f.kind==='riverfront'&&!city.riverboatHub){
    q.box(w,1.5,31,x+w/2,1,z+40,wood);q.box(w,1,1,x+w/2,14,z+55,iron);for(let xx=x;xx<x+w;xx+=18)q.box(.8,14,.8,xx,7,z+55,iron);
    const boat=new THREE.Group();boat.position.set(x+w*.62,0,z+165);group.add(boat);
    const bq=batch(boat);bq.box(145,8,56,0,4,0,material('#283c3e'));bq.box(126,13,47,-3,15,0,white);bq.box(137,3,57,-3,23,0,white);bq.box(110,13,40,-6,31,0,white);bq.box(125,2,53,-6,39,0,white);

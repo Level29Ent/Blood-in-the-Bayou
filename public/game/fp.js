@@ -676,7 +676,7 @@ function syncDynamic(){
   const tg = mission ? missionTarget() : null;
   markerMesh.visible = !!tg && state!=='menu' && dist(camP.x, camP.z, tg.x, tg.y) > (mission && mission.phase==='start' ? 260 : 40); markerRing.visible = false;
   if (tg && markerMesh.visible){
-    markerMesh.position.set(tg.x, 35 + Math.sin(frame * .06) * 2, tg.y); markerMesh.material.color.set(tg.col);
+    markerMesh.position.set(tg.x, terrainHeight(tg.x,tg.y) + 35 + Math.sin(frame * .06) * 2, tg.y); markerMesh.material.color.set(tg.col);
     const sc = 1 + Math.sin(frame * .1) * .06; markerMesh.scale.set(sc, 1, sc);
     if (tg.zone){ markerRing.visible = true; markerRing.position.set(tg.x, .6, tg.y); markerRing.scale.set(tg.zone, tg.zone, tg.zone); markerRing.material.color.set(tg.col); }
   }
