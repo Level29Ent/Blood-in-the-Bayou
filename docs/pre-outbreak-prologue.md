@@ -12,7 +12,7 @@ first and intentionally start a new game; do not clear browser storage.
    gaming deck**. The current casino is an off-street boat interior, so the first
    marker leads to its real boarding landing, not an unreachable world coordinate.
 2. Find **Ahmad Ervins** walking with the moving second line in Tremé. Mardi Gras
-   colors, brass players, hats, parasols, two moving crown floats and an original
+   colors, brass players, hats, parasols, five moving crown floats and an original
    synthesized festival phrase accompany the crowd. This is a stylized celebration,
    not a claim to reproduce a particular parade or recording.
 3. Retrieve Ahmad's phone from the porch of the apartments nearest the mall; bring
@@ -65,7 +65,7 @@ checkpoint pending. No automatic timeout skips a story scene or blocks the save.
 
 ## Rendering and compatibility
 
-The opening's residents use 420 lightweight world descriptors with at most 72
+The opening's residents use 420 lightweight world descriptors with at most 104
 nearby residents/marchers rendered in nine shared instance batches, plus two floats
 and a small fixed named-character pool. Far-away routines are not simulated every
 frame. Crowd paths and the festival use the existing cardinal street graph. The
