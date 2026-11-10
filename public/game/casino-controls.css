@@ -1,0 +1,10 @@
+#riverboatControls{display:none;position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 150px);z-index:47}
+#riverboatControlsToggle{min-height:44px;padding:10px 14px;background:#18323aed;color:#f0dfad;border:1px solid #bba36c;font:700 12px monospace}
+#riverboatControlsPanel[hidden]{display:none!important}
+#riverboatControlsPanel{position:fixed;inset:0;z-index:14000;display:flex;align-items:center;justify-content:center;padding:max(16px,env(safe-area-inset-top)) 16px max(16px,env(safe-area-inset-bottom));box-sizing:border-box;background:#081720f5;color:#f2dfae;overflow:auto;font:14px/1.5 monospace}
+.riverboat-controls-card{width:min(380px,100%);max-height:100%;overflow:auto;background:#152c35;border:1px solid #b69e62;padding:16px;box-sizing:border-box}
+.riverboat-controls-card h2{font-size:20px;margin:0 0 12px}
+.riverboat-controls-card button{display:block;width:100%;min-height:44px;margin:8px 0;padding:10px;background:#29464e;color:#f5e4bb;border:1px solid #a88f55;font:14px monospace;box-sizing:border-box}
+.riverboat-controls-card button[hidden]{display:none!important}
+@media(max-width:760px),(pointer:coarse){#riverboatControls{left:16px;transform:none;bottom:calc(env(safe-area-inset-bottom,0px) + 198px);max-width:125px}#riverboatControlsToggle{max-width:125px}#prologueAction{bottom:calc(env(safe-area-inset-bottom,0px) + 250px)!important;max-width:calc(100vw - 32px)!important;font-size:12px!important}}
+@media(max-height:500px){#riverboatControls{bottom:calc(env(safe-area-inset-bottom,0px) + 150px);left:16px;transform:none}#prologueAction{bottom:calc(env(safe-area-inset-bottom,0px) + 165px)!important;left:65%!important;max-width:55vw!important}#riverboatControlsPanel{align-items:flex-start}}

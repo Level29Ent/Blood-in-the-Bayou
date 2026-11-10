@@ -8,7 +8,7 @@ const style=document.createElement('style');style.textContent=`
  #mobileActionsToggle{display:block!important;position:fixed;top:calc(env(safe-area-inset-top,0px) + var(--hud-status-bottom,162px) + 8px);right:max(10px,env(safe-area-inset-right));z-index:44;min-height:40px;padding:8px 12px;background:#162b34ed;color:#ebd89f;border:1px solid #b09a5e;font:12px monospace}
  #hudDrawerToggle{display:none!important}
  #touch #jumpControl{position:static!important;inset:auto!important;min-width:44px!important}
- #missionWaypoints{top:var(--hud-mission-bottom,128px)!important;left:10px!important;max-width:48vw!important;font-size:10px!important;max-height:65px;overflow:hidden}
+ #missionWaypoints{top:calc(var(--hud-mission-bottom,128px) + 8px)!important;left:10px!important;max-width:48vw!important;font-size:10px!important;max-height:65px;overflow:hidden}
  #touch{bottom:calc(env(safe-area-inset-bottom,0px) + 70px)!important;right:max(10px,env(safe-area-inset-right))!important;max-width:48vw!important}
  #touch .group{display:grid!important;grid-template-columns:repeat(3,minmax(44px,1fr));width:min(204px,46vw)!important;gap:6px!important}
  #touch .group button{position:static!important;inset:auto!important;transform:none!important;width:100%!important;margin:0!important;
