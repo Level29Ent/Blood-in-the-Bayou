@@ -275,13 +275,20 @@ function addDriver(g, c, L, W, top){
   const wheel = new THREE.Mesh(new THREE.TorusGeometry(1.6, .3, 6, 14), lam('#151515'));
   wheel.position.set(seat[0] + 4.2, seat[1] + 2.6, -W * .2); wheel.rotation.y = Math.PI / 2; wheel.rotation.x = .5;
   const rig = new THREE.Group(); rig.add(d, wheel); g.add(rig);
+  // Figure anatomy is shared; only these per-driver resources belong to this car.
+  g.userData.ownedMaterials ??= new Set(); g.userData.ownedGeometries ??= new Set();
+  for (const mat of [u.skin, u.shirt, u.pants, u.hair.material, u.helmet.material, wheel.material]) g.userData.ownedMaterials.add(mat);
+  for (const geo of [u.helmet.geometry, wheel.geometry]) g.userData.ownedGeometries.add(geo);
   return rig;
 }
 function syncCars(){
   const p = player, far = isNight() ? 580 : 780;
+  const mobile = window.level29MobileBudget?.mobile && window.level29RuntimeResources;
+  const selected = mobile ? mobile.mobileTraffic(cars, camera.position, p?.car, far) : null;
+  if (selected) for (const [c, m] of carMeshes) if (!selected.has(c)){ mobile.releaseVehicle(m); carMeshes.delete(c); }
   if (frame % 30 === 0){ const live = new Set(cars); for (const [c, m] of carMeshes) if (!live.has(c)){ scene.remove(m); carMeshes.delete(c); } }
   for (const c of cars){
-    if(c.gone)continue;
+    if(c.gone || selected && !selected.has(c))continue;
     const d = dist(c.x, c.y, camera.position.x, camera.position.z);
     let m = carMeshes.get(c);
     if (d >= far && (!p || p.car !== c)){ if (m) m.visible = false; continue; }

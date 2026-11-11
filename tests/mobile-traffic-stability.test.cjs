@@ -1,0 +1,28 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),THREE=require('three'),fs=require('node:fs'),vm=require('node:vm');
+const resources=require('../public/game/runtime-resources.js');
+test('mobile traffic selects only the nearest sixteen models, always keeping the player vehicle',()=>{
+ const cars=Array.from({length:80},(_,i)=>({x:i*10,y:0})),own={x:2000,y:0};cars.push(own,{x:1,y:0,gone:true});
+ const selected=resources.mobileTraffic(cars,{x:0,z:0},own);assert.equal(selected.size,16);assert(selected.has(own));assert(selected.has(cars[0]));assert(!selected.has(cars[15]));assert(!selected.has(cars.at(-1)));
+});
+test('actual vehicle synchronizer stays bounded during repeated travel and preserves simulation traffic',()=>{
+ const source=fs.readFileSync('public/game/fp.js','utf8'),start=source.indexOf('function syncCars(){'),end=source.indexOf('// ---------- Pickups',start),cars=Array.from({length:400},(_,i)=>({x:i*20,y:0,z:0,v:0,vs:0,hp:100,maxHp:100,spec:{},col:'#abc'}));
+ const scene=new THREE.Scene(),map=new Map();let disposed=0,created=0;
+ const context={window:{level29MobileBudget:{mobile:true},level29RuntimeResources:resources},cars,scene,carMeshes:map,frame:1,player:{car:null},view:{chase:false},camera:{position:{x:0,z:0}},dist:(x,y,a,b)=>Math.hypot(x-a,y-b),isNight:()=>false,clamp:(x,a,b)=>Math.min(b,Math.max(a,x)),MAT:{dead:new THREE.MeshBasicMaterial()},makeCarMesh(c){created++;const m=new THREE.Group(),paint=new THREE.MeshStandardMaterial();paint.addEventListener('dispose',()=>disposed++);m.userData={paint,col:c.col,ownedMaterials:new Set([paint])};scene.add(m);return m;}};
+ vm.createContext(context);vm.runInContext(source.slice(start,end),context);
+ for(let lap=0;lap<3;lap++)for(let x=0;x<8000;x+=250){context.camera.position.x=x;context.frame++;context.syncCars();assert(map.size<=16);assert(scene.children.length<=16);}
+ assert.equal(cars.length,400);assert(created>100);assert.equal(created-disposed,map.size);
+});
+test('vehicle release frees owned driver geometry but never shared template geometry',()=>{
+ const root=new THREE.Group(),owned=new THREE.BoxGeometry(),shared=new THREE.BoxGeometry();let freed=0,sharedFreed=0;owned.addEventListener('dispose',()=>freed++);shared.addEventListener('dispose',()=>sharedFreed++);root.add(new THREE.Mesh(owned),new THREE.Mesh(shared));root.userData.ownedGeometries=new Set([owned]);resources.releaseVehicle(root);resources.releaseVehicle(root);assert.equal(freed,1);assert.equal(sharedFreed,0);
+});
+test('actual driver construction declares only its own materials, helmet and steering wheel for retirement',()=>{
+ const source=fs.readFileSync('public/game/fp.js','utf8'),a=source.indexOf('let FIG = null;'),b=source.indexOf('function makeBoss(',a),c=source.indexOf('const DRIVER_LOOKS'),d=source.indexOf('function syncCars',c),context={THREE,Math,MAT:{},lam:color=>new THREE.MeshStandardMaterial({color})};vm.createContext(context);vm.runInContext(source.slice(a,b)+source.slice(c,d),context);
+ const root=new THREE.Group();root.userData.ownedMaterials=new Set();context.addDriver(root,{type:'sedan',spec:{}},50,22,17);assert.equal(root.userData.ownedMaterials.size,6);assert.equal(root.userData.ownedGeometries.size,2);let freed=0,sharedFreed=0;for(const g of root.userData.ownedGeometries)g.addEventListener('dispose',()=>freed++);root.traverse(o=>{if(o.geometry&&!root.userData.ownedGeometries.has(o.geometry))o.geometry.addEventListener('dispose',()=>sharedFreed++);});resources.releaseVehicle(root);assert.equal(freed,2);assert.equal(sharedFreed,0);
+});
+test('recovery preserves prior evidence and records navigation/discard hints without inferring a crash',()=>{
+ const stored=new Map([['level29.session-diagnostic.v1',JSON.stringify({active:true,at:Date.now()-1000,reason:'performance',events:[]})]]),context={Date,performance:{getEntriesByType:()=>[{type:'reload'}]},document:{wasDiscarded:false,createElement:()=>({style:{}}),querySelector:()=>({appendChild(){}}),addEventListener(){}},localStorage:{getItem:k=>stored.get(k),setItem:(k,v)=>stored.set(k,v)},window:{level29Graphics:{quality:'low'},level29Save:{save(){}}},addEventListener(){},update(){},state:'play',player:{},mpRole:null,carMeshes:new Map([[{},{}]]),renderer:{getPixelRatio:()=>.85,info:{memory:{geometries:100,textures:10},render:{calls:12}}}};
+ vm.createContext(context);vm.runInContext(fs.readFileSync('public/game/session-recovery.js','utf8'),context);context.update();const data=JSON.parse(stored.get('level29.session-diagnostic.v1'));assert.equal(data.startup.navigationType,'reload');assert.equal(data.startup.browserDiscarded,false);assert.equal(data.startup.runtime,'mobile-stability-1');assert.equal(data.graphics.trafficModels,1);assert.equal(context.window.level29SessionRecovery.previous.reason,'performance');
+});
+test('actual car LOD wrapper hides detailed drivers on distant mobile cars without changing desktop LOD',()=>{
+ const source=fs.readFileSync('public/game/cars.js','utf8'),a=source.indexOf('  const originalSync=syncCars;'),b=source.indexOf('  // Free per-instance',a),car={x:220,y:0,ai:true},u={visualVersion:2,shell:{},distant:{},rollingWheels:[],driver:{}},context={syncCars(){},carMeshes:new Map([[car,{visible:false,userData:u}]]),window:{level29MobileBudget:{mobile:true}},dist:(x,y,a,b)=>Math.hypot(x-a,y-b),camera:{position:{x:0,z:0}},player:{car:null}};vm.createContext(context);vm.runInContext(source.slice(a,b),context);context.syncCars();assert.equal(u.driver.visible,false);car.x=100;context.syncCars();assert.equal(u.driver.visible,true);car.x=220;context.window.level29MobileBudget.mobile=false;context.syncCars();assert.equal(u.driver.visible,true);
+});
