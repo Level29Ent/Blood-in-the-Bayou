@@ -408,6 +408,8 @@ function batchStatic(root,skip,target){
   }
   root.traverse(o=>{
     if(!o.isMesh||o===root||ancestorKept(o)||o.name.startsWith('hidden:')||o.userData.noBatch)return;
+    // Keep authored cube instances compact on mobile; the final spatial pass partitions them.
+    if(window.level29MobileBudget?.mobile&&o.userData.staticWorldBatch)return;
     const mats=Array.isArray(o.material)?o.material:[o.material];
     if(mats.some(m=>!m||m.vertexColors||m.isShaderMaterial||m.isPointsMaterial))return;
     if(o.isInstancedMesh&&o.instanceColor)return;

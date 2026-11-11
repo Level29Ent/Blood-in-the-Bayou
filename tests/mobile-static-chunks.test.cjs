@@ -146,3 +146,23 @@ test("actual world batch builder shares cube buffers across materials and rebuil
     "small batches stay unchanged",
   );
 });
+test("actual legacy world merger keeps authored instances compact only on mobile", () => {
+  const fs = require("node:fs"),
+    vm = require("node:vm"),
+    code = fs.readFileSync("public/game/gulf.js", "utf8"),
+    a = code.indexOf("function matSig("),
+    b = code.indexOf("const prevBuild=buildCity;", a);
+  for (const mobile of [true, false]) {
+    const c = { THREE: T, window: { level29MobileBudget: { mobile } } };
+    vm.createContext(c);
+    vm.runInContext(code.slice(a, b), c);
+    const root = new T.Group(),
+      m = batch(root);
+    c.window.level29BatchStatic(root, []);
+    if (mobile) {
+      assert.equal(m.parent, root);
+      assert.equal(m.geometry.attributes.position.count, 24);
+      assert(optimize(T, root).chunks > 1);
+    } else assert.equal(m.parent, null);
+  }
+});
