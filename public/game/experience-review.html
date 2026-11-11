@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Blood in the Bayou · settings and interiors review</title
+  ><link rel="stylesheet" href="player-experience.css?v=1" /><style>
+    body {
+      margin: 0;
+      background: #152731;
+      color: #e6d3ab;
+      font: 14px monospace;
+    }
+    header {
+      position: fixed;
+      z-index: 3;
+      background: #12212de8;
+      padding: 12px;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      min-height: 44px;
+      padding: 8px;
+      background: #29424e;
+      color: #efd6a4;
+      border: 1px solid #8a9b93;
+    }
+    canvas {
+      display: block;
+      width: 100vw;
+      height: 100dvh;
+    }
+    #hudMapActions {
+      display: none;
+    }
+  </style>
+  <header>
+    <b>Isolated UI / geometry review — not full-city performance</b>
+    <p>Real settings and survival modules with fixture city/player state.</p>
+    <button onclick="level29UX.open()">Open settings</button
+    ><button onclick="level29SurvivalExpansion.show()">Survival services</button
+    ><select aria-label="Interior review" id="interior">
+      <option>manor</option>
+      <option>docks</option>
+      <option>jail</option></select
+    ><button onclick="drawRoom()">View room</button>
+  </header>
+  <div id="menu"><div class="keys"></div></div>
+  <div id="main-view-3" hidden></div>
+  <div id="hudMapActions"></div>
+  <div id="pauseControls">
+    <input
+      id="pauseSensitivity"
+      type="range"
+      min=".4"
+      max="2"
+      step=".1"
+      value="1"
+    /><input
+      id="pauseShake"
+      type="range"
+      min="0"
+      max="1"
+      step=".1"
+      value=".5"
+    />
+  </div>
+  <canvas id="review"></canvas>
+  <script src="three.min.js"></script>
+  <script>
+    var state = "play",
+      mpRole = null,
+      mouse = { down: false },
+      keys = {},
+      touch = {},
+      gp = {},
+      stick = {},
+      parts = [],
+      frame = 0,
+      player = { x: 120, y: 180, hp: 100, maxHp: 100 },
+      view = {},
+      arsenal = { m240: Infinity, pistol: 20 },
+      cash = 3000,
+      mission = null,
+      objective = "",
+      zombies = [],
+      rbMesh = null,
+      gun = null,
+      vmScene = new THREE.Scene(),
+      cityGroup = new THREE.Group(),
+      scene = new THREE.Scene(),
+      camera = new THREE.PerspectiveCamera(
+        55,
+        innerWidth / innerHeight,
+        1,
+        1000,
+      ),
+      moverCtx = null;
+    var city = {
+      world: true,
+      venues: [
+        { id: "business", doorX: 120, doorY: 180 },
+        { id: "business", southern: "manor", doorX: 120, doorY: 180 },
+        { id: "business", southern: "sawmill", doorX: 120, doorY: 180 },
+        { id: "business", southern: "federal", doorX: 120, doorY: 180 },
+      ],
+    };
+    var level29Graphics = {
+        quality: "low",
+        preferred: "low",
+        setQuality(q) {
+          this.quality = this.preferred = q;
+          localStorage.setItem("level29.graphics.stage1", q);
+        },
+      },
+      level29MobileBudget = { mobile: false };
+    function update() {}
+    function render() {}
+    function nearStation() {
+      return null;
+    }
+    function hasW(id) {
+      return id in arsenal;
+    }
+    function terrainHeight() {
+      return 0;
+    }
+    function solidAt() {
+      return false;
+    }
+    function blockedCircle() {
+      return false;
+    }
+    function serviceVenue() {}
+    function spawnZombieAt() {}
+    function hurtPlayer() {}
+    function passMission() {}
+    function beginMission() {}
+    function syncViewModel() {}
+    function buildCity() {}
+    function killPlayer() {}
+    function ambientSpawn() {}
+    function extraBlips() {
+      return [];
+    }
+    function toast(t) {
+      console.log(t);
+    }
+    function giveW() {}
+    function snapCamera() {}
+    function makeZombie(x, y) {
+      return { x, y, hp: 3, alive: true };
+    }
+    function makeFigure() {
+      return new THREE.Group();
+    }
+    function setFigureColors() {}
+    function tileAt() {
+      return 0;
+    }
+    var T_WATER = 4,
+      T_BLD = 2,
+      T_LOT = 3;
+    function zombieGoal(z, x, y) {
+      return { x, y };
+    }
+    function hitRect(x, y, r, b) {
+      return (
+        x + r > b.x && x - r < b.x + b.w && y + r > b.y && y - r < b.y + b.h
+      );
+    }
+    var renderer = new THREE.WebGLRenderer({
+      canvas: document.getElementById("review"),
+      antialias: true,
+    });
+    renderer.setPixelRatio(1);
+    renderer.setSize(innerWidth, innerHeight);
+    scene.background = new THREE.Color("#152731");
+    scene.add(new THREE.HemisphereLight("#dbe7ee", "#5f594b", 2));
+    const sun = new THREE.DirectionalLight("#fff3d1", 1.5);
+    sun.position.set(100, 200, 90);
+    scene.add(sun);
+    scene.add(cityGroup);
+    camera.position.set(350, 260, 330);
+    camera.lookAt(120, 12, 85);
+  </script>
+  <script src="runtime-policy.js"></script>
+  <script src="input-bindings.js"></script>
+  <script src="survival-expansion.js"></script>
+  <script src="player-experience.js"></script>
+  <script>
+    // Read the exact reusable builder without introducing a second model implementation.
+    var previewRoot = null;
+    function drawRoom() {
+      if (previewRoot) level29RuntimePolicy.disposeOwned(previewRoot);
+      previewRoot = level29SurvivalGeometry.room(
+        THREE,
+        document.getElementById("interior").value,
+      );
+      scene.add(previewRoot);
+      renderer.render(scene, camera);
+    }
+    drawRoom();
+    addEventListener("resize", () => {
+      renderer.setSize(innerWidth, innerHeight);
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.render(scene, camera);
+    });
+  </script>
+</html>

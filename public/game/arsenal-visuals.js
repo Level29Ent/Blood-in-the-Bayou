@@ -75,7 +75,7 @@ function bake(g){
 }
 function arms(g,one=false){
  const existing=new Set(g.children);
- const cuff=finish('cuff','#232b29',.96);
+ const cuff=finish('cuff','#232b29',.96);cuff.name='survivorSleeve';
  const sleeve=(a,b)=>{
   const start=new THREE.Vector3(...a),end=new THREE.Vector3(...b),v=end.clone().sub(start);
   const m=new THREE.Mesh(new THREE.CylinderGeometry(.92,1.2,v.length(),14),cuff);

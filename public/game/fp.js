@@ -97,8 +97,10 @@ class Pool {
   constructor(make){ this.make = make; this.map = new Map(); this.free = []; this.seen = new Set(); }
   begin(){ this.seen.clear(); }
   get(o){ let m = this.map.get(o), fresh = false; if (!m){ m = this.free.pop() || this.make(); if (!m.parent) scene.add(m); m.visible = true; this.map.set(o, m); fresh = true; } this.seen.add(o); return [m, fresh]; }
-  end(){ for (const [o, m] of this.map) if (!this.seen.has(o)){ m.visible = false; this.free.push(m); this.map.delete(o); } }
+  end(){ for (const [o, m] of this.map) if (!this.seen.has(o)){ m.visible = false; this.free.push(m); this.map.delete(o); } if(window.level29MobileBudget?.mobile)this.trim(); }
   clear(){ for (const [o, m] of this.map){ m.visible = false; this.free.push(m); } this.map.clear(); }
+  trim(limit=16){while(this.free.length>limit){const m=this.free.pop(),u=m.userData;if(!u.body){this.free.push(m);break;}window.level29RuntimePolicy?.figureOwnership(m);window.level29RuntimePolicy?.disposeOwned(m);}}
+
 }
 
 // ---------- Figures (zombies, survivors, corpses, boss) ----------
@@ -472,6 +474,7 @@ function buildViewModel(){
   add(box(2.2, 2.2, 2.6, glove), .2, -1.6, -6.2);
   const fl = box(2.4, 2.4, 9, sleeve); fl.rotation.set(.3, .45, 0); add(fl, -1.8, -3.4, -2.2);
   add(box(2.2, 2.4, 2.4, glove), .5, -2.4, 2.2);
+  sleeve.name='survivorSleeve';
   const fr = box(2.6, 2.6, 10, sleeve); fr.rotation.set(.5, -.25, 0); add(fr, 1.8, -4.8, 7.2);
   muzzle = new THREE.Mesh(new THREE.PlaneGeometry(7, 7), new THREE.MeshBasicMaterial({ map: starTex, transparent: true, depthWrite: false, blending: THREE.AdditiveBlending }));
   muzzle.position.set(0, .3, -16.4); gun.add(muzzle);
@@ -589,6 +592,16 @@ function applyLightMode(){
 
 // ---------- Sync dynamic objects ----------
 const _c = new THREE.Color();
+function configureZombieFigure(m,z){
+ const u=m.userData,skin=z.type==='runner'?'#a3bc6c':z.type==='brute'?'#6f8a58':'#86a46e';
+ setFigureColors(m,skin,z.shirt||'#555555',z.military?CAMO[0]:'#2e3a52');
+ u.helmet.visible=!!z.military&&z.v<.5;u.hair.visible=!u.helmet.visible;
+ u.hair.scale.set(1,1,1);u.hair.position.set(0,20.4,0);
+ u.longHair.visible=!!z.fem&&!u.helmet.visible;
+ u.hair.material.color.set(u.longHair.visible?['#2a1a10','#6a3a1a','#c8a050','#151515'][Math.min(3,Math.floor((z.v||0)*4))]:'#3a2a1a');
+ m.scale.setScalar(z.storyScale||(z.type==='brute'?1.6:z.type==='runner'?.95:1));u.eyes.visible=true;
+}
+
 function syncDynamic(){
   const p = player, camP = camera.position, far = window.level29Downtown?.ride?1200:isNight()?470:600;
   syncCars();
@@ -597,15 +610,7 @@ function syncDynamic(){
   for (const z of zombies){
     if (!z.alive || window.level29MobileHordeSelection?.has(z) || dist(z.x, z.y, camP.x, camP.z) > far) continue;
     const [m, fresh] = zPool.get(z), u = m.userData;
-    if (fresh){
-      const skin = z.type==='runner' ? '#a3bc6c' : z.type==='brute' ? '#6f8a58' : '#86a46e';
-      setFigureColors(m, skin, z.shirt, z.military ? CAMO[0] : '#2e3a52');
-      u.helmet.visible = z.military && z.v < .5; u.hair.visible = !u.helmet.visible;
-      u.hair.scale.set(1, 1, 1); u.hair.position.set(0, 20.4, 0);
-      if (z.fem && !u.helmet.visible){ u.longHair.visible = true; u.hair.material.color.set(['#2a1a10','#6a3a1a','#c8a050','#151515'][Math.floor(z.v*4)]); } else { u.longHair.visible = false; u.hair.material.color.set('#3a2a1a'); }
-      m.scale.setScalar(z.type==='brute' ? 1.6 : z.type==='runner' ? .95 : 1);
-      u.eyes.visible = true;
-    }
+    if (fresh) configureZombieFigure(m,z);
     m.scale.setScalar(z.storyScale||(z.type==='brute'?1.6:z.type==='runner'?.95:1));
     poseFigure(m, z.x, z.y, z.a, z.anim, 'zombie');
     if (z.type==='runner') u.body.rotation.z = -.35;
@@ -616,9 +621,9 @@ function syncDynamic(){
   // corpses
   cPool.begin();
   for (const q of parts){
-    if (q.k!=='corpse' || q.isPlayer || dist(q.x, q.y, camP.x, camP.z) > far * .7) continue;
+    if (q.k!=='corpse' || q.isPlayer || q.ragdoll?.root.parent || dist(q.x, q.y, camP.x, camP.z) > far * .7) continue;
     const [m, fresh] = cPool.get(q), u = m.userData;
-    if (fresh){ setFigureColors(m, '#7a9460', q.shirt, q.military ? CAMO[0] : '#2e3a52'); m.scale.setScalar((q.r || 10) / 10); u.eyes.visible = false; u.helmet.visible = false; u.legL.rotation.z = .2; u.legR.rotation.z = -.1; u.armL.rotation.z = 2.6; u.armR.rotation.z = 2.2; }
+    if (fresh){ configureZombieFigure(m,q);u.eyes.visible=false;u.legL.rotation.z=.2;u.legR.rotation.z=-.1;u.armL.rotation.z=2.6;u.armR.rotation.z=2.2; }
     m.position.set(q.x, 2.3, q.y); m.rotation.set(0, -(q.a + 1.2), 0); u.body.rotation.set(0, 0, -Math.PI/2); u.body.position.y = 0;
     if (q.t < 60) m.position.y = 2.3 - (60 - q.t) * .08;
   }
@@ -664,7 +669,7 @@ function syncDynamic(){
   let si = 0; for (const s of spits){ if (si >= 80) break; _dm.position.set(s.x, 12, s.y); _dm.rotation.set(0, 0, 0); _dm.scale.set(1, 1, 1); _dm.updateMatrix(); spitMesh.setMatrixAt(si++, _dm.matrix); }
   spitMesh.count = si; spitMesh.instanceMatrix.needsUpdate = true;
   // particles
-  const fill = (pts, list, fn) => { const pa = pts.geometry.attributes.position.array, ca = pts.geometry.attributes.color.array, max = pa.length / 3; let i = 0; for (const q of list){ if (i >= max) break; if (fn(q, pa, ca, i)) i++; } pts.geometry.setDrawRange(0, i); pts.geometry.attributes.position.needsUpdate = true; pts.geometry.attributes.color.needsUpdate = true; };
+  const fill = (pts, list, fn) => { const pa = pts.geometry.attributes.position.array, ca = pts.geometry.attributes.color.array, max = Math.min(pa.length / 3,window.level29RuntimePolicy?.budget.particles||800); let i = 0; for (const q of list){ if (i >= max) break; if (fn(q, pa, ca, i)) i++; } pts.geometry.setDrawRange(0, i); pts.geometry.attributes.position.needsUpdate = true; pts.geometry.attributes.color.needsUpdate = true; };
   fill(ptsSmall, parts, (q, pa, ca, i) => {
     let y, c;
     if (q.k==='gore'){ y = 1 + q.t * .3; c = q.c; } else if (q.k==='shell'){ y = 6 + q.t * .1; c = '#d4a017'; } else if (q.k==='spark'){ y = 10; c = '#fff3a0'; } else return false;
@@ -757,7 +762,7 @@ function fpHUD(small){
     g.addColorStop(0, 'rgba(160,0,0,0)'); g.addColorStop(1, 'rgba(160,0,0,' + a + ')'); cx.fillStyle = g; cx.fillRect(0, 0, SW, SH);
   }
   // crosshair
-  if (!p.dead && (!p.car || view.chase || mouse.down || keys['f'] || touch.shoot)){
+  if (state==='play'&&!window.level29UX?.modalOpen&&!p.dead && (!p.car || view.chase || mouse.down || keys['f'] || touch.shoot)){
     const firing = frame - lastShotFrame < 6, gap = 5 + (firing ? 5 : 0) + (p.car ? 3 : 0), L = 7;
     let cxp = SW/2, cyp = SH/2;
     if (p.car && view.chase){ const pr = project(p.car.x + Math.cos(p.aim) * 300, p.car.y + Math.sin(p.aim) * 300, 12); if (pr){ cxp = pr.x; cyp = pr.y; } }
