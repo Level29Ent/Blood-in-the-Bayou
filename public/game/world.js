@@ -58,9 +58,10 @@ function roofMaterial(){
 const oldBuilding=buildingBox;
 buildingBox=function(b,h){const m=oldBuilding(b,h);const type=b.kind==='tower'||b.kind==='helipad'?'glass':D.id==='nola'&&Math.floor(b.seed)%3===0?'brick':'stucco';const fm=facade(b.kind==='cathedral'?'#e4dfd0':b.col,type),rm=roofMaterial();m.material=[fm,fm,rm,rm,fm,fm];return m;};
 // Batched cuboids keep facade/roof/street detail inexpensive, one draw per material.
+let sharedBatchCube=null;
 function batch(group){const buckets=new Map();const tmp=new THREE.Object3D();return {
  box(w,h,d,x,y,z,mat,rot=0){if(!buckets.has(mat))buckets.set(mat,[]);buckets.get(mat).push([w,h,d,x,y,z,rot]);},
- finish(){for(const [mat,items]of buckets){const m=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),mat,items.length);items.forEach((q,i)=>{tmp.position.set(q[3],q[4],q[5]);tmp.scale.set(q[0],q[1],q[2]);tmp.rotation.set(0,q[6],0);tmp.updateMatrix();m.setMatrixAt(i,tmp.matrix);});group.add(m);}}
+ finish(){for(const [mat,items]of buckets){const m=new THREE.InstancedMesh(sharedBatchCube||(sharedBatchCube=new THREE.BoxGeometry(1,1,1)),mat,items.length);items.forEach((q,i)=>{tmp.position.set(q[3],q[4],q[5]);tmp.scale.set(q[0],q[1],q[2]);tmp.rotation.set(0,q[6],0);tmp.updateMatrix();m.setMatrixAt(i,tmp.matrix);});m.userData.staticWorldBatch=true;group.add(m);}}
  };}
 function plane(group,w,h,x,y,z,tex,rot=0){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide}));m.position.set(x,y,z);m.rotation.y=rot;group.add(m);return m;}
 function architecturalDetails(group){

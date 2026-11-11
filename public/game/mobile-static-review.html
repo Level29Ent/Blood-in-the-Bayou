@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+  <meta charset="utf-8" /><meta
+    name="viewport"
+    content="width=device-width,initial-scale=1"
+  /><title>Mobile static scenery budget check</title
+  ><style>
+    body {
+      margin: 0;
+      background: #182b35;
+      color: #ecd7a5;
+      font: 14px monospace;
+    }
+    header {
+      position: fixed;
+      padding: 12px;
+      background: #14242ded;
+      z-index: 2;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+    button {
+      min-height: 44px;
+      padding: 8px;
+    }
+    canvas {
+      display: block;
+    }
+    pre {
+      white-space: pre-wrap;
+    }
+  </style>
+  <header>
+    Isolated static scenery check · not full-city FPS<br /><button id="turn">
+      Turn camera
+    </button>
+    <pre id="stats"></pre>
+  </header>
+  <script src="three.min.js"></script>
+  <script>
+    window.level29MobileBudget = { mobile: true };
+    window.level29ChunksReview = true;
+    var buildCity = function () {},
+      render = function () {};
+  </script>
+  <script src="mobile-static-chunks.js"></script>
+  <script>
+    window.level29MobileBudget.mobile = false;
+    var scene = new THREE.Scene(),
+      cityGroup = new THREE.Group();
+    scene.add(cityGroup);
+  </script>
+  <script src="mobile-world-visibility.js"></script>
+  <script>
+    const renderer = new THREE.WebGLRenderer({ antialias: true }),
+      camera = new THREE.PerspectiveCamera(
+        65,
+        innerWidth / innerHeight,
+        1,
+        760,
+      );
+    renderer.setSize(innerWidth, innerHeight);
+    renderer.setPixelRatio(1);
+    document.body.appendChild(renderer.domElement);
+    scene.background = new THREE.Color("#182b35");
+    scene.fog = new THREE.Fog("#182b35", 360, 660);
+    scene.add(new THREE.HemisphereLight("#e0ebeb", "#506254", 2));
+    const root = new THREE.Group();
+    cityGroup.add(root);
+    const m = new THREE.InstancedMesh(
+        new THREE.BoxGeometry(8, 20, 8),
+        new THREE.MeshStandardMaterial({ color: "#c2aa7f" }),
+        100,
+      ),
+      matrix = new THREE.Matrix4();
+    m.userData.staticWorldBatch = true;
+    for (let i = 0; i < 100; i++)
+      m.setMatrixAt(
+        i,
+        matrix.makeTranslation(
+          (i % 10) * 200,
+          10,
+          -Math.floor(i / 10) * 200 - 50,
+        ),
+      );
+    root.add(m);
+    const stats = level29MobileChunks.optimize(THREE, root);
+    let reverse = false;
+    // Use the actual mobile visibility renderer wrapper on the actual partitioned batches.
+    window.level29MobileBudget.mobile = true;
+    const raw = render;
+    render = function () {
+      raw();
+    };
+    camera.position.set(0, 20, 0);
+    function draw() {
+      camera.lookAt(reverse ? 500 : 0, 20, reverse ? 0 : -100);
+      render();
+      renderer.render(scene, camera);
+      document.getElementById("stats").textContent =
+        "Authored instances: 100\nShared geometries: " +
+        renderer.info.memory.geometries +
+        "\nDraw calls: " +
+        renderer.info.render.calls +
+        "\nSpatial chunks: " +
+        stats.chunks +
+        "\nCulled islands: " +
+        level29MobileVisibility.hidden;
+    }
+    document.getElementById("turn").onclick = () => {
+      reverse = !reverse;
+      draw();
+    };
+    addEventListener("resize", () => {
+      renderer.setSize(innerWidth, innerHeight);
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      draw();
+    });
+    draw();
+  </script>
+</html>
