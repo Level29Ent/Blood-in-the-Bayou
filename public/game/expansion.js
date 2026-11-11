@@ -170,15 +170,16 @@ function addSign(group,text,w,h,x,y,z,col){
   const tex=new THREE.CanvasTexture(cv);tex.anisotropy=8;tex.encoding=THREE.sRGBEncoding;
   const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,side:THREE.DoubleSide,toneMapped:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2}));m.position.set(x,y,z);m.name='venue-sign:'+text;group.add(m);return m;
 }
-let sharedVehicleEnv=null;
+let sharedVehicleEnv=null,sharedVehicleTarget=null;
 function vehicleEnv(){
   if(sharedVehicleEnv)return sharedVehicleEnv;
   const cv=document.createElement('canvas');cv.width=512;cv.height=256;const c=cv.getContext('2d');
   const grad=c.createLinearGradient(0,0,0,256);grad.addColorStop(0,'#cce3ef');grad.addColorStop(.46,'#f9f4df');grad.addColorStop(.52,'#a3b6ae');grad.addColorStop(1,'#26352b');c.fillStyle=grad;c.fillRect(0,0,512,256);
   c.fillStyle='#fff';c.fillRect(70,45,130,16);c.fillRect(310,62,95,12);
   const tex=new THREE.CanvasTexture(cv);tex.mapping=THREE.EquirectangularReflectionMapping;
-  const pmrem=new THREE.PMREMGenerator(renderer);sharedVehicleEnv=pmrem.fromEquirectangular(tex).texture;tex.dispose();pmrem.dispose();return sharedVehicleEnv;
+  const pmrem=new THREE.PMREMGenerator(renderer);sharedVehicleTarget=pmrem.fromEquirectangular(tex);sharedVehicleEnv=sharedVehicleTarget.texture;tex.dispose();pmrem.dispose();return sharedVehicleEnv;
 }
+function restoreVehicleEnvironment(){const old=sharedVehicleEnv;if(!old)return;sharedVehicleTarget?.dispose();sharedVehicleTarget=null;sharedVehicleEnv=null;const next=vehicleEnv();for(const root of [scene,typeof vmScene!=='undefined'?vmScene:null])root?.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(m?.envMap===old){m.envMap=next;m.needsUpdate=true;}});window.level29Cars?.restoreEnvironment?.(old,next);}
 function roundedCarBody(L,H,W,mat){
   const shape=new THREE.Shape(),x=-L/2,y=-W/2,rf=Math.min(W*.34,9),rr=Math.min(W*.2,5),nose=W*.07;
   shape.moveTo(x+rr,y);shape.lineTo(x+L-rf-4,y+nose*.4);shape.quadraticCurveTo(x+L,y+nose,x+L,y+rf+nose);shape.lineTo(x+L,y+W-rf-nose);shape.quadraticCurveTo(x+L,y+W-nose,x+L-rf-4,y+W-nose*.4);

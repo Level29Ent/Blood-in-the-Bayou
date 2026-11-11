@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Blood in the Bayou · Community</title>
+    <link rel="stylesheet" href="community.css" />
+  </head>
+  <body>
+    <main>
+      <header>
+        <h1>Bayou Community</h1>
+        <a href="/">Back to game</a>
+      </header>
+      <p>
+        Online accounts, friends, casual rankings and co-op discovery. Your
+        local campaign save stays on this browser.
+      </p>
+      <p id="status" role="status" aria-live="polite">Loading configuration…</p>
+      <nav aria-label="Community">
+        <button data-tab="account">Account</button
+        ><button data-tab="friends">Friends</button
+        ><button data-tab="scores">Rankings</button
+        ><button data-tab="lobbies">Find a crew</button>
+      </nav>
+      <section id="content"></section>
+      <p class="notice">
+        Rankings are client-reported casual records, not cheat-proof or
+        server-authoritative results. Never use them for prizes or competitive
+        rewards. No historical local scores are uploaded automatically.
+      </p>
+    </main>
+    <script src="community-service.js?v=1"></script>
+    <script src="community-page.js?v=1"></script>
+  </body>
+</html>

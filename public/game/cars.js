@@ -480,5 +480,5 @@
   };
   // Existing cars are regenerated on the next frame. No player/campaign state is reset.
   for(const m of carMeshes.values())scene.remove(m);carMeshes.clear();
-  window.level29Cars={version:2,types:Object.keys(profiles),get cachedTemplates(){return cache.size;},get diagnostics(){return {vehicles:carMeshes.size,templates:cache.size,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles};}};
+  window.level29Cars={restoreEnvironment(old,next){for(const m of Object.values(materials||{}))if(m.envMap===old){m.envMap=next;m.needsUpdate=true;}for(const root of cache.values())root.traverse(o=>{for(const m of Array.isArray(o.material)?o.material:[o.material])if(m?.envMap===old){m.envMap=next;m.needsUpdate=true;}});},version:2,types:Object.keys(profiles),get cachedTemplates(){return cache.size;},get diagnostics(){return {vehicles:carMeshes.size,templates:cache.size,drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles};}};
 })();
