@@ -258,6 +258,17 @@
           });
     }
     if (page === "crew") {
+      const community = document.createElement("a");
+      if (location.protocol !== "https:" && location.hostname !== "localhost")
+        community.hidden = true;
+      community.href = "/game/community.html";
+      community.target = "_blank";
+      community.rel = "noopener";
+      community.textContent =
+        "ONLINE ACCOUNTS / FRIENDS / RANKINGS / FIND CREW";
+      community.style.cssText =
+        "display:block;min-height:44px;padding:12px;color:#e5cb8d";
+      dialog.appendChild(community);
       const code = typeof MP !== "undefined" ? MP.code : "";
       text(
         code
@@ -294,7 +305,7 @@
         window.__mp?.open();
       });
       text(
-        "Public quick-match and global/friend leaderboards are not connected. Local records are clearly labelled in Survival.",
+        "Open Online Community for accounts, friends, casual rankings and live crew listings. Local records remain separate.",
       );
     }
   }
