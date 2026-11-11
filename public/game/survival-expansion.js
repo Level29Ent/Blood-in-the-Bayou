@@ -807,16 +807,14 @@
   };
   const blips = extraBlips;
   extraBlips = function () {
-    return blips
-      .apply(this, arguments)
-      .concat(
-        sites().map((s) => ({
-          x: s.v.doorX,
-          y: s.v.doorY,
-          label: s.name,
-          col: "#a6cda1",
-        })),
-      );
+    return blips.apply(this, arguments).concat(
+      sites().map((s) => ({
+        x: s.v.doorX,
+        y: s.v.doorY,
+        label: s.name,
+        col: "#a6cda1",
+      })),
+    );
   };
   addEventListener("level29:bounty-complete", () => {
     saved.bounties.push("dispatch:" + Date.now() + ":" + frame);
@@ -841,6 +839,9 @@
   window.level29SurvivalExpansion = {
     show,
     close,
+    get modalOpen() {
+      return modal.open;
+    },
     sites,
     PERKS,
     get saved() {

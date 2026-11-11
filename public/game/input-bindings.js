@@ -113,6 +113,18 @@
       fn(e.key);
       return;
     }
+    if (e.type === "keydown" && e.key === "Escape") {
+      const modal = window.level29UX?.modalOpen
+        ? window.level29UX
+        : window.level29SurvivalExpansion?.modalOpen
+          ? window.level29SurvivalExpansion
+          : null;
+      if (modal) {
+        stop(e);
+        modal.close();
+        return;
+      }
+    }
     if (
       e.target?.closest?.(
         'input,textarea,select,[contenteditable="true"],dialog[open]',
@@ -124,11 +136,6 @@
       stop(e);
       emit("keyup", held.get(physical));
       held.delete(physical);
-      return;
-    }
-    if (window.level29UX?.modalOpen && e.key === "Escape") {
-      stop(e);
-      window.level29UX.close();
       return;
     }
     if (

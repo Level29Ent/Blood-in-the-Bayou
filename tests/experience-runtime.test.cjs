@@ -245,4 +245,67 @@ test("retiring actor pools release converted owned colors but preserve shared sh
   assert.equal(disposed, 1);
   assert.equal(kept, 0);
 });
-test('45 FPS preset keeps its cadence on a 60 Hz display rather than collapsing to 30 FPS',()=>{let time=0,renders=0;const code=fs.readFileSync('public/game/game.js','utf8'),ctx={window:{level29RuntimePolicy:{budget:{fps:45}}},performance:{now:()=>time},requestAnimationFrame(){},document:{hidden:false},mpRole:null,state:'play',update(){},updateMusic(){},updateEngine(){},render(){renders++;},console};vm.createContext(ctx);vm.runInContext(code.slice(code.indexOf('let last = performance.now(), accT = 0;')),ctx);for(let i=1;i<=600;i++){time=i*1000/60;ctx.loop(time);}assert(renders>=448&&renders<=451);});
+test("45 FPS preset keeps its cadence on a 60 Hz display rather than collapsing to 30 FPS", () => {
+  let time = 0,
+    renders = 0;
+  const code = fs.readFileSync("public/game/game.js", "utf8"),
+    ctx = {
+      window: { level29RuntimePolicy: { budget: { fps: 45 } } },
+      performance: { now: () => time },
+      requestAnimationFrame() {},
+      document: { hidden: false },
+      mpRole: null,
+      state: "play",
+      update() {},
+      updateMusic() {},
+      updateEngine() {},
+      render() {
+        renders++;
+      },
+      console,
+    };
+  vm.createContext(ctx);
+  vm.runInContext(
+    code.slice(code.indexOf("let last = performance.now(), accT = 0;")),
+    ctx,
+  );
+  for (let i = 1; i <= 600; i++) {
+    time = (i * 1000) / 60;
+    ctx.loop(time);
+  }
+  assert(renders >= 448 && renders <= 451);
+});
+test("Escape closes active dialogs before editable-target filtering or legacy capture listeners can consume it", () => {
+  const handlers = {},
+    ctx = {
+      window: null,
+      state: "menu",
+      localStorage: { getItem: () => null },
+      addEventListener: (n, f) => (handlers[n] ??= []).push(f),
+      KeyboardEvent: class {},
+      level29UX: {
+        modalOpen: true,
+        close() {
+          ctx.closed = true;
+        },
+      },
+    };
+  ctx.window = ctx;
+  vm.createContext(ctx);
+  vm.runInContext(
+    fs.readFileSync("public/game/input-bindings.js", "utf8"),
+    ctx,
+  );
+  const e = {
+    type: "keydown",
+    key: "Escape",
+    target: { closest: () => true },
+    preventDefault() {},
+    stopImmediatePropagation() {
+      this.stopped = true;
+    },
+  };
+  handlers.keydown[0](e);
+  assert(ctx.closed);
+  assert(e.stopped);
+});
