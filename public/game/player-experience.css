@@ -1,0 +1,167 @@
+#experienceButton {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 12px);
+  z-index: 65;
+  min-height: 44px;
+  background: #12252ee8;
+  color: #f0d69c;
+  border: 1px solid #9f8d64;
+  padding: 8px 12px;
+}
+:is(#experienceDialog, #survivalDialog) {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: min(720px, calc(100vw - 24px));
+  max-height: calc(100dvh - 32px);
+  box-sizing: border-box;
+  overflow: auto;
+  background: #10212bf5;
+  color: #f1dfb6;
+  border: 1px solid #aa9465;
+  border-radius: 12px;
+  padding: 20px;
+  font: 14px/1.6 monospace;
+  z-index: 200;
+}
+:is(#experienceDialog, #survivalDialog)::backdrop {
+  background: #050d14c9;
+  backdrop-filter: blur(6px);
+}
+:is(#experienceDialog, #survivalDialog) button,
+:is(#experienceDialog, #survivalDialog) select,
+:is(#experienceDialog, #survivalDialog) input {
+  min-height: 44px;
+  box-sizing: border-box;
+  font: inherit;
+  background: #233c48;
+  color: #f1dfb6;
+  border: 1px solid #71848b;
+  border-radius: 4px;
+  padding: 8px;
+  margin: 4px;
+  max-width: 100%;
+}
+:is(#experienceDialog, #survivalDialog) label {
+  display: block;
+  margin: 8px 0;
+}
+:is(#experienceDialog, #survivalDialog) nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  position: sticky;
+  top: -20px;
+  background: #10212b;
+  z-index: 1;
+  padding: 8px 0;
+}
+:is(#experienceDialog, #survivalDialog) table {
+  width: 100%;
+  border-collapse: collapse;
+}
+:is(#experienceDialog, #survivalDialog) td {
+  padding: 6px;
+  border-bottom: 1px solid #38505a;
+}
+:is(#experienceDialog, #survivalDialog) td:last-child {
+  text-align: right;
+}
+:is(#experienceDialog, #survivalDialog) h2 {
+  font-size: 22px;
+}
+:is(#experienceDialog, #survivalDialog) p {
+  overflow-wrap: anywhere;
+}
+#contextTip {
+  position: fixed;
+  top: calc(var(--hud-mission-bottom, 110px) + 20px);
+  left: 12px;
+  max-width: min(300px, 70vw);
+  padding: 10px;
+  background: #10232ce8;
+  color: #ecd59e;
+  border-left: 3px solid #bba064;
+  pointer-events: none;
+  z-index: 55;
+  font: 12px/1.5 monospace;
+}
+body.ux-modal #gl,
+body.ux-modal #game {
+  filter: blur(2px);
+}
+body.ux-modal #touch,
+body.ux-modal #joy,
+body.ux-modal #prologueAction {
+  visibility: hidden !important;
+}
+body.ux-drawer-closed #hudMapActions,
+body.ux-drawer-closed #worldClock,
+body.ux-drawer-closed #missionWaypoints,
+body.ux-drawer-closed #southernCombatActions {
+  display: none !important;
+}
+body.hud-minimal #worldClock,
+body.hud-minimal #missionWaypoints,
+body.hud-minimal #hudMapActions,
+body.hud-minimal #compass,
+body.hud-minimal #objectiveNotice {
+  display: none !important;
+}
+#pauseControls.ux-replaced {
+  display: none !important;
+}
+#progressionPanel,
+#shop,
+#cheat,
+#mp,
+#inventoryPanel {
+  backdrop-filter: blur(6px);
+  box-sizing: border-box;
+  overflow: auto !important;
+  padding: 16px !important;
+}
+#progressionPanel > .sbox,
+#shop > .sbox,
+#mp > .sbox,
+#inventoryPanel > .sbox {
+  width: min(720px, 100%) !important;
+  max-height: calc(100dvh - 40px) !important;
+  overflow: auto !important;
+  margin: auto !important;
+  box-sizing: border-box;
+}
+@media (max-height: 500px) {
+  :is(#experienceDialog, #survivalDialog) {
+    max-height: 94dvh;
+  }
+  #contextTip {
+    top: 12px;
+    left: 25%;
+    max-width: 45vw;
+  }
+  #experienceButton {
+    bottom: 8px;
+  }
+}
+
+body.ux-drawer-closed #phoneDispatch,
+body.hud-minimal #phoneDispatch {
+  display: none !important;
+}
+
+body.ux-shop #gl {
+  filter: blur(3px);
+}
+body.ux-shop #touch,
+body.ux-shop #joy,
+body.ux-shop #prologueAction {
+  visibility: hidden !important;
+}
+#southernServices,
+#progressionPanel,
+#shop,
+#inventoryPanel {
+  backdrop-filter: blur(6px);
+}

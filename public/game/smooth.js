@@ -93,8 +93,9 @@
     const floor = Math.min(MIN_RATIO,cap);
     if (ratio > cap || ratio < floor){ ratio = Math.max(floor,Math.min(cap,ratio)); renderer.setPixelRatio(ratio); }
     avg += (dt - avg) * .05;
-    if (avg > slowMs) { slowFor += dt; fastFor = 0; }
-    else if (avg < fastMs) { fastFor += dt; slowFor = 0; }
+    const target=1000/(window.level29RuntimePolicy?.budget.fps||60),slowThreshold=Math.max(slowMs,target*1.3),fastThreshold=Math.max(fastMs,target*1.05);
+    if (avg > slowThreshold) { slowFor += dt; fastFor = 0; }
+    else if (avg < fastThreshold) { fastFor += dt; slowFor = 0; }
     else { slowFor = fastFor = 0; }
     if (now - lastChange < 2000) return;
     let next = ratio;

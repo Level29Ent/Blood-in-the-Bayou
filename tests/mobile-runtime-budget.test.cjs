@@ -15,7 +15,7 @@ test('Low releases both shadow targets once without touching light/shared textur
 });
 test('actual graphics selector cannot enable desktop composer/shadows on mobile',()=>{
  const source=fs.readFileSync('public/game/graphics.js','utf8');const a=source.indexOf('window.level29Graphics='),body=source.slice(a,source.indexOf('\n})();',a));
- const c={window:{level29MobileBudget:{quality:()=> 'low'}},quality:'low',localStorage:{setItem:(k,v)=>c.stored=v}};vm.createContext(c);vm.runInContext(body,c);c.window.level29Graphics.setQuality('high');assert.equal(c.window.level29Graphics.quality,'low');assert.equal(c.stored,'low');
+ const c={window:{level29MobileBudget:{quality:()=> 'low'}},quality:'low',preferred:'low',localStorage:{setItem:(k,v)=>c.stored=v}};vm.createContext(c);vm.runInContext(body,c);c.window.level29Graphics.setQuality('high');assert.equal(c.window.level29Graphics.quality,'low');assert.equal(c.stored,'high');assert.equal(c.window.level29Graphics.preferred,'high');
 });
 test('blur, OS tab hide, orientation and GPU loss clear private drag/run and look state',()=>{
  const source=fs.readFileSync('public/game/joy.js','utf8'),a=source.indexOf('function releaseTouchGesture'),b=source.indexOf('// ---------- Game controller',a),events={},docs={};let removed=0;

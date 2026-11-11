@@ -630,7 +630,7 @@ function fireWeapon(ox, oy, aim){
   snd('shot'); lastShotFrame = frame;
   heat = Math.min(5, heat + .012);
 }
-function gore(x, y, n, col){ for (let k=0;k<n;k++) parts.push({ k:'gore', x, y, vx:rnd(-3,3), vy:rnd(-3,3), t:rnd(20,40), c: col || (Math.random()<.5 ? '#5f8a3a' : '#8a1a1a') }); }
+function gore(x, y, n, col){ n=Math.min(n,Math.max(0,(window.level29RuntimePolicy?.budget.particles||800)-parts.length)); for (let k=0;k<n;k++) parts.push({ k:'gore', x, y, vx:rnd(-3,3), vy:rnd(-3,3), t:rnd(20,40), c: col || (Math.random()<.5 ? '#5f8a3a' : '#8a1a1a') }); }
 function killZombie(z, vx, vy){
   if (!z.alive) return;
   z.playerKill=z.killSource!=='ambient'&&z.killSource!=='guard'&&z.killSource!=='remote';
@@ -784,7 +784,7 @@ const kU = () => keys['w'] || keys['arrowup'] || touch.up, kD = () => keys['s'] 
 const kL = () => keys['a'] || keys['arrowleft'] || touch.left, kR = () => keys['d'] || keys['arrowright'] || touch.right;
 const kFire = () => mouse.down || keys['f'] || keys['j'] || touch.shoot || gp.fire;
 const autoAim = () => keys['f'] || keys['j'] || touch.shoot || gp.fire;
-function alertZombies(x, y, r){ for (const z of zombies) if (z.alive && dist(z.x, z.y, x, y) < r) z.alert = true; }
+function alertZombies(x, y, r){ if(player&&!player.car&&Math.hypot(player.x-x,player.y-y)<10)r*=window.level29SurvivalExpansion?.noiseMultiplier()||1; for (const z of zombies) if (z.alive && dist(z.x, z.y, x, y) < r) z.alert = true; }
 function screenToWorld(sx, sy){ return { x: (sx - SW/2) / zoom + camX, y: (sy - SH/2) / zoom + camY }; }
 
 // ---------- Messages ----------
@@ -945,13 +945,13 @@ function update(){
       const fw = clamp((kU() ? 1 : 0) - (kD() ? 1 : 0) + stick.y, -1, 1), sf = clamp((keys['d'] || touch.right ? 1 : 0) - (keys['a'] || touch.left ? 1 : 0) + stick.x, -1, 1);
       let mx = Math.cos(view.yaw) * fw + Math.cos(view.yaw + Math.PI/2) * sf, my = Math.sin(view.yaw) * fw + Math.sin(view.yaw + Math.PI/2) * sf;
       const ml = Math.hypot(mx, my);
-      const spd = (keys['shift'] || gp.sprint ? 3.3 : 2.3) * (p.carrying ? .75 : 1);
+      const spd = (keys['shift'] || gp.sprint ? 3.3*(window.level29SurvivalExpansion?.sprintMultiplier()||1) : 2.3) * (p.carrying ? .75 : 1);
       p.a = view.yaw;
       if (ml > 1){ mx /= ml; my /= ml; }
       if (ml > .05) p.anim += .25 * Math.min(1, ml);
       p.vx = level29GameplayMath.velocity(p.vx,mx*spd); p.vy = level29GameplayMath.velocity(p.vy,my*spd);
       moveCircle(p, p.vx, p.vy, p.r);
-      if (tileAt(p.x, p.y)===T_WATER&&!window.level29Destinations?.swimming&&!window.level29MetroTravel?.underground) hurtPlayer(1, p.x, p.y);
+      if (!window.level29SurvivalExpansion?.active&&tileAt(p.x, p.y)===T_WATER&&!window.level29Destinations?.swimming&&!window.level29MetroTravel?.underground) hurtPlayer(1, p.x, p.y);
     }
     // aiming
     const ox = p.car ? p.car.x : p.x, oy = p.car ? p.car.y : p.y;
@@ -1422,9 +1422,10 @@ function drawHUD(){
   const p = player, small = SW < 700 || SH < 500;
   const layout=window.level29MobileViewport.hudLayout(SW,SH);
   // top right: cash + health + armor + heat skulls + weapon
+  const minimal=!!window.level29UX?.minimal,trackers=window.level29UX?.trackers??true;
   const R = SW - 18;
   if(!window.level29UnifiedHUD){
-  hudText(money(cash), R, 14, small ? 26 : 34, '#7fe08a', 'right');
+  if(!minimal)hudText(money(cash), R, 14, small ? 26 : 34, '#7fe08a', 'right');
   const bw = layout.statusWidth, bx = R - bw;
   let y = small ? 46 : 56;
   cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(bx - 2, y - 2, bw + 4, 12);
@@ -1432,7 +1433,7 @@ function drawHUD(){
   y += 14;
   if (p.armor > 0){ cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(bx - 2, y - 2, bw + 4, 10); cx.fillStyle = '#4a82e8'; cx.fillRect(bx, y, bw * p.armor / (50 + up.armor*25), 6); y += 12; }
   // horde skulls
-  for (let k=0;k<5;k++){ const on = heat > k + .05; drawSkull(R - 12 - (4-k)*24, y + 14, on, on && heat >= 4 && frame % 30 < 15); }
+  for (let k=0;!minimal&&k<5;k++){ const on = heat > k + .05; drawSkull(R - 12 - (4-k)*24, y + 14, on, on && heat >= 4 && frame % 30 < 15); }
   y += 32;
   // weapon panel
   cx.fillStyle = 'rgba(0,0,0,.55)'; cx.fillRect(R - bw, y, bw, 34);
@@ -1442,17 +1443,19 @@ function drawHUD(){
   cx.fillStyle = p.overheat ? '#ff3a1a' : p.heat > 70 ? '#ff9a2a' : '#f4c355'; cx.fillRect(R - bw + 52, y + 12, (bw - 62) * p.heat / 100, 9);
   hudText(p.overheat ? 'OVERHEAT' : '∞ BELT', R - 8, y + 22, 10, '#c9d1d4', 'right', '600 '); }
   y += 40;
-  if (p.car){ const c = p.car; cx.fillStyle = 'rgba(0,0,0,.55)'; cx.fillRect(R - bw, y, bw, 22); hudText(c.spec.name, R - bw + 8, y + 3, 14, '#fff'); cx.fillStyle = '#222'; cx.fillRect(R - 70, y + 8, 62, 7); cx.fillStyle = c.hp < c.maxHp*.35 ? '#ff6a2a' : '#7fe08a'; cx.fillRect(R - 70, y + 8, 62 * c.hp / c.maxHp, 7); y += 26; hudText(Math.round(Math.abs(c.v) * 12) + ' MPH', R - 8, y, 14, '#fff', 'right'); }
+  if (p.car&&!minimal){ const c = p.car; cx.fillStyle = 'rgba(0,0,0,.55)'; cx.fillRect(R - bw, y, bw, 22); hudText(c.spec.name, R - bw + 8, y + 3, 14, '#fff'); cx.fillStyle = '#222'; cx.fillRect(R - 70, y + 8, 62, 7); cx.fillStyle = c.hp < c.maxHp*.35 ? '#ff6a2a' : '#7fe08a'; cx.fillRect(R - 70, y + 8, 62 * c.hp / c.maxHp, 7); y += 26; hudText(Math.round(Math.abs(c.v) * 12) + ' MPH', R - 8, y, 14, '#fff', 'right'); }
   // power-up chips
   const chips = [];
+  if(!minimal){
   if (up.rapid) chips.push('RAPID ×' + up.rapid); if (up.spread) chips.push(up.spread > 1 ? 'WIDE SPREAD' : 'SPREAD'); if (up.armor) chips.push('ARMOR ×' + up.armor);
   if (up.nitro) chips.push('NITRO'); if (up.cool) chips.push('COOLING ×' + up.cool); if (up.ap) chips.push('AP ×' + up.ap); if (up.tough) chips.push('TOUGH RIDES ×' + up.tough);
+  }
   if (chips.length){ y += 6; chips.forEach((ch, k) => { if (!small || k < 4) hudText(ch, R, y + k*16, small ? 10 : 12, '#9fdcab', 'right', '600 '); }); }
   // DOM actions start after the actual status stack (armor, vehicle and upgrade chips included).
   document.documentElement.style.setProperty('--hud-status-bottom', (y + (chips.length ? Math.min(chips.length, small ? 4 : chips.length) * 16 : 0) + 14) + 'px');
   }
   // mission panel top-left
-  if (mission){
+  if (mission&&!minimal&&trackers){
     const info = mission.info;
     hudText(info.prologue?'PROLOGUE · OPENING STORY':'MISSION ' + (info.i+1) + ' / ' + CAMPAIGN_TOTAL, 18, 14, 14, '#f4c355');
     hudText(info.title.toUpperCase(), 18, 30, window.level29MobileViewport.fitText(cx,info.title.toUpperCase(),small?22:28,layout.missionWidth), '#fff');
@@ -1465,26 +1468,18 @@ function drawHUD(){
   // boss bar
   if (boss && !boss.dead){ const w = Math.min(560, SW - 60), x = (SW - w)/2, by = SH - (small ? 150 : 58); cx.fillStyle = 'rgba(0,0,0,.7)'; cx.fillRect(x - 4, by - 22, w + 8, 38); hudText(boss.name, SW/2, by - 20, 14, '#ff8a8a', 'center'); cx.fillStyle = '#3a0a0a'; cx.fillRect(x, by - 2, w, 10); cx.fillStyle = boss.hp < boss.maxHp*.4 ? '#ffea00' : '#e83a3a'; cx.fillRect(x, by - 2, w * boss.hp / boss.maxHp, 10); }
   // minimap
-  drawMinimap(small);
+  if(trackers&&!minimal)drawMinimap(small);
   fpHUD(small);
   // area name bottom-right (GTA style)
-  if (areaShow > 0 && !boss){ cx.globalAlpha = Math.min(1, areaShow / 30); if (small && SH >= 600){ hudText(areaName, 18, SH - 350, window.level29MobileViewport.fitText(cx,areaName,17,SW-36), '#f6f3e6', 'left'); hudText(D.name, 18, SH - 328, 12, '#f4c355', 'left', '600 '); } else { hudText(areaName, SW - 18, SH - (small ? 150 : 104), small ? 20 : 28, '#f6f3e6', 'right'); hudText(D.name, SW - 18, SH - (small ? 124 : 76), 13, '#f4c355', 'right', '600 '); } cx.globalAlpha = 1; }
-  if (vehShow){ cx.globalAlpha = Math.min(1, vehShow.t / 30); hudText(vehShow.txt, SW - 18, SH - (small ? 176 : 138), 18, '#9fd0ff', 'right'); cx.globalAlpha = 1; }
+  if (!minimal&&trackers&&areaShow > 0 && !boss){ cx.globalAlpha = Math.min(1, areaShow / 30); if (small && SH >= 600){ hudText(areaName, 18, SH - 350, window.level29MobileViewport.fitText(cx,areaName,17,SW-36), '#f6f3e6', 'left'); hudText(D.name, 18, SH - 328, 12, '#f4c355', 'left', '600 '); } else { hudText(areaName, SW - 18, SH - (small ? 150 : 104), small ? 20 : 28, '#f6f3e6', 'right'); hudText(D.name, SW - 18, SH - (small ? 124 : 76), 13, '#f4c355', 'right', '600 '); } cx.globalAlpha = 1; }
+  if (!minimal&&trackers&&vehShow){ cx.globalAlpha = Math.min(1, vehShow.t / 30); hudText(vehShow.txt, SW - 18, SH - (small ? 176 : 138), 18, '#9fd0ff', 'right'); cx.globalAlpha = 1; }
   // toast
-  if (toastQ){ cx.globalAlpha = Math.min(1, toastQ.life / 30); hudText(toastQ.t, SW/2, small ? 120 : 90, 18, '#f4c355', 'center'); cx.globalAlpha = 1; }
+  if (!minimal&&toastQ){ cx.globalAlpha = Math.min(1, toastQ.life / 30); hudText(toastQ.t, SW/2, small ? 120 : 90, 18, '#f4c355', 'center'); cx.globalAlpha = 1; }
   // Portrait captions for every speaking character.
   if(subtitle&&window.drawCharacterCaption)window.drawCharacterCaption(subtitle);
-  // banner
-  if (banner){
-    const a = Math.min(1, banner.t / 25);
-    cx.globalAlpha = a;
-    const col = banner.good ? '#f4c355' : banner.bad ? '#ff4d4d' : '#f6f3e6';
-    cx.fillStyle = 'rgba(0,0,0,.45)'; cx.fillRect(0, SH*.32, SW, small ? 92 : 120);
-    hudText(banner.big, SW/2, SH*.32 + 10, window.level29MobileViewport.fitText(cx,banner.big,small?32:68,SW-32,'900 '), col, 'center', '900 ');
-    hudText(banner.small, SW/2, SH*.32 + (small ? 54 : 84), window.level29MobileViewport.fitText(cx,banner.small,small?12:18,SW-32,'600 '), '#e8e8e2', 'center', '600 ');
-    cx.globalAlpha = 1;
-  }
-  if (state==='pause'){ cx.fillStyle = 'rgba(10,14,18,.7)'; cx.fillRect(0, 0, SW, SH); hudText('PAUSED', SW/2, SH/2 - 60, 72, '#f6f3e6', 'center', '900 '); hudText('P to resume · TAB map · Q weapons · T cheat codes · N music · M mute', SW/2, SH/2 + 24, 16, '#c9d1d4', 'center', '600 '); }
+  // Brief notices stay outside the reticle; full status lives in Journal.
+  if(banner&&!minimal){const x=12,y=Math.max(100,Math.min(SH*.2,180));cx.save();cx.globalAlpha=Math.min(1,banner.t/25);hudText(banner.big,x,y,small?14:18,banner.bad?'#ff8c79':'#ead49d');cx.restore();}
+  if (state==='pause'&&!window.level29UX){ cx.fillStyle = 'rgba(10,14,18,.7)'; cx.fillRect(0, 0, SW, SH); hudText('PAUSED', SW/2, SH/2 - 60, 72, '#f6f3e6', 'center', '900 '); hudText('P to resume · TAB map · Q weapons · T cheat codes · N music · M mute', SW/2, SH/2 + 24, 16, '#c9d1d4', 'center', '600 '); }
   if (state==='win'){ cx.fillStyle = 'rgba(10,14,18,.85)'; cx.fillRect(0, 0, SW, SH); hudText('THE CITY IS YOURS', SW/2, SH/2 - 80, small ? 46 : 80, '#f4c355', 'center', '900 '); hudText('All ' + CAMPAIGN_TOTAL + ' missions complete · ' + money(cash), SW/2, SH/2 + 20, 20, '#fff', 'center', '600 '); }
   if (showMap) drawFullMap();
 }
@@ -1540,6 +1535,7 @@ function travelToMenu(){ D = DISTRICTS[0]; city = genCity(0); renderGround(); ca
 
 // ---------- Loop ----------
 let last = performance.now(), accT = 0;
+let lastRendered=-Infinity;
 const loopErrors = new Map();
 function reportLoopError(where, e){
   const key = where + ':' + (e && e.message);
@@ -1550,7 +1546,7 @@ function reportLoopError(where, e){
 function loop(now){
   // Schedule first so a thrown error in one frame can never stop the game permanently.
   requestAnimationFrame(loop);
-  if (window.level29CrashGuard?.halted || window.bayouAdActive || document.hidden) { last = now; accT = 0; return; }
+  if (window.level29RuntimeResources?.lost || window.level29CrashGuard?.halted || window.bayouAdActive || document.hidden) { last = now; accT = 0; return; }
   // Avoid a catch-up spiral on a slow phone: at most three simulation steps per rendered frame.
   accT = Math.min(50, accT + Math.min(50, now - last)*(mpRole?1:(window.level29TimeScale||1))); last = now;
   let stepped = false; const stepStart=performance.now(); let steps=0;
@@ -1563,5 +1559,9 @@ function loop(now){
   try { updateMusic(); updateEngine(); } catch (e) { reportLoopError('audio', e); }
   // On 90/120Hz phones a frame with no simulation step would redraw an identical image; skipping it halves GPU load and heat.
   if (!stepped && window.L29_SKIP_IDLE_FRAMES) return;
+  const fps=window.level29RuntimePolicy?.budget.fps||60;
+  if(now-lastRendered+0.5<1000/fps)return;
+  const interval=1000/fps;
+  lastRendered=Number.isFinite(lastRendered)?lastRendered+interval*Math.max(1,Math.floor((now-lastRendered+.5)/interval)):now;
   try { render(); } catch (e) { reportLoopError('render', e); }
 }

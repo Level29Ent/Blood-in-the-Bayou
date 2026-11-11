@@ -3,8 +3,9 @@
 // Loaded last; wraps initGL/render the same way the other expansion files do.
 (function(){
   // Default lightweight; explicit user choice can opt into higher quality.
-  let quality='low'; // Safe initial frame; explicit menu choice can opt in later.
+  let quality='low';try{const q=localStorage.getItem('level29.graphics.stage1');if(['low','medium','high'].includes(q))quality=q;}catch(_){} // Safe initial frame; explicit menu choice can opt in later.
 
+  let preferred=quality;quality=window.level29MobileBudget?.quality(quality)||quality;
   const SHADOW = {
     high:   { size: 1024, extent: 220, every: 4 },
     medium: { size: 512, extent: 170, every: 8 },
@@ -112,7 +113,7 @@
   }
 
   function applyQuality(){
-    const cfg = SHADOW[quality];
+    const cfg = window.level29MobileBudget?.mobile?null:SHADOW[quality];
     renderer.shadowMap.enabled = !!cfg;
     sun.castShadow = !!cfg;
     if(!cfg)window.level29MobileBudget?.releaseShadow(sun);
@@ -132,7 +133,7 @@
   }
 
   function updateShadowCamera(){
-    const cfg = SHADOW[quality];
+    const cfg = window.level29MobileBudget?.mobile?null:SHADOW[quality];
     if (!cfg) return;
     renderer.shadowMap.autoUpdate = false;
     if (frameN % cfg.every === 0) renderer.shadowMap.needsUpdate = true;
@@ -185,5 +186,5 @@
     baseRender.apply(this, arguments);
   };
 
-  window.level29Graphics={get quality(){return quality;},setQuality(q){if(!['low','medium','high'].includes(q))return;quality=window.level29MobileBudget?.quality(q)||q;try{localStorage.setItem('level29.graphics.stage1',quality);}catch(_){}if(typeof renderer!=='undefined'&&renderer&&ready)applyQuality();}};
+  window.level29Graphics={get quality(){return quality;},get preferred(){return preferred;},setQuality(q){if(!['low','medium','high'].includes(q))return;preferred=q;quality=window.level29MobileBudget?.quality(q)||q;try{localStorage.setItem('level29.graphics.stage1',preferred);}catch(_){}if(typeof renderer!=='undefined'&&renderer&&ready)applyQuality();}};
 })();
