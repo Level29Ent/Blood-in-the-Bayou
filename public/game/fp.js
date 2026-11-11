@@ -589,6 +589,16 @@ function applyLightMode(){
 
 // ---------- Sync dynamic objects ----------
 const _c = new THREE.Color();
+function configureZombieFigure(m,z){
+ const u=m.userData,skin=z.type==='runner'?'#a3bc6c':z.type==='brute'?'#6f8a58':'#86a46e';
+ setFigureColors(m,skin,z.shirt||'#555555',z.military?CAMO[0]:'#2e3a52');
+ u.helmet.visible=!!z.military&&z.v<.5;u.hair.visible=!u.helmet.visible;
+ u.hair.scale.set(1,1,1);u.hair.position.set(0,20.4,0);
+ u.longHair.visible=!!z.fem&&!u.helmet.visible;
+ u.hair.material.color.set(u.longHair.visible?['#2a1a10','#6a3a1a','#c8a050','#151515'][Math.min(3,Math.floor((z.v||0)*4))]:'#3a2a1a');
+ m.scale.setScalar(z.storyScale||(z.type==='brute'?1.6:z.type==='runner'?.95:1));u.eyes.visible=true;
+}
+
 function syncDynamic(){
   const p = player, camP = camera.position, far = window.level29Downtown?.ride?1200:isNight()?470:600;
   syncCars();
@@ -597,15 +607,7 @@ function syncDynamic(){
   for (const z of zombies){
     if (!z.alive || window.level29MobileHordeSelection?.has(z) || dist(z.x, z.y, camP.x, camP.z) > far) continue;
     const [m, fresh] = zPool.get(z), u = m.userData;
-    if (fresh){
-      const skin = z.type==='runner' ? '#a3bc6c' : z.type==='brute' ? '#6f8a58' : '#86a46e';
-      setFigureColors(m, skin, z.shirt, z.military ? CAMO[0] : '#2e3a52');
-      u.helmet.visible = z.military && z.v < .5; u.hair.visible = !u.helmet.visible;
-      u.hair.scale.set(1, 1, 1); u.hair.position.set(0, 20.4, 0);
-      if (z.fem && !u.helmet.visible){ u.longHair.visible = true; u.hair.material.color.set(['#2a1a10','#6a3a1a','#c8a050','#151515'][Math.floor(z.v*4)]); } else { u.longHair.visible = false; u.hair.material.color.set('#3a2a1a'); }
-      m.scale.setScalar(z.type==='brute' ? 1.6 : z.type==='runner' ? .95 : 1);
-      u.eyes.visible = true;
-    }
+    if (fresh) configureZombieFigure(m,z);
     m.scale.setScalar(z.storyScale||(z.type==='brute'?1.6:z.type==='runner'?.95:1));
     poseFigure(m, z.x, z.y, z.a, z.anim, 'zombie');
     if (z.type==='runner') u.body.rotation.z = -.35;
@@ -616,9 +618,9 @@ function syncDynamic(){
   // corpses
   cPool.begin();
   for (const q of parts){
-    if (q.k!=='corpse' || q.isPlayer || dist(q.x, q.y, camP.x, camP.z) > far * .7) continue;
+    if (q.k!=='corpse' || q.isPlayer || q.ragdoll?.root.parent || dist(q.x, q.y, camP.x, camP.z) > far * .7) continue;
     const [m, fresh] = cPool.get(q), u = m.userData;
-    if (fresh){ setFigureColors(m, '#7a9460', q.shirt, q.military ? CAMO[0] : '#2e3a52'); m.scale.setScalar((q.r || 10) / 10); u.eyes.visible = false; u.helmet.visible = false; u.legL.rotation.z = .2; u.legR.rotation.z = -.1; u.armL.rotation.z = 2.6; u.armR.rotation.z = 2.2; }
+    if (fresh){ configureZombieFigure(m,q);u.eyes.visible=false;u.legL.rotation.z=.2;u.legR.rotation.z=-.1;u.armL.rotation.z=2.6;u.armR.rotation.z=2.2; }
     m.position.set(q.x, 2.3, q.y); m.rotation.set(0, -(q.a + 1.2), 0); u.body.rotation.set(0, 0, -Math.PI/2); u.body.position.y = 0;
     if (q.t < 60) m.position.y = 2.3 - (60 - q.t) * .08;
   }

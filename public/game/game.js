@@ -636,7 +636,7 @@ function killZombie(z, vx, vy){
   z.playerKill=z.killSource!=='ambient'&&z.killSource!=='guard'&&z.killSource!=='remote';
   z.alive = false; snd('zdie'); zombieSay(z, true);
   gore(z.x, z.y, 10); decal(z.x, z.y, Math.random()<.5 ? 'blood' : 'green', z.type==='brute' ? 1.6 : 1);
-  parts.push({ k:'corpse', x:z.x, y:z.y, a:z.a, t:600, shirt:z.shirt, military:z.military, r:z.r, vx:(vx||0)*.4, vy:(vy||0)*.4 });
+  parts.push({ k:'corpse', x:z.x, y:z.y, a:z.a, t:600, shirt:z.shirt, military:z.military, type:z.type, fem:z.fem, v:z.v, storyScale:z.storyScale, r:z.r, vx:(vx||0)*.4, vy:(vy||0)*.4 });
   if(z.playerKill){cash += z.pts; heat = Math.min(5, heat + .05);}
   if ((z.playerKill||(z.killSource==='remote'&&typeof mpRole!=='undefined'&&mpRole==='host')) && mission && mission.phase==='active' && mission.info.type==='clear' && dist(z.x, z.y, mission.targets[0].x, mission.targets[0].y) < 420) mission.kills++;
   if (!z.playerKill)return;
