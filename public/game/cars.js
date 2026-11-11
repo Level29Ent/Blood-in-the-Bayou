@@ -451,6 +451,7 @@
       const u=m.userData;if(u.visualVersion!==2)continue;
       const distance=dist(c.x,c.y,camera.position.x,camera.position.z),detailed=distance<190||player&&player.car===c;
       u.shell.visible=detailed;u.distant.visible=!detailed;for(const w of u.rollingWheels)w.pivot.visible=detailed;
+      if(u.driver)u.driver.visible=!!c.ai&&!c.dead&&(!window.level29MobileBudget?.mobile||detailed);
       if(!m.visible||c.dead)continue;
       // Update once per simulation frame: mesh motion no longer depends on render frame rate.
       if(u.previousFrame!==frame){
