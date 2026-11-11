@@ -41,6 +41,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <head>
+        <script id="level29-google-tag-manager" dangerouslySetInnerHTML={{ __html: "(function(w,d){\n  'use strict';\n  // Web only: native game builds keep their existing privacy/ads integration.\n  if(!/^https?:$/.test(w.location.protocol)||w.Capacitor?.isNativePlatform?.())return;\n  try{if(w.top!==w&&w.top.__level29GTM==='GTM-MTKR4ZCD')return;}catch(_){/* Cross-origin frames cannot inspect their parent. */}\n  if(w.__level29GTM==='GTM-MTKR4ZCD')return;\n  w.__level29GTM='GTM-MTKR4ZCD';\n  w.dataLayer=w.dataLayer||[];\n  w.gtag=w.gtag||function(){w.dataLayer.push(arguments);};\n  // The site's CMP must update consent; loading the container does not grant it.\n  if(!w.google_tag_data?.ics)w.gtag('consent','default',{ad_storage:'denied',analytics_storage:'denied',ad_user_data:'denied',ad_personalization:'denied',wait_for_update:500});\n  w.gtag('js',new Date());\n  w.dataLayer.push({'gtm.start':Date.now(),event:'gtm.js'});\n  var script=d.createElement('script');script.async=true;script.src='https://www.googletagmanager.com/gtm.js?id=GTM-MTKR4ZCD';\n  d.head.appendChild(script);\n})(window,document);" }} />
         {/* Site-level AdSense tag requested by the owner. H5 game ads remain
             separately consent/approval gated inside the game document. */}
         <script
