@@ -16,3 +16,15 @@ test('Natchez paddlewheel is on the far side, not across the casino boarding lan
 test('peaceful camera does not re-enable weapon overlay and remote casino interior is hidden outside',()=>{
  const coast=fs.readFileSync('public/game/coastline.js','utf8'),hub=fs.readFileSync('public/game/riverboat-hub.js','utf8');assert.ok(coast.includes('vmScene.visible=!window.level29Prologue?.peaceful'));assert.ok(hub.includes('if(root)root.visible=!!active'));assert.ok(fs.readFileSync('public/game/world.js','utf8').includes("f.kind==='riverfront'&&!city.riverboatHub"));
 });
+
+test('production static batching keeps Natchez hull decks chimneys and moving wheel together at the landing',()=>{
+ const vm=require('node:vm'),{batchExterior}=require('../public/game/riverboat-hub.js');
+ const src=fs.readFileSync('public/game/gulf.js','utf8'),ctx={THREE:T,window:{}};vm.createContext(ctx);
+ vm.runInContext(src.slice(src.indexOf('function matSig('),src.indexOf('const prevBuild=buildCity;',src.indexOf('function matSig('))),ctx);
+ const entry={x:5688,y:6400},boat=buildNatchezExterior(T,entry),before=new T.Box3().setFromObject(boat),wheel=boat.userData.wheel.getWorldPosition(new T.Vector3());
+ batchExterior(T,boat,ctx.batchStatic);const after=new T.Box3().setFromObject(boat);
+ for(const key of ['min','max'])assert.ok(before[key].distanceTo(after[key])<.002,key+' bounds stay in place');
+ assert.ok(boat.userData.wheel.getWorldPosition(new T.Vector3()).distanceTo(wheel)<1e-7);
+ assert.ok(boat.getObjectByName('level29-batched'));assert.ok(after.min.x>entry.x-10&&after.max.x<entry.x+400);
+ const hull=new T.Raycaster(new T.Vector3(entry.x+170,180,entry.y),new T.Vector3(0,-1,0)).intersectObject(boat,true);assert.ok(hull.length,'body still visible above the water');
+});
