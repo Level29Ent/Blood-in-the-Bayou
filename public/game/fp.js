@@ -190,6 +190,7 @@ function makeFigure(zombie){
   const helmet = new THREE.Mesh(new THREE.SphereGeometry(3, 16, 8, 0, Math.PI*2, 0, Math.PI/2), lam('#4b5320')); helmet.position.y = 19.6; helmet.scale.set(1, .8, 1); helmet.visible = false; body.add(helmet);
   g.traverse(o => { if (o.isMesh){ o.castShadow = true; o.receiveShadow = false; } });
   g.userData = { body, legL, legR, armL, armR, torso, head, jaw, hair, longHair, face, eyes, helmet, skin, shirt, pants };
+  if(typeof window!=='undefined'&&window.level29NPCAppearance)window.level29NPCAppearance.apply(THREE,g);
   return g;
 }
 function setFigureColors(m, skin, shirt, pants, hairCol){
