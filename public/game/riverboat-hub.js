@@ -27,11 +27,19 @@ function buildNatchezExterior(T,entry,options={}){
  box(boat,66,2,24,158,2,0,wood);for(const z of [-11,11])box(boat,66,.8,.8,158,12,z,white);
  for(const side of [-1,1]){const sign=options.label?.(boat,'NATCHEZ · CASINO',150,11,0,58,side*43,'#f3d99a');if(sign){if(side<0)sign.rotation.y=Math.PI;sign.material=sign.material.clone();sign.material.side=T.FrontSide;}}boat.userData={floors,wheel};return boat;
 }
-if(typeof module!=='undefined')module.exports={buildHub,buildNatchezExterior};if(typeof window==='undefined')return;if(window.level29HubReview){window.level29HubReview={buildHub,buildNatchezExterior};return;}
+// batchStatic bakes world matrices into geometry. Neutralize this transformed root
+// while batching so its translation/half-turn are applied once, not twice.
+function batchExterior(T,boat,batch){
+ const position=boat.position.clone(),quaternion=boat.quaternion.clone(),scale=boat.scale.clone();
+ try{boat.position.set(0,0,0);boat.quaternion.identity();boat.scale.set(1,1,1);boat.updateMatrixWorld(true);batch(boat,[boat.userData.wheel]);}
+ finally{boat.position.copy(position);boat.quaternion.copy(quaternion);boat.scale.copy(scale);boat.updateMatrixWorld(true);}
+ return boat;
+}
+if(typeof module!=='undefined')module.exports={buildHub,buildNatchezExterior,batchExterior};if(typeof window==='undefined')return;if(window.level29HubReview){window.level29HubReview={buildHub,buildNatchezExterior,batchExterior};return;}
 let exteriorBoat=null,root=null,active=null,floor=0,returnPoint=null,last=0,clock=0;
 const gen=genCity;genCity=function(){const c=gen.apply(this,arguments);if(!c.world)return c;const v=c.casinoVenue,old={...v.b},b={x:6656,y:6208,w:320,h:192};Object.assign(v.b,b,{H:60,baseY:0});Object.assign(v,{frontage:null,baseY:0,doorX:b.x+b.w/2,doorY:b.y+b.h,doorW:64,stationX:b.x+b.w/2,stationY:b.y+b.h-35,open:true,furniture:[],colliderWalls:[],colliderDoor:null,name:'BOOMCITY RIVERBOAT SURVIVOR HUB'});for(let y=Math.floor(old.y/32);y<Math.ceil((old.y+old.h)/32);y++)for(let x=Math.floor(old.x/32);x<Math.ceil((old.x+old.w)/32);x++)if(![1,9].includes(c.g[y*c.width+x]))c.g[y*c.width+x]=T_PLAZA;Object.assign(boomCity.DOOR,{x:v.doorX,y:v.doorY+16});c.riverboatHub={b:v.b,old,entry:{x:boomCity.CAPTAIN.x+24,y:boomCity.CAPTAIN.y},solids:[]};c.casinoStations=[{x:b.x+b.w/2,y:b.y+b.h-35}];return c;};
 const venue=buildVenue;buildVenue=function(v){if(v!==city?.casinoVenue||!city.riverboatHub)return venue.apply(this,arguments);if(v.mesh?.parent===cityGroup)return;root=buildHub(THREE,v.b,{material:level29World.material,label:addSign});root.userData.noBatch=true;cityGroup.add(root);root.visible=false;v.mesh=root;v.door=new THREE.Object3D();v.roof=null;v.furniture=[];};
-const buildExteriorBase=buildCity;buildCity=function(){const result=buildExteriorBase.apply(this,arguments);if(!city?.riverboatHub)return result;exteriorBoat=buildNatchezExterior(THREE,city.riverboatHub.entry,{material:level29World.material,label:addSign});cityGroup.add(exteriorBoat);if(window.level29BatchStatic)level29BatchStatic(exteriorBoat,[exteriorBoat.userData.wheel]);return result;};
+const buildExteriorBase=buildCity;buildCity=function(){const result=buildExteriorBase.apply(this,arguments);if(!city?.riverboatHub)return result;exteriorBoat=buildNatchezExterior(THREE,city.riverboatHub.entry,{material:level29World.material,label:addSign});cityGroup.add(exteriorBoat);if(window.level29BatchStatic)batchExterior(THREE,exteriorBoat,level29BatchStatic);return result;};
 function enter(){if(!root||player.car||player.dead||state!=='play'||mpRole||active)return false;const p=city.riverboatHub.entry;if(Math.hypot(player.x-p.x,player.y-p.y)>65)return false;returnPoint={x:player.x,y:player.y};root.userData.exterior.visible=false;root.visible=true;if(exteriorBoat)exteriorBoat.visible=false;active=true;floor=0;change(0);return true;}
 function change(n){if(!active||n<0||n>2)return false;floor=n;root.userData.floors.forEach((g,i)=>g.visible=i===n);const b=city.riverboatHub.b;player.x=b.x+b.w/2;player.y=b.y+b.h-28;player.vx=player.vy=0;snapCamera();return true;}
 function leave(){if(!active)return;active=null;root.visible=false;if(exteriorBoat)exteriorBoat.visible=true;root.userData.exterior.visible=true;root.userData.floors.forEach((g,i)=>g.visible=i===0);player.x=returnPoint.x;player.y=returnPoint.y;player.vx=player.vy=0;snapCamera();}

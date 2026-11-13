@@ -29,7 +29,7 @@ test('retail purchases charge once, clamp benefits and reject invalid or unneces
 test('HUD does not duplicate the primary objective and waypoints follow the measured mission bottom',()=>{
  const state=fs.readFileSync('public/game/mission-state.js','utf8'),guide=fs.readFileSync('public/game/mission-guidance.js','utf8');assert.ok(state.includes("hud.style.display='none';hud.setAttribute('aria-hidden','true')"));assert.ok(guide.includes('var(--hud-mission-bottom,150px) + 8px'));assert.ok(guide.includes('screen.y>Math.max(200,SH*.26)'));
 });
-test('interstate outside corner lanes retain raised support and short exits reach ground',()=>{
- const R=require('../public/game/foundation-road.js'),B={left:128,top:96,right:5984,bottom:5984};for(const x of [B.left,B.right])for(const y of [B.top,B.bottom])for(const dx of [-42,0,42])for(const dy of [-42,0,42])assert.equal(R.deckHeight(B,x+dx,y+dy),40);
+test('surface road outside corner lanes stay at ground; legacy grade helper still reaches its endpoint',()=>{
+ const R=require('../public/game/foundation-road.js'),B={left:128,top:96,right:5984,bottom:5984};for(const x of [B.left,B.right])for(const y of [B.top,B.bottom])for(const dx of [-42,0,42])for(const dy of [-42,0,42])assert.equal(R.deckHeight(B,x+dx,y+dy),0);
  for(const length of [160,220,300]){const path=[{x:0,y:0},{x:length,y:0}];assert.equal(R.routeHeight(path,length,0,40),0);assert.ok(R.routeHeight(path,length/2,0,40)>0);}
 });
