@@ -2,7 +2,8 @@
 (function(){
 const SKIN=['#603d2b','#976b4d','#be8f6b','#d7ad88'],CLOTH=['#436c82','#88734c','#773d87','#3e7a5b','#d6b34b','#a75647'];
 // Authored mixed crowd identities; hairstyle/clothes never change with animation or camera distance.
-function character(id){const n=Math.abs(Math.trunc(id)||0),woman=n%2===1,variant=Math.floor(n/2)%4;return {gender:woman?'woman':'man',hairstyle:woman?['bob','ponytail','bun','natural'][variant]:['crop','short','curls','long'][variant],outfit:woman?['blouse','jacket','tunic','tee'][variant]:'shirt',build:variant};}
+function character(id){const n=Math.abs(Math.trunc(id)||0),woman=n%2===1,pair=Math.floor(n/2),variant=pair%8,build=variant%4,hairstyle=woman?['bob','ponytail','bun','natural','long','locs-shoulder','locs-long','locs-tied'][variant]:['crop','short','curls','long','locs-short','locs-shoulder','locs-long','locs-tied'][variant],black=hairstyle.startsWith('locs');return {gender:woman?'woman':'man',hairstyle,outfit:woman?['blouse','jacket','tunic','tee'][build]:'shirt',build,...(black?{heritage:'African American',skin:['#573827','#754c35','#966b4b'][Math.floor(pair/8)%3],hairColor:variant===6?'#30231b':'#191715'}:{})};}
+
 function population(nav,width,count=180){const cells=[];for(let k=0;k<nav.mask.length;k++)if(nav.mask[k])cells.push(k);if(!cells.length)return [];return Array.from({length:Math.min(count,cells.length)},(_,i)=>{const k=cells[Math.floor(i*cells.length/count)%cells.length],p=nav.point(k);return {...p,id:i,...character(i),cell:k,previous:-1,a:0,anim:0,wait:(i%5)*.4,activity:['commute','shop','talk','stroll','rest'][i%5]};});}
 function advance(a,nav,width,dt,panic=false,zombies=[]){
  const danger=panic?zombies.filter(z=>z.alive&&Math.hypot(z.x-a.x,z.y-a.y)<150).sort((z,q)=>Math.hypot(z.x-a.x,z.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y))[0]:null;
@@ -52,13 +53,13 @@ function procession(count=5,rows=6,columns=11){return Array.from({length:count*r
 function create(T,capacity=72){
  const root=new T.Group();root.name='Prologue city residents / second line';root.userData.noBatch=true;
  const appearance=typeof window!=='undefined'?window.level29NPCAppearance:null;
- const specs=[['shirt',new T.CylinderGeometry(1,.84,1,10),1],['skin',new T.SphereGeometry(1,10,8),1],['arms',new T.CylinderGeometry(1,.8,1,8),2],['legs',new T.CylinderGeometry(1,.85,1,8),2],['shoes',new T.BoxGeometry(1,1,1),2],['eyes',new T.SphereGeometry(1,6,4),4],['hat',new T.CylinderGeometry(1,1,1,10),1],['brass',new T.CylinderGeometry(.4,1,1,8),1],['parasol',new T.ConeGeometry(1,1,10),1]];
+ const specs=[['shirt',new T.CylinderGeometry(1,.84,1,10),1],['skin',new T.SphereGeometry(1,10,8),1],['arms',new T.CylinderGeometry(1,.8,1,8),2],['legs',new T.CylinderGeometry(1,.85,1,8),2],['shoes',new T.BoxGeometry(1,1,1),2],['eyes',new T.SphereGeometry(1,6,4),24],['hat',new T.CylinderGeometry(1,1,1,10),1],['brass',new T.CylinderGeometry(.4,1,1,8),1],['parasol',new T.ConeGeometry(1,1,10),1]];
  for(const [kind,geo,mult]of specs){const detailed=appearance?.crowdGeometry(T,kind),geometry=detailed||geo;if(detailed)geo.dispose();const material=appearance?new T.MeshStandardMaterial({color:'#ffffff',vertexColors:!!detailed,roughness:kind==='brass'?.35:.85,metalness:kind==='brass'?.6:0}):new T.MeshLambertMaterial({color:'#ffffff'});if(appearance&&['shirt','legs'].includes(kind)){material.bumpMap=appearance.details(T).cloth;material.bumpScale=.025;}const m=new T.InstancedMesh(geometry,material,capacity*mult);m.name=kind;m.count=0;m.frustumCulled=false;m.userData.noBatch=true;root.add(m);}root.userData.capacity=capacity;root.userData.detailed=!!appearance;return root;
 }
 function pose(T,root,actors,height){
  const dummy=new T.Object3D(),base=new T.Object3D(),local=new T.Matrix4(),matrix=new T.Matrix4(),color=new T.Color();for(const m of root.children)m.count=0;
  for(const a of actors.slice(0,root.userData.capacity)){
-  const skin=SKIN[Math.floor(a.id/2)%SKIN.length],shirt=a.festival?['#713b91','#ceac3e','#32825d'][a.id%3]:CLOTH[a.id%CLOTH.length],sw=a.wait>0?0:Math.sin(a.anim||0),s=a.scale||(.94+(a.id%7)*.018),look={...character(a.id),...a},woman=look.gender==='woman',build=look.build%4;const torsoWidth=woman?[3.25,3.55,3.6,3.45][build]:3.75;
+  const profile=character(a.id),skin=a.skin||profile.skin||SKIN[Math.floor(a.id/2)%SKIN.length],shirt=a.festival?['#713b91','#ceac3e','#32825d'][a.id%3]:CLOTH[a.id%CLOTH.length],sw=a.wait>0?0:Math.sin(a.anim||0),s=a.scale||(.94+(a.id%7)*.018),look={...profile,...a},woman=look.gender==='woman',build=look.build%4;const torsoWidth=woman?[3.25,3.55,3.6,3.45][build]:3.75;
   base.position.set(a.x,height(a.x,a.y),a.y);base.rotation.set(0,-a.a,0);base.scale.setScalar(s);base.updateMatrix();
   const put=(index,p,scale,c,rz=0,rx=0)=>{const m=root.children[index],i=m.count++;dummy.position.set(...p);dummy.scale.set(...scale);dummy.rotation.set(rx,0,rz);dummy.updateMatrix();local.copy(dummy.matrix);matrix.multiplyMatrices(base.matrix,local);m.setMatrixAt(i,matrix);color.set(c);m.setColorAt(i,color);};
   put(0,[0,woman&&look.outfit==='tunic'?11.9:12.4,0],[woman?2.15:2.38,woman&&look.outfit==='tunic'?8.2:7.2,torsoWidth],shirt);put(1,[.05,18.3,0],root.userData.detailed?[woman?1.6:1.7,1.85,woman?1.53:1.6]:[2.05,2.35,1.95],skin);
@@ -71,8 +72,18 @@ function pose(T,root,actors,height){
    put(4,[.7+sw*side,.8,side*1.8],[4,1.4,2.6],'#353331');
    if(!root.userData.detailed)put(5,[2,18.7,side*.8],[.18,.22,.3],'#241b18');
   }
-  if(root.userData.detailed){const hair=['#211c18','#39271c','#66513c','#aaa08b'][Math.floor(a.id/2)%4];
+  if(root.userData.detailed){const hair=look.hairColor||['#211c18','#39271c','#66513c','#aaa08b'][Math.floor(a.id/2)%4];
    put(5,[-.1,19.8,0],[1.72,.5+(a.id%3)*.1,1.63],hair);
+   if(look.hairstyle.startsWith('locs')){
+    const tied=look.hairstyle==='locs-tied',length=look.hairstyle==='locs-long'?5.5:look.hairstyle==='locs-short'?2.1:3.7;
+    for(let i=0;i<16;i++){const angle=Math.PI*.35+i/15*Math.PI*1.3,x=-.45+Math.cos(angle)*1.15,z=Math.sin(angle)*1.7,drop=length*(.85+(i%3)*.075);
+     put(5,[tied?-1.9:x,tied?18.4-i%4*.28:19.25-drop*.48,tied?z*.35:z],[.21,tied?1.75:drop*.56,.23],hair,tied?-.25:Math.sin(i)*.06);
+    }
+    if(tied)put(5,[-1.8,19.6,0],[.65,.65,.65],hair);
+   }else if(woman&&look.hairstyle==='long'){
+    for(let i=0;i<5;i++)put(5,[-1.12,16.8,(i-2)*.65],[.65,3.05,.48],hair);
+    for(const side of [-1,1])put(5,[-.2,17.25,side*1.55],[.55,2.6,.4],hair);
+   }else
    if(woman){
     if(look.hairstyle==='bob')for(const side of [-1,1])put(5,[-.4,18.45,side*1.25],[.95,1.35,.62],hair);
     if(look.hairstyle==='ponytail')put(5,[-1.7,18.4,0],[.7,1.75,.65],hair);
