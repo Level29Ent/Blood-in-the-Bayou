@@ -13,6 +13,13 @@ function apply(T,actor){const u=actor.userData;if(!u.body||u.npcAppearance)retur
  for(const arm of [u.armL,u.armR]){const hand=arm?.children.find(o=>o.geometry?.type==='SphereGeometry'&&o.position.y< -7);if(hand)hand.geometry=out.hand;}
  return actor;
 }
+function styleWoman(T,actor,variant=0){const u=actor?.userData;if(!u?.body||u.womanStyle!==undefined)return actor;const i=((Math.trunc(variant)||0)%4+4)%4;u.womanStyle=i;u.gender='woman';
+ // Adult, fully clothed everyday silhouettes; retain the rig, identity colors and gameplay footprint.
+ u.torso.scale.x*=.93;u.torso.scale.z*=[.88,.95,.94,.91][i];u.head.scale.z*=.97;u.jaw.scale.z*=.94;
+ u.hair.visible=true;u.longHair.visible=false;const cache=details(T);if(!cache.hairForm)cache.hairForm=new T.SphereGeometry(1,12,8);
+ const styles=[{p:[-.95,18.4,0],s:[1.35,1.75,2.1]},{p:[-2,18.5,0],s:[.85,2,.85]},{p:[-1.25,20.6,0],s:[1.05,1.05,1.05]},{p:[-.3,19.4,0],s:[2.35,1.5,2.35]}],spec=styles[i],hair=new T.Mesh(cache.hairForm,u.hair.material);hair.position.set(...spec.p);hair.scale.set(...spec.s);u.body.add(hair);u.hairstyle=['bob','ponytail','bun','natural'][i];
+ if(i===2){u.torso.scale.y*=1.12;u.torso.position.y-=.4;}u.outfit=['blouse','jacket','tunic','tee'][i];return actor;
+}
 function combine(T,pieces){const pos=[],normal=[],color=[];for(const [geometry,position,scale,tint]of pieces){const g=geometry.index?geometry.toNonIndexed():geometry.clone();g.scale(...scale);g.translate(...position);const p=g.attributes.position,n=g.attributes.normal,c=new T.Color(tint);for(let i=0;i<p.count;i++){pos.push(p.getX(i),p.getY(i),p.getZ(i));normal.push(n.getX(i),n.getY(i),n.getZ(i));color.push(c.r,c.g,c.b);}g.dispose();geometry.dispose();}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('normal',new T.Float32BufferAttribute(normal,3));g.setAttribute('color',new T.Float32BufferAttribute(color,3));return g;}
 // Merge facial/anatomical cues into the existing nine crowd batches, not per-person draw calls.
 function crowdGeometry(T,kind){const sphere=()=>new T.SphereGeometry(1,12,8),cyl=()=>new T.CylinderGeometry(1,.85,1,12),box=()=>new T.BoxGeometry(),white='#ffffff',dark='#29221f',pieces=[];
@@ -29,5 +36,5 @@ function crowdGeometry(T,kind){const sphere=()=>new T.SphereGeometry(1,12,8),cyl
  if(kind==='hat'){pieces.push([new T.CylinderGeometry(1,1,.35,12),[0,0,0],[1,1,1],white],[new T.CylinderGeometry(.7,.75,1,12),[0,.42,0],[1,1,1],white]);}
  return pieces.length?combine(T,pieces):null;
 }
-const api={details,apply,combine,crowdGeometry};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29NPCAppearance=api;
+const api={details,apply,styleWoman,combine,crowdGeometry};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29NPCAppearance=api;
 })();
