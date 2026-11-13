@@ -2,7 +2,7 @@
 (function(){
 const SKIN=['#603d2b','#976b4d','#be8f6b','#d7ad88'],CLOTH=['#436c82','#88734c','#773d87','#3e7a5b','#d6b34b','#a75647'];
 // Authored mixed crowd identities; hairstyle/clothes never change with animation or camera distance.
-function character(id){const n=Math.abs(Math.trunc(id)||0),woman=n%2===1,variant=Math.floor(n/2)%4;return {gender:woman?'woman':'man',hairstyle:woman?['bob','ponytail','bun','natural'][variant]:['crop','short','curls','long'][variant],outfit:woman?['blouse','skirt','tunic','tee'][variant]:'shirt',build:variant};}
+function character(id){const n=Math.abs(Math.trunc(id)||0),woman=n%2===1,variant=Math.floor(n/2)%4;return {gender:woman?'woman':'man',hairstyle:woman?['bob','ponytail','bun','natural'][variant]:['crop','short','curls','long'][variant],outfit:woman?['blouse','jacket','tunic','tee'][variant]:'shirt',build:variant};}
 function population(nav,width,count=180){const cells=[];for(let k=0;k<nav.mask.length;k++)if(nav.mask[k])cells.push(k);if(!cells.length)return [];return Array.from({length:Math.min(count,cells.length)},(_,i)=>{const k=cells[Math.floor(i*cells.length/count)%cells.length],p=nav.point(k);return {...p,id:i,...character(i),cell:k,previous:-1,a:0,anim:0,wait:(i%5)*.4,activity:['commute','shop','talk','stroll','rest'][i%5]};});}
 function advance(a,nav,width,dt,panic=false,zombies=[]){
  const danger=panic?zombies.filter(z=>z.alive&&Math.hypot(z.x-a.x,z.y-a.y)<150).sort((z,q)=>Math.hypot(z.x-a.x,z.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y))[0]:null;
@@ -80,7 +80,6 @@ function pose(T,root,actors,height){
     if(look.hairstyle==='natural')for(const side of [-1,1])put(5,[-.15,19.2,side*1.05],[1.1,1.1,1.05],hair);
    }else if(look.hairstyle==='long')put(5,[-1.1,18.65,0],[.8,1.3,1.54],hair);
   }
-  if(woman&&look.outfit==='skirt'&&(!a.festival||a.id%3!==1))put(8,[0,7.8,0],[4.15,7.2,4.15],shirt);
   if(a.festival){put(6,[0,21,0],[3,.7,3],'#dbb747');if(a.id%3===0)put(7,[5,14,-3],[2,6,2],'#caa548',Math.PI/2);if(a.id%3===1)put(8,[0,29,6],[8,4,8],shirt);}
  }
  for(const m of root.children){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;}
