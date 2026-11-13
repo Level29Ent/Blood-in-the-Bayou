@@ -22,8 +22,8 @@ function crowdGeometry(T,kind){const sphere=()=>new T.SphereGeometry(1,12,8),cyl
   pieces.push([sphere(),[.96,-.48,0],[.06,.055,.25],'#794b43']);
  }
  if(kind==='shirt'){pieces.push([cyl(),[0,0,0],[1,1,1],white],[cyl(),[0,-.47,0],[.86,.07,.88],'#56575a']);for(const side of [-1,1])pieces.push([sphere(),[0,.34,side*.81],[.66,.19,.26],white]);pieces.push([box(),[.91,.08,-.37],[.07,.22,.22],'#bbb7ac']);}
- if(kind==='arms'){pieces.push([cyl(),[0,.08,0],[1, .65,1],white],[sphere(),[0,-.42,0],[.89,.15,.9],white],[sphere(),[.05,-.53,0],[.88,.14,.72],white]);}
- if(kind==='legs'){pieces.push([cyl(),[0,0,0],[1,1,1],white],[sphere(),[.09,-.04,0],[.96,.15,.97],white],[box(),[.02,.08,.96],[.04,.77,.025],'#c0bbae']);}
+ if(kind==='arms'){pieces.push([cyl(),[0,0,0],[1,1,1],white],[sphere(),[0,-.42,0],[.89,.15,.9],white],[sphere(),[.05,-.53,0],[.88,.14,.72],white]);}
+ if(kind==='legs'){pieces.push([cyl(),[0,0,0],[1,1,1],white],[sphere(),[.09,-.04,0],[.84,.12,.87],white],[box(),[.02,.08,.96],[.04,.77,.025],'#c0bbae']);}
  if(kind==='shoes'){pieces.push([sphere(),[0,.02,0],[.5,.49,.48],white],[box(),[0,-.38,0],[.96,.16,.96],'#c5c0b3']);}
  if(kind==='eyes'){pieces.push([sphere(),[0,0,0],[1,1,1],white]);}
  if(kind==='hat'){pieces.push([new T.CylinderGeometry(1,1,.35,12),[0,0,0],[1,1,1],white],[new T.CylinderGeometry(.7,.75,1,12),[0,.42,0],[1,1,1],white]);}

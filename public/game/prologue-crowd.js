@@ -59,7 +59,7 @@ function pose(T,root,actors,height){
   const skin=SKIN[a.id%SKIN.length],shirt=a.festival?['#713b91','#ceac3e','#32825d'][a.id%3]:CLOTH[a.id%CLOTH.length],sw=a.wait>0?0:Math.sin(a.anim||0),s=a.scale||(.94+(a.id%7)*.018);
   base.position.set(a.x,height(a.x,a.y),a.y);base.rotation.set(0,-a.a,0);base.scale.setScalar(s);base.updateMatrix();
   const put=(index,p,scale,c,rz=0,rx=0)=>{const m=root.children[index],i=m.count++;dummy.position.set(...p);dummy.scale.set(...scale);dummy.rotation.set(rx,0,rz);dummy.updateMatrix();local.copy(dummy.matrix);matrix.multiplyMatrices(base.matrix,local);m.setMatrixAt(i,matrix);color.set(c);m.setColorAt(i,color);};
-  put(0,[0,12.4,0],[2.38,7.2,3.75],shirt);put(1,[.05,18.3,0],[2.05,2.35,1.95],skin);
+  put(0,[0,12.4,0],[2.38,7.2,3.75],shirt);put(1,[.05,18.3,0],root.userData.detailed?[1.7,1.85,1.6]:[2.05,2.35,1.95],skin);
   const reaction=a.reaction||'wave',phase=a.anim||0,cheer=a.cheer;
   for(const side of [-1,1]){
    const wave=cheer&&reaction==='wave',clap=cheer&&reaction==='clap',dance=cheer&&reaction==='dance';
@@ -69,7 +69,7 @@ function pose(T,root,actors,height){
    put(4,[.7+sw*side,.8,side*1.8],[4,1.4,2.6],'#353331');
    if(!root.userData.detailed)put(5,[2,18.7,side*.8],[.18,.22,.3],'#241b18');
   }
-  if(root.userData.detailed){const hair=['#211c18','#39271c','#66513c','#aaa08b'][a.id%4];put(5,[-.18,20.05,0],[2.1,.7+(a.id%3)*.14,1.98],hair);if(a.id%3===1)put(5,[-1.35,18.8,0],[1.05,1.7,1.9],hair);}
+  if(root.userData.detailed){const hair=['#211c18','#39271c','#66513c','#aaa08b'][a.id%4];put(5,[-.1,19.8,0],[1.72,.5+(a.id%3)*.1,1.63],hair);if(a.id%3===1)put(5,[-1.1,18.65,0],[.8,1.3,1.54],hair);}
   if(a.festival){put(6,[0,21,0],[3,.7,3],'#dbb747');if(a.id%3===0)put(7,[5,14,-3],[2,6,2],'#caa548',Math.PI/2);if(a.id%3===1)put(8,[0,29,6],[8,4,8],shirt);}
  }
  for(const m of root.children){m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;}
