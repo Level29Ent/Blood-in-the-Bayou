@@ -115,8 +115,8 @@ function guest(index){
 function buildPenthouse(){
  if(!city.mansion)return;
  const sf=city.mansion,b=sf.B,base=105,g=new THREE.Group();g.name='Ronniebaby penthouse';cityGroup.add(g);
- const gold=material('#c4a249',.35,.55),stone=material('#bcb39d'),wood=material('#392b24'),black=material('#23252a'),cream=material('#bbae96'),purple=material('#632b70');
- const marble=canvasTex(256,256,c=>{c.fillStyle='#8b8171';c.fillRect(0,0,256,256);const r=mkRng(2928);for(let k=0;k<60;k++){c.strokeStyle=k%3?'rgba(239,226,192,.12)':'rgba(40,32,30,.22)';c.lineWidth=.3+r()*1.8;c.beginPath();const y=r()*256;c.moveTo(0,y);c.bezierCurveTo(70,y-25,130,y+20,256,y+20);c.stroke();}});
+ const gold=material('#c4a249',.35,.55),stone=material('#bcb39d'),wood=material('#392b24'),black=material('#23252a'),cream=material('#bbae96');
+ const marble=canvasTex(256,256,c=>{c.fillStyle='#b8ae99';c.fillRect(0,0,256,256);const r=mkRng(2928);for(let k=0;k<60;k++){c.strokeStyle=k%3?'rgba(239,226,192,.12)':'rgba(40,32,30,.22)';c.lineWidth=.3+r()*1.8;c.beginPath();const y=r()*256;c.moveTo(0,y);c.bezierCurveTo(70,y-25,130,y+20,256,y+20);c.stroke();}});
  marble.wrapS=marble.wrapT=THREE.RepeatWrapping;marble.repeat.set(4,3);
  const floorMat=new THREE.MeshStandardMaterial({map:marble,roughness:.4,metalness:.04});
  const paintTexture=wallTexture();paintTexture.encoding=THREE.sRGBEncoding;
@@ -139,21 +139,10 @@ function buildPenthouse(){
  q.box(b.w-5,.5,b.h-5,cx,base+49,cy,cream);
  for(const x of [b.x+3,b.x+b.w-3])q.box(2,2,b.h-4,x,base+46,cy,gold);
  q.box(b.w-5,2,2,cx,base+46,b.y+3,gold);
- // Marble grid floor and a lounge rug.
+ // Pale marble grid floor; luxury furnishings retain the original color-banded walls.
  for(let x=b.x+16;x<b.x+b.w;x+=24)q.box(.25,.1,b.h-3,x,base+1.1,cy,wood);
  for(let y=b.y+16;y<b.y+b.h;y+=24)q.box(b.w-3,.1,.25,cx,base+1.12,y,wood);
- q.box(85,.3,54,cx,base+1.4,cy+3,purple);
- function furniture(x,y,w,h,d,m){
-  q.box(w,h,d,x,base+1+h/2,y,m);penthouse.furniture.push({x:x-w/2,y:y-d/2,w,h:d});
- }
- // Leather sofa, segmented cushions, brass feet and low glass coffee table.
- furniture(b.x+19,cy,24,8,57,cream);
- q.box(5,13,57,b.x+9,base+11,cy,cream);
- for(let k=0;k<3;k++){q.box(19,3,16,b.x+21,base+11,cy-19+k*19,cream);q.box(18,3,12,b.x+20,base+13,cy-20+k*19,purple);}
- furniture(cx,cy+4,29,7,21,wood);q.box(30,.6,22,cx,base+9,cy+4,gold);
- for(const x of [-10,10])for(const z of [-7,7])q.box(1.2,7,1.2,cx+x,base+4,cy+4+z,gold);
- furniture(b.x+b.w-15,b.y+27,19,15,42,wood);q.box(21,1,43,b.x+b.w-15,base+17,b.y+27,gold);
- for(let k=0;k<5;k++){q.box(2.3,7,2.3,b.x+b.w-15,base+21,b.y+10+k*6,material(['#33604c','#80532f','#d2c59c'][k%3]));}
+ const luxury=level29PenthouseLuxury.build(THREE,b,{base});g.add(luxury.root);penthouse.furniture.push(...luxury.solids);penthouse.referenceLuxury=luxury.root;
  // Elevator: ground-level portal, actual top-floor exit and clear central circulation.
  // Private lift lobby: one clear central approach, one compact sign, no overlapping door panel.
  q.box(42,39,2,cx,19.5,b.y+b.h+2,black);
@@ -172,8 +161,6 @@ function buildPenthouse(){
   q.box(25,25,1.4,x,base+30,b.y+1.4,gold);q.box(22,22,1.5,x,base+30,b.y+2,black);
   const artwork=addMesh(g,new THREE.PlaneGeometry(20,20),new THREE.MeshBasicMaterial({map:logo}),x,base+30,b.y+2.9);artwork.name='Level 29 framed logo';
  }
- // Warm coffer lighting without costly extra shadow-casting lights.
- for(const x of [cx-36,cx+36]){q.box(16,1,16,x,base+47,cy,material('#eee0b0'));q.box(2,7,2,x,base+44,cy,gold);}
  q.finish();
  const fill=new THREE.PointLight('#ffe2b2',.6,200,1);fill.position.set(cx,base+37,cy);g.add(fill);
  const positions=[[b.x+46,b.y+30],[b.x+b.w-43,b.y+35],[b.x+42,b.y+b.h-29],[b.x+b.w-39,b.y+b.h-31],[cx+18,cy+23]];
