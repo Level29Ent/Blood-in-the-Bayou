@@ -1,0 +1,9 @@
+# Crescent Camera interior
+
+The CAMERA SHOP mall tenant now follows the supplied densely stocked photography-store references: warm wood cabinets, low-opacity glass showcases, DSLR-like and compact cameras, twin-lens vintage models, white/black long lenses, ribbed lens barrels, coated blue lens faces, camera bags, freestanding tripods, red-header price tickets and bright ceiling panels. Generic original Crescent Camera signage avoids copied brand logos. The 79.2×70 mall bay contains 58 cameras, 78 attached/standalone lenses, four bags, two tripods and 62 price tickets.
+
+The same tenant, floor, entry and browse interaction remain. Side counters, rear cabinet and tripod footprints share the production collision plan, leaving a radius-ten central route open in either mall orientation. Root visibility follows the active mall floor. Only this tenant skips generic counter, wall stock, checkout and finish passes. No camera-buying, photography, staffing or transaction mechanics are added.
+
+Shared low-poly geometry/material instances need no remote model files or product images, new point lights, shadows, reflections, animation timers or dependencies. Glass has depth writes off. This is a stylized interpretation rather than photographic reconstruction. `/game/camera-shop-review.html` loads the production builder at the real mall dimensions; entrance, counter, lens-cabinet and north/south controls exercise its appearance but not the full world.
+
+Tests cover both collision orientations, camera stock counts, finite instanced geometry/room bounds and base elevation, loader order, absence of new lights, stock/finish exclusions and the real mall's upper-floor install, browse access and off-floor hiding. Full-city startup/gameplay and physical mobile-device performance require separate testing.
