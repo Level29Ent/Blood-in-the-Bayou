@@ -5,7 +5,7 @@ const F=level29InteriorRealism;let owner=null,sites=[],scan=0;let registered=new
 function register(source,b,base=0,v={},visible=()=>true){if(!source||!b?.w||!b?.h||v.karma||v.referenceLiquor)return;const key=[b.x,b.y,b.w,b.h,base].join(':');let known=registered.get(source);if(!known){known=new Set();registered.set(source,known);}if(known.has(key))return;known.add(key);sites.push({source,b:{...b},base,v,visible,root:null});}
 function refresh(){owner=city;sites=[];registered=new WeakMap();if(!city?.world)return;
  for(const v of city.venues||[]){if(v.referenceLiquor||v.karma||v.referenceHospital||!v.mesh)continue;if(v===city.casinoVenue&&city.riverboatHub){for(let f=0;f<3;f++)register(v.mesh,v.b,f*48,v,()=>!!window.level29Riverboat?.active&&window.level29Riverboat.floor===f);}
-  else if(v.id==='mall'){for(const s of v.mallLayout.shops.filter(s=>!s.referenceGameStore))register(v.mesh,s.room,(v.baseY||0)+s.floor*56,{...v,name:s.name},()=>v.floor===s.floor);}
+  else if(v.id==='mall'){for(const s of v.mallLayout.shops.filter(s=>!s.referenceGameStore).filter(s=>!s.referenceBarber))register(v.mesh,s.room,(v.baseY||0)+s.floor*56,{...v,name:s.name},()=>v.floor===s.floor);}
   else{const floors=v.floorFurniture?.length||1;for(let f=0;f<floors;f++)register(v.mesh,v.b,(v.baseY||0)+f*56,v,()=>floors===1||v.floor===f);}}
  const gm=city.greenmart;if(gm)for(let f=0;f<2;f++)register(gm.mesh||cityGroup,gm.b,f*56,{id:'grocery',name:'GREENMART'},()=>gm.floor===f);
  for(const room of level29InteriorRuntime?.rooms||[])if(room.custom)register(room.source,room.b,room.base,room.v,()=>room.source.visible);

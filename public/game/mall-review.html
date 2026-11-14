@@ -6,7 +6,7 @@
 body{margin:0;background:#d4dce0;color:#fff;font:14px system-ui}canvas{display:block;width:100vw;height:100dvh}header{position:fixed;z-index:2;top:12px;left:12px;background:#202c30e8;padding:12px;border-radius:8px;max-width:90vw}p{margin:5px 0 10px;font-size:12px}button{padding:10px;border:1px solid #8b9b9d;background:#33474e;color:#fff;cursor:pointer;min-height:44px}#hudMapActions{display:none}
 </style>
 <header><b>Greentown Mall · reference-inspired atrium</b><p>Isolated production mall builder with fixture state — not full-city performance.</p>
-<button data-view="court">Atrium</button> <button data-view="gallery">Upper gallery</button> <button data-view="stairs">Escalator</button> <button data-view="overview">Overview</button><p id="status">Building mall…</p></header>
+<button data-view="court">Atrium</button> <button data-view="gallery">Upper gallery</button> <button data-view="stairs">Escalator</button> <button data-view="overview">Overview</button><p id="status">Building mall…</p><button data-view="barber">BARBER SHOP</button><button data-view="barberChair">BARBER CHAIRS</button></header>
 <div id="hudMapActions"></div><canvas id="review"></canvas>
 <script src="three.min.js"></script>
 <script>
@@ -18,16 +18,16 @@ var level29World={material:function(color,metalness=0,roughness=.85){return new 
 function addSign(g,text,w,h,x,y,z,color){const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=128;const c=canvas.getContext('2d');c.clearRect(0,0,1024,128);c.fillStyle=color;c.font='600 64px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(text,512,64,1000);const tex=new THREE.CanvasTexture(canvas),m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));m.position.set(x,y,z);g.add(m);return m}
 </script>
 <script src="interior-models.js?v=city-renewal-1"></script>
-<script src="bike-shop-interior.js?v=reference-bike-1"></script><script src="mall-displays.js?v=reference-bike-1"></script>
+<script src="bike-shop-interior.js?v=reference-bike-1"></script><script src="barber-interior.js?v=reference-barber-1"></script><script src="mall-displays.js?v=reference-barber-1"></script>
 <script src="game-store-interior.js?v=reference-game-store-1"></script>
-<script src="mall-gardens.js?v=reference-bike-1"></script>
+<script src="mall-gardens.js?v=reference-barber-1"></script>
 <script>
-const b={x:0,y:0,w:576,h:416},v={b,doorX:288,doorY:416,doorW:48,colliderWalls:[],parkingDecks:[]};
+const b={x:0,y:0,w:576,h:416},v={b,floor:0,doorX:288,doorY:416,doorW:48,colliderWalls:[],parkingDecks:[]};
 v.mallLayout=level29Mall.layout(b);level29Mall.buildMall(v);
 scene.background=new THREE.Color('#d6e1e6');scene.add(new THREE.HemisphereLight('#fff9e8','#7b7060',.65));const sun=new THREE.DirectionalLight('#fff3dc',.7);sun.position.set(100,400,180);scene.add(sun);
 const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('review'),antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.72;
 const camera=new THREE.PerspectiveCamera(65,1,.5,2000);
-const views={court:[[440,28,275],[245,72,135]],gallery:[[440,76,275],[230,70,155]],stairs:[[84,26,100],[28,45,228]],overview:[[650,360,570],[288,55,208]]};
+const views={barber:[[345,23,101],[345,22,43]],barberChair:[[345,23,89],[321,15,65]],court:[[440,28,275],[245,72,135]],gallery:[[440,76,275],[230,70,155]],stairs:[[84,26,100],[28,45,228]],overview:[[650,360,570],[288,55,208]]};
 function show(name){const view=views[name];camera.position.set(...view[0]);camera.lookAt(...view[1]);document.getElementById('status').textContent='Ready · '+name+' · 3 levels / 26 shops';draw()}
 function draw(){renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.render(scene,camera)}
 document.querySelectorAll('[data-view]').forEach(button=>button.onclick=()=>show(button.dataset.view));addEventListener('resize',draw);show('gallery');

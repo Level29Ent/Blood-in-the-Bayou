@@ -1,7 +1,7 @@
 'use strict';
 (function(){
 if(typeof window==='undefined')return;
-function build(s,g,base,part,palette,venue){if(s.name==='GAME STORE')return;
+function build(s,g,base,part,palette,venue){if(s.name==='BARBER SHOP'){const built=level29BarberInterior.build(THREE,s.room,{base,dir:s.dir});g.add(built.root);s.referenceBarber=true;return built;}if(s.name==='GAME STORE')return;
  if(s.name==='BIKE SHOP'&&window.level29BikeShop){const shop=level29BikeShop.build(THREE,s,base,addSign);g.add(shop.root);if(venue)venue.floorFurniture[s.floor].push(...shop.solids);return;}
  const D=window.level29InteriorModels;if(!D)return;const z=s.dir===1?s.room.y+12:s.room.y+s.room.h-12;
  if(s.name==='FISH AQUARIUM STORE'){for(const dx of [-20,20])D.tank(g,s.doorX+dx,base+12,z,30);const label=addSign(g,'KOI · GOLDFISH · ANGELFISH · SHRIMP · SNAILS',s.room.w-10,3,s.doorX,base+41,s.doorY+s.dir*2,'#9de6eb');if(label&&s.dir===-1)label.rotation.y=Math.PI;return;}

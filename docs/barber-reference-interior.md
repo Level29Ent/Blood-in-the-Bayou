@@ -1,0 +1,9 @@
+# Greentown Mall barber shop
+
+The existing ground-floor BARBER SHOP tenant is rebuilt from the user's classic/modern barber references: warm plank floor, dark paneled base cabinets, cream walls and brick pilasters, tall dark-framed silvered mirrors, warm sconces, patterned metal-look ceiling with panel lights, two black leather hydraulic chairs (pedestals, footrests, chrome arms, headrests and tuft buttons), stocked worktops, clippers/scissors, two red/black waiting chairs, a static wall TV and service board.
+
+The tenant remains in the same 102 × 70 room in the 576 × 416 mall layout. The mall's walls, doorway, directory/service coordinates, floor count, lifts, stairs and purchases are unchanged. A shared plan supplies visual furniture and colliders. The former generic wall-to-wall counter is skipped for BARBER SHOP only; mall merchandise/clutter passes do not overlay this tenant. Other tenants retain their original fixtures. Opposite-gallery orientation and nonzero floor base are supported and tested.
+
+Mirrors are static silvered material panels, not live scene reflections. The TV is a decorative panel, not streaming video. No new haircut system, NPCs, purchases or animation loop is introduced. This is a stylized procedural interpretation, not a photoreal recreation.
+
+Furniture uses 21 instanced draw batches, five original 128-square textures, no external assets/GLBs, no new dynamic lights, no mirror render targets and no shadow maps. Allocation bounds are not phone FPS measurements. The updated `/game/mall-review.html` uses the production full-mall builder, with BARBER SHOP and BARBER CHAIRS cameras, rather than an independent room mockup. It does not exercise full-city startup or the complete player/service loop. Native iOS source archive is refreshed, not compiled or signed.
