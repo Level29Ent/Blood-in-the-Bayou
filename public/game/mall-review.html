@@ -23,8 +23,8 @@ function addSign(g,text,w,h,x,y,z,color){const canvas=document.createElement('ca
 <script>
 const b={x:0,y:0,w:576,h:416},v={b,doorX:288,doorY:416,doorW:48,colliderWalls:[],parkingDecks:[]};
 v.mallLayout=level29Mall.layout(b);level29Mall.buildMall(v);
-scene.background=new THREE.Color('#d6e1e6');scene.add(new THREE.HemisphereLight('#fff9e8','#9b8e7a',1.4));const sun=new THREE.DirectionalLight('#fff3dc',1.1);sun.position.set(100,400,180);scene.add(sun);
-const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('review'),antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;
+scene.background=new THREE.Color('#d6e1e6');scene.add(new THREE.HemisphereLight('#fff9e8','#7b7060',.65));const sun=new THREE.DirectionalLight('#fff3dc',.7);sun.position.set(100,400,180);scene.add(sun);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('review'),antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.72;
 const camera=new THREE.PerspectiveCamera(65,1,.5,2000);
 const views={court:[[440,28,275],[245,72,135]],gallery:[[440,76,275],[230,70,155]],stairs:[[84,26,100],[28,45,228]],overview:[[650,360,570],[288,55,208]]};
 function show(name){const view=views[name];camera.position.set(...view[0]);camera.lookAt(...view[1]);document.getElementById('status').textContent='Ready · '+name+' · 3 levels / 26 shops';draw()}

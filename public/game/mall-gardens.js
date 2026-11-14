@@ -66,17 +66,18 @@ function buildMall(v){const b=v.b,g=new THREE.Group();g.name='Greentown Mall · 
  }
  function tileLines(base){
   const edge=Math.min(140,b.w*.3,b.h*.34),hx=b.x+edge,hz=b.y+edge,hw=b.w-2*edge,hd=b.h-2*edge;
+  const cuts=v.mallLayout.stairs.filter(st=>st.to===base/56).map(st=>({start:st.start,end:st.end,lo:st.x<b.x+b.w/2?b.x:st.x-st.width/2-2,hi:st.x<b.x+b.w/2?st.x+st.width/2+2:b.x+b.w}));
   // Split seams at the actual atrium void: nothing floats across the opening.
   for(let x=b.x+16;x<b.x+b.w;x+=16){
    if(base&&x>hx&&x<hx+hw){for(const z of [b.y+edge/2,b.y+b.h-edge/2])part(.16,.08,edge,x,base+1.05,z,grout);}
-   else if(!base||!v.mallLayout.stairs.some(st=>st.to===base/56&&Math.abs(x-st.x)<st.width/2+2))part(.16,.08,b.h,x,base+1.05,b.y+b.h/2,grout);
+   else{const cut=cuts.find(c=>x>=c.lo&&x<=c.hi);if(cut){for(const [lo,hi]of [[b.y,cut.start],[cut.end,b.y+b.h]])part(.16,.08,hi-lo,x,base+1.05,(lo+hi)/2,grout);}else part(.16,.08,b.h,x,base+1.05,b.y+b.h/2,grout);}
   }
   for(let z=b.y+16;z<b.y+b.h;z+=16){
    // North/south galleries are continuous; side galleries have stair openings.
    const spans=base&&z>hz&&z<hz+hd?[[b.x,hx],[hx+hw,b.x+b.w]]:[[b.x,b.x+b.w]];
    for(const [lo,hi]of spans){let cursor=lo;
-    const wells=base?v.mallLayout.stairs.filter(st=>st.to===base/56&&z>st.start&&z<st.end&&st.x+st.width/2+2>lo&&st.x-st.width/2-2<hi).sort((a,c)=>a.x-c.x):[];
-    for(const st of wells){const end=Math.min(hi,Math.max(cursor,st.x-st.width/2-2));if(end>cursor)part(end-cursor,.08,.16,(cursor+end)/2,base+1.05,z,grout);cursor=Math.max(cursor,st.x+st.width/2+2);}
+    const wells=cuts.filter(c=>z>c.start&&z<c.end&&c.hi>lo&&c.lo<hi);
+    for(const st of wells){const end=Math.min(hi,Math.max(cursor,st.lo));if(end>cursor)part(end-cursor,.08,.16,(cursor+end)/2,base+1.05,z,grout);cursor=Math.max(cursor,st.hi);}
     if(hi>cursor)part(hi-cursor,.08,.16,(cursor+hi)/2,base+1.05,z,grout);
    }
   }
@@ -111,6 +112,12 @@ function buildMall(v){const b=v.b,g=new THREE.Group();g.name='Greentown Mall · 
     const x=stair.x+side*(stair.width/2+1);
     beam(x,base+4,stair.start,x,base+60,stair.end,2.5,gold);
     beam(x,base+14,stair.start,x,base+70,stair.end,2,black);
+    const panelGeometry=new THREE.BufferGeometry();
+    panelGeometry.setAttribute('position',new THREE.Float32BufferAttribute([
+     x,base+4,stair.start,x,base+60,stair.end,x,base+69,stair.end,
+     x,base+4,stair.start,x,base+69,stair.end,x,base+13,stair.start
+    ],3));panelGeometry.computeVertexNormals();
+    const panel=new THREE.Mesh(panelGeometry,glassRail);panel.material.side=THREE.DoubleSide;g.add(panel);
     for(let i=0;i<8;i++){const t=(i+.5)/8,z=stair.start+t*(stair.end-stair.start);part(1,11,1,x,base+t*56+8,z,gold);}
    }
    for(const [z,y]of [[stair.start,base],[stair.end,base+56]]){
