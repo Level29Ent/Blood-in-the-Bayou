@@ -75,11 +75,12 @@
   // ---------- Atmosphere: drifting dust by day, fireflies at night ----------
   let motes = null;
   const MOTES = 260, R = 260;
+  function moteTexture(){const c=document.createElement('canvas');c.width=c.height=32;const a=c.getContext('2d'),g=a.createRadialGradient(16,16,0,16,16,16);g.addColorStop(0,'rgba(255,255,255,1)');g.addColorStop(.25,'rgba(255,255,255,.5)');g.addColorStop(1,'rgba(255,255,255,0)');a.fillStyle=g;a.fillRect(0,0,32,32);return new THREE.CanvasTexture(c);}
   function makeMotes(){
     const g = new THREE.BufferGeometry(), pos = new Float32Array(MOTES * 3), seed = new Float32Array(MOTES);
     for (let i = 0; i < MOTES; i++){ pos[i*3] = (Math.random() - .5) * R * 2; pos[i*3+1] = 4 + Math.random() * 60; pos[i*3+2] = (Math.random() - .5) * R * 2; seed[i] = Math.random() * 100; }
     g.setAttribute('position', new THREE.BufferAttribute(pos, 3));
-    const m = new THREE.PointsMaterial({ size: 1.6, color: 0xfff2c8, transparent: true, opacity: .35, depthWrite: false, blending: THREE.AdditiveBlending, fog: true });
+    const m = new THREE.PointsMaterial({ map: moteTexture(), size: 1.6, color: 0xfff2c8, transparent: true, opacity: .35, depthWrite: false, blending: THREE.AdditiveBlending, fog: true });
     const pts = new THREE.Points(g, m);
     pts.frustumCulled = false; pts.userData.__gfx = true; pts.userData.seed = seed;
     scene.add(pts);
@@ -87,16 +88,17 @@
   }
   function updateMotes(){
     if (!scene) return;
+    if(motes&&motes.parent!==scene){motes.parent?.remove(motes);motes.geometry.dispose();motes.material.map?.dispose();motes.material.dispose();motes=null;}
     if (!motes) motes = makeMotes();
-    const show = state !== 'menu' && quality() !== 'low';
+    const show = state !== 'menu' && quality() !== 'low' && lightMode === 'night';
     motes.visible = show;
     if (!show) return;
     const night = lightMode === 'night', dusk = lightMode === 'dusk';
     const m = motes.material;
     m.color.setHex(night ? 0xc8ff6a : dusk ? 0xffc890 : 0xfff2c8);
-    m.size = night ? 2.4 : 1.4;
+    m.size = night ? .7 : .35;
     const t = now() * .001, cp = camera.position, arr = motes.geometry.attributes.position.array, seed = motes.userData.seed;
-    m.opacity = night ? .55 + Math.sin(t * 2.3) * .2 : .28;
+    m.opacity = night ? .25 + Math.sin(t * 2.3) * .08 : 0;
     for (let i = 0; i < MOTES; i++){
       const o = i * 3, s = seed[i];
       arr[o] += Math.sin(t * .6 + s) * .08 + .03;

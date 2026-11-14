@@ -253,8 +253,8 @@ buildCity=function(){const r=prevBuild.apply(this,arguments);if(!cityGroup)retur
 // ---------------------------------------------------------------- sky: clouds, the flying jet, birds
 function ensureSky(){
   if(!scene)return;
-  if(!clouds.length){const m=new THREE.MeshLambertMaterial({color:'#ffffff',transparent:true,opacity:.82});
-    for(let i=0;i<26;i++){const c=new THREE.Group();const n=3+Math.floor(Math.random()*3);for(let k=0;k<n;k++){const s=new THREE.Mesh(new THREE.SphereGeometry(rnd(26,46),10,8),m);s.position.set(k*34-n*17,rnd(-6,8),rnd(-14,14));s.scale.y=.6;c.add(s);}
+  if(!clouds.length){const m=new THREE.MeshBasicMaterial({color:'#edf2ed',transparent:true,opacity:.48,depthWrite:false});
+    for(let i=0;i<26;i++){const c=new THREE.Group();const n=3+Math.floor(Math.random()*3);for(let k=0;k<n;k++){const s=new THREE.Mesh(new THREE.SphereGeometry(rnd(26,46),10,8),m);const angle=k*2.399;s.position.set(Math.cos(angle)*30,rnd(-3,5),Math.sin(angle)*22);s.scale.set(1.6,.28,1.1);c.add(s);}
       c.name='weather-cloud';c.userData.v=rnd(.15,.45);c.position.set(player.x+rnd(-1300,1300),rnd(300,420),player.y+rnd(-1300,1300));clouds.push(c);}}
   for(const c of clouds)if(!c.parent)scene.add(c);
   if(!flyer){flyer=planeMesh(false);flyer.userData.a=0;}
