@@ -35,8 +35,9 @@ function build(T,b){
   }
   const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;if(kind==='carpet'){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(5,3);}return t;
  };
- const mat=(color,roughness=.7,extra={})=>new T.MeshStandardMaterial({color,roughness,...extra});
- const gold=mat('#c2984d',.34,{metalness:.65}),cream=mat('#e1c693',.65,{emissive:'#9a6831',emissiveIntensity:.18}),wine=mat('#682d40'),wood=mat('#35202b',.48),black=mat('#141925',.4,{metalness:.28}),leather=mat('#352132',.82),felt=mat('#137857',.95),carpet=mat('#ffffff',1,{map:texture('carpet')}),blue=new T.MeshBasicMaterial({color:'#6367ff'}),amber=new T.MeshBasicMaterial({color:'#ffe1a0'}),screen=new T.MeshBasicMaterial({color:'#ffffff',map:texture('screen')}),markings=new T.MeshBasicMaterial({color:'#ffffff',map:texture('felt')});
+ // Three r149 uses legacy linear Color inputs; decode CSS swatches before sRGB output.
+ const linear=m=>{m.color.convertSRGBToLinear();if(m.emissive)m.emissive.convertSRGBToLinear();return m;},mat=(color,roughness=.7,extra={})=>linear(new T.MeshStandardMaterial({color,roughness,...extra})),basic=(color,extra={})=>linear(new T.MeshBasicMaterial({color,...extra}));
+ const gold=mat('#c2984d',.34,{metalness:.65}),cream=mat('#e1c693',.65,{emissive:'#9a6831',emissiveIntensity:.18}),wine=mat('#682d40'),wood=mat('#35202b',.48),black=mat('#141925',.4,{metalness:.28}),leather=mat('#352132',.82),felt=mat('#137857',.95),carpet=mat('#ffffff',1,{map:texture('carpet')}),blue=basic('#6367ff'),amber=basic('#ffe1a0'),screen=basic('#ffffff',{map:texture('screen')}),markings=basic('#ffffff',{map:texture('felt')});
  if(!carpet.map)carpet.color.set('#72283e');if(!screen.map)screen.color.set('#7565cf');if(!markings.map)markings.color.set('#147e61');
  const box=new T.BoxGeometry(1,1,1),cyl=new T.CylinderGeometry(1,1,1,16),sphere=new T.SphereGeometry(1,12,8),plane=new T.PlaneGeometry(1,1);
  function emit(geo,m,w,h,d,x,y,z,angle=0,rx=0){if(!batches.has(m))batches.set(m,new Map());const bucket=batches.get(m);if(!bucket.has(geo))bucket.set(geo,[]);bucket.get(geo).push({w,h,d,x,y,z,angle,rx});}
@@ -53,7 +54,7 @@ function build(T,b){
  B(b.w-5,40,1,cx,21,b.y+2.7,wine);for(const y of [9,31,35,39])B(b.w-5,1,1.5,cx,y,b.y+3,gold);
  // Shallow barrel vault plus stepped side coffers fit below the next 48-unit deck.
  const strips=24;for(let i=0;i<strips;i++){const a=i*Math.PI/strips,bb=(i+1)*Math.PI/strips,x1=cx-80*Math.cos(a),x2=cx-80*Math.cos(bb),y1=35+9*Math.sin(a),y2=35+9*Math.sin(bb),w=Math.hypot(x2-x1,y2-y1);const geo=new T.BoxGeometry(w+.12,.45,b.h-5),mesh=new T.Mesh(geo,cream);mesh.position.set((x1+x2)/2,(y1+y2)/2,cz);mesh.rotation.z=Math.atan2(y2-y1,x2-x1);root.add(mesh);}
- const rib=new T.TorusGeometry(1,.02,5,48,Math.PI);for(const zz of [8,66,124,183])emit(rib,gold,80,9,80,cx,35,b.y+zz);
+ const rib=new T.TorusGeometry(1,.02,5,48,Math.PI);for(const zz of [8,66,124,183])emit(rib,gold,80,9,80,cx,34.4,b.y+zz);
  for(const side of [-1,1]){B(74,.7,b.h-5,cx+side*119,37,cz,wood);for(const dx of [80,84,153]){B(1.3,1.2,b.h-5,cx+side*dx,35.4,cz,gold);B(.6,.3,b.h-5,cx+side*(dx+1),34.7,cz,amber);}for(const zz of [35,94,153]){B(68,.8,2,cx+side*119,36,b.y+zz,gold);B(58,.3,1,cx+side*119,35.5,b.y+zz+2,blue);}}
  // Columns define the vaulted table hall without cutting the central or perimeter aisles.
  for(const s of p.columns){C(2,29,2,s.x,16,s.z,cream);for(const y of [2,4,29,31,33])C(y===33?3.6:3,1,3,s.x,y,s.z,gold);}
