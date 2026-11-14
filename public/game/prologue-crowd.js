@@ -5,13 +5,13 @@ const SKIN=['#603d2b','#976b4d','#be8f6b','#d7ad88'],CLOTH=['#436c82','#88734c',
 function character(id){const n=Math.abs(Math.trunc(id)||0),woman=n%2===1,pair=Math.floor(n/2),variant=pair%8,build=variant%4,hairstyle=woman?['bob','ponytail','bun','natural','long','locs-shoulder','locs-long','locs-tied'][variant]:['crop','short','curls','long','locs-short','locs-shoulder','locs-long','locs-tied'][variant],black=hairstyle.startsWith('locs');return {gender:woman?'woman':'man',hairstyle,outfit:woman?['blouse','jacket','tunic','tee'][build]:'shirt',build,...(black?{heritage:'African American',skin:['#573827','#754c35','#966b4b'][Math.floor(pair/8)%3],hairColor:variant===6?'#30231b':'#191715'}:{})};}
 
 function population(nav,width,count=180){const cells=[];for(let k=0;k<nav.mask.length;k++)if(nav.mask[k])cells.push(k);if(!cells.length)return [];return Array.from({length:Math.min(count,cells.length)},(_,i)=>{const k=cells[Math.floor(i*cells.length/count)%cells.length],p=nav.point(k);return {...p,id:i,...character(i),cell:k,previous:-1,a:0,anim:0,wait:(i%5)*.4,activity:['commute','shop','talk','stroll','rest'][i%5]};});}
-function advance(a,nav,width,dt,panic=false,zombies=[]){
+function advance(a,nav,width,dt,panic=false,zombies=[],movement=null){
  const danger=panic?zombies.filter(z=>z.alive&&Math.hypot(z.x-a.x,z.y-a.y)<150).sort((z,q)=>Math.hypot(z.x-a.x,z.y-a.y)-Math.hypot(q.x-a.x,q.y-a.y))[0]:null;
  a.wait-=dt;if(a.wait>0&&!panic)return;
  if(!a.target){const k=a.cell,x=k%width;let choices=[x?k-1:-1,x<width-1?k+1:-1,k-width,k+width].filter(n=>n>=0&&n<nav.mask.length&&nav.mask[n]);if(choices.length>1)choices=choices.filter(n=>n!==a.previous);if(danger)choices.sort((x,y)=>{const p=nav.point(x),q=nav.point(y);return Math.hypot(q.x-danger.x,q.y-danger.y)-Math.hypot(p.x-danger.x,p.y-danger.y);});const next=choices[panic?0:(a.id+Math.floor(a.anim))%choices.length];if(next===undefined)return;a.target={...nav.point(next),cell:next};}
  const dx=a.target.x-a.x,dy=a.target.y-a.y,d=Math.hypot(dx,dy),speed=panic?34:a.activity==='commute'?17:10,step=Math.min(d,Math.max(0,dt)*speed);
- a.a=Math.atan2(dy,dx);if(d){a.x+=dx/d*step;a.y+=dy/d*step;a.anim+=step*.15;}
- if(d<=step+.01){a.previous=a.cell;a.cell=a.target.cell;a.target=null;if(!panic&&['talk','rest','shop'].includes(a.activity))a.wait=1+a.id%4;}
+ let arrived=d<=step+.01;if(movement){arrived=movement(a,a.target,step);}else{a.a=Math.atan2(dy,dx);if(d){a.x+=dx/d*step;a.y+=dy/d*step;a.anim+=step*.15;}}
+ if(arrived){a.previous=a.cell;a.cell=a.target.cell;a.target=null;if(!panic&&['talk','rest','shop'].includes(a.activity))a.wait=1+a.id%4;}
 }
 function spectators(route,tileAt,blocked,count=384){
  const out=[],outbound=route.slice(0,Math.max(1,Math.floor(route.length/2)+1)),stations=[];
