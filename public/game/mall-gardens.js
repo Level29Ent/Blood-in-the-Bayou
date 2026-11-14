@@ -146,10 +146,10 @@ function buildMall(v){const b=v.b,g=new THREE.Group();g.name='Greentown Mall · 
    part(r.w-4,.5,r.h-4,r.x+r.w/2,base+49,r.y+r.h/2,cream);
    for(const dx of [-r.w*.25,r.w*.25])part(7,.6,3,shop.doorX+dx,base+48,shop.doorY-shop.dir*18,glow);
    part(r.w-4,1,r.h-4,r.x+r.w/2,base+1,r.y+r.h/2,tile);
-   if(shop.name!=='BAYOU BURGERS'&&!['MAGAZINE STORE','GAME STORE','BIKE SHOP','BARBER SHOP','FISH AQUARIUM STORE','MUSIC STORE','JEWELRY STORE'].includes(shop.name)){const counterY=shop.dir===1?r.y+12:r.y+r.h-12;part(r.w-24,10,16,shop.doorX,base+5,counterY,wood);v.floorFurniture[floor].push({x:r.x+12,y:counterY-8,w:r.w-24,h:16});}
+   if(shop.name!=='BAYOU BURGERS'&&!['SPORTING GOODS','MAGAZINE STORE','GAME STORE','BIKE SHOP','BARBER SHOP','FISH AQUARIUM STORE','MUSIC STORE'].includes(shop.name)){const counterY=shop.dir===1?r.y+12:r.y+r.h-12;part(r.w-24,10,16,shop.doorX,base+5,counterY,wood);v.floorFurniture[floor].push({x:r.x+12,y:counterY-8,w:r.w-24,h:16});}
    if(shop.name==='GAME STORE'){const store=level29GameStoreInterior.build(THREE,shop,base);g.add(store.root);v.floorFurniture[floor].push(...store.solids);shop.referenceGameStore=true;shop.referenceRoot=store.root;store.root.visible=v.floor===floor;}
    const label=addSign(g,shop.name,r.w-8,7,shop.doorX,base+40,shop.doorY+shop.dir*2,'#fff6e7');if(label&&shop.dir===-1)label.rotation.y=Math.PI;
-   const detail=window.level29MallDisplays?.build(shop,g,base,part,{wood,gold,dark,cream},v);if((shop.referenceMagazine||shop.referenceJewelry||shop.referenceRecordStore||shop.referenceFastFood||shop.referenceBarber||shop.referenceAquarium)&&detail){v.floorFurniture[floor].push(...detail.solids);shop.referenceRoot=detail.root;detail.root.visible=v.floor===floor;}
+   const detail=window.level29MallDisplays?.build(shop,g,base,part,{wood,gold,dark,cream},v);if((shop.referenceSports||shop.referenceMagazine||shop.referenceRecordStore||shop.referenceFastFood||shop.referenceBarber||shop.referenceAquarium)&&detail){v.floorFurniture[floor].push(...detail.solids);shop.referenceRoot=detail.root;detail.root.visible=v.floor===floor;}
 
    if(shop.name==='29 CUISINE'){addSign(g,'U · BURGER MEAL $60 · +50 HEALTH',90,5,shop.doorX,base+25,shop.doorY+2,'#e4b578');}
   }
