@@ -1,5 +1,5 @@
 const nextConfig = {
-  output: 'export',
+  // Community API routes require a server build. Static hosts can serve public/ directly.
   images: {
     unoptimized: true,
   },
