@@ -22,7 +22,7 @@ for(const y of[26,33]){B(wood,b.w*.38,.8,4,b.w*.26,y,5.8);for(let i=0;i<7;i++){c
 // Each seating group has its own conservative collider, never in the central walkway.
 for(const t of p.tables){const x=t.x-b.x,z=t.y-b.y;B(wood,16,1,8,x,11,z);C(black,.8,9,x,6,z);C(steel,3.2,.4,x,1.6,z);for(const dz of[-8,8]){B(cloth,13,2,6,x,7,z+dz);B(warm?wood:black,13,8,1,x,11,z+dz+Math.sign(dz)*2.4);for(const dx of[-4.5,4.5])B(black,.6,5,4,x+dx,3.5,z+dz);}C(paper,1,2,x-4,12.5,z);B(paper,3,.4,3,x+3,12,z);ball(food,1.5,.7,1,x+3,12.8,z);}
 function plant(x,z,y=5){C(wood,2.2,4,x,y,z);for(let k=0;k<6;k++){const a=k*Math.PI/3;E(sphere,green,1,3,.7,x+Math.cos(a)*1.8,y+5+(k%2),z+Math.sin(a)*1.8,0,0,Math.sin(a)*.4);}}
-for(const x of[6,b.w-6])plant(x,b.h-8);if(warm)for(let x=12;x<b.w-8;x+=22){B(wood,15,.7,5,x,35,6);plant(x,6,37);}
+for(const x of[6,b.w-6])plant(x,b.h-8);if(warm)for(let x=12;x<b.w*.45;x+=22){B(wood,15,.7,5,x,35,6);plant(x,6,37);}
 B(warm?cream:black,b.w-7,.4,b.h-7,b.w/2,47,b.h/2);
 if(warm){for(const z of[43,b.h*.76]){C(brass,.25,7,b.w/2,43,z);for(const dx of[-15,-5,5,15]){B(brass,Math.abs(dx)+1,.35,.35,b.w/2+dx/2,39,z);C(brass,.2,4,b.w/2+dx,37,z);ball(glow,2,2,2,b.w/2+dx,34.5,z);}}for(const x of[10,b.w-10])for(let z=40;z<b.h-6;z+=27){B(wood,1,2,8,x,45,z);}}
 else{for(const z of[31,b.h-23]){B(steel,b.w*.63,1,5,b.w/2,44,z);B(glow,b.w*.61,.25,3,b.w/2,43.3,z);}E(cyl,steel,2,b.h-8,2,b.w-12,42,b.h/2,Math.PI/2);for(let x=15;x<b.w-8;x+=25)B(cream,1,3,b.h-8,x,45.2,b.h/2);}
