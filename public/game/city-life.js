@@ -96,7 +96,8 @@ buildVenue=function(v){
  part(v.doorW,7,3,v.doorX,45,v.doorY,gold);v.door=part(1,1,1,v.doorX,0,v.doorY,dark);v.door.visible=false;
  v.roof=part(b.w,2,b.h,b.x+b.w/2,50,b.y+b.h/2,dark);v.labelH=70;
  if(v.id!=='casino')addSign(g,v.name,Math.min(220,b.w),11,v.doorX,61,v.doorY,v.col);
- if(v.id==='casino'){
+ if(v.depth==='basefood'){const detail=level29FastFood.build(THREE,b,{theme:'mess',sign:addSign});g.add(detail.root);v.furniture.push(...detail.solids);v.referenceFastFood=true;
+ }else if(v.id==='casino'){
   level29RetailCasino.casino(v,g); }else if(v.id==='nightclub'){
   part(b.w-30,2,28,b.x+b.w/2,1,b.y+16,dark);part(25,12,8,b.x+b.w/2,8,b.y+18,gold);
   for(let i=0;i<(v.southern?3:9);i++){const x=b.x+20+(i%3)*Math.max(12,(b.w-40)/3),y=b.y+28+Math.floor(i/3)*Math.max(6,(b.h-38)/3),m=makeFigure(false);setFigureColors(m,['#986d50','#c3946a','#6e4939'][i%3],['#87539b','#d5b568','#4c8491'][i%3],'#28313b','#272322');m.traverse(o=>{if(o.isMesh)o.userData.noBatch=true;});g.add(m);dancers.push({m,x,y});}
