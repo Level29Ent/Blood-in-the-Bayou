@@ -105,6 +105,8 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
   staff(v,g,b.x+b.w/2,b.y+22,base);for(const [label,x]of [['DRINKS',b.x+38],['FOOD',b.x+b.w-38]])sign(label,x,b.y+5,55);
  }else if(v.id==='bank'){
   const bank=level29BankInterior.build(THREE,b,base);g.add(bank.root);v.furniture.push(...bank.solids);v.referenceBank=true;staff(v,g,bank.plan.staff.x,bank.plan.staff.y,base);
+ }else if(v.id==='gym'&&v.boxingGym){
+  const gym=level29BoxingInterior.build(THREE,b,base);g.add(gym.root);v.furniture.push(...gym.solids);v.referenceBoxing=true;v.boxingPlan=gym.plan;staff(v,g,b.x+b.w/2,b.y+150,base);
  }else if(v.id==='gym'){
   for(const x of [b.x+35,b.x+b.w-35])for(const y of [b.y+60,b.y+120]){item(x,y,28,3,40,dark);q.box(3,19,3,x+12,base+11,y-16,steel);q.box(28,2,3,x,base+21,y-16,steel);}
   for(const y of [b.y+40,b.y+95]){item(b.x+90,y,26,8,45,steel);q.box(45,2,3,b.x+90,base+24,y,steel);for(const x of [b.x+70,b.x+110])q.box(4,14,14,x,base+24,y,dark);}
