@@ -16,7 +16,7 @@ function build(T,b,base=0){
  const glow=new T.MeshBasicMaterial({color:'#eaf8ff'}),glass=mat('#b9d7dc',{transparent:true,opacity:.17,roughness:.16,depthWrite:false});
  function box(m,w,h,d,x,y,z,color){if(!batches.has(m))batches.set(m,[]);batches.get(m).push({w,h,d,x,y:base+y,z,color});}
  function texture(kind){const size=128,data=new Uint8Array(size*size*4);for(let y=0;y<size;y++)for(let x=0;x<size;x++){let n=((x*17+y*23+x*y)%19)-9,c;
-  if(kind==='tile'){const vein=Math.sin(x*.07+y*.11+Math.sin(y*.08)*3);c=190+n+(vein>.92?23:vein<-.93?-25:0);if(x<2||y<2)c=135;data.set([c+8,c+4,c-7,255],(y*size+x)*4);}
+  if(kind==='tile'){const vein=Math.sin(x*.07+y*.11+Math.sin(y*.08)*3);c=190+n+(vein>.92?9:vein<-.93?-10:0);if(x<2||y<2)c=135;data.set([c+8,c+4,c-7,255],(y*size+x)*4);}
   else{c=235+n*.3;if(y>32&&y<81)c=255;if((y===48||y===54||y===60)&&x>26&&x<100)c=75;if(y>103)c=180;data.set([c,c,c,255],(y*size+x)*4);}}
  const t=new T.DataTexture(data,size,size);t.encoding=T.sRGBEncoding;t.wrapS=t.wrapT=T.RepeatWrapping;t.minFilter=T.LinearMipmapLinearFilter;t.generateMipmaps=true;t.needsUpdate=true;textures.push(t);return t;}
  const floor=mat('#ffffff',{map:texture('tile'),roughness:.38,metalness:.03});floor.map.repeat.set(b.w/24,b.h/24);
@@ -42,7 +42,7 @@ function build(T,b,base=0){
  for(let i=0;i<3;i++)box(white,1.5,2.2,1.5,cx+1+i*2,16.2,cz-4);
  box(dark,8,11,8,c.x+2,6,c.y+c.h+9);box(steel,9,1,9,c.x+2,12,c.y+c.h+9);
  // Back-bar liquor / tobacco stock: actual rows of colored packages and bottle necks.
- const s=p.stock;box(dark,s.w,28,s.h,s.x+s.w/2,15,s.y+s.h/2);
+ const s=p.stock;box(dark,s.w,28,.7,s.x+s.w/2,15,s.y+.4);
  for(let row=0;row<4;row++){box(steel,s.w,.5,8,s.x+s.w/2,3+row*7,s.y+4);for(let i=0;i<Math.floor(s.w/3.6);i++)bottle(s.x+2+i*3.6,6+row*7,s.y+5,i+row);}
  // Double-sided gondolas, six stocked faces per aisle and candy endcaps.
  for(const [k,r]of p.shelves.entries()){
@@ -56,7 +56,7 @@ function build(T,b,base=0){
  for(const [bank,r]of p.coolers.entries()){
  const side=bank===1,length=side?r.h:r.w,doors=Math.floor(length/13),step=length/doors;
  const put=(m,w,h,d,u,y,depth)=>side?box(m,d,h,w,r.x+r.w-depth,y,r.y+u):box(m,w,h,d,r.x+u,y,r.y+depth);
- put(dark,length,33,10,length/2,18,5);put(black,length+1,6,11,length/2,38,5.5);
+ put(dark,length,33,.8,length/2,18,.5);for(const u of [.5,length-.5])put(dark,1,33,11,u,18,5.5);put(black,length+1,6,11,length/2,38,5.5);
  for(let door=0;door<doors;door++){const u=(door+.5)*step;put(white,step-1,29,.5,u,18,.7);
  for(let row=0;row<5;row++){put(steel,step-1,.35,8,u,4+row*5.5,6);for(let j=0;j<4;j++){
   const a=u-step/2+2+j*(step-3)/4;put(packs,2,3.8,2,a,6.3+row*5.5,8);const last=batches.get(packs).at(-1);last.color=colors[(door+row+j)%colors.length];products++;}}
