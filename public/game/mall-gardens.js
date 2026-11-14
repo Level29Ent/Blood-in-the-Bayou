@@ -111,6 +111,12 @@ function buildMall(v){const b=v.b,g=new THREE.Group();g.name='Greentown Mall · 
     const x=stair.x+side*(stair.width/2+1);
     beam(x,base+4,stair.start,x,base+60,stair.end,2.5,gold);
     beam(x,base+14,stair.start,x,base+70,stair.end,2,black);
+    const panelGeometry=new THREE.BufferGeometry();
+    panelGeometry.setAttribute('position',new THREE.Float32BufferAttribute([
+     x,base+4,stair.start,x,base+60,stair.end,x,base+69,stair.end,
+     x,base+4,stair.start,x,base+69,stair.end,x,base+13,stair.start
+    ],3));panelGeometry.computeVertexNormals();
+    const panel=new THREE.Mesh(panelGeometry,glassRail);panel.material.side=THREE.DoubleSide;g.add(panel);
     for(let i=0;i<8;i++){const t=(i+.5)/8,z=stair.start+t*(stair.end-stair.start);part(1,11,1,x,base+t*56+8,z,gold);}
    }
    for(const [z,y]of [[stair.start,base],[stair.end,base+56]]){
