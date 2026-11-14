@@ -1,0 +1,11 @@
+# 29 Cuisine mall service counter
+
+The existing 29 CUISINE tenant uses the supplied hot-food, mall counter and drink-shop references: brick-front counter with warm orange/cream trim, stainless worktop, glass sneeze guard, six serving trays with modeled portions, checkerboard tan/cream backsplash, orange wall/blue header, original illustrated menu panels, rear prep/hood, drinks and soft-serve-inspired equipment, cups, trays, register and napkin dispenser. All artwork is original generic 29 Cuisine branding; no chain logos, copied menus, food photography or external assets.
+
+The actual 79.2×70 bay on floor one (the middle playable floor), entry, meal point, floor assignment and original service logic remain. The original $60 fictional-cash meal still grants up to +50 health and refuses when already healthy or underfunded. Hot plates/drinks are decorative display categories, not extra purchasable items or changed healing effects. No cashier NPC, live cooking, dispensing or new kitchen activity is introduced.
+
+A shared rear-prep and serving-line blocker plan leaves the original center customer approach and meal interaction clear in both gallery directions. Only this tenant skips its generic old counter, stock and checkout/finish passes. The authored root follows existing active-floor visibility so kitchen stock does not appear on other mall floors.
+
+Shared geometry/material instances, low-opacity glass with depth writes off, static original text/meal illustration and decorative light panels require no new real-time lights, shadows, timers, external models/photos or dependencies. This is a stylized reference interpretation rather than photographic reconstruction.
+
+`/game/cuisine-review.html` uses the production builder at the real bay size with entry/hot-food/prep-drinks and north/south controls. It is not full-city shopping, food-court crowd or phone performance validation. Tests cover finite bounded raised-floor geometry, stock counts/no extra lights, both route orientations, loader order and overlay exclusions, actual mall furnishing registration/active-floor hiding and existing meal service regressions. Rendered appearance, full-world gameplay and physical mobile performance still require a READY preview.
