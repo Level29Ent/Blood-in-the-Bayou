@@ -93,3 +93,26 @@ collect the Science Kit, and traverse the moving festival on desktop and a phone
 The maintained iOS source archive includes the same runtime changes. Publishing an
 installed iOS app still requires a newly signed native build; updating the website
 alone does not update an old native bundle.
+
+## Twin-tower reference update
+
+The same existing power-station parcel now uses smooth, curved cooling shells with
+an open annular top lip and dark inset inner throat, rather than solid cylinder
+caps. Each shell starts above a modeled air-intake/support gap and has construction
+seam rings that follow its changing radius. Two white steam plumes use 32 shared
+low-poly transparent sphere instances, separate from opaque batches with depth
+writes off; they are **static decorative scenery**, not particle/fluid/weather
+simulation or a claim of moving steam.
+
+The site gains a paved perimeter loop, central gate approach, lawn panels, low
+service/intake houses, an annex and rooftop machinery while keeping the turbine
+hall, domed building, transformers, fence, map marker and original site identity.
+It remains a fictional exterior landmark, not a technical nuclear-plant simulation.
+No new lights, shadows, textures, downloads or animation loops were added. The
+photo is an architectural/palette reference, not a copied texture or scanned asset.
+
+`/game/power-plant-review.html` renders the production landmark on isolated ground
+with campus, tower and aerial cameras. It does not verify full-city streaming,
+aircraft travel or device frame rate. Focused tests check two open shells, narrow
+waists, no top cap cylinders, finite instance transforms, separate steam/no lights,
+batch limits and the clear front gate approach.
