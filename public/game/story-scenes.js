@@ -45,11 +45,13 @@ function kitchen(v){const g=new THREE.Group();g.name='Major Cajun kitchen';v.mes
  addSign(g,'CHIEF JOJO · GUMBO / CAJUN KITCHEN',Math.min(110,b.w-10),6,b.x+b.w/2,34,b.y+3,'#ebc187');
  }return result;
 }
-function theater(v){const g=new THREE.Group();v.mesh.add(g);const b=v.b,x=b.x+b.w/2,z=b.y+26;box(g,b.w-16,5,38,x,2.5,z,'#534035');box(g,b.w-12,35,2,x,20,b.y+4,'#602e3b');
+function theater(v){const g=new THREE.Group();v.mesh.add(g);const b=v.b,x=b.x+b.w/2,z=b.y+26;box(g,b.w-16,5,38,x,2.5,z,'#534035');if(!window.level29Theater)box(g,b.w-12,35,2,x,20,b.y+4,'#602e3b');
  const damion=figure('damion');g.add(damion);poseFigure(damion,x,z,Math.PI/2,0,'stand');damion.position.y=5;
  box(g,.5,15,.5,x+7,12,z+4,'#272f31');add(g,new THREE.SphereGeometry(.9,10,8),x+7,20,z+4,'#a9aaa4');
- for(let row=0;row<3;row++)for(let col=0;col<3;col++){if(col===1)continue;const xx=b.x+22+col*(b.w-44)/2,zz=b.y+62+row*19;if(zz>b.y+b.h-18)continue;box(g,14,5,11,xx,2.5,zz,'#453b53');const a=makeFigure(false);setFigureColors(a,'#aa7958',['#697669','#9b6d53','#687f96'][col],'#303943');poseFigure(a,xx,zz,-Math.PI/2,0,'stand');a.userData.legL.rotation.z=-1.3;a.userData.legR.rotation.z=-1.3;a.userData.body.position.y=-2;a.scale.setScalar(.8);g.add(a);v.furniture.push({x:xx-7,y:zz-6,w:14,h:12});}
- return {g,damion};
+ let auditorium=null;
+ if(window.level29Theater){auditorium=level29Theater.build(THREE,v,addSign);for(const [i,s]of auditorium.plan.audience.entries()){const a=makeFigure(false);setFigureColors(a,'#aa7958',['#697669','#9b6d53','#687f96'][i%3],'#303943');poseFigure(a,s.x,s.y,-Math.PI/2,0,'stand');a.userData.legL.rotation.z=-1.3;a.userData.legR.rotation.z=-1.3;a.userData.body.position.y=-2;a.scale.setScalar(.6);a.traverse(o=>{if(o.isMesh)o.userData.noBatch=true;});g.add(a);}}
+ else{ for(let row=0;row<3;row++)for(let col=0;col<3;col++){if(col===1)continue;const xx=b.x+22+col*(b.w-44)/2,zz=b.y+62+row*19;if(zz>b.y+b.h-18)continue;box(g,14,5,11,xx,2.5,zz,'#453b53');const a=makeFigure(false);setFigureColors(a,'#aa7958',['#697669','#9b6d53','#687f96'][col],'#303943');poseFigure(a,xx,zz,-Math.PI/2,0,'stand');a.userData.legL.rotation.z=-1.3;a.userData.legR.rotation.z=-1.3;a.userData.body.position.y=-2;a.scale.setScalar(.8);g.add(a);v.furniture.push({x:xx-7,y:zz-6,w:14,h:12});}}
+ return {g,damion,auditorium};
 }
 window.level29StoryScenes={figure,kitchen,theater,box,add};
 })();
