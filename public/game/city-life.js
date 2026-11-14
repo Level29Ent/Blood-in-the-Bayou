@@ -124,14 +124,11 @@ buildCity=function(){farmGPS=false;farmButton.textContent='MAP';dancers=[];anima
  if(city.farm){const r=city.farm,base=city.heightAt?city.heightAt(r.x+r.w/2,r.y+r.h/2):0;
   // A visible lowland landmark and open entrance, not just a small remote sign.
   const farmGroup=new THREE.Group();farmGroup.name='Bayou Farm landmark';farmGroup.position.y=base;root.add(farmGroup);
-  const barnMat=new THREE.MeshStandardMaterial({color:'#993f32',roughness:1}),roofMat=new THREE.MeshStandardMaterial({color:'#313b3b',roughness:.9});
-  city.farmBarn={x:r.x+r.w-77.5,y:r.y+15.5,w:65,h:45};addPart(farmGroup,65,35,45,r.x+r.w-45,17.5,r.y+38,barnMat);const roof=addPart(farmGroup,76,4,58,r.x+r.w-45,37,r.y+38,roofMat);roof.rotation.z=.08;
-  addPart(farmGroup,24,25,1,r.x+r.w-45,12.5,r.y+61,new THREE.MeshStandardMaterial({color:'#efe3be',roughness:1}));
+  city.farmBarn=null;
   addSign(farmGroup,'BAYOU FARM · ANIMALS & PRODUCE',190,17,r.x+r.w/2,45,r.y+r.h,'#edcf7c');
   addSign(farmGroup,'ENTER HERE · USE TO FEED ANIMALS',160,10,r.x+r.w/2,24,r.y+r.h+1,'#d5e5b0');
   cFarmEntrance(r);
   addSign(root,'LEVEL 29 BAYOU FARM',150,14,r.x+r.w/2,base+48,r.y,'#d3c38c');
-  for(let x=r.x;x<=r.x+r.w;x+=24)for(const y of [r.y,r.y+r.h]){if(y===r.y+r.h&&Math.abs(x-(r.x+r.w/2))<40)continue;part(2,16,2,x,8,y,'#96774e');part(23,2,2,x,11,y,'#ad9268');}
   const species=city.relocation?['cow','pig','chicken','goat','sheep','duck']:['cow','pig','chicken'];city.farmExhibits=[];
   for(const [j,kind]of species.entries()){const col=j%3,row=Math.floor(j/3),width=city.relocation?102:58,x=r.x+14+col*(city.relocation?120:76),y=r.y+84+row*65;city.farmExhibits.push({kind,x,y,w:width,h:51});for(let i=0;i<4;i++){const g=level29FarmModels.create(kind,j*4+i);g.scale.multiplyScalar(.65);root.add(g);animals.push({g,kind,x:x+18+(i%2)*(width-36),y:y+14+Math.floor(i/2)*22,seed:j*4+i});}}
 
