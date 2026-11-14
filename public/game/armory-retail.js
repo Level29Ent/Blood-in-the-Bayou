@@ -11,22 +11,13 @@ function palette(T){return {
  glass:new T.MeshStandardMaterial({color:'#b9d8d8',transparent:true,opacity:.18,depthWrite:false,roughness:.15}),
  glow:new T.MeshBasicMaterial({color:'#fff2d5'})
 };}
-function box(T,g,w,h,d,x,y,z,mat){const m=new T.Mesh(new T.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);g.add(m);return m;}
-function silhouette(T,id,P){
- const g=new T.Group();g.name='Cosmetic retail stock · '+id;
- const part=(w,h,d,x,y,z,m)=>box(T,g,w,h,d,x,y,z,m);
- if(id==='pistol'){
-  part(9,1.7,1.4,0,2,0,P.black);part(3,4,1.4,-2,-.5,0,P.black).rotation.z=-.2;
-  part(2,.5,1.3,1,0,0,P.steel);part(.8,.6,.8,2,3,0,P.steel);
- }else{
-  const wood=id==='shotgun'||id==='marksman',stock=wood?P.wood:P.black;
-  part(7,3,1.6,-10,0,0,stock);part(10,2,1.8,-1,1,0,P.black);
-  part(12,.8,.8,10,1.5,0,P.steel);part(5,1.7,1.9,5,.9,0,stock);
-  part(2.2,3,1.2,-2,-1.4,0,P.black).rotation.z=-.25;
-  if(!wood)part(2.5,4,1.2,1,-1.8,0,P.black).rotation.z=.1;
-  if(id==='marksman'){part(7,1,1,-1,3.4,0,P.black);for(const x of [-3,1])part(.5,1.5,.5,x,2.7,0,P.steel);}
- }
- return g;
+function silhouette(T,id){
+ const factory=typeof window!=='undefined'?window.level29FirearmModels:require('./firearm-models.js');
+ const g=factory.create(T,id);if(!g)throw Error('Unsupported retail firearm: '+id);
+ // Gameplay points down -Z. The retail fixture contract points the barrel along +X.
+ g.rotation.y=-Math.PI/2;g.updateMatrixWorld(true);
+ const bounds=new T.Box3().setFromObject(g),size=bounds.getSize(new T.Vector3()),center=bounds.getCenter(new T.Vector3()),s=(id==='pistol'?9:30)/size.x;
+ const root=new T.Group();root.name='Detailed retail stock · '+id;g.scale.setScalar(s);g.position.copy(center).multiplyScalar(-s);root.add(g);return root;
 }
 function build(T,v,parent,world,sign,P=palette(T)){
  const b=v.b,g=new T.Group();g.name='Reference gun-store retail';parent.add(g);
