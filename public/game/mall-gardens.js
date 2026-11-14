@@ -44,9 +44,44 @@ const gen=genCity;genCity=function(){const c=gen.apply(this,arguments);if(!c.wor
  for(let y=b.y/TILE;y<(b.y+b.h)/TILE;y++)for(let x=b.x/TILE;x<(b.x+b.w)/TILE;x++)c.g[y*MW+x]=T_LOT;
  const inPlot=o=>overlap({x:o.x,y:o.y,w:1,h:1},p,16);c.trees=c.trees.filter(o=>!inPlot(o));if(c.pineTrees)c.pineTrees=c.pineTrees.filter(o=>!inPlot(o));c.parked=c.parked.filter(o=>!inPlot(o));c.rocks=(c.rocks||[]).filter(o=>!inPlot(o));indexTrees(c);return c;
 };
-function buildMall(v){const b=v.b,g=new THREE.Group();g.name='Greentown Mall · three levels';v.mesh=g;cityGroup.add(g);const M=level29World.material,q=level29World.batch(g),cream=M('#d9cfb8'),gold=M('#bd9b58',.45,.5),tile=M('#b8c6bc'),dark=M('#233c43'),wood=M('#87684e');v.floorFurniture=[[],[],[]];
+function buildMall(v){const b=v.b,g=new THREE.Group();g.name='Greentown Mall · three levels';v.mesh=g;cityGroup.add(g);const M=level29World.material,q=level29World.batch(g),cream=M('#eee8da'),gold=M('#a9b3b4',.65,.3),tile=M('#d8cbb5',0,.3),dark=M('#292b2c'),wood=M('#886348');v.floorFurniture=[[],[],[]];
  const glassRail=new THREE.MeshStandardMaterial({color:'#b5d4d4',transparent:true,opacity:.25,roughness:.25,depthWrite:false});
  const part=(w,h,d,x,y,z,m)=>q.box(w,h,d,x,y,z,m);
+ const windowGlass=new THREE.MeshStandardMaterial({color:'#d4e7e4',transparent:true,opacity:.16,roughness:.15,depthWrite:false});
+ const glow=new THREE.MeshBasicMaterial({color:'#fff0cf'}),grout=M('#b5aa98'),black=M('#24292b',.2,.4);
+ // All repeated details use the venue's material batches; no new real-time lights.
+ function beam(x,y,z,xx,yy,zz,width,mat){
+  const length=Math.hypot(xx-x,yy-y,zz-z),mesh=new THREE.Mesh(new THREE.BoxGeometry(width,length,width),mat);
+  mesh.position.set((x+xx)/2,(y+yy)/2,(z+zz)/2);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(xx-x,yy-y,zz-z).normalize());g.add(mesh);
+ }
+ function railing(x,z,xx,zz,base){
+  const length=Math.hypot(xx-x,zz-z),count=Math.ceil(length/24);
+  for(let i=0;i<=count;i++){const t=i/count;part(1,13,1,x+(xx-x)*t,base+7,z+(zz-z)*t,gold);}
+  beam(x,base+14,z,xx,base+14,zz,1.2,gold);
+  beam(x,base+2,z,xx,base+2,zz,.6,gold);
+  // Solid cream slab edges and warm soffit strips below the glass balustrades.
+  if(x===xx){part(2,5,length,x,base-1,(z+zz)/2,cream);part(2,.5,length,x,base-3.7,(z+zz)/2,glow);}
+  else{part(length,5,2,(x+xx)/2,base-1,z,cream);part(length,.5,2,(x+xx)/2,base-3.7,z,glow);}
+ }
+ function tileLines(base){
+  const edge=Math.min(140,b.w*.3,b.h*.34),hx=b.x+edge,hz=b.y+edge,hw=b.w-2*edge,hd=b.h-2*edge;
+  // Split seams at the actual atrium void: nothing floats across the opening.
+  for(let x=b.x+16;x<b.x+b.w;x+=16){
+   if(base&&x>hx&&x<hx+hw){for(const z of [b.y+edge/2,b.y+b.h-edge/2])part(.16,.08,edge,x,base+1.05,z,grout);}
+   else if(!base||!v.mallLayout.stairs.some(st=>st.to===base/56&&Math.abs(x-st.x)<st.width/2+2))part(.16,.08,b.h,x,base+1.05,b.y+b.h/2,grout);
+  }
+  for(let z=b.y+16;z<b.y+b.h;z+=16){
+   // North/south galleries are continuous; side galleries have stair openings.
+   const spans=base&&z>hz&&z<hz+hd?[[b.x,hx],[hx+hw,b.x+b.w]]:[[b.x,b.x+b.w]];
+   for(const [lo,hi]of spans){let cursor=lo;
+    const wells=base?v.mallLayout.stairs.filter(st=>st.to===base/56&&z>st.start&&z<st.end&&st.x+st.width/2+2>lo&&st.x-st.width/2-2<hi).sort((a,c)=>a.x-c.x):[];
+    for(const st of wells){const end=Math.min(hi,Math.max(cursor,st.x-st.width/2-2));if(end>cursor)part(end-cursor,.08,.16,(cursor+end)/2,base+1.05,z,grout);cursor=Math.max(cursor,st.x+st.width/2+2);}
+    if(hi>cursor)part(hi-cursor,.08,.16,(cursor+hi)/2,base+1.05,z,grout);
+   }
+  }
+ }
+
  for(let floor=0;floor<3;floor++){const base=floor*56;
   if(!floor)part(b.w,2,b.h,b.x+b.w/2,base,b.y+b.h/2,tile);
   else{const edge=Math.min(140,b.w*.3,b.h*.34);for(const side of [0,1]){const stair=v.mallLayout.stairs[side],x=side?b.x+b.w-edge/2:b.x+edge/2;if(stair.to===floor){for(const [lo,hi]of [[b.y,stair.start],[stair.end,b.y+b.h]])part(edge,2,hi-lo,x,base,(hi+lo)/2,tile);
@@ -55,8 +90,8 @@ function buildMall(v){const b=v.b,g=new THREE.Group();g.name='Greentown Mall · 
  part(outer-inner,2,stair.end-stair.start,(inner+outer)/2,base,(stair.start+stair.end)/2,tile);
  v.floorFurniture[floor].push({x:stair.x-stair.width/2,y:stair.start+10,w:stair.width,h:stair.end-stair.start-20,stairWell:true});
  }else part(edge,2,b.h,x,base,b.y+b.h/2,tile);}part(b.w-edge*2,2,edge,b.x+b.w/2,base,b.y+edge/2,tile);part(b.w-edge*2,2,edge,b.x+b.w/2,base,b.y+b.h-edge/2,tile);
-   const hole={x:b.x+edge,y:b.y+edge,w:b.w-2*edge,h:b.h-2*edge};if(floor===2){const gap=24,mid=hole.y+hole.h/2;v.floorFurniture[floor].push({...hole,h:hole.h/2-gap/2},{...hole,y:mid+gap/2,h:hole.h/2-gap/2});part(hole.w,2,gap,hole.x+hole.w/2,base,mid,tile);for(const side of [-1,1])part(hole.w,12,1,hole.x+hole.w/2,base+7,mid+side*gap/2,glassRail);addSign(g,'SKYBRIDGE · LUXURY WING',100,6,hole.x+hole.w/2,base+22,mid,'#e5d3a4');}else v.floorFurniture[floor].push(hole);
-   for(const x of [hole.x,hole.x+hole.w])part(1,12,hole.h,x,base+7,hole.y+hole.h/2,glassRail);for(const y of [hole.y,hole.y+hole.h])part(hole.w,12,1,hole.x+hole.w/2,base+7,y,glassRail);
+   const hole={x:b.x+edge,y:b.y+edge,w:b.w-2*edge,h:b.h-2*edge};if(floor===2){const gap=24,mid=hole.y+hole.h/2;v.floorFurniture[floor].push({...hole,h:hole.h/2-gap/2},{...hole,y:mid+gap/2,h:hole.h/2-gap/2});part(hole.w,2,gap,hole.x+hole.w/2,base,mid,tile);for(const side of [-1,1]){part(hole.w,12,1,hole.x+hole.w/2,base+7,mid+side*gap/2,glassRail);railing(hole.x,mid+side*gap/2,hole.x+hole.w,mid+side*gap/2,base);}addSign(g,'SKYBRIDGE · LUXURY WING',100,6,hole.x+hole.w/2,base+22,mid,'#e5d3a4');}else v.floorFurniture[floor].push(hole);
+   for(const x of [hole.x,hole.x+hole.w]){part(1,12,hole.h,x,base+7,hole.y+hole.h/2,glassRail);railing(x,hole.y,x,hole.y+hole.h,base);}for(const y of [hole.y,hole.y+hole.h]){part(hole.w,12,1,hole.x+hole.w/2,base+7,y,glassRail);railing(hole.x,y,hole.x+hole.w,y,base);}
   }
   for(const r of v.colliderWalls){if(floor===2&&r.h>20&&r.w<=3){const span=(r.h-28)/2;for(const side of [-1,1])part(r.w,48,span,r.x+r.w/2,base+24,r.y+r.h/2+side*(r.h+28)/4,glassRail);}else part(r.w,48,r.h,r.x+r.w/2,base+24,r.y+r.h/2,r.h>20&&r.w<=3?glassRail:cream);if(r.h>20&&r.w<=3)for(let z=r.y+16;z<r.y+r.h;z+=32)if(floor!==2||Math.abs(z-(r.y+r.h/2))>16)part(2,50,2,r.x+r.w/2,base+25,z,gold);}
   // Upper front wall is closed except for the lift: players cannot exit into midair.
@@ -66,32 +101,95 @@ function buildMall(v){const b=v.b,g=new THREE.Group();g.name='Greentown Mall · 
    addSign(g,'U · GLASS LIFT',65,5,hub.x,base+27,hub.y-12,'#e6c887');
   }
   const stair=v.mallLayout.stairs.find(s=>s.from===floor);if(stair){
-   const n=20,run=(stair.end-stair.start)/n;for(let i=0;i<n;i++)part(stair.width,2,run+.1,stair.x,base+(i+1)*56/n-1,stair.start+(i+.5)*run,gold);
-   for(const side of [-1,1]){const rail=new THREE.Mesh(new THREE.CylinderGeometry(.6,.6,Math.hypot(56,stair.end-stair.start),8),gold);rail.position.set(stair.x+side*(stair.width/2+1),base+40,(stair.start+stair.end)/2);rail.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(0,56,stair.end-stair.start).normalize());g.add(rail);}
-   addSign(g,'WALK UP · FLOOR '+(stair.to+1),34,4,stair.x,base+16,stair.start-4,'#e6c887');
+   const n=28,run=(stair.end-stair.start)/n;
+   for(let i=0;i<n;i++){
+    const y=base+(i+1)*56/n-1,z=stair.start+(i+.5)*run;
+    part(stair.width,2,run+.1,stair.x,y,z,gold);
+    part(stair.width-2,.2,.35,stair.x,y+1.1,z+run/2-.2,black);
+   }
+   for(const side of [-1,1]){
+    const x=stair.x+side*(stair.width/2+1);
+    beam(x,base+4,stair.start,x,base+60,stair.end,2.5,gold);
+    beam(x,base+14,stair.start,x,base+70,stair.end,2,black);
+    for(let i=0;i<8;i++){const t=(i+.5)/8,z=stair.start+t*(stair.end-stair.start);part(1,11,1,x,base+t*56+8,z,gold);}
+   }
+   for(const [z,y]of [[stair.start,base],[stair.end,base+56]]){
+    part(stair.width,1,6,stair.x,y+1,z,gold);
+    part(stair.width,.2,1,stair.x,y+1.6,z,glow);
+   }
+   addSign(g,'WALK UP · FLOOR '+(stair.to+1),34,4,stair.x,base+22,stair.start-4,'#f4eee2');
   }
   const lift=v.mallLayout.lift;part(36,1,26,lift.x,base+1,lift.y,gold);addSign(g,'U · LIFT · FLOOR '+(floor+1),100,7,lift.x,base+30,b.y+4,'#e6c887');
   for(const shop of v.mallLayout.shops.filter(s=>s.floor===floor)){
    const r=shop.room,door=Math.min(40,r.w-16),wall=(w,d,x,z)=>{part(w,42,d,x,base+21,z,cream);v.floorFurniture[floor].push({x:x-w/2,y:z-d/2,w,h:d});};
    wall(r.w,2,r.x+r.w/2,shop.dir===1?r.y:r.y+r.h);wall(2,r.h,r.x,r.y+r.h/2);wall(2,r.h,r.x+r.w,r.y+r.h/2);
-   const span=(r.w-door)/2;for(const side of [-1,1])wall(span,2,shop.doorX+side*(r.w+door)/4,shop.doorY);
-   part(door,8,2,shop.doorX,base+46,shop.doorY,cream);
+   const span=(r.w-door)/2;for(const side of [-1,1]){
+    const x=shop.doorX+side*(r.w+door)/4;
+    part(span,30,1,x,base+16,shop.doorY,windowGlass);
+    v.floorFurniture[floor].push({x:x-span/2,y:shop.doorY-1,w:span,h:2});
+    part(span,2,2,x,base+2,shop.doorY,gold);
+    part(1,33,2,shop.doorX+side*door/2,base+17,shop.doorY,gold);
+    part(span-2,.6,9,x,base+33,shop.doorY-shop.dir*5,glow);
+    // Window plinths frame the merchandise without narrowing the existing doorway.
+    part(Math.max(2,span-4),3,10,x,base+3,shop.doorY-shop.dir*8,cream);
+   }
+   const fascia=[dark,wood,M('#52534b')][(floor+v.mallLayout.shops.indexOf(shop))%3];
+   part(r.w,12,3,shop.doorX,base+40,shop.doorY,fascia);
+   part(r.w,.7,3,shop.doorX,base+47,shop.doorY,gold);
+   part(r.w-4,.5,r.h-4,r.x+r.w/2,base+49,r.y+r.h/2,cream);
+   for(const dx of [-r.w*.25,r.w*.25])part(7,.6,3,shop.doorX+dx,base+48,shop.doorY-shop.dir*18,glow);
    part(r.w-4,1,r.h-4,r.x+r.w/2,base+1,r.y+r.h/2,tile);
    const counterY=shop.dir===1?r.y+12:r.y+r.h-12;part(r.w-24,10,16,shop.doorX,base+5,counterY,wood);v.floorFurniture[floor].push({x:r.x+12,y:counterY-8,w:r.w-24,h:16});
-   const label=addSign(g,shop.name,r.w-8,7,shop.doorX,base+36,shop.doorY+shop.dir*2,'#ead39b');if(label&&shop.dir===-1)label.rotation.y=Math.PI;
+   const label=addSign(g,shop.name,r.w-8,7,shop.doorX,base+40,shop.doorY+shop.dir*2,'#fff6e7');if(label&&shop.dir===-1)label.rotation.y=Math.PI;
    window.level29MallDisplays?.build(shop,g,base,part,{wood,gold,dark,cream});
 
    if(shop.name==='29 CUISINE'){addSign(g,'U · BURGER MEAL $60 · +50 HEALTH',90,5,shop.doorX,base+25,shop.doorY+2,'#e4b578');}
   }
+  tileLines(base);
   for(const side of [-1,1]){const x=b.x+b.w/2+side*42,z=b.y+b.h-43;part(28,6,12,x,base+3,z,wood);part(28,8,2,x,base+8,z-5,cream);v.floorFurniture[floor].push({x:x-14,y:z-6,w:28,h:12});}
  }
- // Barrel-vault skylight leaves the atrium open rather than a solid slab.
- const glassRoof=new THREE.MeshStandardMaterial({color:'#a4d1d5',transparent:true,opacity:.25,roughness:.2,depthWrite:false,side:THREE.DoubleSide});
- const geo=new THREE.PlaneGeometry(b.w,b.h,24,1),verts=geo.attributes.position;
- for(let i=0;i<verts.count;i++){const x=verts.getX(i),z=verts.getY(i);verts.setXYZ(i,b.x+b.w/2+x,168+Math.sqrt(Math.max(0,1-(x/(b.w/2))**2))*24,b.y+b.h/2+z);}geo.computeVertexNormals();
- const roof=new THREE.Mesh(geo,glassRoof);g.add(roof);
- for(let z=b.y;z<=b.y+b.h;z+=40){for(let k=0;k<24;k++){const x=-b.w/2+k*b.w/24,nx=x+b.w/24,y=168+Math.sqrt(Math.max(0,1-(x/(b.w/2))**2))*24,ny=168+Math.sqrt(Math.max(0,1-(nx/(b.w/2))**2))*24;const rod=new THREE.Mesh(new THREE.CylinderGeometry(.5,.5,Math.hypot(nx-x,ny-y),6),gold);rod.position.set(b.x+b.w/2+(x+nx)/2,(y+ny)/2,z);rod.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(nx-x,ny-y,0).normalize());g.add(rod);}}v.roof=null;
- const rink=new THREE.Mesh(new THREE.CircleGeometry(Math.min(b.w,b.h)*.23,48),new THREE.MeshStandardMaterial({color:'#c3e6eb',roughness:.3}));rink.rotation.x=-Math.PI/2;rink.position.set(b.x+b.w/2,1.5,b.y+b.h/2);g.add(rink);
+ // Reference-inspired clerestory: cream pitched ceiling wings, a clear central skylight,
+ // and silver cross-trusses. The open atrium still connects all three playable floors.
+ const roofZ=b.y+b.h/2,roofX=b.x+b.w/2,roofY=170,peak=196;
+ const roofGlass=new THREE.MeshStandardMaterial({color:'#d7edf3',transparent:true,opacity:.2,roughness:.2,depthWrite:false,side:THREE.DoubleSide});
+ function roofPanel(lo,hi,y1,y2,mat){const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute([lo,y1,b.y,hi,y2,b.y,hi,y2,b.y+b.h,lo,y1,b.y,hi,y2,b.y+b.h,lo,y1,b.y+b.h],3));geo.computeVertexNormals();const mesh=new THREE.Mesh(geo,mat);g.add(mesh);}
+ const roofCream=M('#f6f0e2');roofCream.side=THREE.DoubleSide;
+ roofPanel(b.x,roofX-48,roofY,peak-7,roofCream);roofPanel(roofX+48,b.x+b.w,peak-7,roofY,roofCream);
+ roofPanel(roofX-48,roofX,peak-7,peak,roofGlass);roofPanel(roofX,roofX+48,peak,peak-7,roofGlass);
+ for(let z=b.y;z<=b.y+b.h;z+=32){
+  for(const side of [-1,1]){
+   beam(roofX+side*b.w/2,roofY,z,roofX,peak,z,2,cream);
+   beam(roofX+side*48,peak-7,z,roofX,peak,z,1,gold);
+  }
+  beam(b.x,roofY-2,z,b.x+b.w,roofY-2,z,1.5,gold);
+ }
+ for(const x of [roofX-48,roofX,roofX+48])beam(x,x===roofX?peak:peak-7,b.y,x,x===roofX?peak:peak-7,b.y+b.h,1,gold);
+ v.roof=null;
+ // A patterned stone court replaces the blue rink; the waterfall remains playable.
+ part(Math.min(220,b.w*.5),.3,Math.min(100,b.h*.24),roofX,1.3,roofZ,M('#bca98b',0,.4));
+ const leaf=M('#427047'),leafLight=M('#67864f'),soil=M('#453c2e'),crownGeometry=new THREE.IcosahedronGeometry(6,0);
+ for(const side of [-1,1])for(const end of [-1,1]){
+  const x=roofX+side*Math.min(108,b.w*.21),z=roofZ+end*Math.min(45,b.h*.12);
+  part(26,5,18,x,3.5,z,cream);part(23,.5,15,x,6.2,z,soil);
+  for(let k=0;k<5;k++){
+   const dx=(k%3-1)*7,dz=(Math.floor(k/3)-.5)*6;
+   part(1,12,1,x+dx,12,z+dz,wood);
+   // Angular clusters read as planted indoor trees, not opaque walls.
+   for(const offset of [-1,1]){const crown=new THREE.Mesh(crownGeometry,k%2?leaf:leafLight);crown.scale.set(1,1.3,.85);crown.position.set(x+dx+offset*2,17+k%2*3,z+dz);g.add(crown);}
+  }
+  v.floorFurniture[0].push({x:x-13,y:z-9,w:26,h:18});
+ }
+ // Wood-clad guest-services desk and freestanding directory, kept off the lift route.
+ const deskZ=roofZ+Math.min(48,b.h*.12);
+ part(36,11,14,roofX,6.5,deskZ,wood);part(39,1.5,16,roofX,12.8,deskZ,cream);
+ v.floorFurniture[0].push({x:roofX-19.5,y:deskZ-8,w:39,h:16});
+ addSign(g,'GUEST SERVICES',34,4,roofX,9,deskZ+8,'#fff0d0');
+ for(const side of [-1,1]){const x=roofX+side*(b.w/2-72),z=roofZ+45;
+  part(13,2,10,x,2,z,gold);part(11,25,2,x,15,z,dark);
+  addSign(g,'DIRECTORY',10,2,x,24,z+1.5,'#ffffff');
+  for(let i=0;i<3;i++)part(8,1,.4,x,19-i*4,z+1.5,[gold,wood,leaf][i]);
+  v.floorFurniture[0].push({x:x-6.5,y:z-5,w:13,h:10});
+ }
 
  for(const x of [b.x+10,b.x+b.w-10])part(5,110,5,x,55,b.y+b.h+3,gold);
  // Large window frames on both stories; transparent glass stays performance-friendly.
