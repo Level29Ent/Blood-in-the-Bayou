@@ -6,3 +6,22 @@ test('hookahs glassware and product boxes remain bounded instanced details witho
 function production(){const source=fs.readFileSync('public/game/city-life.js','utf8'),a=source.indexOf('const oldBuild=buildVenue;'),end=source.indexOf('const build=buildCity;',a),ctx={window:{},THREE:T,TYPES:[{id:'retail'}],level29SmokeShop:S,buildVenue(){throw Error('wrong builder');},cityGroup:new T.Group(),addSign(){},genCity(){return {world:false};}};vm.createContext(ctx);vm.runInContext(source.slice(a,end),ctx);vm.runInContext(fs.readFileSync('public/game/street-frontage.js','utf8'),ctx);return ctx;}
 test('live venue uses real model and rotates every collision footprint with its east-facing entrance exactly once',()=>{const c=production(),center={x:1328,y:2176},canonical={x:1296,y:2128,w:64,h:96},actual={x:1280,y:2144,w:96,h:64},station={x:1313.6,y:2176};const v={id:'retail',kind:'smoke',b:actual,doorX:1376,doorY:2176,doorW:38.4,stationX:station.x,stationY:station.y,colliderWalls:[],colliderDoor:{x:1373,y:2156.8,w:3,h:38.4},frontage:{angle:Math.PI/2,center,canonical}};c.buildVenue(v);assert.equal(v.referenceSmoke,true);assert.equal(v.b,actual);assert.equal(v.stationX,station.x);assert.equal(v.stationY,station.y);assert.equal(v.doorX,1376);assert.equal(v.mesh.rotation.y,Math.PI/2);const expected=S.plan(canonical).solids.map(r=>F.rect(r,center,Math.PI/2));for(let i=0;i<expected.length;i++)for(const k of ['x','y','w','h'])assert.ok(Math.abs(v.furniture[i][k]-expected[i][k])<.001);assert.ok(!v.furniture.some(r=>hit(v.stationX,v.stationY,10,r)));const mesh=v.mesh;c.buildVenue(v);assert.equal(v.mesh,mesh);assert.equal(c.cityGroup.children.length,1);});
 test('authored Crown furnishings are not overwritten by generic decor passes',()=>{for(const f of ['estate','interior-details','lived-interiors','interior-core','business-richness'])assert.match(fs.readFileSync('public/game/'+f+'.js','utf8'),/referenceSmoke/);const C=require('../public/game/interior-core.js'),B=require('../public/game/business-richness.js'),v={id:'retail',b,referenceSmoke:true,furniture:S.plan(b).solids};assert.equal(C.plan(v).props.length,0);assert.equal(B.plan(v).length,0);const html=fs.readFileSync('public/game/index.html','utf8');assert.ok(html.indexOf('src="smoke-shop-interior.js')<html.indexOf('src="city-life.js'));assert.equal(/fetch\(|GLTFLoader|TextureLoader|setInterval/.test(fs.readFileSync('public/game/smoke-shop-interior.js','utf8')),false);});
+
+// Load the dependency from the real launcher instead of injecting its API into the test.
+test('launcher registers smoke-shop API before the city builder renders its first venue',()=>{
+ const html=fs.readFileSync('public/game/index.html','utf8');
+ const scripts=[...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)].map(m=>m[1].split('?')[0]);
+ assert.equal(scripts.filter(s=>s==='smoke-shop-interior.js').length,1,'Smoke-shop script must be loaded exactly once');
+ const shop=scripts.indexOf('smoke-shop-interior.js'),city=scripts.indexOf('city-life.js');
+ assert.ok(shop>scripts.indexOf('three.min.js')&&shop<city,'Smoke-shop API must load after Three.js and before city-life');
+ const ctx={THREE:T,TYPES:[{id:'retail'}],cityGroup:new T.Group(),addSign(){},buildVenue(){throw Error('wrong builder');}};
+ ctx.window=ctx;vm.createContext(ctx);
+ vm.runInContext(fs.readFileSync('public/game/'+scripts[shop],'utf8'),ctx);
+ const source=fs.readFileSync('public/game/city-life.js','utf8');
+ vm.runInContext(source.slice(source.indexOf('const oldBuild=buildVenue;'),source.indexOf('const build=buildCity;')),ctx);
+ const venue={id:'retail',kind:'smoke',b,doorW:38.4};
+ assert.doesNotThrow(()=>ctx.buildVenue(venue));
+ assert.equal(venue.referenceSmoke,true);
+ assert.equal(venue.mesh.parent,ctx.cityGroup);
+ assert.equal(venue.mesh.userData.smokeShop.hookahs,8);
+});
