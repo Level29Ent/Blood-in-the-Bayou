@@ -1,0 +1,9 @@
+# Neighborhood liquor-store interior
+
+The existing retail venue named `NEIGHBORHOOD LIQUOR STORE` gets a curated interior based on the supplied photographs: dense labeled bottles with narrow necks and varied shoulders/caps, oak-backed spirits bays, inward-facing side stock, gray double-sided gondolas, shelf tickets, stacked shipping cases, a register counter, plank floor, ceiling grid and fluorescent-style panels. Category headers read RUM / TEQUILA / GIN, WHISKEY / BOURBON and WINE / SPIRITS. Labels and case artwork are fictional/generic, not copied retailer artwork.
+
+The builder is called by the actual venue shell, not a second detached store. Its existing door, station coordinates, terrain base, map marker, story pickup and saved Anthony progress remain unchanged. Only retail venues named LIQUOR STORE match; groceries, gas stations and other retailers are untouched. Generic room clutter, duplicate streamed furnishing/registers and legacy decorative placards are suppressed for this curated room. The checkout retains an opaque ordinary mesh for the existing furniture-cover recovery system; repeated stock uses instanced geometry.
+
+Aisle/path tests flood-fill radius-ten player clearance in three room sizes, including the actual 128×128 store. A radius-thirteen circle remains clear at the original story/service point. Other tests exercise the real shell builder, verify stock count, shaped bottle geometry, bounded instance batches, no new dynamic lights, and raised/translated venue transforms. Anthony’s existing story regressions are also run.
+
+`/game/liquor-store-review.html` renders the same production furnishings in an isolated shell with entrance, spirits-wall and bottle-aisle views. It does not test full-city performance or physically walk the deployed game. This is procedural game art rather than a photographic/scanned replacement.
