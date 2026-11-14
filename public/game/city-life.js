@@ -79,6 +79,11 @@ const oldBuild=buildVenue;
 buildVenue=function(v){
  if(!TYPES.some(t=>t.id===v.id))return oldBuild(v);
  if(v.mesh&&v.mesh.parent===cityGroup)return;
+ if(v.id==='showroom'&&v.lotId==='dealer'){
+  const built=level29BonnieShowroom.build(THREE,v.b,{sign:addSign,car:slot=>{const c=makeCar(0,0,0,slot.type);c.col=slot.color;const mesh=makeCarMesh(c);return slot.hero?level29BonnieShowroom.customize(THREE,mesh):mesh;}});
+  v.mesh=built.root;v.referenceBonnie=true;v.furniture=built.solids.slice();cityGroup.add(v.mesh);
+  v.door=new THREE.Group();v.mesh.add(v.door);v.labelH=74;return;
+ }
  const b=v.b,g=new THREE.Group();v.mesh=g;cityGroup.add(g);const mat=c=>window.level29World.material(c),wood=mat('#785b43'),dark=mat('#253039'),gold=mat('#d8b46d');
  const part=(w,h,d,x,y,z,m)=>addPart(g,w,h,d,x,y,z,m);
  part(b.w,1,b.h,b.x+b.w/2,.5,b.y+b.h/2,mat(v.id==='casino'?'#69334d':'#bdb5a1'));

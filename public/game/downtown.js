@@ -63,7 +63,7 @@ genCity=function(di){
     for(let y=L.y0;y<=L.y1;y++)for(let x=L.x0;x<=L.x1;x++)set(x,y,T_PLAZA);
     let fb=null;
     if(id==='airport')fb={x0:L.x0,y0:L.y0,x1:L.x0+3,y1:L.y0+3};
-    else if(id==='dealer')fb={x0:L.x0,y0:L.y0,x1:Math.min(L.x1,L.x0+5),y1:L.y0+2};
+    else if(id==='dealer')fb=level29BonnieShowroom.footprint(L,T);
     else if(id!=='truck')fb={x0:L.x0,y0:L.y0,x1:L.x1,y1:L.y1-2};
     L.fb=fb;
     if(fb)for(let y=fb.y0;y<=fb.y1;y++)for(let x=fb.x0;x<=fb.x1;x++)set(x,y,T_BLD);
@@ -204,14 +204,7 @@ function buildLots(g){
     }
     else if(id==='dealer'){
       genericBuilding(g,L,48,'#efeae0','#ffffff','#5b2a86');
-      const cols=['#6a1fb0','#c21f6a','#1f9e5a','#d9a520','#356b9e','#e3ddd0','#713d38','#424a55'];
-      const slots=window.level29OriginalCity?level29OriginalCity.dealerSpots(L,T):cols.slice(0,4).map((_,i)=>({x:(L.x0+1+i*(L.x1-L.x0-1)/3)*T,y:(L.y0+5)*T}));
-      slots.forEach((p,k)=>{const pad=new THREE.Group();pad.position.set(p.x,0,p.y);g.add(pad);
-        cyl(pad,25,27,3,0,1.5,0,lam('#1a1424'));const rec=L.inventory[k],sample=rec?makeCar(0,0,0,rec.type):null;if(sample)sample.col=cols[k%cols.length];const car=sample?makeCarMesh(sample):lowriderMesh(cols[k%cols.length]);car.position.set(0,3,0);car.rotation.y=Math.PI/2;pad.add(car);if(rec)priceLabel(pad,CAR_SPECS[rec.type].name+' · '+money(rec.price),0,35,27);});
-      const fig=bonnieMesh(),bp=window.level29Frontage?level29Frontage.lotPoint(L,{x:(L.x0+2)*T,y:(L.y0+1.2)*T}):{x:(L.x0+2)*T,y:(L.y0+1.2)*T};fig.position.set(bp.x,L.venue?.baseY||0,bp.y);g.add(fig);dealerFig=fig;
-      const bb=new THREE.Mesh(new THREE.PlaneGeometry(56,32),new THREE.MeshBasicMaterial({map:getBonnie(),side:THREE.DoubleSide}));bb.position.set((L.x0+6.6)*T,62,(L.y0+.5)*T);g.add(bb);
-      cyl(g,1.5,1.5,46,(L.x0+6.6)*T,23,(L.y0+.5)*T,lam('#333'));
-      sign(g,'BONNIE DE VETTE · OWNER',56,9,(L.x0+6.6)*T,41,(L.y0+.5)*T+.4,COL.gold,'#14231a');
+      const fig=bonnieMesh(),bp=L.venue?.referenceBonnie?level29BonnieShowroom.plan(L.venue.b).bonnie:window.level29Frontage?level29Frontage.lotPoint(L,{x:(L.x0+2)*T,y:(L.y0+1.2)*T}):{x:(L.x0+2)*T,y:(L.y0+1.2)*T};fig.position.set(bp.x,L.venue?.baseY||0,bp.y);g.add(fig);dealerFig=fig;
     }
     else if(id==='club'){const b=genericBuilding(g,L,40,'#160b22','#d17bff','#0b0612');
       for(const [c,y] of [[COL.green,30],[COL.gold,34]])box(g,b.w-8,1.2,1.2,b.cx,y,b.cz+b.d/2+.8,lam(c,c));}
@@ -397,7 +390,7 @@ function spots(){
     if(id==='airport'){add({x:(L.fb.x0+L.fb.x1+1)/2*T,y:(L.fb.y0+1.2)*T},'AIRPORT TERMINAL',()=>openPanel(airportPanel));add({x:(L.x0+(L.x1-L.x0+1)*.8)*T,y:(L.y0+4.6)*T},'BOMBER GUNNER RIDE · '+money(BOMBER_COST),()=>openPanel(airportPanel));}
     if(id==='stadium')add(L.door,'JESTER STADIUM · KICK FIELD GOALS',()=>openPanel(kickPanel()));
     if(id==='university')add({x:(L.fb.x0+L.fb.x1+1)/2*T,y:(L.fb.y0+1.5)*T},'BAYOU STATE UNIVERSITY · CLASS',()=>openPanel(quizPanel()));
-    if(id==='dealer')add({x:(L.x0+2)*T,y:(L.y0+1.2)*T},'TALK TO BONNIE DE VETTE',()=>openPanel(bonniePanel));
+    if(id==='dealer')add(L.venue?.referenceBonnie?level29BonnieShowroom.plan(L.venue.b).bonnie:{x:(L.x0+2)*T,y:(L.y0+1.2)*T},'TALK TO BONNIE DE VETTE',()=>openPanel(bonniePanel));
     if(id==='club')add({x:(L.fb.x0+L.fb.x1+1)/2*T,y:(L.fb.y0+1.5)*T},'DANCE AT THE VELVET JESTER',()=>openPanel(clubPanel));
     if(id==='dispensary')add(L.door,'ELEVATED MELANIN',()=>openPanel(shopPanel('dispensary')));
     if(id==='smoke')add(L.door,'CROWN SMOKE SHOP',()=>openPanel(shopPanel('smoke')));
