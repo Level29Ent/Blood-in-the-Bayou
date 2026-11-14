@@ -85,7 +85,10 @@ function shell(v,g,q,base,level){const b=v.b,st=wallStyle[v.id],fm=facade(st[0],
 function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=material('#253842'),wood=material('#866944'),steel=material('#7c8a8f',.6),green=material('#5c8e67');
  const item=(x,y,w,h,d,m,solid=true)=>{q.box(w,h,d,x,base+h/2,y,m);if(solid)v.furniture.push({x:x-w/2,y:y-d/2,w,h:d});};
  const sign=(s,x,y,w=100)=>addSign(g,s,w,9,x,base+30,y,v.col);
- if(v.id==='grocery'||v.id==='gas'){
+ if(v.id==='gas'){
+  const store=level29GasStation.build(THREE,b,base);g.add(store.root);v.furniture.push(...store.solids);v.referenceGas=true;
+  staff(v,g,store.plan.staff.x,store.plan.staff.y,base);
+ }else if(v.id==='grocery'){
   item(b.x+b.w/2,b.y+40,80,12,18,wood);sign('CHECKOUT · U',b.x+b.w/2,b.y+4,100);
   for(const x of [b.x+38,b.x+b.w-38])for(const y of [b.y+90,b.y+145]){
    if(y>b.y+b.h-35)continue;
@@ -124,7 +127,7 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
 const oldVenue=buildVenue;buildVenue=function(v){if(!v.extended)return oldVenue(v);const g=new THREE.Group();g.name='level29-'+v.id;v.mesh=g;cityGroup.add(g);v.floorFurniture=[];const q=batch(g),levels=v.id==='hospital'?5:1;if(v.id==='hospital'){v.patientBeds=[];v.careNurses=[];}
  for(let l=0;l<levels;l++){v.furniture=[];shell(v,g,q,l*56,l);furnish(v,g,q,l*56,l);v.floorFurniture.push(v.furniture);}
  v.furniture=v.floorFurniture[v.floor];q.finish();addSign(g,v.name,Math.min(250,v.b.w),15,v.doorX,levels*56+10,v.doorY,v.col);v.labelH=levels*56+34;addSign(g,'WALK IN · AUTO DOOR',150,8,v.doorX,46,v.doorY+1,v.col);
- const tq=batch(g);if(v.id==='gas'){const b=v.b,zz=b.y+b.h-22;tq.box(b.w-16,3,32,b.x+b.w/2,42,zz,material('#d2c3a1'));for(const x of [b.x+20,b.x+b.w-20]){tq.box(2,40,2,x,20,zz,material('#9b7548'));tq.box(12,19,10,x,9.5,zz,material('#c7b696'));tq.box(9,5,1,x,14,zz+5.1,material('#24343d'));tq.box(1,10,1,x+7,11,zz,material('#252d32'));v.furniture.push({x:x-9,y:zz-6,w:18,h:12});}addSign(g,'FUEL',Math.min(150,b.w-20),8,b.x+b.w/2,39,b.y+b.h-5,v.col);}
+ const tq=batch(g);if(v.id==='gas'){const b=v.b,zz=b.y+b.h+28;tq.box(b.w-16,3,32,b.x+b.w/2,42,zz,material('#d2c3a1'));for(const x of [b.x+20,b.x+b.w-20]){tq.box(2,40,2,x,20,zz,material('#9b7548'));tq.box(12,19,10,x,9.5,zz,material('#c7b696'));tq.box(9,5,1,x,14,zz+5.1,material('#24343d'));tq.box(1,10,1,x+7,11,zz,material('#252d32'));v.furniture.push({x:x-9,y:zz-6,w:18,h:12});}addSign(g,'FUEL',Math.min(150,b.w-20),8,b.x+b.w/2,39,zz+17,v.col);}
 
  if(v.id==='hospital'){const b=v.b;tq.box(8,35,2,b.x+20,170,v.doorY+2,material('#cf5551'));tq.box(25,8,2,b.x+20,170,v.doorY+2,material('#cf5551'));}
  tq.finish();
