@@ -22,7 +22,7 @@ function mall(v){const D=level29InteriorModels,b=v.b,g=new THREE.Group();g.name=
  for(let floor=0;floor<3;floor++){for(const side of [-1,1]){const x=b.x+b.w/2+side*72,z=b.y+18,y=floor*56;D.box(g,17,12,8,x,y+6,z,wood);D.box(g,19,1,10,x,y+12.5,z,stone);const screen=D.box(g,12,9,.8,x,y+19,z+1,D.material('#284956','metal'));screen.rotation.x=-.18;v.floorFurniture[floor].push({x:x-10,y:z-6,w:20,h:12});addSign(g,'DIRECTORY · '+(floor+1),30,3,x,y+27,z+2,'#c8d9d4');}
  }
 }
-const build=buildVenue;buildVenue=function(v){build.apply(this,arguments);if(!v.mesh||v.mesh.userData.civicDetail)return;v.mesh.userData.civicDetail=true;if(v.id==='bank')bank(v);if(v.id==='police')police(v);if(v.id==='mall')mall(v);
+const build=buildVenue;buildVenue=function(v){build.apply(this,arguments);if(!v.mesh||v.mesh.userData.civicDetail)return;v.mesh.userData.civicDetail=true;if(v.id==='bank'&&!v.referenceBank)bank(v);if(v.id==='police')police(v);if(v.id==='mall')mall(v);
  if(v.kind==='fish'){const b=v.b,g=new THREE.Group();g.name='Fish market live aquarium gallery';v.mesh.add(g);for(const side of [-1,1]){const x=b.x+b.w/2+side*(b.w/2-22),z=b.y+b.h*.62;const tank=level29InteriorModels.tank(g,x,2,z,30);tank.rotation.y=Math.PI/2;solid(v,{x:x-10,y:z-16,w:20,h:32});}}
 };
 const tick=update;update=function(){tick.apply(this,arguments);if(state!=='play'||!player||!city)return;const t=window.level29TimeOfDay?.seconds||frame/60;for(const v of city.venues||[]){if(!v.mesh||Math.hypot(player.x-v.doorX,player.y-v.doorY)>700)continue;level29InteriorModels.animate(v.mesh,t);for(const a of v.cellActors||[]){const x=a.x+Math.sin(t*.6+a.phase)*3,z=a.z+Math.cos(t*.5+a.phase)*5;poseFigure(a.m,x,z,Math.sin(t*.4+a.phase),t*4,'walk');a.m.position.y=0;}}
