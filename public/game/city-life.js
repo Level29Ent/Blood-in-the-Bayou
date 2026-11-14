@@ -99,7 +99,7 @@ buildVenue=function(v){
  if(v.depth==='basefood'){const detail=level29FastFood.build(THREE,b,{theme:'mess',sign:addSign});g.add(detail.root);v.furniture.push(...detail.solids);v.referenceFastFood=true;
  }else if(v.id==='casino'){
   level29RetailCasino.casino(v,g); }else if(v.id==='nightclub'){
-  let clubPlan=null;if(window.level29Nightclub?.matches(v)){const detail=level29Nightclub.build(THREE,b,0,addSign);g.add(detail.root);v.furniture.push(...detail.solids);v.referenceNightclub=true;clubPlan=detail.plan;}else{
+  let clubPlan=null;if(v.southern==='juke'){const detail=level29JukeJoint.build(THREE,b,{base:v.baseY||0});g.add(detail.root);detail.ceiling.position.set(b.x-v.roof.position.x,(v.baseY||0)-v.roof.position.y,b.y-v.roof.position.z);v.roof.add(detail.ceiling);v.furniture.push(...detail.solids);v.referenceJuke=true;clubPlan=detail.plan;}else if(window.level29Nightclub?.matches(v)){const detail=level29Nightclub.build(THREE,b,0,addSign);g.add(detail.root);v.furniture.push(...detail.solids);v.referenceNightclub=true;clubPlan=detail.plan;}else{
   part(b.w-30,2,28,b.x+b.w/2,1,b.y+16,dark);part(25,12,8,b.x+b.w/2,8,b.y+18,gold);
   }
   for(let i=0;i<(v.southern?3:9);i++){const x=clubPlan?clubPlan.dancers[i].x:b.x+20+(i%3)*Math.max(12,(b.w-40)/3),y=clubPlan?clubPlan.dancers[i].y:b.y+28+Math.floor(i/3)*Math.max(6,(b.h-38)/3),m=makeFigure(false);setFigureColors(m,['#986d50','#c3946a','#6e4939'][i%3],['#87539b','#d5b568','#4c8491'][i%3],'#28313b','#272322');m.traverse(o=>{if(o.isMesh)o.userData.noBatch=true;});g.add(m);dancers.push({m,x,y});}
