@@ -18,7 +18,7 @@ var level29World={material:function(color,metalness=0,roughness=.85){return new 
 function addSign(g,text,w,h,x,y,z,color){const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=128;const c=canvas.getContext('2d');c.clearRect(0,0,1024,128);c.fillStyle=color;c.font='600 64px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(text,512,64,1000);const tex=new THREE.CanvasTexture(canvas),m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));m.position.set(x,y,z);g.add(m);return m}
 </script>
 <script src="interior-models.js?v=city-renewal-1"></script>
-<script src="bike-shop-interior.js?v=reference-bike-1"></script><script src="barber-interior.js?v=reference-barber-1"></script><script src="aquarium-store.js?v=aquarium-reference-1"></script><script src="fast-food-interiors.js?v=distinct-fastfood-1"></script><script src="record-store.js?v=records-reference-1"></script><script src="toy-store.js?v=reference-toys-1"></script><script src="mall-displays.js?v=reference-toys-1"></script>
+<script src="bike-shop-interior.js?v=reference-bike-1"></script><script src="barber-interior.js?v=reference-barber-1"></script><script src="aquarium-store.js?v=aquarium-reference-1"></script><script src="fast-food-interiors.js?v=distinct-fastfood-1"></script><script src="record-store.js?v=records-reference-1"></script><script src="magazine-store-interior.js?v=reference-magazine-1"></script><script src="mall-displays.js?v=records-reference-1"></script>
 <script src="game-store-interior.js?v=reference-game-store-1"></script>
 <script src="mall-gardens.js?v=reference-toys-1"></script>
 <script>
