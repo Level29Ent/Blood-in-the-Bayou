@@ -25,7 +25,7 @@ function build(T,b,{base=0,dir=1}={}){
  for(const side of [-1,1]){const x=side<0?3+p.depth/2:b.w-3-p.depth/2,inner=x-side*p.depth/2,rotation=side<0?Math.PI/2:-Math.PI/2;
  box(wood,p.depth,11,sideLength,x,7.3,caseZ);box(gold,p.depth+.3,.5,sideLength+.3,x,13,caseZ);box(velvet,p.depth-.8,.4,sideLength-1,x,13.5,caseZ);
  for(const end of [-1,1]){box(gold,.35,10,.35,inner,18,caseZ+end*sideLength/2);box(glass,p.depth,9,.12,x,18,caseZ+end*sideLength/2);}
- box(glass,.12,9,sideLength,inner,18,caseZ);box(glass,p.depth,.12,sideLength,x,22.6,caseZ);box(gold,p.depth+.4,.5,sideLength+.4,x,23,caseZ);box(glow,.2,.2,sideLength-1,inner-side*.6,22.4,caseZ);
+ box(glass,.12,9,sideLength,inner,18,caseZ);box(glass,p.depth,.12,sideLength,x,22.6,caseZ);for(const edge of [-1,1]){box(gold,.3,.5,sideLength+.4,x+edge*p.depth/2,23,caseZ);box(gold,p.depth+.4,.5,.3,x,23,caseZ+edge*sideLength/2);}box(glow,.2,.2,sideLength-1,inner-side*.6,22.4,caseZ);
  for(let z=p.rear+12;z<b.h-17;z+=11){const sc=Math.min(1,p.depth/8);bust(x,13.8,z,sc,rotation,Math.floor(z));tray(inner+side*2,14,z+4,Math.min(3,p.depth*.35),5);for(let j=0;j<3;j++)ring(inner+side*2,14.3,z+2.5+j*1.4,j);}
  for(let z=p.rear+10;z<b.h-15;z+=9){box(gold,.25,6,6,inner+.15*side,7,z);box(wood,.3,5,5,inner+.2*side,7,z);}
  label(side<0?'NECKLACES':'RINGS & GEMS',side<0?2.6:b.w-2.6,38,b.h/2,b.h-20,4,rotation);
