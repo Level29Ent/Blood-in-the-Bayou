@@ -1,0 +1,13 @@
+# Police station reference interior
+
+The existing police station uses original procedural furnishings inspired by the supplied public reception and jail photographs: pale tiled lobby, timber/cream enquiries counter with framed glass and pass-through ledges, police/Captain Smith signage, dispatch monitors, leaflet stacks, community noticeboard, waiting seats, staff-door panel, plant and evidence/equipment cabinets.
+
+The holding wing has two cells facing the public-side corridor, with dark steel vertical bars, cross rails, reinforced door frames, locking plates, handles, hinges and feeding slots. Blockwork-textured walls, four green-mattress bunks with pillows, ladder details, steel sink/toilet fixtures, vents and drains add institutional detail. Gates remain locked; the entire cell footprints (including protruding frames/handles) block player entry, preserving the existing secure-infected-holding behavior rather than adding prisoner-release gameplay.
+
+Captain Smith's original staff point, main service pad, police UI, careers and equipment/heat actions are unchanged. Three original noncombat captive figures remain animated inside the secured footprints; their new positions and oscillations are clear of bunk frames and fixtures. They are not added to the combat zombie collection and grant no kill rewards. Existing civic police decoration is replaced only for referencePolice venues; the legacy builder remains available for older contexts.
+
+Repeated details use fewer than 30 instanced mesh/material batches with four local procedural maps, no imported models, remote downloads or additional dynamic lights. Generic estate, lived-in props, room planner, stocked-business and finish overlays skip the authored station. Physical-device performance has not been profiled.
+
+`/game/police-review.html` builds actual production furnishings with lobby, reception, cell-corridor, cell-interior and evidence/waiting cameras. It omits city shell, staff, captive actors and service UI, so it is not a full-city gameplay verification.
+
+Checks: `node --test tests/police-interior.test.cjs tests/interior-expansion.test.cjs tests/source-integrity.test.cjs tests/city-detail.test.cjs tests/interior-realism-parade.test.cjs`. Covers ten-unit player-radius routes to reception staff/service/cell corridor, inaccessible secured cells, safe captive animation positions, translated finite geometry and ceiling/draw limits, production furnishing integration, actor counts, no duplicate holding geometry, module order and related legacy interior regressions. Build/broad-suite and preview evidence are recorded in the PR/task summary.

@@ -9,7 +9,7 @@ function bank(v){const D=level29InteriorModels,b=v.b,g=new THREE.Group();g.name=
  solid(v,{x:b.x+b.w-21,y:b.y+90,w:15,h:42});
  for(const xx of [b.x+b.w*.35,b.x+b.w*.65]){D.box(g,10,7,.7,xx,18,b.y+65,dark);D.rod(g,[xx,14,b.y+65],[xx,12,b.y+65],.5,steel);D.box(g,10,.4,4,xx,15,b.y+71,paper);D.box(g,8,1,5,xx+12,15,b.y+66,paper);D.box(g,1,14,19,xx+20,21,b.y+65,steel);}
  D.box(g,b.w-68,1.2,22,b.x+b.w/2,15,b.y+65,oak);return g;}
-function police(v){const D=level29InteriorModels,b=v.b,g=new THREE.Group();g.name='Secure infected holding room';v.mesh.add(g);const w=Math.min(68,b.w*.3),d=56,x=b.x+b.w-w-12,z=b.y+b.h-d-12,iron=D.material('#303b40','metal',.7),wall=D.material('#88918b','tile');
+function police(v){if(v.referencePolice){const g=new THREE.Group();g.name='Secure infected holding room';v.mesh.add(g);v.cellActors=[];for(const [i,p]of v.policePlan.actors.entries()){const m=makeFigure(true);m.name='Contained zombie '+(i+1);m.traverse(o=>{o.userData.noBatch=true;});m.userData.noBatch=true;g.add(m);poseFigure(m,p.x,p.z,0,i,'walk');m.position.y=v.baseY||0;v.cellActors.push({m,x:p.x,z:p.z,phase:i*2,cell:g,base:v.baseY||0});}return g;}const D=level29InteriorModels,b=v.b,g=new THREE.Group();g.name='Secure infected holding room';v.mesh.add(g);const w=Math.min(68,b.w*.3),d=56,x=b.x+b.w-w-12,z=b.y+b.h-d-12,iron=D.material('#303b40','metal',.7),wall=D.material('#88918b','tile');
  // Entire locked holding footprint blocks players. Captives are local figures,
  // not combat zombies, so indoor cleanup/spawning/rewards cannot free them.
  solid(v,{x,y:z,w,h:d});D.box(g,w,2,d,x+w/2,1,z+d/2,wall);for(const xx of [x,x+w])D.box(g,2,34,d,xx,17,z+d/2,wall);D.box(g,w,34,2,x+w/2,17,z,wall);
@@ -25,7 +25,7 @@ function mall(v){const D=level29InteriorModels,b=v.b,g=new THREE.Group();g.name=
 const build=buildVenue;buildVenue=function(v){build.apply(this,arguments);if(!v.mesh||v.mesh.userData.civicDetail)return;v.mesh.userData.civicDetail=true;if(v.id==='bank'&&!v.referenceBank)bank(v);if(v.id==='police')police(v);if(v.id==='mall')mall(v);
  if(v.kind==='fish'&&!v.referenceFish){const b=v.b,g=new THREE.Group();g.name='Fish market live aquarium gallery';v.mesh.add(g);for(const side of [-1,1]){const x=b.x+b.w/2+side*(b.w/2-22),z=b.y+b.h*.62;const tank=level29InteriorModels.tank(g,x,2,z,30);tank.rotation.y=Math.PI/2;solid(v,{x:x-10,y:z-16,w:20,h:32});}}
 };
-const tick=update;update=function(){tick.apply(this,arguments);if(state!=='play'||!player||!city)return;const t=window.level29TimeOfDay?.seconds||frame/60;for(const v of city.venues||[]){if(!v.mesh||Math.hypot(player.x-v.doorX,player.y-v.doorY)>700)continue;level29InteriorModels.animate(v.mesh,t);for(const a of v.cellActors||[]){const x=a.x+Math.sin(t*.6+a.phase)*3,z=a.z+Math.cos(t*.5+a.phase)*5;poseFigure(a.m,x,z,Math.sin(t*.4+a.phase),t*4,'walk');a.m.position.y=0;}}
+const tick=update;update=function(){tick.apply(this,arguments);if(state!=='play'||!player||!city)return;const t=window.level29TimeOfDay?.seconds||frame/60;for(const v of city.venues||[]){if(!v.mesh||Math.hypot(player.x-v.doorX,player.y-v.doorY)>700)continue;level29InteriorModels.animate(v.mesh,t);for(const a of v.cellActors||[]){const x=a.x+Math.sin(t*.6+a.phase)*3,z=a.z+Math.cos(t*.5+a.phase)*5;poseFigure(a.m,x,z,Math.sin(t*.4+a.phase),t*4,'walk');a.m.position.y=a.base||0;}}
 };
 window.level29CivicInteriors={bank,police,mall};
 })();

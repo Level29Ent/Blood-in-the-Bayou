@@ -110,9 +110,7 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
   for(const y of [b.y+40,b.y+95]){item(b.x+90,y,26,8,45,steel);q.box(45,2,3,b.x+90,base+24,y,steel);for(const x of [b.x+70,b.x+110])q.box(4,14,14,x,base+24,y,dark);}
   sign('CARDIO · STRENGTH · CONDITIONING',b.x+b.w/2,b.y+4,180);staff(v,g,b.x+b.w*.66,b.y+b.h*.4,base);
  }else if(v.id==='police'){
-  item(b.x+b.w/2,b.y+65,b.w-65,14,24,dark);sign('CAPTAIN SMITH · U',b.x+b.w/2,b.y+4,155);staff(v,g,b.x+b.w/2,b.y+35,base);
-  for(const x of [b.x+40,b.x+b.w-40]){item(x,b.y+120,35,25,22,steel);q.box(26,1,1,x,base+27,b.y+132,white);}
-  sign('EVIDENCE',b.x+42,b.y+103,60);sign('EQUIPMENT',b.x+b.w-42,b.y+103,64);
+  const station=level29PoliceInterior.build(THREE,b,base);g.add(station.root);v.furniture.push(...station.solids);v.referencePolice=true;v.policePlan=station.plan;staff(v,g,station.plan.staff.x,station.plan.staff.y,base);
 
  }else if(v.id==='fire'){
   item(b.x+b.w/2,b.y+58,84,13,22,dark);sign('FIRE CAPTAIN · PAID RESCUE JOBS',b.x+b.w/2,b.y+4,190);staff(v,g,b.x+b.w/2,b.y+30,base);
