@@ -1,0 +1,9 @@
+# Greentown Public Library reference interior
+
+The public library keeps its existing civic parcel, entrance, metro separation and prologue science-book interaction point. Its former six opaque wood blocks and sparse props are replaced with four double-sided cream metal stacks, 3,412 varied book spines, shelf levels/slots/end labels, green carpeted stack aisles, a gray reading lounge, four red upholstered chairs, side tables, study desks/chairs, two return carts, glazed wall panels and recessed fluorescent-style ceiling strips. The design is inspired by the user's library photos; it is procedural geometry, not a photographic reconstruction.
+
+`library-interior.js` supplies the same plan for geometry and furniture collision. Existing walls still block travel; window panels are decorative glazing, not new exits. The 48-unit entrance and center path remain open. Radius-10 flood-fill tests cover both stack aisles and the unchanged science-book trigger. No mission, save, NPC, world startup, metro or quality-setting behavior is changed.
+
+Books are instanced with deterministic colors, varied spine widths/heights, and small original spine/label textures. The furnishing layer uses 17 draw batches, five 128-square procedural textures, and no additional dynamic lights, shadow maps, network asset requests or GLBs. This is an allocation bound, not a claim about phone FPS. The existing civic shell and signs are additional draws. The downloadable iOS source archive is refreshed, not signed or compiled.
+
+The signed-out `/game/library-review.html` viewer uses the actual production civic shell and furnishing module on a local parcel. Reading-room, science-aisle and lounge cameras support visual review without loading the rest of the city. This viewer does not verify full-city startup, driving or the complete prologue. Physical Safari/device performance remains a separate acceptance check.
