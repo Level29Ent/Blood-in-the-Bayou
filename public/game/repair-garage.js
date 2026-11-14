@@ -1,6 +1,6 @@
 'use strict';
 (function(){
-function matches(v){return v.id==='garage'&&v.careerBusiness!=='marine';}
+function matches(v){return v.id==='garage'&&v.careerBusiness!=='marine'&&v.careerBusiness!=='tow';}
 function plan(b){const cx=b.x+b.w/2,z=b.y+b.h*.56,spread=Math.min(50,b.w/2-25),posts=[-1,1].map(s=>({x:cx+s*spread-3,y:z-4,w:6,h:8,kind:'lift-post'})),rear={x:b.x+7,y:b.y+5,w:b.w-14,h:13,kind:'workbench'},sides=[{x:b.x+5,y:b.y+32,w:12,h:34,kind:'tire-rack'},{x:b.x+b.w-18,y:b.y+32,w:13,h:34,kind:'diagnostics'}];return {posts,rear,sides,solids:[rear,...posts,...sides],lift:{x:cx,y:z,spread},entry:{x:cx,y:b.y+b.h},service:{x:cx,y:b.y+b.h*.61}};}
 function build(T,b,{base=0,sign}={}){
  const root=new T.Group();root.name='Repair Garage · red / steel workshop';root.position.y=base;root.userData.noBatch=true;const p=plan(b),batches=new Map(),textures=[];

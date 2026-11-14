@@ -243,7 +243,7 @@ function decorateVenues(){
  const g=new THREE.Group();g.name='career-interior-detail';cityGroup.add(g);const q=batch(g);
  const steel=material('#a2aaa5',.42,.5),dark=material('#273437'),wood=material('#846340'),paper=material('#e1d8c3'),red=material('#b34432'),green=material('#56765b'),blue=material('#36647b');
  for(const v of city.venues||[]){
-  if(v.referenceRecording||v.referenceCarwash||v.referenceNightclub||v.referenceBoxing||v.referenceSnowball||v.referencePolice||v.referenceVet||v.referenceFilm||v.referenceFreight||v.referenceRepair||v.referenceFastFood||v.referenceScrapyard||v.referenceSawmill||v.referenceLaundry||v.referenceBank||v.referenceTires||v.referenceFish||v.referenceBotanica||v.referenceDonut||v.referenceLiquor||v.referenceBonnie||v.referenceGas||v.id==='mall'||v.frontage?.angle||v.storyRole||v.kind==='snowballs'||v.id==='hospital')continue; // Rotated rooms receive local-space detail from interior-details.
+  if(v.referenceTow||v.referenceRecording||v.referenceCarwash||v.referenceNightclub||v.referenceBoxing||v.referenceSnowball||v.referencePolice||v.referenceVet||v.referenceFilm||v.referenceFreight||v.referenceRepair||v.referenceFastFood||v.referenceScrapyard||v.referenceSawmill||v.referenceLaundry||v.referenceBank||v.referenceTires||v.referenceFish||v.referenceBotanica||v.referenceDonut||v.referenceLiquor||v.referenceBonnie||v.referenceGas||v.id==='mall'||v.frontage?.angle||v.storyRole||v.kind==='snowballs'||v.id==='hospital')continue; // Rotated rooms receive local-space detail from interior-details.
   const b=v.b,levels=v.id==='hospital'?5:1;
   for(let l=0;l<levels;l++){
    const z=(v.baseY||0)+l*56,x=b.x+b.w/2,y=b.y+7;
