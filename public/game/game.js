@@ -1547,6 +1547,8 @@ function loop(now){
   // Schedule first so a thrown error in one frame can never stop the game permanently.
   requestAnimationFrame(loop);
   if (window.level29RuntimeResources?.lost || window.level29CrashGuard?.halted || window.bayouAdActive || document.hidden) { last = now; accT = 0; return; }
+  // The title is DOM-only until actual game entry. Never build/render a throwaway city.
+  if(state==='menu'&&!city){last=now;accT=0;return;}
   // Avoid a catch-up spiral on a slow phone: at most three simulation steps per rendered frame.
   accT = Math.min(50, accT + Math.min(50, now - last)*(mpRole?1:(window.level29TimeScale||1))); last = now;
   let stepped = false; const stepStart=performance.now(); let steps=0;

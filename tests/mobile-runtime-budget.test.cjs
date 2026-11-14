@@ -43,7 +43,7 @@ test('sustained slow phone rendering retains a readable floor and recovers when 
  const low=s.ratio;for(let i=0;i<1800;i++)s.frame(16.7);assert.ok(s.ratio>low);assert.ok(s.ratio<=1.5);
 });
 
-test('mobile renderer requests edge smoothing while desktop keeps its existing context',()=>{
+test('renderer avoids MSAA multisample buffers during mobile startup while preserving desktop context',()=>{
  const source=fs.readFileSync('public/game/fp.js','utf8'),a=source.indexOf('renderer = new THREE.WebGLRenderer('),b=source.indexOf('\n',a);
- for(const mobile of [true,false]){let options;const c={renderer:null,glCv:{},window:{level29MobileBudget:{mobile}},THREE:{WebGLRenderer:class{constructor(o){options=o;}}}};vm.createContext(c);vm.runInContext(source.slice(a,b),c);assert.equal(options.antialias,mobile);}
+ for(const mobile of [true,false]){let options;const c={renderer:null,glCv:{},window:{level29MobileBudget:{mobile}},THREE:{WebGLRenderer:class{constructor(o){options=o;}}}};vm.createContext(c);vm.runInContext(source.slice(a,b),c);assert.equal(options.antialias,false);}
 });
