@@ -107,8 +107,7 @@ buildVenue=function(v){
   part(b.w-24,12,12,b.x+b.w/2,6,b.y+14,dark);addSign(g,'CHECK IN · AIR TOURS',90,9,b.x+b.w/2,30,b.y+4,v.col);
   for(let i=0;i<3;i++)part(28,7,10,b.x+24+i*32,3.5,b.y+45,gold);
  }else if(v.id==='classroom'){
-  part(b.w-30,22,1,b.x+b.w/2,27,b.y+4,mat('#31564b'));addSign(g,'BAYOU HISTORY & CULTURE',100,7,b.x+b.w/2,28,b.y+5,v.col);
-  for(let i=0;i<6;i++){const x=b.x+24+(i%3)*32,y=b.y+36+Math.floor(i/3)*30;part(22,8,14,x,4,y,wood);part(12,6,10,x,3,y+15,dark);}
+  const detail=level29University.build(THREE,b,{base:v.baseY||0});g.add(detail.root);detail.ceiling.position.set(-v.roof.position.x,(v.baseY||0)-v.roof.position.y,-v.roof.position.z);v.roof.add(detail.ceiling);v.furniture.push(...detail.solids);v.referenceUniversity=true;addSign(g,'BAYOU HISTORY & CULTURE',Math.min(100,b.w-20),6,b.x+b.w/2,39,b.y+5,v.col);
  }else if(v.id==='retail'){
   for(const x of [b.x+10,b.x+b.w-10])for(let y=8;y<30;y+=10){part(14,2,b.h-30,x,y,b.y+b.h/2,wood);for(let j=0;j<4;j++)part(3,5,3,x,y+3,b.y+20+j*9,mat(j%2?'#9f9d69':'#6b997e'));}
   part(32,10,12,b.x+b.w/2,5,b.y+16,wood);addSign(g,'ACCESSORIES · LOCAL GOODS',90,7,b.x+b.w/2,32,b.y+4,v.col);
