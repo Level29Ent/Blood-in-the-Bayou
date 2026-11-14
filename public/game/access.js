@@ -72,6 +72,7 @@ buildVenue=function(v){
  v.door=part(v.doorW-1,40,1.5,v.doorX,20,v.doorY-1,green);
  v.roof=part(b.w+2,3,b.h+2,b.x+b.w/2,50,b.y+b.h/2,green);
  if(v.upperHeight>60)part(b.w,v.upperHeight-52,b.h,b.x+b.w/2,52+(v.upperHeight-52)/2,b.y+b.h/2,wall);
+ if(window.level29VetClinic?.matches(v)){const clinic=level29VetClinic.build(THREE,b,{sign:addSign});g.add(clinic.root);v.furniture.push(...clinic.solids);v.referenceVet=true;addSign(g,v.name,Math.min(140,b.w),9,v.doorX,59,v.doorY,v.col);v.labelH=72;return;}
  if(window.level29FishMarket?.matches(v)){const store=level29FishMarket.build(THREE,b,0,addSign);g.add(store.root);v.furniture.push(...store.solids);v.referenceFish=true;addSign(g,v.name,Math.min(140,b.w),9,v.doorX,59,v.doorY,v.col);v.labelH=72;return;}
  if(window.level29TireShop?.matches(v)){const store=level29TireShop.build(THREE,b,0,addSign);g.add(store.root);v.furniture.push(...store.solids);v.referenceTires=true;addSign(g,v.name,Math.min(140,b.w),9,v.doorX,59,v.doorY,v.col);v.labelH=72;return;}
  // Furniture hugs the back wall; the entrance and central aisle remain clear.
