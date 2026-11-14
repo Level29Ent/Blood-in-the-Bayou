@@ -1,0 +1,13 @@
+# Moss Fall Manor reference redesign
+
+Moss Fall Manor uses original procedural classical-residence details inspired by the supplied white house/gallery, cream bedroom and wood-accented apartment references. The existing manor parcel and ground-floor shell remain authoritative.
+
+White moulded facade panels, sash-window details, gallery columns/balustrades, a central triangular pediment, pale pitched roof, dormer accents and chimneys form a taller decorative silhouette. The ground floor has a tufted cream headboard/bed, pillows, freestanding bath, fireplace-like headwall, brass/cream bedside lamp, blue-gray lounge cushions, dark round coffee table and walnut/white kitchen. A small static tiered fountain and formal side planters sit inside the original parcel. The upper story and galleries are facade scenery, not new playable floors or an exterior estate expansion. No new bedroom/bath interactions or kitchen simulation.
+
+The existing $12,000 manor deed, ownership/privacy rules, Southern services, saved state, basement entry/exit coordinates and underground workshop are unchanged. The later Southern pass skips its old exterior columns/roof for referenceManor while still constructing and operating the basement. New furnishings replace the generic safe-house props rather than stack on top. Generic estate/stock/lived-in/finish passes skip authored manor detail. Collision footprints reserve furniture, headwall, fountain, garden beds and column bases, leaving the main doorway/service and basement approach accessible. Existing frontage wrapper rotates geometry and solids together.
+
+Repeated details use shared instanced batches under 65 tested mesh draws, no imported assets/textures, dynamic lights, new timers or network fetches. Water and lamp faces are static materials, not fluid simulation or new shadow-casting lights. Physical-device performance remains unprofiled.
+
+`/game/moss-manor-review.html` uses the production builder with facade/fountain, bedroom/bath, lounge/kitchen and gallery views. Its interior cameras hide decorative facade/upper scenery to inspect furnishings; this is not proof of the actual city camera, ownership UI or basement flow. The existing outer shell and automatic front door remain production responsibilities.
+
+Checks: `node --test tests/moss-manor.test.cjs tests/tactical-surplus-interior.test.cjs tests/film-studio-interior.test.cjs tests/southern-noir.test.cjs tests/source-integrity.test.cjs tests/interior-realism-parade.test.cjs`. Covers route flood-fill, canonical orientations, parcel/furniture bounds, finite instances, draw/height budget, exact production branch, original deed/workshop code, module order and related regressions. Build/broad-suite/preview findings recorded in PR/task summary.
