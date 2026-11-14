@@ -1,33 +1,16 @@
 'use strict';
 (function(){
-function buildHub(T,b,options={}){const root=new T.Group();root.name='Fortified paddlewheel riverboat survivor hub';const floors=[],solidFloors=[],cache=new Map(),mat=(c,m=0,r=.8)=>{const k=c+m+r;if(!cache.has(k))cache.set(k,options.material?options.material(c,m,r):new T.MeshStandardMaterial({color:c,metalness:m,roughness:r}));return cache.get(k);},white=mat('#ded8c5'),iron=mat('#2b414a',.55),wood=mat('#78563d'),neon=new T.MeshBasicMaterial({color:'#b073cb'}),green=mat('#6e7e5b');
+function buildHub(T,b,options={}){const root=new T.Group();root.name='Fortified paddlewheel riverboat survivor hub';const floors=[],solidFloors=[],cache=new Map(),mat=(c,m=0,r=.8)=>{const k=c+m+r;if(!cache.has(k))cache.set(k,options.material?options.material(c,m,r):new T.MeshStandardMaterial({color:c,metalness:m,roughness:r}));return cache.get(k);},white=mat('#ded8c5'),iron=mat('#2b414a',.55),wood=mat('#78563d');
 const hull=new T.Mesh(new T.CylinderGeometry(1,1,1,20),iron);hull.rotation.z=Math.PI/2;hull.scale.set(10,b.w*.53,b.h*.56);hull.position.set(b.x+b.w/2,-13,b.y+b.h/2);root.add(hull);
-for(let f=0;f<3;f++){const g=new T.Group();g.name='Riverboat deck '+(f+1);g.visible=f===0;root.add(g);floors.push(g);const solids=[],base=f*48,box=(w,h,d,x,y,z,m,solid=false)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,base+y,z);g.add(o);if(solid)solids.push({x:x-w/2,y:z-d/2,w,h:d});};box(b.w,2,b.h,b.x+b.w/2,0,b.y+b.h/2,wood);for(const side of [-1,1]){box(3,34,b.h,b.x+(side<0?1:b.w-1),17,b.y+b.h/2,white,true);box((b.w-64)/2,34,3,b.x+b.w/2+side*(32+(b.w-64)/4),17,b.y+b.h-1,white,true);}box(b.w,34,3,b.x+b.w/2,17,b.y+1,white,true);
+for(let f=0;f<3;f++){const g=new T.Group();g.name='Riverboat deck '+(f+1);g.visible=f===0;root.add(g);floors.push(g);const solids=[],base=f*48,box=(w,h,d,x,y,z,m,solid=false)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,base+y,z);g.add(o);if(solid)solids.push({x:x-w/2,y:z-d/2,w,h:d});};box(b.w,2,b.h,b.x+b.w/2,0,b.y+b.h/2,wood);for(const side of [-1,1]){box(3,f===0?34:9,b.h,b.x+(side<0?1:b.w-1),f===0?17:4.5,b.y+b.h/2,white,true);box((b.w-64)/2,34,3,b.x+b.w/2+side*(32+(b.w-64)/4),17,b.y+b.h-1,white,true);}box(b.w,34,3,b.x+b.w/2,17,b.y+1,white,true);
 if(f===0){const casino=typeof module!=='undefined'?require('./casino-interior.js'):window.level29CasinoInterior;const deck=casino.build(T,b);g.add(deck.root);solids.push(...deck.solids);}
-else if(f===1)for(const side of [-1,1])for(let i=0;i<5;i++){const x=b.x+(side<0?27:b.w-27),z=b.y+26+i*30;box(22,20,16,x,10,z,iron,true);box(16,12,1,x,15,z+8.5,neon);box(18,2,6,x,8,z+11,white);}
-else{box(110,.4,110,b.x+b.w/2,.8,b.y+b.h/2,green);box(50,.5,3,b.x+b.w/2,1.2,b.y+b.h/2,white);for(const x of [-23,23])box(3,.5,42,b.x+b.w/2+x,1.2,b.y+b.h/2,white);for(const side of [-1,1])for(let i=0;i<3;i++)box(20,7,10,b.x+b.w/2+side*(55+i*22),3.5,b.y+b.h-25,green,true);}
-options.label?.(g,f===2?'ROOF HELIPAD / DEFENSIVE LOOKOUT':f===1?'SURVIVOR ARMORY / GENERATOR':'BOOMCITY RIVERBOAT · GAMING / TRADE',b.w-12,8,b.x+b.w/2,base+28,b.y+5,'#e0c99e');solidFloors.push(solids);}
+else{const ref=typeof module!=='undefined'?require('./riverboat-reference.js'):window.level29RiverboatReference;const deck=ref.buildDeck(T,b,f);g.add(deck.root);solids.push(...deck.solids);}
+options.label?.(g,f===2?'GRAND SALON / BANQUET LOUNGE':f===1?'PANORAMIC DINING / ARMORY SERVICES':'BOOMCITY RIVERBOAT · GAMING / TRADE',b.w-12,8,b.x+b.w/2,base+28,b.y+5,'#e0c99e');solidFloors.push(solids);}
 const wheel=new T.Group();wheel.position.set(b.x+b.w+18,9,b.y+b.h/2);root.add(wheel);const disk=new T.Mesh(new T.CylinderGeometry(23,23,34,20),mat('#943f34'));disk.rotation.x=Math.PI/2;wheel.add(disk);for(let i=0;i<12;i++){const m=new T.Mesh(new T.BoxGeometry(5,4,38),wood),a=i*Math.PI/6;m.position.set(Math.cos(a)*23,Math.sin(a)*23,0);m.rotation.z=a;wheel.add(m);}const exterior=new T.Group();exterior.name='Riverboat external galleries';root.add(exterior);const gallery=(w,h,d,x,y,z,m)=>{const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,y,z);exterior.add(o);};for(const height of [45,93]){gallery(b.w+4,2,b.h+4,b.x+b.w/2,height,b.y+b.h/2,white);for(let i=0;i<16;i++)for(const side of [-1,1])gallery(.8,12,.8,b.x+8+i*(b.w-16)/15,height+7,b.y+(side<0?-1:b.h+1),iron);}for(const side of [-1,1]){gallery(12,50,12,b.x+40+side*15,111,b.y+50,iron);gallery(16,3,16,b.x+40+side*15,137,b.y+50,white);}root.userData={floors,solidFloors,wheel,exterior};return root;}
 function buildNatchezExterior(T,entry,options={}){
- const boat=new T.Group();boat.name='NATCHEZ · paddlewheel casino exterior';boat.position.set(entry.x+190,0,entry.y);boat.rotation.y=Math.PI;
- const cache=new Map(),mat=(c,m=0)=>{if(!cache.has(c))cache.set(c,options.material?options.material(c,m):new T.MeshStandardMaterial({color:c,metalness:m,roughness:.75}));return cache.get(c);},white=mat('#f2ebd5'),red=mat('#943a32'),iron=mat('#293b43',.3),wood=mat('#96714e'),glass=mat('#385c70',.35),gold=mat('#c9a04e',.4);
- const box=(g,w,h,d,x,y,z,m)=>{const mesh=new T.Mesh(new T.BoxGeometry(w,h,d),m);mesh.position.set(x,y,z);g.add(mesh);return mesh;};
- const shape=new T.Shape();shape.moveTo(-125,-48);shape.lineTo(80,-56);shape.quadraticCurveTo(123,-45,141,0);shape.quadraticCurveTo(123,45,80,56);shape.lineTo(-125,48);shape.closePath();
- const hullGeo=new T.ExtrudeGeometry(shape,{depth:15,bevelEnabled:false,curveSegments:12});hullGeo.rotateX(-Math.PI/2);const hull=new T.Mesh(hullGeo,iron);hull.position.y=-8;boat.add(hull);
- box(boat,210,5,97,-12,5,0,red);
- const floors=[];for(let floor=0;floor<3;floor++){
-  const deck=new T.Group();deck.name='Natchez exterior deck '+(floor+1);boat.add(deck);floors.push(deck);const y=10+floor*30,w=244-floor*16,d=112-floor*8;
-  box(deck,w,2,d,0,y,0,white);box(deck,w-42,25,d-30,-4,y+14,0,white);box(deck,w-36,2,d-24,-4,y+27,0,white);
-  for(const side of [-1,1]){
-   for(let i=0;i<10;i++){const x=-(w-58)/2+i*(w-58)/9;box(deck,10,14,1,x,y+15,side*(d/2-14.4),glass);box(deck,.8,12,.8,x,y+8,side*(d/2-1),white);}
-   box(deck,w-5,1,1,0,y+14,side*(d/2-1),gold);for(const x of [-w/2+4,w/2-4])box(deck,1,14,d-4,x,y+8,0,white);
-  }
- }
- for(const z of [-19,19]){box(boat,10,47,10,-45,111,z,iron);box(boat,14,3,14,-45,136,z,white);box(boat,11,2,11,-45,120,z,gold);}
- const wheel=new T.Group();wheel.name='Natchez stern paddlewheel';wheel.position.set(-140,14,0);boat.add(wheel);for(const z of [-39,39]){const disk=new T.Mesh(new T.CylinderGeometry(22,22,1.5,24),red);disk.rotation.x=Math.PI/2;disk.position.z=z;wheel.add(disk);}for(let i=0;i<12;i++){const a=i*Math.PI/6,m=box(wheel,5,4,82,Math.cos(a)*22,Math.sin(a)*22,0,wood);m.rotation.z=a;}
- box(boat,66,2,24,158,2,0,wood);for(const z of [-11,11])box(boat,66,.8,.8,158,12,z,white);
- for(const side of [-1,1]){const sign=options.label?.(boat,'NATCHEZ · CASINO',150,11,0,58,side*43,'#f3d99a');if(sign){if(side<0)sign.rotation.y=Math.PI;sign.material=sign.material.clone();sign.material.side=T.FrontSide;}}boat.userData={floors,wheel};return boat;
+ const ref=typeof module!=='undefined'?require('./riverboat-reference.js'):window.level29RiverboatReference;return ref.buildExterior(T,entry,options);
 }
+
 // batchStatic bakes world matrices into geometry. Neutralize this transformed root
 // while batching so its translation/half-turn are applied once, not twice.
 function batchExterior(T,boat,batch){
