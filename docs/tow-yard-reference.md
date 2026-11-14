@@ -1,0 +1,11 @@
+# 29 Tow & Impound reference yard
+
+The existing career business `tow` is an outdoor fenced impound yard rather than a second copy of the repair-garage interior. Its original parcel, frontage, terrain base, entrance/service coordinates, career ID and job dispatch remain. The layout packs varied compact vehicle scenery into side rows around an 84-unit front gate and a radius-30-tested center vehicle approach. Front-row trucks have a recovery boom, cable and lightbar; some passenger cars have raised hoods. No photo textures or stock-image watermarks are copied.
+
+A two-story tan dispatch office with pitched roof and windows sits at the rear. The yard has patched asphalt, bay markings, chain-link alpha-mesh fencing, posts and original warning/dispatch signs. The office is scenic with no upper-floor traversal. The parked models are original simplified procedural props, not driveable cars or additions to traffic/physics/AI pools. Existing tow recovery tasks still select real existing game vehicles and use the unchanged career system.
+
+Only `careerBusiness === 'tow'` matches. The generic repair garage and later career-bike props are skipped for that site; ordinary garages/marine/carwash sites retain their builders. Room furnishing/register/wall-finish passes skip the authored outdoor yard. Fence/office/vehicle blockers share the production collision plan; frontage rotates model/furniture together. The old enclosed garage shell is not retained around the yard.
+
+Repeated car bodies, wheels, recovery equipment and office details are instanced by geometry/material. The fence uses one original 32×32 procedural alpha pattern, without downloaded textures, external models, added lights or new animation loops. The enlarged stock density scales with the existing lot size, not a new plot or extension into adjacent roads.
+
+`/game/tow-yard-review.html` renders the production builder on isolated ground with yard/fleet/gate cameras. It is not a full-world driving/recovery/dispatch or phone-performance test. Tests cover exact matching, unchanged dispatch/terrain/door target, pedestrian and vehicle approaches, finite bounds/draw budget, no lights and actual rotated-frontage placement. The visuals are stylized game art, not a photographic reconstruction.

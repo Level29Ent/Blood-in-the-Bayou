@@ -275,6 +275,8 @@ function venueFloorTex(v){
   const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(v.b.w/64,v.b.h/64);t.encoding=THREE.sRGBEncoding;return floorTexCache[key]=t;
 }
 function buildVenue(v){
+  if(window.level29TowYard?.matches(v)){const yard=level29TowYard.build(THREE,v.b,{sign:addSign});v.mesh=yard.root;v.mesh.position.y=terrainHeight(v.b.x+v.b.w/2,v.b.y+v.b.h/2);cityGroup.add(v.mesh);v.furniture=yard.solids.slice();v.colliderWalls=[];v.colliderDoor=null;v.door=new THREE.Group();v.mesh.add(v.door);v.roof=null;v.referenceTow=true;v.labelH=46;return;}
+
   const b=v.b,group=new THREE.Group(),height=52,referenceFilm=window.level29FilmStudio?.matches(v),referenceRecording=window.level29RecordingStudio?.matches(v),referenceFreight=window.level29FreightDepot?.matches(v),referenceRepair=window.level29RepairGarage?.matches(v),referenceLiquor=window.level29LiquorStore?.matches(v),referenceDonut=window.level29DonutShop?.matches(v),referenceLaundry=window.level29LaundryInterior?.matches(v),referenceBotanica=window.level29Botanica?.matches(v);group.position.y=terrainHeight(b.x+b.w/2,b.y+b.h/2);cityGroup.add(group);v.mesh=group;
   const wall=new THREE.MeshStandardMaterial({color:v.id==='safe'?'#d8cbaa':'#e6dfcf',roughness:.88,emissive:v.id==='safe'?'#4a3f2e':'#4b463c'}),trim=new THREE.MeshStandardMaterial({color:'#3f4b50',metalness:.4,roughness:.55});
   const floorMat=new THREE.MeshStandardMaterial({map:venueFloorTex(v),roughness:.55,metalness:.05,emissive:'#2c2a26'});
