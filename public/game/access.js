@@ -73,6 +73,7 @@ buildVenue=function(v){
  v.roof=part(b.w+2,3,b.h+2,b.x+b.w/2,50,b.y+b.h/2,green);
  if(v.upperHeight>60)part(b.w,v.upperHeight-52,b.h,b.x+b.w/2,52+(v.upperHeight-52)/2,b.y+b.h/2,wall);
  if(window.level29FishMarket?.matches(v)){const store=level29FishMarket.build(THREE,b,0,addSign);g.add(store.root);v.furniture.push(...store.solids);v.referenceFish=true;addSign(g,v.name,Math.min(140,b.w),9,v.doorX,59,v.doorY,v.col);v.labelH=72;return;}
+ if(window.level29TireShop?.matches(v)){const store=level29TireShop.build(THREE,b,0,addSign);g.add(store.root);v.furniture.push(...store.solids);v.referenceTires=true;addSign(g,v.name,Math.min(140,b.w),9,v.doorX,59,v.doorY,v.col);v.labelH=72;return;}
  // Furniture hugs the back wall; the entrance and central aisle remain clear.
  const benchW=Math.min(45,b.w*.3),depth=Math.min(18,b.h*.2),x=b.x+8+benchW/2,z=b.y+8+depth/2;
  part(benchW,8,depth,x,4,z,wood);part(benchW,3,depth,x,9,z,green);v.furniture.push({x:x-benchW/2,y:z-depth/2,w:benchW,h:depth});
