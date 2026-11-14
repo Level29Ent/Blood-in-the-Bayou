@@ -8,7 +8,7 @@ The other screenshot shows an input handler error around `e.target.matches`. Job
 
 ## Roads and new neighborhood
 
-Bayou Oaks is a bounded eight-home subdivision planned near the Bayou Pawn / Bayou business frontage visible in the supplied area. The exact camera/player coordinates are not present in screenshots; the anchor is the named pawn career business, falling back to the Bayou Seafood/Bait frontage. A bounded nearest-vacant search stays within 1800 units of that anchor and rejects protected buildings, water, existing facilities/mission parcels, roads through lots and steep land. It safely skips if no suitable site exists instead of replacing existing content.
+Bayou Oaks is a bounded eight-home subdivision planned near the Bayou Seafood & Bait waterfront business frontage visible in the supplied area. The exact camera/player coordinates are not present in screenshots; the anchor is the named Bayou Seafood/Bait frontage, falling back to Bayou Pawn if absent. A bounded nearest-vacant search with cached terrain samples and a pre-rasterized protected-site mask stays within 1800 units of that anchor and rejects protected buildings, water, existing facilities/mission parcels, roads through lots and steep land. It safely skips if no suitable site exists instead of replacing existing content.
 
 The subdivision has a two-way spine, turning area, connected street approach, sidewalks, eight driveways/door paths, streetlights, mailboxes and eight varied exterior homes. Homes have collision footprints but are not new enterable/purchasable interiors. Existing public buildings and missions are not moved. The OAKS map blip and entrance sign identify it.
 
