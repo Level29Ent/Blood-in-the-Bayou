@@ -1,0 +1,6 @@
+'use strict';
+(function(){
+const build=buildVenue;buildVenue=function(v){const style=level29CafeReference.theme(v);if(!style)return build.apply(this,arguments);if(v.mesh?.parent===cityGroup)return;const T=THREE,b=v.b,base=v.baseY||0,root=new T.Group();root.name=v.name+' · reference coffeehouse';v.mesh=root;cityGroup.add(root);const wall=new T.MeshStandardMaterial({color:style==='golden'?'#e3d4bb':'#d0d1c6',roughness:.85}),trim=new T.MeshStandardMaterial({color:'#303b37'});function box(w,h,d,x,y,z,m=wall){const o=new T.Mesh(new T.BoxGeometry(w,h,d),m);o.position.set(x,base+y,z);root.add(o);return o;}
+for(const r of v.colliderWalls||[]){box(r.w,48,r.h,r.x+r.w/2,24,r.y+r.h/2);}if(!(v.colliderWalls||[]).length){box(b.w,48,3,b.x+b.w/2,24,b.y+1.5);for(const x of[b.x+1.5,b.x+b.w-1.5])box(3,48,b.h,x,24,b.y+b.h/2);const side=(b.w-v.doorW)/2;for(const x of[b.x+side/2,b.x+b.w-side/2])box(side,48,3,x,24,b.y+b.h-1.5);}
+box(v.doorW,6,3,v.doorX,45,v.doorY);v.door=box(v.doorW-1,41,1.5,v.doorX,20.5,v.doorY-.8,trim);v.roof=box(b.w+3,2,b.h+3,b.x+b.w/2,50,b.y+b.h/2,trim);const model=level29CafeReference.build(T,b,{style,base,sign:addSign});root.add(model.root);v.furniture=model.solids;v.referenceCafe=true;v.labelH=69;addSign(root,v.name,Math.min(180,b.w),9,v.doorX,base+58,v.doorY,'#e4c795');};
+})();
