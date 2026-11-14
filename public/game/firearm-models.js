@@ -39,14 +39,14 @@ function build(T,id,P){
   for(const side of [-1,1]){for(let i=0;i<6;i++)part('slide serrations',.03,.65,.055,side*.71,.65,.35+i*.18,P.black);for(let y=0;y<5;y++)part('grip texture',.035,.08,.95,side*.64,-.65-y*.34,.9,P.rubber);}
   guard(-.5,-.85);part('rear sight',1.15,.25,.3,0,1.25,.98,P.black);part('front sight',.18,.28,.2,0,1.22,-3.48,P.black);
   for(const x of [-.37,.37])part('sight dots',.12,.12,.04,x,1.31,1.15,P.edge);
-  part('slide stop',.12,.18,.65,-.66,-.02,.2,P.edge);muzzle(-3.95,.65,.27);pins(.4,-.1,.56);
+  part('slide stop',.12,.18,.65,-.66,-.02,.2,P.edge);muzzle(-3.95,.65,.27);pins(-.2,-.1,.64);
  }else if(id==='shotgun'){
   part('receiver',1.6,1.7,5.4,0,.25,.3);
-  part('ejection port',.04,.7,1.8,.83,.3,-.4,P.black);
-  tube('barrel',.34,12.5,0,.6,-9.2);tube('magazine tube',.26,10.5,0,-.25,-8.1);
+  part('ejection port',.04,.7,1.8,.94,.3,-.4,P.black);
+  tube('barrel',.34,13.6,0,.6,-8.85);tube('magazine tube',.26,11.5,0,-.25,-7.5);
   part('walnut pump',1.65,1.25,4.4,0,-.4,-6.2,P.wood);
   for(let i=0;i<10;i++)part('pump grooves',1.7,.12,.09,0,-.35,-8+i*.4,P.black);
-  part('walnut stock',1.55,1.9,5.4,0,-.5,5.5,P.wood).rotation.x=-.13;
+  profile('walnut shoulder stock',[[3.1,.3],[8.1,.3],[8.1,-1.7],[6.5,-1.5],[3.1,-.6]],1.55,P.wood);
   part('buttpad',1.75,2.35,.5,0,-.8,8.4,P.rubber);
   part('stock wrist',1.1,1.7,1.7,0,-.8,2.4,P.wood).rotation.x=-.25;
   guard(.7,-1.1);muzzle(-15.65,.6,.34);pins(-.5,.15);
