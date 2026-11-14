@@ -1,0 +1,11 @@
+# Two distinct photo-inspired fast-food interiors
+
+**Mess Stop Fast Food:** red-and-stainless order/pickup counter with ribbed metal fascia, bright checker floor, cream walls/red soffit, classic red booths, separate soda station, visible prep/grill/fryer/hood and bright ceiling panels. Same existing 128 × 128 café near the base, no relocation or new shop.
+
+**Bayou Burgers:** warm slatted-oak counter, charcoal walls/ceiling, wood ceiling ribs, warm pendant fixtures, muted floor, compact green/lime seating, planted accents and darker illustrated menu treatment. Same second-floor Greentown Mall tenant, 102 × 70 bay facing the south gallery; local geometry and colliders rotate together.
+
+Both feature original illustrated menu panels with burger silhouettes and readable original category labels, register screens, glass display cabinet, food/tray details and open-kitchen fixtures. No copied restaurant logos, downloaded stock photography, AI service calls or branding from the reference images. Distinct geometry, palettes, lighting-fixture designs and seating plans, not just one room recolored.
+
+Shared plans supply colliders; entrance and unchanged service points remain accessible at radius 10. Mess Stop keeps its original health-meal/delivery services and prices; Bayou Burgers retains its existing mall behavior. No new purchase, job, NPC or cooking minigame. Old Mess Stop depth props and old Bayou Burgers generic counter/stock/wall-art passes are skipped only for the rebuilt locations. Other restaurants and all prior shop interiors are preserved. Bayou detail visibility follows existing mall active-floor/distance handling.
+
+Furnishings are instanced, with 18/21 fixture-model draws before sign callbacks, four 128-square generated material maps plus one original 1024 × 256 menu texture per model. No new dynamic lights, shadow maps, model/image downloads, reflections or animation loops. These allocation bounds are not measured phone FPS. Existing iOS source download is refreshed, not compiled/signed. `/game/fast-food-review.html` reuses production furnishing models at actual room sizes inside matching simple shells, not the full game. Full-city traversal, live transactions and physical-device performance require separate acceptance checks. Stylized reference-inspired procedural geometry, not photoreal reconstruction.
