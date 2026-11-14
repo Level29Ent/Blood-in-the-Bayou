@@ -48,7 +48,7 @@ function build(T,b,base=0,sign){
  for(const side of [-1,1]){const xx=b.x+b.w/2+side*(b.w/2-17),zz=b.y+b.h-22;box(steel,.15,7,.15,xx,44,zz);plant(xx,32,zz,1.2,side+2);for(let i=0;i<4;i++)for(let j=0;j<4;j++)inst(sphere,leaf,xx+Math.sin(i)*2,33-j*2,zz+Math.cos(i)*2,.5,1.2,.35,'#4d7c4e');}
  // Abstract floral/eye-inspired wall art, no copied religious or retailer imagery.
  for(let i=0;i<3;i++){const zz=b.y+35+i*19;box(wood,.7,9,8,b.x+b.w-3.5,40,zz);inst(sphere,gold,b.x+b.w-4,40,zz,.2,2,3);inst(sphere,dark,b.x+b.w-4.3,40,zz,.25,1.3,1.3);}
- if(sign){sign(root,'MOONLIT BOTANICA',Math.min(72,b.w*.55),5,b.x+b.w/2,46,b.y+5,'#e4cf9c');sign(root,'PLANTS · CANDLES · OILS · INCENSE',Math.min(80,b.w*.6),3,b.x+b.w/2,20,b.y+5,'#f1dfbe');}
+ if(sign){sign(root,'MOONLIT BOTANICA',Math.min(72,b.w*.55),5,b.x+b.w/2,46,b.y+5,'#e4cf9c');sign(root,'PLANTS · CANDLES · OILS · INCENSE',Math.min(40,b.w*.25),3,b.x+b.w/2,20,b.y+5,'#f1dfbe');}
  for(const [g,groups]of batches)for(const [m,items]of groups){const mesh=new T.InstancedMesh(g,m,items.length);mesh.userData.noBatch=true;items.forEach((a,i)=>{mesh.setMatrixAt(i,a.matrix);if(a.tint)mesh.setColorAt(i,color.set(a.tint));});root.add(mesh);}
  root.userData.botanica={products,plants,drawBatches:root.children.length};return {root,plan:p,solids:p.solids};
 }
