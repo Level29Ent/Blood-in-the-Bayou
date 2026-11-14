@@ -1,0 +1,13 @@
+# 29 Land reference-inspired thrills and splash scenery
+
+29 Land retains its reserved 640×704 world parcel and 90-degree local/world mapping, original boardwalk, six ride IDs/names/durations, free boarding controls, return positions and multiplayer restrictions. Bayou Viper now has yellow rails with teal A-supports, a tall lift hill and a vertical loop. Timber Run follows the perimeter around a new decorative splash island, with braced timber trestles. Bayou Drop has a taller lattice wrapper and greater visual travel on the existing cycle. The carousel, wheel and teacups remain.
+
+The fenced family-coaster envelope contains a static shallow splash basin with four colorful open-flume slide forms, a railed two-level tower, yellow stairs, bucket, flag and stylized spray arcs. The slides, bucket, pool and sprays are decorative—not new boardable/walkable water attractions or a water simulation. Added palms, planters, parasols and picnic tables have matching ground blockers. Radius-ten connectivity is tested from the main gate to every original ride boarding point.
+
+Coaster rail and train frames share closed transported normals so both stay oriented through the loop; the existing on-ride camera follows the roll and resets its up vector before normal camera placement. This remains the game's existing constant-speed scripted ride, not a gravity/safety-engineering simulation. The three-car group remains a rigid stylized train.
+
+New scenery is merged by shared geometry/material into fewer than 35 static meshes, with no external image/model requests, new lights, shadows, reflections, extra live timers or dependencies. Existing game update animates all rides; the standalone review uses its own review-only loop. Existing parcel placement and roads are not moved.
+
+`/game/theme-park-review.html` loads actual production park/scenery builders with overview, coaster-loop, splash-island, midway and pause controls. The legacy ride preview also loads the scenery and follows inverted train orientation. Preview appearance is not proof of full-city gameplay, ride boarding in the complete world or phone/GPU performance. References guide original colors/shapes; branded park names/logos are not copied.
+
+Validation covers all six ride motions/finite anchors, unequal closed coaster tracks, parcel bounds and transforms, original ride controls/definitions, negative/NaN-time handling, transport continuity and inversion, slide/scenery bounds/counts, script load order, no new lights and entrance-to-boarding walking routes. Unrelated baseline integration and character-asset failures are not repaired in this change.
