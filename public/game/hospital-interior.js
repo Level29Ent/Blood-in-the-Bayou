@@ -20,7 +20,7 @@ function build(T,b,base=0,level=0){const root=new T.Group();root.name='General H
  // Tile ceiling and flat panel illumination, matching the reference's bright clinical lighting.
  B(b.w-7,.3,b.h-7,cx,50.45,cz,white);for(let x=b.x+6;x<b.x+b.w-5;x+=24)B(.3,.15,b.h-8,x,50.2,cz,steel);for(let z=b.y+6;z<b.y+b.h-5;z+=24)B(b.w-8,.15,.3,cx,50.2,z,steel);
  for(const dx of [-85,0,85])for(const zz of [43,107,177]){B(20,.5,11,cx+dx,49.7,b.y+zz,steel);B(18,.15,9,cx+dx,49.35,b.y+zz,glow);}
- emit(plane,sign,94,15,1,cx,39,b.y+4.1);emit(plane,sign,64,10,1,cx,36,b.y+b.h-4.1,0,Math.PI);
+ emit(plane,sign,level===2?128:94,level===2?6:15,1,cx,level===2?47:39,b.y+(level===2?23.5:4.1));emit(plane,sign,64,10,1,cx,36,b.y+b.h-4.1,0,Math.PI);
  const monitor=(x,y,z,angle=0)=>{B(13,9,1,x,y,z,dark);emit(plane,screen,11.7,7.5,1,x,y,z+.6,0,angle);B(1,5,1,x,y-6,z,steel);};
  const chair=(x,z,m=teal)=>{B(14,1.6,13,x,7,z,m);B(14,12,1.7,x,13,z-5.6,m);for(const dx of [-5.5,5.5]){for(const dz of [-4,4])B(.65,6,.65,x+dx,3.6,z+dz,steel);B(.7,4,.7,x+dx,10,z+2,steel);B(.9,.8,11,x+dx,12,z,steel);}S(x,z,15,15,'chair');};
  const sink=(x,z)=>{B(17,12,12,x,7,z,wood);B(19,1.2,14,x,13.5,z,white);emit(sphere,steel,6,.6,4,x,14.2,z);emit(sphere,white,5,.35,3,x,14.6,z);B(.7,5,.7,x,17,z-3.8,steel);B(.7,.7,4,x,19,z-2,steel);B(4,6,2,x+12,23,z-5,white);B(3,2,2,x+12,20,z-3.5,dark);S(x,z,19,14,'sink');};
@@ -34,7 +34,7 @@ function build(T,b,base=0,level=0){const root=new T.Group();root.name='General H
  };
  if(level===0){
  // Desk, workstation displays, connected waiting seats and bright pediatric feature walls.
- B(112,14,17,cx,8,b.y+57,white);B(114,1.5,20,cx,15.8,b.y+57,steel);B(112,2,1,cx,3,b.y+67,navy);S(cx,b.y+57,114,20,'reception');B(12,14,31,cx+52,8,b.y+42,white);S(cx+52,b.y+42,12,31,'desk return');for(const dx of [-36,0,36])monitor(cx+dx,21,b.y+56);monitor(cx+28,34,b.y+4.8);monitor(cx-28,34,b.y+4.8);
+ B(112,14,17,cx,8,b.y+57,white);B(114,1.5,20,cx,15.8,b.y+57,steel);B(112,2,1,cx,3,b.y+67,navy);S(cx,b.y+57,114,20,'reception');B(12,14,31,cx+52,8,b.y+42,white);S(cx+52,b.y+42,12,31,'desk return');for(const dx of [-36,0,36])monitor(cx+dx,21,b.y+56);monitor(cx+65,34,b.y+4.8);monitor(cx-65,34,b.y+4.8);
  for(const side of [-1,1])for(const zz of [113,178])for(let i=0;i<3;i++)chair(cx+side*92+(i-1)*17,b.y+zz);for(const side of [-1,1]){const x=b.x+(side<0?4.3:b.w-4.3);for(const zz of [92,153,213]){B(.4,13,2,x,26,b.y+zz,white);for(const dz of [-4,4])emit(sphere,white,.4,4,5,x,34,b.y+zz+dz);}B(34,5,13,cx+side*94,4,b.y+82,white);for(let i=0;i<6;i++)emit(sphere,green,3.5,4,3,cx+side*94-13+i*5,9,b.y+82);S(cx+side*94,b.y+82,34,13,'planter');}
  // Suspended hexagonal fixtures inspired by the nurses' station reference.
  for(const zz of [88,143])for(let i=0;i<6;i++){const a=i*Math.PI/3;emit(unit,dark,15,2,1,cx+Math.cos(a)*13,44,b.y+zz+Math.sin(a)*13,0,-a-Math.PI/2);emit(unit,glow,14,.15,.7,cx+Math.cos(a)*13,42.9,b.y+zz+Math.sin(a)*13,0,-a-Math.PI/2);}
@@ -46,7 +46,7 @@ function build(T,b,base=0,level=0){const root=new T.Group();root.name='General H
  const rx=b.x+b.w-45,rz=b.y+187;chair(rx,rz,wood);B(14,4,10,rx,3,rz+10,wood);S(rx,rz+10,14,10,'recliner footrest');sink(b.x+b.w-26,b.y+218);B(16,1,12,rx-25,12,rz,white);C(.7,10,.7,rx-25,6,rz,steel);S(rx-25,rz,16,12,'side table');
  B(38,13,15,cx,7.5,b.y+57,white);B(40,1,17,cx,14.5,b.y+57,steel);S(cx,b.y+57,40,17,'nurse desk');monitor(cx,20,b.y+57);
  }
- for(const [m,geos]of batches)for(const [geo,list]of geos){const mesh=new T.InstancedMesh(geo,m,list.length);mesh.name='Hospital · '+(m===glass?'glazed treatment fronts':m===screen?'clinical displays':'instanced fixtures');list.forEach((v,i)=>{dummy.position.set(v.x,v.y,v.z);dummy.rotation.set(v.rx,v.ry,v.rz);dummy.scale.set(v.w,v.h,v.d);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});mesh.userData.noBatch=true;mesh.frustumCulled=false;root.add(mesh);}
+ for(const [m,geos]of batches)for(const [geo,list]of geos){const mesh=new T.InstancedMesh(geo,m,list.length);mesh.name='Hospital · '+(m===glass?'glazed treatment fronts':m===screen?'clinical displays':m===sign?'department signs':'instanced fixtures');list.forEach((v,i)=>{dummy.position.set(v.x,v.y,v.z);dummy.rotation.set(v.rx,v.ry,v.rz);dummy.scale.set(v.w,v.h,v.d);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});mesh.userData.noBatch=true;mesh.frustumCulled=false;root.add(mesh);}
  root.userData.hospital={level,plan:p,textureCount:maps.length};return {root,solids,plan:p};
 }
 const api={build,plan,DEPARTMENTS};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29HospitalInterior=api;
