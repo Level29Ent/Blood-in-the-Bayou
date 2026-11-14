@@ -84,6 +84,11 @@ buildVenue=function(v){
   v.mesh=built.root;v.referenceBonnie=true;v.furniture=built.solids.slice();cityGroup.add(v.mesh);
   v.door=new THREE.Group();v.mesh.add(v.door);v.labelH=74;return;
  }
+ if(v.kind==='smoke'){
+  const built=level29SmokeShop.build(THREE,v.b,{doorWidth:v.doorW,base:v.baseY||0,sign:addSign});
+  v.mesh=built.root;v.roof=built.roof;v.referenceSmoke=true;v.furniture=built.solids.slice();cityGroup.add(v.mesh);
+  v.door=new THREE.Group();v.mesh.add(v.door);v.labelH=64;return;
+ }
  const b=v.b,g=new THREE.Group();v.mesh=g;cityGroup.add(g);const mat=c=>window.level29World.material(c),wood=mat('#785b43'),dark=mat('#253039'),gold=mat('#d8b46d');
  const part=(w,h,d,x,y,z,m)=>addPart(g,w,h,d,x,y,z,m);
  part(b.w,1,b.h,b.x+b.w/2,.5,b.y+b.h/2,mat(v.id==='casino'?'#69334d':'#bdb5a1'));

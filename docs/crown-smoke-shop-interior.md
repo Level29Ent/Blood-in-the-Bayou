@@ -1,0 +1,9 @@
+# Crown Smoke Shop reference interior
+
+The existing Crown Smoke Shop receives a procedural interior inspired by the supplied glass-counter / hookah / tobacco-store photos. It is not a photographic reconstruction. Purple walls, pale floor tiles, blonde slatwall, dark shelves, teal LED-style strips, ceiling panels, eight hookahs with hoses/trays/stems, 54 glassware pieces, 100 packaged products, a glazed service counter with display levels, checkout screen and a tiered feature island replace the generic accessories shelves.
+
+The production street-frontage system temporarily supplies the canonical 64 × 96 parcel to `smoke-shop-interior.js`, then rotates the model and its shared collider footprints together back into Crown's east-facing 96 × 64 site. The doorway width, actual service coordinates, trading/purchase hooks and all prices stay unchanged. No new shop is spawned and Karma/Elevated Melanin are not modified. Generic estate/interior/clutter/stock passes skip this authored room using referenceSmoke.
+
+Radius-10 route tests reach the center/service point, front entrance and display approaches. An integration test executes the actual city-life builder and street-frontage rotation, checking unchanged world service/door coordinates and transformed furniture, then rebuilds to verify idempotence. Geometry is instanced with 17 fixture/product draw batches, three original 128-square textures and no added GLB/image downloads, dynamic lights, smoke simulation or shadow maps. This is an allocation bound, not a phone-performance claim.
+
+`/game/smoke-shop-review.html` is a signed-out isolated model viewer at the production room size, with entrance, counter, hookah and wall-stock cameras. It excludes the rest of the city and trading UI, so visual review there does not verify walking to the shop, live transactions, full-world startup or physical Safari performance. The iOS download contains refreshed sources, not a compiled/signed app.
