@@ -14,11 +14,11 @@ function build(T,b,base=0,sign){
  const cube=new T.BoxGeometry(1,1,1),ring=new T.TorusGeometry(1,.43,7,16),frost=new T.TorusGeometry(1,.36,5,16),cyl=new T.CylinderGeometry(1,1,1,12),sphere=new T.SphereGeometry(1,10,6),sprinkleGeo=new T.BoxGeometry(.08,.05,.28);
  function inst(geo,m,x,y,z,sx=1,sy=1,sz=1,color,rotation){let bucket=batches.get(geo);if(!bucket){bucket=new Map();batches.set(geo,bucket);}if(!bucket.has(m))bucket.set(m,[]);tmp.position.set(x,base+y,z);tmp.scale.set(sx,sy,sz);tmp.rotation.set(...(rotation||[0,0,0]));tmp.updateMatrix();bucket.get(m).push({matrix:tmp.matrix.clone(),color});}
  const box=(m,w,h,d,x,y,z,color)=>inst(cube,m,x,y,z,w,h,d,color);
- const colors=['#e997b6','#543326','#e9cc8f','#f4eee0','#c8a447','#b3cba5'];
+ const colors=['#dc5290','#351b12','#c99437','#e7dfc9','#a97522','#71a97e'];
  function donut(x,y,z,i){const type=i%5;
-  if(type===3){inst(sphere,dough,x,y,z,1.6,.55,.9);box(icing,2.6,.24,1.5,x,y+.45,z,colors[i%6]);}
+  if(type===3){inst(sphere,dough,x,y,z,1.6,.55,.9);box(icing,2.6,.24,1.5,x,y+.57,z,colors[i%6]);}
   else if(type===4){inst(sphere,dough,x,y,z,1,.6,1);inst(sphere,icing,x,y+.35,z,.85,.22,.85,colors[i%6]);}
-  else{inst(ring,dough,x,y,z,1,1,.9,null,[Math.PI/2,0,0]);inst(frost,icing,x,y+.25,z,1,1,.75,colors[i%6],[Math.PI/2,0,0]);}
+  else{inst(ring,dough,x,y,z,1,1,.9,null,[Math.PI/2,0,0]);inst(frost,icing,x,y+.36,z,1,1,.75,colors[i%6],[Math.PI/2,0,0]);}
   if(i%3===0)for(let n=0;n<7;n++){const a=n*.9;inst(sprinkleGeo,icing,x+Math.cos(a)*.92,y+.65,z+Math.sin(a)*.92,1,1,1,['#f9dc52','#f0c2cf','#edf0e6'][n%3],[0,a,0]);}pastries++;
  }
  // Mint walls, warm wood wainscoting and a tiled customer floor.
@@ -58,7 +58,7 @@ function build(T,b,base=0,sign){
   for(const dx of [-1.8,1.8])box(steel,.12,5,.12,x+dx,41,z);for(const y of [38.5,43.5])box(steel,3.6,.15,3.6,x,y,z);
  }
  for(const x of [b.x+b.w*.3,b.x+b.w*.7])for(const z of [b.y+51,b.y+b.h-22]){box(steel,20,.5,12,x,50,z);box(glow,18,.3,10,x,49.6,z);}
- if(sign){sign(root,'CRESCENT DONUTS · FRESH DAILY',b.w*.6,6,b.x+b.w/2,44,b.y+4.2,'#ffe9b7');sign(root,'GLAZED · CHOCOLATE · SPRINKLES',b.w*.56,4,b.x+b.w/2,36,b.y+4.4,'#f5c0d2');sign(root,'COFFEE  /  PASTRIES  /  BREAKFAST',b.w*.55,4,b.x+b.w/2,30,b.y+4.5,'#f5e4ba');sign(root,'ORDER HERE',22,4,b.x+b.w/2,22,b.y+19,'#f4e3c4');}
+ if(sign){sign(root,'CRESCENT DONUTS · FRESH DAILY',b.w*.6,6,b.x+b.w/2,44,b.y+4.2,'#ffe9b7');sign(root,'GLAZED · CHOCOLATE · SPRINKLES',b.w*.34,4,b.x+b.w/2,36,b.y+4.4,'#f5c0d2');sign(root,'COFFEE  /  PASTRIES  /  BREAKFAST',b.w*.34,4,b.x+b.w/2,30,b.y+4.5,'#f5e4ba');sign(root,'ORDER HERE',22,4,b.x+b.w/2,22,b.y+19,'#f4e3c4');}
  for(const [geo,groups]of batches)for(const [m,items]of groups){const mesh=new T.InstancedMesh(geo,m,items.length);mesh.userData.noBatch=true;items.forEach((a,i)=>{mesh.setMatrixAt(i,a.matrix);if(a.color)mesh.setColorAt(i,tint.set(a.color));});root.add(mesh);}
  root.userData.donutShop={pastries,drawBatches:root.children.length};return {root,plan:p,solids:p.solids};
 }
