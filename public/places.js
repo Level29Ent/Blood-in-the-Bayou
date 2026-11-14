@@ -84,7 +84,10 @@ function shell(v,g,q,base,level){const b=v.b,st=wallStyle[v.id],fm=facade(st[0],
 function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=material('#253842'),wood=material('#866944'),steel=material('#7c8a8f',.6),green=material('#5c8e67');
  const item=(x,y,w,h,d,m,solid=true)=>{q.box(w,h,d,x,base+h/2,y,m);if(solid)v.furniture.push({x:x-w/2,y:y-d/2,w,h:d});};
  const sign=(s,x,y,w=100)=>addSign(g,s,w,9,x,base+30,y,v.col);
- if(v.id==='grocery'||v.id==='gas'){
+ if(v.id==='gas'){
+  const store=level29GasStation.build(THREE,b,base);g.add(store.root);v.furniture.push(...store.solids);v.referenceGas=true;
+  staff(v,g,store.plan.staff.x,store.plan.staff.y,base);
+ }else if(v.id==='grocery'){
   item(b.x+b.w/2,b.y+40,80,12,18,wood);sign('CHECKOUT · U',b.x+b.w/2,b.y+4,100);
   for(const x of [b.x+38,b.x+b.w-38])for(const y of [b.y+90,b.y+145]){
    if(y>b.y+b.h-35)continue;
