@@ -15,7 +15,7 @@ function build(T,b,{base=0,dir=1}={}){const root=new T.Group();root.name='Cresce
  for(let row=0;row<5;row++){const y=4+row*6.6;B(b.w-10,.55,7,0,y,5,white);for(let i=0;i<Math.floor((b.w-16)/7);i++){const x=-(b.w-16)/2+4+i*7;shoe(x,y+.5,5,[red,blue,black,green,orange,tan,purple][(i+row)%7]);B(4,.45,.3,x,y-.5,8.6,white);}}
  for(const side of[-1,1])for(let row=0;row<5;row++){const y=4+row*6.6,x=side*(b.w/2-5);B(7,.55,b.h-16,x,y,b.h/2,white);for(let i=0;i<Math.floor((b.h-20)/7.5);i++){const z=12+i*7.5;shoe(x-side*.4,y+.5,z,[black,orange,blue,green,red,pink,tan][(i+row)%7],-side*Math.PI/2,side>0&&row<3&&i%2===0);B(.3,.5,4,x-side*3.7,y-.6,z,white);}}
  // Red fitting benches echo the boutique reference but stay out of the entry/service axis.
- for(const r of p.local.filter(r=>r.kind==='fitting bench')){B(r.w,1.7,r.h,r.x,8,r.z,red);for(const dz of[-7,7])B(10,6,1.8,r.x,4.5,r.z+dz,red);for(let i=0;i<3;i++){B(8,2,5,r.x,3.2+i*1.6,r.z+1,[blue,black,orange][i]);boxes++;}}
+ for(const r of p.local.filter(r=>r.kind==='fitting bench')){B(r.w,1.7,r.h,r.x,8,r.z,red);for(const dz of[-7,7])B(10,6,1.8,r.x,4.5,r.z+dz,red);for(let i=0;i<3;i++){B(8,1.4,5,r.x,3.2+i*1.6,r.z+1,[blue,black,orange][i]);boxes++;}}
  const desk=p.local.find(r=>r.kind==='checkout');B(14,11,12,desk.x,6.7,desk.z,white);B(15,1,13,desk.x,12.7,desk.z,red);B(6,4,.6,desk.x+3,15.3,desk.z,dark);B(6,.5,4,desk.x+3,13.5,desk.z+2,black);
  // Shoebox columns and sock packets use existing rear shelving footprint.
  for(const side of[-1,1])for(let i=0;i<5;i++){const x=side*(b.w/2-13),y=3+i*2.3;B(10,2,6,x,y,6,[orange,blue,black][i%3]);B(10.4,.4,6.4,x,y+1.2,6,white);B(3,1,.1,x,y,9.1,tan);boxes++;}
