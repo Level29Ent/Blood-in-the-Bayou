@@ -312,13 +312,8 @@ function tower(c){
     {x:b.x+b.w*.55,y:b.y+82,w:b.w*.45,h:3},{x:b.x+b.w*.75,y:b.y,w:3,h:58}];
   resident.apartmentWalls.forEach((q,i)=>{if(i<4){const gw=box(q.w,36,q.h,new THREE.MeshStandardMaterial({color:'#bfe0ea',transparent:true,opacity:.14,roughness:.05,metalness:.4,side:THREE.DoubleSide}));gw.position.set(q.x+q.w/2,floor+18,q.y+q.h/2);g.add(gw);part(g,q.w,2,q.h,q.x+q.w/2,floor+36,q.y+q.h/2,'#d9c58f',.6);if(q.w>q.h)for(let x=q.x;x<=q.x+q.w;x+=56)part(g,2,36,q.h+1,x,floor+18,q.y+q.h/2,'#d9c58f',.6);else for(let y=q.y;y<=q.y+q.h;y+=56)part(g,q.w+1,36,2,q.x+q.w/2,floor+18,y,'#d9c58f',.6);}else wall(g,q,floor,35,'#eee7d9');});
   part(g,b.w,2,b.h,b.x+b.w/2,floor+37,b.y+b.h/2,'#f3ecdc');part(g,b.w*.5,1,b.h*.3,b.x+b.w*.3,floor+36,b.y+b.h*.7,'#fff3d2').material=new THREE.MeshBasicMaterial({color:'#fff1c8'});
-  // Kitchen: worktop, cabinets, refrigerator, sink and island.
-  part(g,80,11,18,b.x+51,floor+6,b.y+17,'#6e5140');part(g,82,2,20,b.x+51,floor+13,b.y+17,'#efe9dc');
-  part(g,18,29,20,b.x+12,floor+15,b.y+44,'#bbc3c5',.4);part(g,17,1,10,b.x+60,floor+14.5,b.y+17,'#65777a',.5);
-  part(g,44,13,25,b.x+70,floor+7,b.y+58,'#896c50');part(g,46,2,27,b.x+70,floor+14,b.y+58,'#eee7d9');
-  // Living room: sectional, brass table, wall television and balcony seating.
-  part(g,61,7,22,b.x+54,floor+7,b.y+136,'#35454f');part(g,61,14,7,b.x+54,floor+11,b.y+144,'#35454f');part(g,20,7,40,b.x+16,floor+7,b.y+123,'#35454f');
-  part(g,34,8,22,b.x+62,floor+4,b.y+107,'#b29455',.5);part(g,44,23,2,b.x+105,floor+20,b.y+132,'#10242e');
+  // Shared reference-inspired living/kitchen furnishings; original bedroom, bath and lift stay unchanged.
+  const modern=level29ModernApartment.build(THREE,{x:b.x+3,y:b.y+3,w:b.w*.55-6,h:b.h-6},{base:floor+1,variant:0,height:34,bedroom:false});g.add(modern.root);
   // Bedroom: upholstered king bed, pillows, bedside cabinets, wardrobe.
   part(g,64,8,74,b.x+b.w*.78,floor+5,b.y+b.h*.68,'#67584e');part(g,62,4,70,b.x+b.w*.78,floor+11,b.y+b.h*.68,'#eee8db');
   part(g,65,20,4,b.x+b.w*.78,floor+11,b.y+b.h*.68+38,'#6c564d');
