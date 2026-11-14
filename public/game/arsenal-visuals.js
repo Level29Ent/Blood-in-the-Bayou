@@ -231,6 +231,12 @@ ensurePools=function(){
  oldPools();if(installed)return;installed=true;
  const oldGun=gun;gun=buildM240();gun.scale.copy(oldGun.scale);gun.position.copy(oldGun.position);vmScene.remove(oldGun);vmScene.add(gun);muzzle=gun.userData.flash;
  const models={shotgun:buildShotgun(),rpg:buildRPG(),molotov:buildMolotov(),bat:buildBat()};
+ // Share detailed firearm templates with retail walls; held arms stay first-person-only.
+ for(const id of ['pistol','smg','carbine','marksman']){
+  const model=window.level29FirearmModels?.create(THREE,id);if(!model)continue;
+  const rig=new THREE.Group();arms(rig,id==='pistol');bake(rig);model.add(rig);models[id]=model;
+ }
+
  for(const k in models){const old=extraWeap[k],m=models[k];m.scale.copy(old.scale);m.position.copy(old.position);m.visible=false;vmScene.remove(old);vmScene.add(m);extraWeap[k]=m;}
 };
 const oldSync=syncGta;
