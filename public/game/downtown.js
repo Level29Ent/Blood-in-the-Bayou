@@ -199,8 +199,8 @@ function buildLots(g){
     }
     else if(id==='university'){
       const b=genericBuilding(g,L,64,'#b7a58a',COL.gold,'#3b1c5c');
-      for(let k=0;k<6;k++)cyl(g,3,3,44,b.cx-b.w/2+18+k*(b.w-36)/5,22,b.cz+b.d/2+6,lam('#efe9d8'));
-      const dome=new THREE.Mesh(new THREE.SphereGeometry(22,16,10,0,Math.PI*2,0,Math.PI/2),lam(COL.gold,0x221800));dome.position.set(b.cx,64,b.cz);g.add(dome);
+      // The authored university hall provides its own Gothic facade instead of the old dome/column overlay.
+      if(!L.venue?.referenceUniversity){for(let k=0;k<6;k++)cyl(g,3,3,44,b.cx-b.w/2+18+k*(b.w-36)/5,22,b.cz+b.d/2+6,lam('#efe9d8'));const dome=new THREE.Mesh(new THREE.SphereGeometry(22,16,10,0,Math.PI*2,0,Math.PI/2),lam(COL.gold,0x221800));dome.position.set(b.cx,64,b.cz);g.add(dome);}
     }
     else if(id==='dealer'){
       genericBuilding(g,L,48,'#efeae0','#ffffff','#5b2a86');

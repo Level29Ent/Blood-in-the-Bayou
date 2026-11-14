@@ -35,13 +35,13 @@
       return materials.get(key);
     };
     const concrete = mat('#a7aaa0'), brick = mat('#963f32'), wood = mat('#79553e'), slate = mat('#3b444b', .12), iron = mat('#253338', .65, .4), glass = mat('#557c88', .3, .23), green = mat('#3c6a49'), moss = mat('#71846b');
-    const add = (kind, args, material, x, y, z, scale = [1, 1, 1], ry = 0) => {
+    const add = (kind, args, material, x, y, z, scale = [1, 1, 1], ry = 0, rz = 0) => {
       const key = kind + ':' + args.join(',');
       if (!geometries.has(key)) geometries.set(key, kind === 'cylinder' ? new T.CylinderGeometry(...args) : kind === 'sphere' ? new T.SphereGeometry(...args) : kind === 'roof' ? new T.ConeGeometry(...args) : new T.BoxGeometry(1, 1, 1));
       const geo = geometries.get(key);
       let list = buckets.get(geo); if (!list) buckets.set(geo, list = new Map());
       if (!list.has(material)) list.set(material, []);
-      list.get(material).push({ x, y, z, scale, ry });
+      list.get(material).push({ x, y, z, scale, ry, rz });
     };
     const box = (w, h, d, x, y, z, m) => add('box', [], m, x, y, z, [w, h, d]);
     const solid = (site, r) => solids.push({ x: site.x + r.x, y: site.y + r.y, w: r.w, h: r.h });
@@ -77,7 +77,7 @@
         box(48, .6, 350, ox + 224, .5, oz + 192, concrete);
         box(416, .6, 36, ox + 224, .6, oz + 192, concrete);
         for (const r of data.rooms) {
-          const cx = ox + r.x + r.w / 2, cz = oz + r.y + r.h / 2, height = 48, side = (r.w - 40) / 2, wall = r.role === 'library' ? concrete : brick;
+          const cx = ox + r.x + r.w / 2, cz = oz + r.y + r.h / 2, height = 48, side = (r.w - 40) / 2, wall = ['admin','arts'].includes(r.role) ? mat('#b8a16b') : brick;
           box(r.w, .6, r.h, cx, .5, cz, concrete);
           box(r.w, height, 3, cx, 24, oz + r.y + 1.5, wall);
           box(3, height, r.h, ox + r.x + 1.5, 24, cz, wall);
@@ -88,13 +88,33 @@
           if (r.role === 'library') for (const s of [-1, 1]) { box(side - 6, 28, .8, cx + s * (20 + side / 2), 23, oz + r.y + r.h + .1, glass); for (let k = 0; k < 3; k++) box(1, 28, 1, cx + s * (25 + k * 15), 23, oz + r.y + r.h + .8, iron); }
           for (const w of [{ x: r.x, y: r.y, w: r.w, h: 3 }, { x: r.x, y: r.y, w: 3, h: r.h }, { x: r.x + r.w - 3, y: r.y, w: 3, h: r.h }, { x: r.x, y: r.y + r.h - 3, w: side, h: 3 }, { x: r.x + r.w / 2 + 20, y: r.y + r.h - 3, w: side, h: 3 }]) solid(site, w);
           doors.push({ x: cx, y: oz + r.y + r.h, room: r.role });
-          if (r.role === 'admin') {
-            add('sphere', [20, 20, 12, 0, Math.PI * 2, 0, Math.PI / 2], mat('#4a7c59', .4, .45), cx, 51, cz);
-            for (const s of [-1, 1]) for (let k = 0; k < 3; k++) {
-              const x = cx + s * (28 + k * 23), z = oz + r.y + r.h + 7;
-              add('cylinder', [2.5, 3, 34, 8], concrete, x, 17, z);
-              solid(site, { x: x - ox - 3, y: z - oz - 3, w: 6, h: 6 });
-            }
+          const stone=mat('#d5c297'),sandstone=mat('#b8a16b'),ink=mat('#263941'),front=oz+r.y+r.h+1;
+          // Slim buttresses, crenellations, pointed tracery and finials stay on the original shell.
+          for(const sideX of [ox+r.x+4,ox+r.x+r.w-4]){
+            box(5,59,6,sideX,29.5,front-4,stone);
+            add('roof',[4,13,4],stone,sideX,65,front-4,[1,1,1],Math.PI/4);
+          }
+          for(let x=ox+r.x+8;x<ox+r.x+r.w-6;x+=12)box(6,6,4,x,54,front-2,sandstone);
+          box(r.w-3,1.5,1.5,cx,9,front,stone);box(r.w-3,1.3,1.5,cx,46,front,stone);
+          // Two lancet windows on each flank of the wide entry portal.
+          for(const side of [-1,1])for(let k=0;k<2;k++){
+            const x=cx+side*(24+(k+.5)*(r.w/2-28)/2),y=28,ww=Math.min(11,(r.w/2-26)/2-2),hh=23;
+            box(ww,hh,.7,x,y,front,glass);
+            for(const edge of [-1,1]){box(.9,hh,1.4,x+edge*ww/2,y,front+.7,stone);add('box',[],stone,x+edge*ww/4,y+hh/2+ww*.2,front+.7,[.9,ww*.75,1.4],0,edge*.6);}
+            box(.55,hh,1.5,x,y,front+1,stone);box(ww,.6,1.6,x,y-3,front+1,stone);box(ww+3,1,2,x,y-hh/2,front+1,stone);
+          }
+          // Gabled entry arch is decoration above the existing open 40-unit doorway.
+          for(const side of [-1,1])add('box',[],stone,cx+side*10,51,front+.7,[2,27,2],0,side*.82);
+          if(r.role==='admin'){
+            box(26,31,22,cx,65,oz+r.y+35,brick);
+            for(const x of [cx-14,cx+14])box(3,34,24,x,66,oz+r.y+35,stone);
+            box(33,3,28,cx,82,oz+r.y+35,stone);
+            box(20,20,19,cx,93,oz+r.y+35,stone);
+            // Clock hands are original generic detail, not a copied university insignia.
+            add('sphere',[1,16,10],mat('#f0e4bf'),cx,94,oz+r.y+45,[6,6,.5]);
+            box(.5,4,.4,cx,96,oz+r.y+45.6,iron);box(4,.5,.4,cx+1.6,94,oz+r.y+45.6,iron);
+            add('roof',[12,25,4],slate,cx,116,oz+r.y+35,[1,1,1],Math.PI/4);
+            add('roof',[6,28,8],iron,cx,141,oz+r.y+35);
           }
           // Wall-aligned furniture leaves a 40-unit entry aisle in every room.
           for (const s of [-1, 1]) {
@@ -104,6 +124,10 @@
             if (r.role === 'library') for (let k = 0; k < 5; k++) box(19, 2, r.h - 38, x, 17 + k * 4, z, k % 2 ? brick : concrete);
             else if (r.role === 'science') for (let k = 0; k < 3; k++) add('cylinder', [1.5, 2, 6, 8], glass, x, 18, z - 15 + k * 15);
             else box(12, 7, 1, x, 19, z, glass);
+          }
+          if(r.role==='library'){
+            // Glazed study-room edges, timber coffers and orange seating remain on side furniture footprints.
+            for(const side of [-1,1]){const x=cx+side*(r.w/2-19);box(19,4,12,x,17,cz+9,mat('#bd693f'));box(19,7,2,x,21,cz+14,mat('#bd693f'));for(let k=0;k<5;k++)box(17,.45,1,x,44,cz-22+k*11,wood);}
           }
           label(r.name, site, r.x + r.w / 2, 41, r.y + r.h + 2, Math.min(r.w - 6, 155));
         }
@@ -136,7 +160,7 @@
     const dummy = new T.Object3D();
     for (const [geo, byMaterial] of buckets) for (const [material, list] of byMaterial) {
       const mesh = new T.InstancedMesh(geo, material, list.length);
-      list.forEach((p, i) => { dummy.position.set(p.x, p.y, p.z); dummy.scale.set(...p.scale); dummy.rotation.set(0, p.ry, 0); dummy.updateMatrix(); mesh.setMatrixAt(i, dummy.matrix); });
+      list.forEach((p, i) => { dummy.position.set(p.x, p.y, p.z); dummy.scale.set(...p.scale); dummy.rotation.set(0, p.ry, p.rz || 0); dummy.updateMatrix(); mesh.setMatrixAt(i, dummy.matrix); });
       mesh.castShadow = false; mesh.receiveShadow = true; root.add(mesh);
     }
     root.userData.solids = solids; root.userData.water = waters; root.userData.doors = doors;
