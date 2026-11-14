@@ -34,9 +34,9 @@ function build(T,s,base=0){const root=new T.Group(),p=plan(s),r=s.room,w=r.w,h=r
   }else if(f.kind==='pinball'){
    for(const dx of [-5.7,5.7])for(const dz of [-8,8])B(.7,8,.7,x+dx,5.5,z+dz,metal);B(14,5,21,x,12,z,blue);B(12,.4,18,x,14.8,z,black);P(playfield,11,17,x,15.1,z,0,-Math.PI/2);B(14,11,3,x,23,z-10,black);P(display,12,8,x,23,z-8.3);for(const dx of [-6.8,6.8])B(.5,.5,2,x+dx,15,z+6,pink);for(let k=0;k<4;k++)emit(sphere,[pink,cyan,gold,white][k],1.1,.5,1.1,x+(k%2?3:-3),15.5,z-5+Math.floor(k/2)*5);emit(sphere,metal,.5,.5,.5,x,15.8,z+4);
   }else if(f.kind==='racer'){
-   B(16,3,17,x,3,z,black);B(15,18,7,x,13,z-5,gold);B(15,11,4,x,25,z-6,black);P(racing,13,9,x,25,z-3.8);B(16,3,4,x,32,z-6,red);B(14,2,8,x,16,z,black);emit(torus,metal,2.7,2.7,2.7,x,19,z+3,Math.PI/6);B(8,2,6,x,7,z+5,black);B(8,7,1.5,x,11,z+7,red);B(6,.4,4,x,5,z+5,metal);
+   B(16,3,17,x,3,z,black);B(15,15.5,7,x,11.75,z-5,gold);B(15,11,4,x,25,z-6,black);P(racing,13,9,x,25,z-3.8);B(16,3,4,x,32,z-6,red);B(14,2,8,x,16,z,black);emit(torus,metal,2.7,2.7,2.7,x,19,z+3,Math.PI/6);B(8,2,4,x,7,z+4,black);B(8,7,1.5,x,11,z+7,red);B(6,.4,4,x,5,z+5,metal);
   }else{
-   const m=i%2?blue:wood;B(14,20,11,x,11.5,z,m);B(14,13,6,x,27,z-2,black);P(display,11.5,10,x,27,z+1.2);B(15,2,5,x,35,z-2,black);P(sign,13,2.8,x,35,z+.6);B(15,1.5,7,x,18,z+4,black);control(x-3,19,z+4,red);for(const dx of [1,3,5])emit(cyl,[pink,cyan,white][Math.floor(dx/2)],.65,.35,.65,x+dx,19,z+4);B(4,6,.4,x,8,z+5.8,black);B(2,.3,.5,x,9,z+6.1,metal);for(const dx of [-6.6,6.6])B(.35,12,.35,x+dx,27,z+1.3,cyan);
+   const m=i%2?blue:wood;B(14,19,11,x,11,z,m);B(14,13,6,x,27,z-2,black);P(display,11.5,10,x,27,z+1.2);B(15,2,5,x,35,z-2,black);P(sign,13,2.8,x,35,z+.6);B(15,1.5,7,x,18,z+4,black);control(x-3,19,z+4,red);for(const dx of [1,3,5])emit(cyl,[pink,cyan,white][Math.floor(dx/2)],.65,.35,.65,x+dx,19,z+4);B(4,6,.4,x,8,z+5.8,black);B(2,.3,.5,x,9,z+6.1,metal);for(const dx of [-6.6,6.6])B(.35,12,.35,x+dx,27,z+1.3,cyan);
   }
  }
  // Atlas faces share one draw while keeping varied per-case UVs.
