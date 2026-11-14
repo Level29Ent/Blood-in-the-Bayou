@@ -1,7 +1,9 @@
 'use strict';
 (function(){
 if(typeof window==='undefined')return;
-function build(s,g,base){if(s.name==='GAME STORE')return;const D=window.level29InteriorModels;if(!D)return;const z=s.dir===1?s.room.y+12:s.room.y+s.room.h-12;
+function build(s,g,base,part,palette,venue){if(s.name==='GAME STORE')return;
+ if(s.name==='BIKE SHOP'&&window.level29BikeShop){const shop=level29BikeShop.build(THREE,s,base,addSign);g.add(shop.root);if(venue)venue.floorFurniture[s.floor].push(...shop.solids);return;}
+ const D=window.level29InteriorModels;if(!D)return;const z=s.dir===1?s.room.y+12:s.room.y+s.room.h-12;
  if(s.name==='FISH AQUARIUM STORE'){for(const dx of [-20,20])D.tank(g,s.doorX+dx,base+12,z,30);const label=addSign(g,'KOI · GOLDFISH · ANGELFISH · SHRIMP · SNAILS',s.room.w-10,3,s.doorX,base+41,s.doorY+s.dir*2,'#9de6eb');if(label&&s.dir===-1)label.rotation.y=Math.PI;return;}
  for(const dx of [-s.room.w*.24,s.room.w*.24]){const p=D.props(s.name);p.scale.setScalar(Math.min(.65,(s.room.w-20)/65));p.position.set(s.doorX+dx,base+12,z);if(s.dir===-1)p.rotation.y=Math.PI;g.add(p);}const upper=D.props(s.name);upper.scale.setScalar(.45);upper.position.set(s.doorX,base+27,z);if(s.dir===-1)upper.rotation.y=Math.PI;g.add(upper);D.box(g,s.room.w-12,1,15,s.doorX,base+26,z,D.material('#8c6d4c'));
  const shelf=D.material('#8c6d4c'),trim=D.material('#a4b3b5','metal',.65);
