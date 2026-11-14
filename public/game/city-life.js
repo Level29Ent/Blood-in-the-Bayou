@@ -92,15 +92,17 @@ buildVenue=function(v){
  const b=v.b,g=new THREE.Group();v.mesh=g;cityGroup.add(g);const mat=c=>window.level29World.material(c),wood=mat('#785b43'),dark=mat('#253039'),gold=mat('#d8b46d');
  const part=(w,h,d,x,y,z,m)=>addPart(g,w,h,d,x,y,z,m);
  part(b.w,1,b.h,b.x+b.w/2,.5,b.y+b.h/2,mat(v.id==='casino'?'#69334d':'#bdb5a1'));
- for(const r of v.colliderWalls)part(r.w,48,r.h,r.x+r.w/2,24,r.y+r.h/2,mat('#b9b5ad'));
+ for(const r of v.colliderWalls)part(r.w,48,r.h,r.x+r.w/2,24,r.y+r.h/2,mat(v.id==='nightclub'&&!v.southern?'#171320':'#b9b5ad'));
  part(v.doorW,7,3,v.doorX,45,v.doorY,gold);v.door=part(1,1,1,v.doorX,0,v.doorY,dark);v.door.visible=false;
  v.roof=part(b.w,2,b.h,b.x+b.w/2,50,b.y+b.h/2,dark);v.labelH=70;
  if(v.id!=='casino')addSign(g,v.name,Math.min(220,b.w),11,v.doorX,61,v.doorY,v.col);
  if(v.depth==='basefood'){const detail=level29FastFood.build(THREE,b,{theme:'mess',sign:addSign});g.add(detail.root);v.furniture.push(...detail.solids);v.referenceFastFood=true;
  }else if(v.id==='casino'){
   level29RetailCasino.casino(v,g); }else if(v.id==='nightclub'){
+  let clubPlan=null;if(window.level29Nightclub?.matches(v)){const detail=level29Nightclub.build(THREE,b,0,addSign);g.add(detail.root);v.furniture.push(...detail.solids);v.referenceNightclub=true;clubPlan=detail.plan;}else{
   part(b.w-30,2,28,b.x+b.w/2,1,b.y+16,dark);part(25,12,8,b.x+b.w/2,8,b.y+18,gold);
-  for(let i=0;i<(v.southern?3:9);i++){const x=b.x+20+(i%3)*Math.max(12,(b.w-40)/3),y=b.y+28+Math.floor(i/3)*Math.max(6,(b.h-38)/3),m=makeFigure(false);setFigureColors(m,['#986d50','#c3946a','#6e4939'][i%3],['#87539b','#d5b568','#4c8491'][i%3],'#28313b','#272322');m.traverse(o=>{if(o.isMesh)o.userData.noBatch=true;});g.add(m);dancers.push({m,x,y});}
+  }
+  for(let i=0;i<(v.southern?3:9);i++){const x=clubPlan?clubPlan.dancers[i].x:b.x+20+(i%3)*Math.max(12,(b.w-40)/3),y=clubPlan?clubPlan.dancers[i].y:b.y+28+Math.floor(i/3)*Math.max(6,(b.h-38)/3),m=makeFigure(false);setFigureColors(m,['#986d50','#c3946a','#6e4939'][i%3],['#87539b','#d5b568','#4c8491'][i%3],'#28313b','#272322');m.traverse(o=>{if(o.isMesh)o.userData.noBatch=true;});g.add(m);dancers.push({m,x,y});}
  }else if(v.id==='terminal'){
   part(b.w-24,12,12,b.x+b.w/2,6,b.y+14,dark);addSign(g,'CHECK IN · AIR TOURS',90,9,b.x+b.w/2,30,b.y+4,v.col);
   for(let i=0;i<3;i++)part(28,7,10,b.x+24+i*32,3.5,b.y+45,gold);
