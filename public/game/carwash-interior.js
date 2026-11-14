@@ -1,0 +1,34 @@
+'use strict';
+(function(){
+function plan(b){const cx=b.x+b.w/2,lane=56,offset=Math.min(b.w/2-16,47),solids=[];for(const side of [-1,1])for(const z of [.32,.65])solids.push({x:cx+side*(offset+7)-4,y:b.y+b.h*z-8,w:8,h:16,kind:'gantry support'});for(const side of [-1,1])solids.push({x:cx+side*(b.w/2-9)-5,y:b.y+20,w:10,h:24,kind:'wash utilities'});return {solids,cx,lane,offset,entry:{x:cx,y:b.y+b.h},station:{x:cx,y:b.y+b.h*.61},stages:[b.y+b.h*.32,b.y+b.h*.65]};}
+function build(T,b,base=0){const root=new T.Group();root.name='Crescent automated wash tunnel';root.userData.noBatch=true;const p=plan(b),batches=new Map(),brushes=[],textures=[];
+ const texture=kind=>{if(typeof document==='undefined')return null;const c=document.createElement('canvas');c.width=512;c.height=256;const a=c.getContext('2d');if(!a)return null;if(kind==='sign'){a.fillStyle='#f2f3e9';a.fillRect(0,0,512,256);a.fillStyle='#156185';a.textAlign='center';a.font='bold 50px sans-serif';a.fillText('CRESCENT SHINE',256,65);a.font='25px sans-serif';a.fillText('AUTOMATIC WASH + RESPRAY',256,111);a.fillStyle='#244f40';a.fillRect(12,139,488,105);a.fillStyle='#f5e5a4';a.font='bold 25px sans-serif';a.fillText('STOP IN BAY  ·  U  ·  $250',256,179);a.font='17px sans-serif';a.fillText('KEEP WINDOWS CLOSED · FOLLOW GUIDES',256,218);}else{a.fillStyle='#eeeae0';a.fillRect(0,0,512,256);for(let y=0;y<256;y++)for(let x=0;x<512;x++){if((x*13+y*37)%29===0){a.fillStyle='#ced8d3';a.fillRect(x,y,1,1);}}for(let x=0;x<512;x+=64){a.fillStyle='#a9bbb7';a.fillRect(x,0,1,256);}for(let y=0;y<256;y+=64){a.fillStyle='#a9bbb7';a.fillRect(0,y,512,1);}}const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;if(kind==='tile'){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(4,2);}textures.push(t);return t;};
+ const linear=m=>{m.color.convertSRGBToLinear();return m;},mat=(color,extra={})=>linear(new T.MeshStandardMaterial({color,roughness:.65,...extra})),basic=(color,extra={})=>linear(new T.MeshBasicMaterial({color,...extra}));
+ const white=mat('#e6eae7'),blue=mat('#1765a0'),yellow=mat('#dfbd28'),red=mat('#b62f35'),steel=mat('#9daaad',{metalness:.7,roughness:.3}),dark=mat('#192d34'),rubber=mat('#1a242b',{roughness:.95}),cloth=mat('#155e9c',{roughness:.95}),lightCloth=mat('#2698c5',{roughness:1}),floor=mat('#536b70',{roughness:.23,metalness:.18}),tile=mat('#ffffff',{map:texture('tile')}),glow=basic('#f7f7df'),sign=basic('#ffffff',{map:texture('sign')}),waterMat=basic('#b3dfe4',{transparent:true,opacity:.27,depthWrite:false});
+ const unit=new T.BoxGeometry(1,1,1),cylinder=new T.CylinderGeometry(1,1,1,14),sphere=new T.SphereGeometry(1,8,6),plane=new T.PlaneGeometry(1,1),dummy=new T.Object3D();
+ function emit(target,geo,m,w,h,d,x,y,z,rx=0,ry=0,rz=0){if(!target.has(m))target.set(m,new Map());const by=target.get(m);if(!by.has(geo))by.set(geo,[]);by.get(geo).push({w,h,d,x,y,z,rx,ry,rz});}
+ const E=(geo,m,w,h,d,x,y,z,rx=0,ry=0,rz=0)=>emit(batches,geo,m,w,h,d,x,base+y,z,rx,ry,rz),B=(w,h,d,x,y,z,m)=>E(unit,m,w,h,d,x,y,z),C=(r,h,rz,x,y,z,m)=>E(cylinder,m,r,h,rz,x,y,z),cx=p.cx,cz=b.y+b.h/2;
+ function flush(target,parent,name){for(const[m,geos]of target)for(const[geo,list]of geos){const mesh=new T.InstancedMesh(geo,m,list.length);mesh.name=name;list.forEach((v,i)=>{dummy.position.set(v.x,v.y,v.z);dummy.rotation.set(v.rx,v.ry,v.rz);dummy.scale.set(v.w,v.h,v.d);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});mesh.frustumCulled=false;mesh.userData.noBatch=true;parent.add(mesh);}}
+ // Wet-look surface is material-based: no costly mirror render targets or extra lights.
+ B(b.w-7,.14,b.h-7,cx,.99,cz,floor);B(50,.1,b.h-10,cx,1.12,cz,dark);
+ for(const side of [-1,1]){const x=cx+side*28;B(2,.35,b.h-8,x,1.36,cz,yellow);B(2.2,.6,b.h-8,x+side*3,1.5,cz,steel);for(let z=b.y+8;z<b.y+b.h-8;z+=7){B(2.1,.07,2.8,x,1.57,z,dark);B(2.4,.3,4.5,x-side*5,1.4,z,rubber);}B(1,46,b.h-7,b.x+(side<0?3.5:b.w-3.5),24,cz,tile);B(1.4,10,b.h-8,b.x+(side<0?4:b.w-4),6,cz,blue);
+ for(const zz of [b.y+20,b.y+b.h-20]){B(18,.1,15,cx+side*(b.w/2-16),1.13,zz,steel);for(let i=0;i<7;i++)B(1,.12,13,cx+side*(b.w/2-16)-7+i*2,1.2,zz,dark);}
+ const ux=cx+side*(b.w/2-9);B(10,23,24,ux,12.5,b.y+32,white);B(10.3,9,13,ux,17,b.y+32,blue);B(1.8,3,1,ux-side*5.3,18,b.y+32,yellow);
+ }
+ B(b.w-7,46,1,cx,24,b.y+3.5,tile);B(b.w-8,.4,b.h-8,cx,49.7,cz,white);for(const dx of [-b.w*.32,b.w*.32]){B(2,2,b.h-10,cx+dx,47,cz,steel);for(const zz of [.2,.5,.8])B(18,.5,5,cx+dx,46,b.y+b.h*zz,glow);}
+ const makeBrush=(x,y,z,horizontal=false)=>{const g=new T.Group();g.name=horizontal?'Overhead cloth roller':'Vertical cloth brush';g.position.set(x,base+y,z);g.userData.noBatch=true;if(horizontal)g.rotation.z=Math.PI/2;const lists=new Map(),length=horizontal?56:27;
+ emit(lists,cylinder,dark,2,length,2,0,0,0);for(let tier=0;tier<9;tier++){const yy=-length/2+2+tier*(length-4)/8;for(let j=0;j<22;j++){const a=j*Math.PI/11+tier*.15,rr=6.5+(j%3)*.5;emit(lists,unit,(tier+j)%4===0?rubber:j%3===0?lightCloth:cloth,.65,horizontal?3:4,6,Math.cos(a)*rr,yy,Math.sin(a)*rr,0,Math.PI/2-a,(j%3-1)*.13);}}flush(lists,g,'Wash brush · shared cloth strips');root.add(g);brushes.push(g);return g;};
+ for(const[i,z]of p.stages.entries()){
+ for(const side of [-1,1]){const x=cx+side*(p.offset+7);B(6,41,7,x,22,z,i?red:blue);B(9,1,14,x,1.6,z,steel);B(13,4,10,x,43,z,white);B(18,2,3,cx+side*(p.offset-2),38,z,steel);C(2.3,5,2.3,cx+side*p.offset,39,z,blue);makeBrush(cx+side*p.offset,16.5,z);B(1.2,31,1.2,cx+side*(p.offset+2),18,z+7,steel);
+ // Fixed spray nozzles sit beyond the usable vehicle envelope.
+ for(const yy of [9,18,27]){B(1.5,1.8,3,cx+side*(p.offset-3),yy,z+8,blue);}
+ }B(p.offset*2+20,4,8,cx,42,z,i?red:white);if(i===0){E(plane,sign,Math.min(88,b.w-35),14,1,cx,39,z+4.2);makeBrush(cx,32,z-12,true);}
+ }
+ // Soap curtain and the drying arch are visual equipment, never invisible driving colliders.
+ const curtainZ=b.y+18;B(59,3,5,cx,38,curtainZ,blue);for(let i=0;i<18;i++)B(2.2,8+(i%3)*2,.6,cx-25+i*3,32-(i%3),curtainZ, i%3?cloth:lightCloth);
+ const spray=new T.Group();spray.name='Wash-cycle water jets';spray.userData.noBatch=true;root.add(spray);const jets=new Map();for(const z of p.stages)for(const side of [-1,1])for(const yy of [10,20,29]){const dx=-side*17,dy=-7,len=Math.hypot(dx,dy);emit(jets,cylinder,waterMat,.18,len,.18,cx+side*(p.offset-12),base+yy-3.5,z+8,0,0,Math.atan2(-dx,dy));}flush(jets,spray,'Instanced water jets');spray.visible=false;
+ flush(batches,root,'Carwash · batched equipment');root.userData.carwash={brushes:brushes.length,spray,plan:p,textures:textures.length};return {root,solids:p.solids,plan:p,brushes,spray};
+}
+function animate(result,dt,washing){const step=Math.max(0,Math.min(.05,dt));for(const b of result.brushes)b.rotateY(step*(washing?4:.2));result.spray.visible=!!washing;}
+const api={plan,build,animate};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29CarwashInterior=api;
+})();
