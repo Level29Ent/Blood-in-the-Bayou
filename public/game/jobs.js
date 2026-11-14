@@ -126,7 +126,7 @@ panel.addEventListener('click',e=>{const b=e.target.closest('[data-job]');if(!b|
  if(a.startsWith('gps-')){const c=a.slice(4),v=selectedHome||nearest(c);if(!v){toast('NO '+CAREERS[c].name.toUpperCase()+' WORKPLACE IN THIS DISTRICT');return;}if(v){gps={x:v.doorX,y:v.doorY+28,name:v.name,col:CAREERS[c].col};close();toast('GPS · '+v.short+' · OPEN JOBS ON ARRIVAL');}return;}
  if(a.startsWith('start-')){const c=selected,def=CAREERS[c]?.jobs.find(j=>'start-'+j.id===a),v=selectedHome;close();if(def)begin(c,def,v);}
 });
-addEventListener('keydown',e=>{if(e.target?.matches('input,textarea,select'))return;const k=e.key.toLowerCase();
+addEventListener('keydown',e=>{if(e.target?.matches?.('input,textarea,select'))return;const k=e.key.toLowerCase();
  if(k==='o'&&!e.repeat&&['play','shop'].includes(state)){e.preventDefault();e.stopImmediatePropagation();if(panel.style.display==='flex')close();else open();return;}
  if(e.key==='Escape'&&panel.style.display==='flex'){e.preventDefault();e.stopImmediatePropagation();close();return;}
  if(k==='u'&&active&&state==='play'&&canWork(active.tasks[active.index])){e.preventDefault();e.stopImmediatePropagation();held=true;ensureAudio();}
