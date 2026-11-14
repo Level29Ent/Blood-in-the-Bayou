@@ -39,8 +39,11 @@ function kitchen(v){const g=new THREE.Group();g.name='Major Cajun kitchen';v.mes
  const chef=figure('jojo');g.add(chef);poseFigure(chef,x+22,z,Math.PI,0,'stand');
  v.furniture.push({x:x-23,y:z-12,w:46,h:24},{x:b.x+b.w*.7-18,y:z-10,w:36,h:20});
  for(const dynamic of [chef,liquid,...bubbles,bowl,ice,ladle,chains,pour,bowlFill])dynamic.traverse(o=>{if(o.isMesh)o.userData.noBatch=true;});
+ const result={g,chef,pot,liquid,bubbles,bowl,ice,ladle,chains,pour,bowlFill,x,z,zx,zz};
+ if(window.level29JojoRestaurant){result.restaurant=level29JojoRestaurant.build(THREE,v,result,addSign);}else{
  for(const side of [-1,1]){const xx=b.x+b.w/2+side*(b.w/2-20),zz=b.y+b.h*.72;add(g,new THREE.CylinderGeometry(9,9,2,16),xx,10,zz,'#775a3b');box(g,3,9,3,xx,4.5,zz,'#3c3931');v.furniture.push({x:xx-9,y:zz-9,w:18,h:18});}
- addSign(g,'CHIEF JOJO · GUMBO / CAJUN KITCHEN',Math.min(110,b.w-10),6,b.x+b.w/2,34,b.y+3,'#ebc187');return {g,chef,pot,liquid,bubbles,bowl,ice,ladle,chains,pour,bowlFill,x,z,zx,zz};
+ addSign(g,'CHIEF JOJO · GUMBO / CAJUN KITCHEN',Math.min(110,b.w-10),6,b.x+b.w/2,34,b.y+3,'#ebc187');
+ }return result;
 }
 function theater(v){const g=new THREE.Group();v.mesh.add(g);const b=v.b,x=b.x+b.w/2,z=b.y+26;box(g,b.w-16,5,38,x,2.5,z,'#534035');box(g,b.w-12,35,2,x,20,b.y+4,'#602e3b');
  const damion=figure('damion');g.add(damion);poseFigure(damion,x,z,Math.PI/2,0,'stand');damion.position.y=5;
