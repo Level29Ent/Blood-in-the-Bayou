@@ -9,7 +9,7 @@ function build(T,b,{base=0,dir=1,sign}={}){
  const box=(m,ww,hh,dd,x,y,z,c)=>inst(cube,m,x,y,z,ww,hh,dd,c);
  // Original illustrated toy-box atlas: vehicles, castles, robots and creatures, no copied brands.
  const n=128,data=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const stripe=y<16||y>111,shape=(x>27&&x<100&&y>35&&y<85)||(y>22&&y<43&&((x>31&&x<47)||(x>78&&x<94)));let c=stripe?220:shape?250:160+((x*13+y*7)%22);if(y>94&&y<100&&x>18&&x<108)c=65;data.set([c,c,c,255],(y*n+x)*4);}const tex=new T.DataTexture(data,n,n);tex.encoding=T.sRGBEncoding;tex.needsUpdate=true;const pack=mat('#ffffff',{map:tex});
- function toyBox(x,y,z,i,side=false){box(pack,side?2.8:5.7,4.2,side?5.7:2.8,x,y,z,colors[i%7]);boxes++;}
+ function toyBox(x,y,z,i,side=false){box(pack,side?2.8:5.7,4.2,side?3.5:2.8,x,y,z,colors[i%7]);boxes++;}
  function bear(x,y,z,i,s=1){const c=colors[i%7];inst(sphere,product,x,y+1.6*s,z,1.4*s,1.8*s,1.1*s,c);inst(sphere,product,x,y+3.5*s,z,1.3*s,1.2*s,1.1*s,c);for(const side of [-1,1]){inst(sphere,product,x+side*s,y+4.4*s,z,.48*s,.5*s,.4*s,c);inst(sphere,product,x+side*1.4*s,y+1.9*s,z,.6*s,.8*s,.6*s,c);inst(sphere,product,x+side*.7*s,y+.2*s,z+.6*s,.6*s,.45*s,.7*s,c);inst(sphere,black,x+side*.4*s,y+3.8*s,z+1.02*s,.12*s,.12*s,.1*s);}inst(sphere,white,x,y+3.2*s,z+1.1*s,.6*s,.4*s,.2*s);inst(sphere,black,x,y+3.45*s,z+1.28*s,.16*s,.12*s,.1*s);plush++;}
  box(white,w-4,.2,h-4,0,1.3,0);box(yellow,w-6,.05,16,0,1.43,h/2-11);
  // Yellow slatwall, white gondola frames and five tightly stocked shelf levels.
