@@ -479,7 +479,7 @@ liftButton.addEventListener('click',e=>{e.stopPropagation();if(performance.now()
 const liftPrevEnterExit=enterExit;
 enterExit=function(){if(liftButton.style.display!=='none'&&!player?.car){useLift();return;}liftPrevEnterExit();};
 const liftStyle=document.createElement('style');liftStyle.textContent='@media(max-width:700px){#penthouseLift{top:155px!important;bottom:auto!important;}}';document.head.appendChild(liftStyle);
-addEventListener('keydown',e=>{if(e.key.toLowerCase()!=='u'||e.repeat||e.target?.matches('input,textarea'))return;
+addEventListener('keydown',e=>{if(e.key.toLowerCase()!=='u'||e.repeat||e.target?.matches?.('input,textarea'))return;
  if(liftButton.style.display!=='none'){e.preventDefault();e.stopImmediatePropagation();useLift();}
 },true);
 const oldUpdate=update;
