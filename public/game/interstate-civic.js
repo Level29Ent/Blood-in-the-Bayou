@@ -5,6 +5,8 @@ function bridgeSurface(bridges,x,y){let h=null;for(const b of bridges){const v=b
 function locations(T=32){return {library:{x:100*T,y:151*T,w:280,h:220},metro:{x:100*T,y:142*T,w:280,h:220},entrance:{x:104*T,y:150*T}};}
 function roomBlocked(b,x,y,r){return x-r<b.x+4||x+r>b.x+b.w-4||y-r<b.y+4||y+r>b.y+b.h-4;}
 if(typeof module!=='undefined')module.exports={bridgeHeight,bridgeSurface,locations,roomBlocked};if(typeof window==='undefined')return;
+// Isolated signed-out review reuses the actual civic shell without building the city.
+if(window.level29LibraryReview){window.level29LibraryShell=shell;return;}
 let underground=false,returnPoint=null,room=null,library=null,metro=null;
 const generate=genCity;genCity=function(){const c=generate.apply(this,arguments);if(!c.highway)return c;underground=false;returnPoint=null;room=null;const L=locations(TILE);c.civicLocations=L;c.civicSolids=[];c.interstateBridges=[{name:'BAYOU MEMORIAL BRIDGE',x:c.highway.bounds.left,start:1300,end:2300},{name:'EAST CITY VIADUCT',x:c.highway.bounds.right,start:900,end:1900}];c.interstateSurface=(x,y)=>bridgeSurface(c.interstateBridges,x,y);
  const height=c.heightAt;c.heightAt=(x,y)=>{const h=c.interstateSurface(x,y);return h===null?height(x,y):h;};
@@ -20,7 +22,8 @@ const generate=genCity;genCity=function(){const c=generate.apply(this,arguments)
 };
 function shell(g,b,base,label,solidList){const D=level29InteriorModels,wall=D.material('#d1c9b8','tile'),floor=D.material('#9fa9a5','tile'),wood=D.material('#6d5542'),metal=D.material('#4a6069','metal');D.box(g,b.w,2,b.h,b.x+b.w/2,base,b.y+b.h/2,floor);D.box(g,b.w,48,3,b.x+b.w/2,base+24,b.y,wall);for(const x of [b.x,b.x+b.w])D.box(g,3,48,b.h,x,base+24,b.y+b.h/2,wall);
  for(const side of [-1,1])D.box(g,b.w/2-24,48,3,b.x+b.w/2+side*(b.w/4+12),base+24,b.y+b.h,wall);D.box(g,48,10,3,b.x+b.w/2,base+43,b.y+b.h,wall);D.box(g,b.w+6,2,b.h+6,b.x+b.w/2,base+50,b.y+b.h/2,wall);addSign(g,label,180,10,b.x+b.w/2,base+44,b.y+b.h+2,'#e8d5a2');
- if(label.includes('LIBRARY')){for(const side of [-1,1])for(let row=0;row<3;row++){const x=b.x+b.w/2+side*92,z=b.y+35+row*48;D.box(g,24,27,34,x,base+14,z,wood);for(let i=0;i<2;i++){const book=D.props('BOOK STORE');book.scale.setScalar(.5);book.position.set(x-9+i*3,base+8,z);g.add(book);}solidList.push({x:x-12,y:z-17,w:24,h:34});}for(const side of [-1,1]){const x=b.x+b.w/2+side*35;D.box(g,38,2,24,x,base+12,b.y+95,wood);solidList.push({x:x-19,y:b.y+83,w:38,h:24});}addSign(g,'READING ROOM · LOCAL HISTORY · LEVEL 29',120,6,b.x+b.w/2,base+32,b.y+4,'#e8d5a2');}
+ if(label.includes('LIBRARY')){const detail=level29LibraryInterior.build(THREE,b,base);g.add(detail.root);solidList.push(...detail.solids);for(const [i,r]of detail.plan.shelves.entries())addSign(g,['SCIENCE','HISTORY','FICTION','REFERENCE'][i],12,2,r.x+7,base+27.5,r.y+r.h+.6,'#d9d6c1');addSign(g,'SCIENCE / LOCAL HISTORY',90,4,b.x+b.w/2-70,base+35,b.y+5,'#e8d5a2');addSign(g,'READING LOUNGE',84,4,b.x+b.w/2,base+38,b.y+146,'#e8d5a2');}
+
  return {D,wall,floor,wood,metal};}
 function build(){if(!city?.civicLocations)return;const D=level29InteriorModels,c=city,g=new THREE.Group();g.name='Interstate bridges and civic expansion';cityGroup.add(g);const asphalt=D.material('#343b42','plaster'),concrete=D.material('#9caaa7','plaster'),steel=D.material('#9daeb1','metal',.7);
  for(const w of c.civicWalks||[])D.box(g,w.w,.5,w.h,w.x+w.w/2,.3,w.y+w.h/2,concrete);
