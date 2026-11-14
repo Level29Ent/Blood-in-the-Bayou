@@ -14,12 +14,10 @@ const fire=fireWeapon;fireWeapon=function(){if(curW==='snowball'&&!level29CitySt
 const reset=startGame;startGame=function(){level29FeliciaVoice.stop();return reset.apply(this,arguments);};
 const builder=buildVenue;buildVenue=function(v){if(v.kind!=='snowballs')return builder.apply(this,arguments);if(v.mesh?.parent===cityGroup)return;
  const g=new THREE.Group();g.name='Felicia walk-in trailer';v.mesh=g;cityGroup.add(g);const b=v.b,{box,add,figure}=level29StoryScenes;
- box(g,b.w,2,b.h,b.x+b.w/2,1,b.y+b.h/2,'#5c6270');for(const r of v.colliderWalls)box(g,r.w,38,r.h,r.x+r.w/2,19,r.y+r.h/2,'#d7b8d0');box(g,v.doorW,7,3,v.doorX,35,v.doorY-1,'#544a68');v.door=box(g,1,1,1,v.doorX,0,v.doorY,'#344854');v.door.visible=false;v.roof=box(g,b.w+2,2,b.h+2,b.x+b.w/2,40,b.y+b.h/2,'#58627c');v.labelH=62;v.furniture=[];
- box(g,b.w-24,12,14,b.x+b.w/2,6,b.y+30,'#655267');box(g,b.w-22,1,16,b.x+b.w/2,12.5,b.y+30,'#d5c7d4');v.furniture.push({x:b.x+12,y:b.y+23,w:b.w-24,h:14});
+ box(g,b.w,2,b.h,b.x+b.w/2,1,b.y+b.h/2,'#5c6270');for(const r of v.colliderWalls)box(g,r.w,38,r.h,r.x+r.w/2,19,r.y+r.h/2,'#55a32e');box(g,v.doorW,7,3,v.doorX,35,v.doorY-1,'#544a68');v.door=box(g,1,1,1,v.doorX,0,v.doorY,'#344854');v.door.visible=false;v.roof=box(g,b.w+2,2,b.h+2,b.x+b.w/2,40,b.y+b.h/2,'#58627c');v.labelH=62;v.furniture=[];
+ const interior=level29SnowballInterior.build(THREE,b);g.add(interior.root);v.furniture.push(...interior.solids);v.referenceSnowball=true;
  const owner=figure('felicia');poseFigure(owner,b.x+b.w/2,b.y+13,Math.PI/2,0,'stand');g.add(owner);v.felicia=owner;
- for(let i=0;i<5;i++){add(g,new THREE.CylinderGeometry(1.7,1.2,4,12),b.x+20+i*12,15,b.y+30,['#bc3f72','#73a6c0','#b087d1','#bc7c38','#75a788'][i]);add(g,new THREE.SphereGeometry(1.8,12,8),b.x+20+i*12,17,b.y+30,'#d8eef3');}
- box(g,14,18,15,b.x+17,9,b.y+62,'#a6b8c3');box(g,14,3,15,b.x+17,19,b.y+62,'#dae0dd');v.furniture.push({x:b.x+10,y:b.y+54,w:14,h:16});
- addSign(g,'FELICIA · SNOWBALLS',Math.min(100,b.w-8),9,v.doorX,49,v.doorY+2,'#e3c2de');addSign(g,'PACKED ICE · 6 / $180',Math.min(80,b.w-12),6,b.x+b.w/2,28,b.y+3,'#ebf5ff');
+ addSign(g,'FELICIA · SNOWBALLS',Math.min(100,b.w-8),9,v.doorX,49,v.doorY+2,'#e3c2de');
  // Decorative wheels remain outside the walk-in floor; no cab or solid shell across the doorway.
  for(const xx of [b.x+20,b.x+b.w-20])for(const zz of [b.y-1,b.y+b.h+1]){const tire=add(g,new THREE.CylinderGeometry(4,4,2,12),xx,2,zz,'#252a31');tire.rotation.x=Math.PI/2;}
 };
