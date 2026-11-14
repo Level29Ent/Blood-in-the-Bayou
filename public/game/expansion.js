@@ -275,7 +275,7 @@ function venueFloorTex(v){
   const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(v.b.w/64,v.b.h/64);t.encoding=THREE.sRGBEncoding;return floorTexCache[key]=t;
 }
 function buildVenue(v){
-  const b=v.b,group=new THREE.Group(),height=52,referenceLiquor=window.level29LiquorStore?.matches(v);group.position.y=terrainHeight(b.x+b.w/2,b.y+b.h/2);cityGroup.add(group);v.mesh=group;
+  const b=v.b,group=new THREE.Group(),height=52,referenceLiquor=window.level29LiquorStore?.matches(v),referenceDonut=window.level29DonutShop?.matches(v);group.position.y=terrainHeight(b.x+b.w/2,b.y+b.h/2);cityGroup.add(group);v.mesh=group;
   const wall=new THREE.MeshStandardMaterial({color:v.id==='safe'?'#d8cbaa':'#e6dfcf',roughness:.88,emissive:v.id==='safe'?'#4a3f2e':'#4b463c'}),trim=new THREE.MeshStandardMaterial({color:'#3f4b50',metalness:.4,roughness:.55});
   const floorMat=new THREE.MeshStandardMaterial({map:venueFloorTex(v),roughness:.55,metalness:.05,emissive:'#2c2a26'});
   addPart(group,b.w,.6,b.h,b.x+b.w/2,.3,b.y+b.h/2,floorMat);
@@ -295,13 +295,15 @@ function buildVenue(v){
   if(v.vehicle){for(let k=0;k<8;k++)addPart(v.door,v.doorW-2,.3,.2,0,-18+k*5,1,trim);}else{addPart(v.door,1.5,.6,1.5,v.doorW/2-4,0,1,trim);addPart(v.door,v.doorW*.6,15,.3,0,7,1,new THREE.MeshStandardMaterial({color:'#254039',metalness:.4,roughness:.2}));}
   addSign(group,v.name,Math.min(160,b.w),13,b.x+b.w/2,height+10.5,v.doorY-1,v.col);v.labelH=height+32;
   if(!v.privateResidence)addSign(group,v.vehicle?'DRIVE IN · E OPEN BAY':'WALK IN · AUTO DOOR',Math.min(125,b.w-8),7,v.doorX,46,v.doorY+.3,v.col);
-  if(!referenceLiquor&&!['business','armory'].includes(v.id))addSign(group,v.short,Math.min(100,b.w-15),12,b.x+b.w/2,35,b.y+3,v.col);
+  if(!referenceDonut&&!referenceLiquor&&!['business','armory'].includes(v.id))addSign(group,v.short,Math.min(100,b.w-15),12,b.x+b.w/2,35,b.y+3,v.col);
   for(const z of [b.y+25,b.y+b.h-25]){
     addPart(group,60,1,5,b.x+b.w/2,48,z,new THREE.MeshBasicMaterial({color:'#e8e8cf'}));
     const pool=new THREE.Mesh(new THREE.PlaneGeometry(110,90).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:'#fff1d4',map:softTex,transparent:true,opacity:.12,depthWrite:false}));pool.position.set(b.x+b.w/2,.7,z);group.add(pool);
   }
   const furniture=(x,z,w,h,d,color)=>{const m=addPart(group,w,h,d,x,h/2,z,new THREE.MeshStandardMaterial({color,roughness:.8,emissive:color,emissiveIntensity:.28}));v.furniture.push({x:x-w/2,y:z-d/2,w,h:d});return m;};
-  if(referenceLiquor){
+  if(referenceDonut){
+    const store=level29DonutShop.build(THREE,b,0,addSign);group.add(store.root);v.furniture.push(...store.solids);v.referenceDonut=true;
+  }else if(referenceLiquor){
     const store=level29LiquorStore.build(THREE,b,0,addSign);group.add(store.root);v.furniture.push(...store.solids);v.referenceLiquor=true;
   }else if(v.id==='garage'){
     furniture(b.x+14,b.y+45,19,10,55,'#c98642');furniture(b.x+b.w-14,b.y+45,19,20,50,'#3f5869');
