@@ -22,25 +22,25 @@ function buildPlant(T,site,options={}){
  // Smooth hyperboloid-like profile with an open throat and rolled concrete lip.
  for(const dx of [.27,.72]){
   const px=x+W*dx,pz=z+H*.28;
-  const profile=[];for(let j=0;j<=36;j++){const yy=j*150/36,rr=23*Math.sqrt(1+((yy-91)/68)**2);profile.push([rr*scale,(yy+9)*scale]);}
+  const profile=[];for(let j=0;j<=36;j++){const yy=j*120/36,rr=29*Math.sqrt(1+((yy-75)/70)**2);profile.push([rr*scale,(yy+9)*scale]);}
   part('lathe',profile,towerConcrete,px,0,pz);
   // Lip and inset inner wall are annular geometry, never a solid cylinder across the opening.
   const topR=profile.at(-1)[0];
-  part('lathe',[[topR-1.3*scale,149*scale],[topR-1.3*scale,159*scale],[topR,159*scale],[topR+.8*scale,158*scale],[topR+.8*scale,156.8*scale],[topR,156.8*scale]],towerConcrete,px,0,pz);
-  part('lathe',[[topR-1.5*scale,146*scale],[topR-1.5*scale,157*scale]],interior,px,0,pz);
+  part('lathe',[[topR-1.3*scale,119*scale],[topR-1.3*scale,129*scale],[topR,129*scale],[topR+.8*scale,128*scale],[topR+.8*scale,126.8*scale],[topR,126.8*scale]],towerConcrete,px,0,pz);
+  part('lathe',[[topR-1.5*scale,116*scale],[topR-1.5*scale,127*scale]],interior,px,0,pz);
   // Repeated horizontal construction seams follow the curved silhouette.
-  for(let yy=18;yy<151;yy+=10){const rr=23*Math.sqrt(1+((yy-91)/68)**2)*scale;part('ring',[1,.003,4,48],seam,px,(yy+9)*scale,pz,[rr,rr,rr],0,Math.PI/2);}
+  for(let yy=18;yy<121;yy+=10){const rr=29*Math.sqrt(1+((yy-75)/70)**2)*scale;part('ring',[1,.003,4,48],seam,px,(yy+9)*scale,pz,[rr,rr,rr],0,Math.PI/2);}
   const baseR=profile[0][0];
   part('cyl',[baseR+2*scale,baseR+2*scale,1.2*scale,48],curb,px,.9*scale,pz);
   // Air intake gap and slender support piers are visible below each shell.
   for(let i=0;i<24;i++){const a=i*Math.PI/12;box(1.7*scale,9*scale,1.7*scale,px+Math.cos(a)*(baseR-1.2*scale),5*scale,pz+Math.sin(a)*(baseR-1.2*scale),concrete);}
   solids.push({x:px-(baseR+3*scale),y:pz-(baseR+3*scale),w:2*(baseR+3*scale),h:2*(baseR+3*scale)});
-  towers.push({x:px,z:pz,height:159*scale,topRadius:topR});
+  towers.push({x:px,z:pz,height:129*scale,topRadius:topR});
  }
  // Soft white steam is shared, static low-poly scenery, not a weather/fluid simulation.
- const steam=new T.Group();steam.name='White cooling-tower steam';const steamGeo=new T.SphereGeometry(1,10,7),steamMat=new T.MeshBasicMaterial({color:'#f1f3ec',transparent:true,opacity:.17,depthWrite:false}),steamMesh=new T.InstancedMesh(steamGeo,steamMat,32),steamTransform=new T.Object3D();let steamIndex=0;
+ const steam=new T.Group();steam.name='White cooling-tower steam';const steamGeo=new T.SphereGeometry(1,10,7),steamMat=new T.MeshBasicMaterial({color:'#f1f3ec',transparent:true,opacity:.22,depthWrite:false}),steamMesh=new T.InstancedMesh(steamGeo,steamMat,32),steamTransform=new T.Object3D();let steamIndex=0;
  for(const tower of towers)for(let i=0;i<16;i++){
-  const level=Math.floor(i/2),a=i*2.4,r=(9+level*1.5)*scale;
+  const level=Math.floor(i/2),a=i*2.4,r=(11+level*1.6)*scale;
   steamTransform.position.set(tower.x+level*2*scale+Math.sin(a)*r*.55,tower.height+(5+level*10)*scale,tower.z+Math.cos(a)*r*.45);
   steamTransform.scale.set(r*.95,r*1.3,r*.9);steamTransform.updateMatrix();steamMesh.setMatrixAt(steamIndex++,steamTransform.matrix);
  }
