@@ -251,13 +251,13 @@ function decorateVenues(){
    for(const xx of [b.x+3,b.x+b.w-3])q.box(1,3,b.h-8,xx,z+2,b.y+b.h/2,dark);
    for(let yy=b.y+24;yy<b.y+b.h-5;yy+=32)q.box(b.w-8,.06,.22,x,z+.9,yy,steel);
    const title={garage:'SERVICE / DIAGNOSTICS',armory:'LICENSED EQUIPMENT',spray:'DETAILING / FINISH BAY',business:'OPERATIONS / DISPATCH',safe:'RESIDENT LOUNGE',bank:'ACCOUNTS / SECURE DEPOSITS',grocery:'FRESH PRODUCE / CHECKOUT',gym:'STRENGTH / RECOVERY',hospital:['TRIAGE / EMERGENCY','PHARMACY / WARD','STERILE OPERATING ROOM','IMAGING / PATHOLOGY','RECOVERY WARD'][l],police:'DUTY ROSTER / EVIDENCE',gas:'FUEL / CONVENIENCE',fire:'RESCUE / EQUIPMENT'}[v.id];
-   if(title&&v.id!=='business')text(g,title,Math.min(120,b.w-20),9,x,z+39,y);
+   if(title&&!['business','armory'].includes(v.id))text(g,title,Math.min(120,b.w-20),9,x,z+39,y);
    if(['garage','spray'].includes(v.id)){
     for(const xx of [b.x+17,b.x+b.w-17]){q.box(12,20,19,xx,z+10,b.y+25,red);for(let k=0;k<4;k++)q.box(9,.5,.7,xx,z+4+k*4,b.y+35,steel);}
     if(v.id==='garage')for(let k=0;k<5;k++){q.box(2,6+k%2*2,1,b.x+24+k*9,z+26,b.y+3,steel);q.box(4,2,1,b.x+24+k*9,z+30,b.y+3,steel);}
     else for(const xx of [b.x+9,b.x+b.w-9]){q.box(4,35,4,xx,z+18,b.y+b.h*.45,blue);for(let k=0;k<9;k++)q.box(4,2,7,xx,z+5+k*3,b.y+b.h*.45,green);}
    }else if(v.id==='armory'){
-    // Dedicated model pedestals are built by armory-showroom.js; no duplicate wall rack.
+    // Curated glass cases and wall racks are built by armory-showroom.js.
    }else if(['business','police','bank'].includes(v.id)){
     q.box(47,23,1,b.x+32,z+25,b.y+3,dark);
     for(let k=0;k<6;k++)q.box(10,6,.4,b.x+17+(k%3)*13,z+20+Math.floor(k/3)*8,b.y+4,paper);
