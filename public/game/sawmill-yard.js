@@ -9,11 +9,11 @@ function build(T,b,base=0){const root=new T.Group();root.name='Blackwater Sawmil
  else{a.fillStyle='#203c37';a.fillRect(0,0,256,256);a.fillStyle='#e5cf9b';a.textAlign='center';a.font='bold 25px sans-serif';a.fillText('BLACKWATER',128,60);a.font='bold 31px sans-serif';a.fillText('SAWMILL',128,103);a.font='17px sans-serif';a.fillText('TIMBER / FISHERY',128,151);a.font='14px sans-serif';a.fillText('U · SUPPLY CONTRACT',128,198);}
  const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;if(kind==='bark'||kind==='ground'){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(kind==='bark'?2:3,kind==='bark'?1:3);}textures.push(t);return t;};
  const linear=m=>{m.color.convertSRGBToLinear();return m;},mat=(color,extra={})=>linear(new T.MeshStandardMaterial({color,roughness:.85,...extra})),basic=(color,extra={})=>linear(new T.MeshBasicMaterial({color,...extra}));
- const bark=mat('#ffffff',{map:texture('bark')}),end=mat('#ffffff',{map:texture('end')}),mud=mat('#ffffff',{map:texture('ground')}),red=mat('#793e36',{metalness:.18}),roofEdge=mat('#4a3630'),wood=mat('#a99164'),dark=mat('#343c37'),green=mat('#3e5a45',{metalness:.35}),steel=mat('#6f7d79',{metalness:.6,roughness:.5}),yellow=mat('#aa8342',{metalness:.4}),sign=basic('#ffffff',{map:texture('sign')});
+ const bark=mat('#ffffff',{map:texture('bark')}),end=mat('#ffffff',{map:texture('end')}),mud=mat('#ffffff',{map:texture('ground')}),laneMud=mat('#9b9587',{map:null}),red=mat('#793e36',{metalness:.18}),roofEdge=mat('#4a3630'),wood=mat('#a99164'),dark=mat('#343c37'),green=mat('#3e5a45',{metalness:.35}),steel=mat('#6f7d79',{metalness:.6,roughness:.5}),yellow=mat('#aa8342',{metalness:.4}),sign=basic('#ffffff',{map:texture('sign')});
  const unit=new T.BoxGeometry(1,1,1),cyl=new T.CylinderGeometry(1,1,1,12,1,true),disc=new T.CircleGeometry(1,16),plane=new T.PlaneGeometry(1,1),dummy=new T.Object3D();
  const E=(geo,m,w,h,d,x,y,z,rx=0,ry=0,rz=0)=>{if(!buckets.has(m))buckets.set(m,new Map());const map=buckets.get(m);if(!map.has(geo))map.set(geo,[]);map.get(geo).push({w,h,d,x,y:y+base,z,rx,ry,rz});},B=(w,h,d,x,y,z,m)=>E(unit,m,w,h,d,x,y,z),cx=b.x+b.w/2,cz=b.y+b.h/2;
  function beam(a,z,width,m){const length=a.distanceTo(z),q=new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),z.clone().sub(a).normalize()),e=new T.Euler().setFromQuaternion(q),mid=a.clone().add(z).multiplyScalar(.5);E(unit,m,width,length,width,mid.x,mid.y,mid.z,e.x,e.y,e.z);}
- B(b.w-4,.2,b.h-4,cx,.15,cz,mud);B(45,.06,b.h-8,cx,.3,cz,dark);for(const dx of [-16,16])B(4,.08,b.h-8,cx+dx,.34,cz,mud);
+ laneMud.map=mud.map;B(b.w-4,.2,b.h-4,cx,.15,cz,mud);B(45,.06,b.h-8,cx,.3,cz,laneMud);for(const dx of [-16,16])B(4,.08,b.h-8,cx+dx,.34,cz,mud);
  // Every stack lies inside its own conservative ground collider; logs taper toward the top.
  let logs=0;const log=(x,y,z,length,radius,variant=0)=>{E(cyl,bark,radius,length,radius,x,y,z,0,0,Math.PI/2);for(const side of [-1,1])E(disc,end,radius*.96,radius*.96,1,x+side*(length/2+.04),y,z,0,side*Math.PI/2);logs++;};
  for(const[rowIndex,row]of p.rows.entries())for(let tier=0;tier<4;tier++){const count=5-tier;for(let i=0;i<count;i++){const radius=3.2+(i+rowIndex)%3*.18,z=row.y+(i-(count-1)/2)*7.1,y=3.6+tier*5.9,length=55+(i*3+rowIndex)%5;log(row.x+(i%2?1:-1),y,z,length,radius,rowIndex);}}
@@ -33,7 +33,7 @@ function build(T,b,base=0){const root=new T.Group();root.name='Blackwater Sawmil
  // Mill dust-extraction tower with ladder and guardrail, behind the right shed footprint.
  const tx=b.x+b.w-26,tz=b.y+21;E(cyl,steel,6,45,6,tx,49,tz);B(14,4,14,tx,73,tz,yellow);for(const dx of [-5,5])B(.6,34,.6,tx+dx,55,tz+7,steel);
  for(let y=39;y<72;y+=3)B(10,.6,.6,tx,y,tz+7,steel);for(const side of [-1,1])B(1,8,14,tx+side*7,78,tz,yellow);B(14,1,1,tx,82,tz-7,yellow);
- E(plane,sign,37,25,1,b.x+b.w-51,27,b.y+48.2);for(const dx of [-20,20])B(2,28,2,b.x+b.w-51+dx,15,b.y+48,wood);
+ E(plane,sign,32,18,1,b.x+b.w-51,19,b.y+49.5);for(const dx of [-20,20])B(2,28,2,b.x+b.w-51+dx,15,b.y+48,wood);
  // Parcel-edge industrial fence retains original perimeter collision and central entry opening.
  for(const side of [-1,1]){const x=b.x+(side<0?1:b.w-1);for(let z=b.y+4;z<b.y+b.h;z+=14)B(.8,12,.8,x,6,z,steel);for(const yy of [4,10])B(.7,.7,b.h,x,yy,cz,steel);}
  for(let x=b.x+5;x<b.x+b.w;x+=14){B(.8,12,.8,x,6,b.y+1,steel);if(Math.abs(x-cx)>29)B(.8,12,.8,x,6,b.y+b.h-1,steel);}for(const side of [-1,1])for(const yy of [4,10]){const span=(b.w-54)/2;B(span,.7,.7,b.x+(side<0?span/2:b.w-span/2),yy,b.y+b.h-1,steel);}
