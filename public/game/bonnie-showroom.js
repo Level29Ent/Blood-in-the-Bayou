@@ -55,14 +55,14 @@ function build(T,b,options={}){
  // Six existing game car types: no duplicated driveable entities or purchase inventory changes.
  for(const c of p.cars){const x=(c.x-b.x)/sx,z=(c.y-b.y)/sz;box(seam,78,.18,56,x,1.3,z);box(tile,76,.18,54,x,1.43,z);
   if(options.car){const car=options.car(c);car.position.set(c.x,1.6,c.y);car.rotation.y=0;root.add(car);}
-  box(metal,1,14,1,x-30,8,z+28);box(dark,20,7,1,x-30,18,z+28);
+  box(metal,1,14,1,x+30,8,z+28);box(dark,20,7,1,x+30,18,z+28);
  }
  function label(text,w,h,x,y,z,color='#e9e9df'){
  if(options.sign){options.sign(root,text,w*sx,h,b.x+x*sx,y,b.y+z*sz,color);return;}
  if(typeof document==='undefined')return;const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=128;const ctx=canvas.getContext('2d');ctx.fillStyle='#163449';ctx.fillRect(0,0,1024,128);ctx.fillStyle=color;ctx.textAlign='center';ctx.font='bold 42px sans-serif';ctx.fillText(text,512,79,1000);const tex=new T.CanvasTexture(canvas);tex.encoding=T.sRGBEncoding;mesh(new T.PlaneGeometry(w*sx,h),new T.MeshBasicMaterial({map:tex}),x,y,z);}
  label('BONNIE DE VETTE',118,12,76,33,4);label('SLAB MOTORS  /  VEHICLE SALES',115,6,76,23,4.1);label('BONNIE  •  WELCOME / SALES',82,5,77,10,71.1);
  label('BONNIE DE VETTE MOTORS',216,10,176,60,257);label('WALK IN  /  AUTO DOOR',90,5,176,39,257);
- for(const c of p.cars)label(c.hero?'HOUSTON SLAB':c.type.toUpperCase(),19,5,(c.x-b.x)/sx-30,18,(c.y-b.y)/sz+28.6);
+ for(const c of p.cars)label(c.hero?'HOUSTON SLAB':c.type.toUpperCase(),19,5,(c.x-b.x)/sx+30,18,(c.y-b.y)/sz+28.6);
  for(const [m,items]of batches){const inst=new T.InstancedMesh(unit,m,items.length);inst.userData.noBatch=true;items.forEach((v,i)=>{dummy.position.set(v.x,v.y,v.z);dummy.scale.set(v.w,v.h,v.d);dummy.updateMatrix();inst.setMatrixAt(i,dummy.matrix);});root.add(inst);}
  root.userData.noBatch=true;return {root,plan:p,solids:p.solids};
 }
