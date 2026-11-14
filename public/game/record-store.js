@@ -14,7 +14,7 @@ function build(T,b,{base=0,dir=1}={}){
  const box=(m,w,h,d,x,y,z,tint)=>emit(cube,m,w,h,d,x,y,z,tint);
  box(red,b.w-4,.12,b.h-4,b.w/2,1.6,b.h/2);box(dark,b.w-4,42,.3,b.w/2,24,1.4);for(const x of [1.4,b.w-1.4])box(x<2?dark:purple,.3,42,b.h-4,x,24,b.h/2);
  // Side flip-through bins: open tops, raised front-facing sleeves and full lower storage.
- for(const [bank,r]of p.bins.entries()){const x=r.x-b.x+r.w/2,z=r.y-b.y+r.h/2;box(wood,r.w,2,r.h,x,2.5,z);for(const xx of [x-r.w/2+.5,x+r.w/2-.5])box(wood,1,15,r.h,xx,11,z);box(wood,r.w,1,r.h,x,11,z);box(wood,r.w,1,r.h,x,19,z);
+ for(const [bank,r]of p.bins.entries()){const x=r.x-b.x+r.w/2,z=r.y-b.y+r.h/2;box(wood,r.w,2,r.h,x,2.5,z);for(const xx of [x-r.w/2+.5,x+r.w/2-.5])box(wood,1,15,r.h,xx,11,z);box(wood,r.w,1,r.h,x,11,z);
  const cells=Math.max(2,Math.floor(r.h/11)),step=r.h/cells;for(let cell=0;cell<cells;cell++){const zz=r.y-b.y+(cell+.5)*step;for(const end of [-1,1])box(wood,r.w,.8,.7,x,20,zz+end*step/2);for(let j=0;j<14;j++){box(sleeve,11,6,.4,x,15,zz-step*.38+j*step*.055,colors[(j+cell+bank)%8]);records++;}for(let j=0;j<13;j++){box(sleeve,11,8,.45,x,7,zz-step*.38+j*step*.058,colors[(j+cell)%8]);records++;}box(paper,11.5,.7,.45,x,18.4,zz-step*.38);}
  }
  // Slatwall with rows of face-out album artwork; original covers are merged into one atlas mesh.
@@ -31,9 +31,9 @@ function build(T,b,{base=0,dir=1}={}){
  // Face-out sleeves along the side walls and on the upper bins, oriented towards the central aisle.
  for(const [bank,r]of p.bins.entries()){const side=bank===0?1:-1,x=bank===0?3:b.w-3,angle=side*Math.PI/2;for(let row=0;row<2;row++){box(wood,3,.7,r.h,x+side*.5,24+row*10,r.y-b.y+r.h/2);for(let i=0;i<Math.floor(r.h/10);i++)cover(x+side*.5,29+row*10,r.y-b.y+5+i*10,8.5,i+row*5+bank*3,angle);}for(let i=0;i<Math.floor(r.h/11);i++)cover(r.x-b.x+r.w/2,24,r.y-b.y+6+i*11,9,i+bank*6);}
  // CD jewel-case spines in a dense right-back rack, no separate texture per item.
- const cdRun=Math.min(20,b.w*.24);box(wood,cdRun,20,6,b.w-7-cdRun/2,13,8.5);for(let row=0;row<4;row++){box(wood,cdRun,.5,6,b.w-7-cdRun/2,4+row*4.7,8.5);for(let i=0;i<26;i++){box(sleeve,.5,3.9,4.5,b.w-7-cdRun+i*.7,6.2+row*4.7,9,colors[(i+row)%8]);cds++;}}
+ const cdRun=Math.min(20,b.w*.24);box(wood,cdRun,20,.6,b.w-7-cdRun/2,13,6);for(const xx of [b.w-7-cdRun,b.w-7])box(wood,.6,20,6,xx,13,8.5);for(let row=0;row<4;row++){box(wood,cdRun,.5,6,b.w-7-cdRun/2,4+row*4.7,8.5);for(let i=0;i<26;i++){box(sleeve,.5,3.9,4.5,b.w-7-cdRun+i*.7,6.2+row*4.7,9,colors[(i+row)%8]);cds++;}}
  // A compact till/turntable sits on the back shelf, not in the browsing corridor.
- box(black,17,2,7,b.w*.48,5,8);emit(cyl,black,3.2,.25,3.2,b.w*.48-3,6.3,8);emit(cyl,paper,.7,.27,.7,b.w*.48-3,6.4,8);box(silver,.2,.25,4,b.w*.48+3,6.5,8);box(black,5,3,3,b.w*.48+6,7,8);box(screen,4,1.8,.1,b.w*.48+6,7.5,9.6);
+ box(wood,20,1,8,b.w*.48,10,8);box(black,17,2,7,b.w*.48,11.5,8);emit(cyl,black,3.2,.25,3.2,b.w*.48-3,12.8,8);emit(cyl,paper,.7,.27,.7,b.w*.48-3,12.9,8);box(silver,.2,.25,4,b.w*.48+3,13,8);box(black,5,3,3,b.w*.48+6,13.5,8);box(screen,4,1.8,.1,b.w*.48+6,14,9.6);
  // Framed music-inspired wall pieces, no real artist portraits copied from the references.
  for(let i=0;i<3;i++){const x=b.w*.2+i*b.w*.27;box(wood,10,7,.7,x,44,2.5);cover(x,44,3,5.7,12+i);}
  for(const x of [b.w*.25,b.w*.75]){box(black,2,.5,b.h-8,x,48,b.h/2);for(let z=13;z<b.h-4;z+=20){box(black,3,3,3,x,46,z);box(glow,2,.2,2,x,44.5,z);}}
