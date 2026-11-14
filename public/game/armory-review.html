@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gun store · interior review</title>
+<style>
+body{margin:0;background:#d4dce0;color:#fff;font:14px system-ui}canvas{display:block;width:100vw;height:100dvh}header{position:fixed;z-index:2;top:12px;left:12px;background:#202c30e8;padding:12px;border-radius:8px;max-width:90vw}p{margin:5px 0 10px;font-size:12px}button{padding:10px;border:1px solid #8b9b9d;background:#33474e;color:#fff;cursor:pointer;min-height:44px}#hudMapActions{display:none}
+</style>
+<header><b>Blood in the Bayou · gun-store interior</b><p>Production retail builder in an isolated room. Featured guns use cosmetic stock silhouettes here; the game retains its actual weapon models.</p>
+<button data-view="entrance">Entrance</button> <button data-view="counter">Glass counters</button> <button data-view="wall">Wall displays</button><p id="status">Building shop…</p></header>
+<div id="hudMapActions"></div><canvas id="review"></canvas>
+<script src="three.min.js"></script>
+<script>
+// Only the surrounding city/game services are fixtures. All mall geometry and props
+// below come from the same builders loaded by the playable game.
+var scene=new THREE.Scene(),cityGroup=new THREE.Group();scene.add(cityGroup);
+window.level29ArmoryReview=true;
+var city={venues:[]},player={dead:false},state='review',render=function(){},insideVenue=function(){return true};
+var WEAPONS=Object.fromEntries(['m240','shotgun','rpg','molotov','bat','smg','carbine','pistol','marksman'].map(id=>[id,{name:({m240:'SUPPORT',shotgun:'SHOTGUN',pistol:'HANDGUN',marksman:'SPORTING RIFLE'})[id]||'EQUIPMENT'}]));
+function addPart(g,w,h,d,x,y,z,mat){const mesh=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);mesh.position.set(x,y,z);g.add(mesh);return mesh}
+var level29World={material:function(color,metalness=0,roughness=.85){return new THREE.MeshStandardMaterial({color,metalness,roughness})},batch:function(group){const buckets=new Map();return {box:function(w,h,d,x,y,z,mat){if(!buckets.has(mat))buckets.set(mat,[]);buckets.get(mat).push([w,h,d,x,y,z])},finish:function(){const o=new THREE.Object3D();for(const [mat,items]of buckets){const mesh=new THREE.InstancedMesh(new THREE.BoxGeometry(1,1,1),mat,items.length);items.forEach((a,i)=>{o.position.set(a[3],a[4],a[5]);o.scale.set(a[0],a[1],a[2]);o.updateMatrix();mesh.setMatrixAt(i,o.matrix)});group.add(mesh)}}}}};
+function addSign(g,text,w,h,x,y,z,color){const canvas=document.createElement('canvas');canvas.width=1024;canvas.height=128;const c=canvas.getContext('2d');c.clearRect(0,0,1024,128);c.fillStyle=color;c.font='600 64px sans-serif';c.textAlign='center';c.textBaseline='middle';c.fillText(text,512,64,1000);const tex=new THREE.CanvasTexture(canvas),m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({map:tex,transparent:true,side:THREE.DoubleSide}));m.position.set(x,y,z);g.add(m);return m}
+</script>
+<script src="site-layout.js?v=restored-world-9"></script>
+<script src="armory-retail.js?v=reference-shop-1"></script>
+<script src="armory-showroom.js?v=reference-shop-1"></script>
+<script>
+const b={x:0,y:0,w:192,h:160},v={id:'armory',b,stationX:96,stationY:56,doorX:96,doorY:160,furniture:[]};
+const walls=new THREE.MeshStandardMaterial({color:'#dfd7c6',side:THREE.DoubleSide});
+addPart(cityGroup,192,52,3,96,26,1.5,walls);for(const x of [1.5,190.5])addPart(cityGroup,3,52,160,x,26,80,walls);
+addPart(cityGroup,192,1,160,96,52,80,walls);
+level29ArmoryShowroom.build(v,cityGroup);
+scene.background=new THREE.Color('#d6e1e6');scene.add(new THREE.HemisphereLight('#fff9e8','#7b7060',.65));const sun=new THREE.DirectionalLight('#fff3dc',.7);sun.position.set(100,400,180);scene.add(sun);
+const renderer=new THREE.WebGLRenderer({canvas:document.getElementById('review'),antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.outputEncoding=THREE.sRGBEncoding;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=.72;
+const camera=new THREE.PerspectiveCamera(65,1,.5,2000);
+const views={entrance:[[96,25,164],[96,21,45]],counter:[[98,24,119],[164,13,70]],wall:[[97,28,66],[80,24,4]]};
+function show(name){const view=views[name];camera.position.set(...view[0]);camera.lookAt(...view[1]);document.getElementById('status').textContent='Ready · '+name+' · wall stock / glass cases';draw()}
+function draw(){renderer.setSize(innerWidth,innerHeight,false);camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.render(scene,camera)}
+document.querySelectorAll('[data-view]').forEach(button=>button.onclick=()=>show(button.dataset.view));addEventListener('resize',draw);show('entrance');
+</script>
+</html>
