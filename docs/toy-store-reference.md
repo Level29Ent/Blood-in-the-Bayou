@@ -1,0 +1,9 @@
+# Reference-inspired mall toy store
+
+The existing ground-floor TOY STORE now combines the supplied toy-showroom references: bright yellow slatwall and canopy, white/metal side shelves, 90 illustrated boxed toys, a red-base glazed display with 45 modeled plush toys, hanging wire baskets, a small castle and two original block-character mascots. A colorful overhead construction-block ribbon recalls a playful branded-store ceiling without copying the pictured logos, characters or packaging. All product graphics are original/generic procedural patterns.
+
+The builder uses the actual 79.2×70 mall bay without expanding the parcel or blocking other stores. The existing doorway, shop name/browse point, floor and mall services remain unchanged. Matching shelf/showcase colliders leave a radius-ten central customer path. Both gallery directions transform the production model and colliders together. Generic back-counter/display/checkout/finish/stock props skip only TOY STORE. The authored root follows the mall's existing active-floor/nearby visibility system.
+
+Repeated geometry is instanced into 17 furnishing batches before signage. The box artwork is one original 128×128 generated texture; no network downloads, added lights, reflections or animation loops. Toy figures and stock are decorative, not purchasable items or playable toys. This is a stylized procedural interpretation rather than a photographic reproduction.
+
+`/game/toy-store-review.html` renders the same production builder at the real bay size with entrance, plush showcase, boxed shelf and reversed-gallery views. It does not run the full city, transactions or a physical-phone performance benchmark. Focused tests cover counts/bounds, finite instances, no lights/draw budget, both orientations, actual mall integration, floor hiding and doorway/service compatibility.
