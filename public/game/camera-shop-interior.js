@@ -20,14 +20,14 @@ function build(T,b,{base=0,dir=1}={}){
  // The back wall reads as a traditional warm timber camera cabinet, with lit glass shelves.
  box(wood,w-4,39,1,0,22,-h/2+2);for(const x of [-w/2+3,0,w/2-3])box(edge,.8,38,10,x,22,-h/2+7);
  const cols=Math.floor((w-10)/8),step=(w-10)/cols;
- for(let row=0;row<4;row++){const y=4.5+row*8.5;box(metal,w-7,.45,10,0,y,-h/2+7);box(glow,w-10,.18,.4,0,y+7.9,-h/2+3);for(let i=0;i<cols;i++){const x=-w/2+5+(i+.5)*step;if(row===0&&i%2===0)cameraBag(x,y+.3,-h/2+7,i);else camera(x,y+.3,-h/2+7,i+row*9);ticket(x,y+1,-h/2+12.3);}}
- box(glass,w-7,34,.15,0,22,-h/2+12.5);box(edge,w-5,1.3,11,0,40.5,-h/2+7);
+ for(let row=0;row<4;row++){const y=4.5+row*8.5;box(metal,w-7,.45,10,0,y,-h/2+7);box(glow,w-10,.18,.4,0,y+7.9,-h/2+3);for(let i=0;i<cols;i++){const x=-w/2+5+(i+.5)*step;if(row===0&&i%2===0)cameraBag(x,y+.3,-h/2+7,i);else camera(x,y+.3,-h/2+7,i+row*9);ticket(x,y+1,-h/2+12.8);}}
+ box(glass,w-7,34,.15,0,22,-h/2+13.2);box(edge,w-5,1.3,11,0,40.5,-h/2+7);
  // Glass-topped side counters have tiered display stock and tall wall lens cabinets behind them.
  for(const side of [-1,1]){const cx=side*(w/2-9.5),wall=side*(w/2-2.8),angle=-side*Math.PI/2;box(wood,13,6,run,cx,4.8,0);box(edge,13,.8,run,cx,8,0);for(const z of [-run/2,run/2])box(metal,13,17,.5,cx,16.5,z);
-  for(let row=0;row<2;row++){const y=8.7+row*7.5;box(metal,12,.35,run,cx,y,0);box(glow,.25,.18,run-1,cx+side*5.5,y+6.5,0);for(let i=0;i<Math.floor(run/6.5);i++){const z=-run/2+3.5+i*6.5;camera(cx,y+.4,z,i+row*6+(side===1?3:0),angle);ticket(cx-side*4.6,y+1.5,z,angle);}}
+  for(let row=0;row<2;row++){const y=8.7+row*7.5;box(metal,12,.35,run,cx,y,0);box(glow,.25,.18,run-1,cx+side*5.5,y+6.5,0);for(let i=0;i<Math.floor(run/6.5);i++){const z=-run/2+3.5+i*6.5;camera(cx,y+.4,z,i+row*6+(side===1?3:0),angle);ticket(cx-side*5.9,y+1.5,z,angle);}}
   box(glass,.15,16.5,run,cx-side*6.5,16.8,0);box(glass,13,.15,run,cx,25.2,0);box(metal,.45,.45,run,cx-side*6.5,25.5,0);
   // Top-deck demonstration cameras on dark stepped pedestals, with white/red price cards.
-  for(let i=0;i<3;i++){const z=-run*.28+i*run*.28;box(black,7,1.2,7,cx,26,z);camera(cx,26.7,z,i+4,angle);ticket(cx-side*5,27.7,z,angle);}
+  for(let i=0;i<3;i++){const z=-run*.28+i*run*.28;box(black,7,1.2,7,cx,26,z);camera(cx,26.7,z,i+4,angle);ticket(cx-side*5.9,27.7,z,angle);}
   box(wood,.5,18,run,wall,35,0);for(const z of [-run/2,run/2])box(edge,5,18,.6,wall-side*2,35,z);
   for(let row=0;row<2;row++){const y=29+row*8;box(metal,5,.3,run,wall-side*2,y,0);for(let i=0;i<7;i++){const z=-run/2+3+i*(run-6)/6;at(wall-side*2,y,z,angle,()=>{emit(cyl,i%4===0?paper:black,0,2.2,0,1.3,4.4,1.3);for(let n=0;n<4;n++)emit(cyl,rubber,0,.7+n,0,1.35,.15,1.35);emit(cyl,lensGlass,0,4.45,0,1.05,.1,1.05);});lenses++;}}
   box(glass,.1,17,run,wall-side*4.7,35,0);
