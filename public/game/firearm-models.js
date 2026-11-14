@@ -4,7 +4,7 @@
 const caches=new WeakMap();
 function kit(T){
  const mat=(name,color,roughness,metalness=0)=>{const m=new T.MeshStandardMaterial({color,roughness,metalness});m.name=name;return m;};
- const P={steel:mat('Blued steel','#424b52',.38,.55),edge:mat('Brushed hardware','#7c858a',.32,.65),poly:mat('Textured polymer','#272b2b',.82),rubber:mat('Rubber buttpad','#171b1c',.95),wood:mat('Walnut furniture','#805238',.6),black:mat('Recesses','#101618',.75),lens:mat('Optic glass','#3d727b',.19,.35)};
+ const P={steel:mat('Blued steel','#29343d',.38,.55),edge:mat('Brushed hardware','#7c858a',.32,.65),poly:mat('Textured polymer','#151b1d',.82),rubber:mat('Rubber buttpad','#171b1c',.95),wood:mat('Walnut furniture','#684631',.6),black:mat('Recesses','#101618',.75),lens:mat('Optic glass','#3d727b',.19,.35)};
  if(typeof document!=='undefined'){
   const canvas=document.createElement('canvas');canvas.width=256;canvas.height=128;const c=canvas.getContext('2d');
   c.fillStyle='#95603c';c.fillRect(0,0,256,128);
@@ -23,16 +23,20 @@ function build(T,id,P){
   const geo=new T.ExtrudeGeometry(s,{depth:Math.max(.01,d-r*2),bevelEnabled:true,bevelThickness:r,bevelSize:r*.5,bevelSegments:1,steps:1,curveSegments:2});geo.translate(0,0,-d/2+r);
   const mesh=new T.Mesh(geo,m);mesh.position.set(x,y,z);g.add(mesh);details.push(name);return mesh;
  };
+ const profile=(name,points,width,material)=>{
+  const shape=new T.Shape();points.forEach(([z,y],i)=>i?shape.lineTo(-z,y):shape.moveTo(-z,y));shape.closePath();
+  const geo=new T.ExtrudeGeometry(shape,{depth:width,bevelEnabled:true,bevelThickness:.04,bevelSize:.04,bevelSegments:1,steps:1});geo.translate(0,0,-width/2);geo.rotateY(Math.PI/2);g.add(new T.Mesh(geo,material));details.push(name);
+ };
  const tube=(name,r,len,x,y,z,m=P.steel)=>{const o=new T.Mesh(new T.CylinderGeometry(r,r,len,12),m);o.rotation.x=Math.PI/2;o.position.set(x,y,z);g.add(o);details.push(name);return o;};
  const muzzle=(z,y,r)=>{const lip=new T.Mesh(new T.RingGeometry(r*.66,r,16),P.steel);lip.position.set(0,y,z);lip.rotation.y=Math.PI;g.add(lip);const bore=new T.Mesh(new T.CircleGeometry(r*.65,16),P.black);bore.position.set(0,y,z+.035);bore.rotation.y=Math.PI;g.add(bore);details.push('recessed muzzle');};
  const guard=(z,y,scale=1)=>{const curve=new T.CatmullRomCurve3([new T.Vector3(0,y+.35,z+.7),new T.Vector3(0,y-.7,z+.7),new T.Vector3(0,y-.85,z-.7),new T.Vector3(0,y+.35,z-.8)],true);g.add(new T.Mesh(new T.TubeGeometry(curve,14,.1*scale,5,true),P.steel));part('curved trigger',.12,.6,.2,0,y-.1,z+.05,P.black).rotation.x=.25;details.push('open trigger guard');};
  const pins=(z,y,x=.83)=>{for(const dz of [0,1.25]){const pin=new T.Mesh(new T.CylinderGeometry(.1,.1,.05,8),P.edge);pin.rotation.z=Math.PI/2;pin.position.set(x,y,z+dz);g.add(pin);}details.push('receiver pins');};
  if(id==='pistol'){
   part('slide',1.2,.92,5.4,0,.65,-1.18);part('frame',1.08,.55,4.5,0,-.05,-.8,P.poly);
-  part('ejection port',.04,.45,.95,.617,.7,-1.1,P.black);part('barrel hood',.05,.25,.55,.642,.66,-1.05,P.edge);
+  part('ejection port',.04,.45,.95,.71,.7,-1.1,P.black);part('barrel hood',.05,.25,.55,.735,.66,-1.05,P.edge);
   const grip=part('angled grip',1.05,2.5,1.5,0,-1.4,.85,P.poly);grip.rotation.x=-.23;
   part('magazine base',1.18,.23,1.6,0,-2.7,1.16,P.rubber);
-  for(const side of [-1,1]){for(let i=0;i<6;i++)part('slide serrations',.03,.65,.055,side*.62,.65,.35+i*.18,P.black);for(let y=0;y<5;y++)part('grip texture',.035,.08,.95,side*.55,-.65-y*.34,.9,P.rubber);}
+  for(const side of [-1,1]){for(let i=0;i<6;i++)part('slide serrations',.03,.65,.055,side*.71,.65,.35+i*.18,P.black);for(let y=0;y<5;y++)part('grip texture',.035,.08,.95,side*.64,-.65-y*.34,.9,P.rubber);}
   guard(-.5,-.85);part('rear sight',1.15,.25,.3,0,1.25,.98,P.black);part('front sight',.18,.28,.2,0,1.22,-3.48,P.black);
   for(const x of [-.37,.37])part('sight dots',.12,.12,.04,x,1.31,1.15,P.edge);
   part('slide stop',.12,.18,.65,-.66,-.02,.2,P.edge);muzzle(-3.95,.65,.27);pins(.4,-.1,.56);
@@ -50,20 +54,21 @@ function build(T,id,P){
  }else{
   const compact=id==='smg',scoped=id==='marksman',front=compact?-8.32:-13.72;
   part('upper receiver',1.62,1.5,5.7,0,.45,.05);part('lower receiver',1.4,.85,3.8,0,-.5,1,P.poly);
-  part('ejection port',.04,.52,1.55,.84,.55,-.3,P.black);part('bolt face',.05,.18,1.1,.87,.43,-.25,P.edge);
+  part('ejection port',.04,.52,1.55,.95,.55,-.3,P.black);part('bolt face',.05,.18,1.1,.975,.43,-.25,P.edge);
   part('charging handle',.45,.3,1.2,-1.02,.6,.4,P.black);pins(-.8,.1);
   const grip=part('pistol grip',.95,2.6,1.3,0,-1.9,2.1,P.poly);grip.rotation.x=-.25;guard(.6,-1.1);
-  const mag=new T.Group();mag.position.set(0,-1.2,-.8);mag.rotation.x=.12;g.add(mag);
-  const magazine=part('curved magazine',1.05,compact?3.4:4.7,1.6,0,0,0,P.poly);g.remove(magazine);mag.add(magazine);magazine.position.set(0,-1.4,-.1);magazine.rotation.x=.06;
-  for(const side of [-1,1])for(let i=0;i<3;i++)part('magazine ribs',.045,2.6,.08,side*.55,-2.35,-1.3+i*.45,P.edge).rotation.x=.12;
+  const magBottom=compact?-4.3:-5.7;
+  profile('curved magazine',[[-1.65,-.85],[-.1,-.85],[.2,magBottom+.1],[-1.3,magBottom-.1],[-1.8,-2.6]],1.02,P.poly);
+  for(const side of [-1,1])for(let i=0;i<3;i++)part('magazine ribs',.045,compact?2.3:3.6,.075,side*.565,compact?-2.8:-3.4,-1.25+i*.4,P.edge).rotation.x=.08;
   const stockZ=compact?4.8:5.6;part('buffer tube',.65,.65,3.4,0,.5,3.9,P.black);
-  part('stock cheek rest',1.55,1.15,3.6,0,.5,stockZ,scoped?P.wood:P.poly);
+  profile('tapered shoulder stock',[[stockZ-1.8,.95],[stockZ+1.8,.95],[stockZ+1.8,-1.05],[stockZ+.6,-.85],[stockZ-1.8,.1]],1.4,scoped?P.wood:P.poly);
   part('stock lower brace',.65,.45,3.5,0,-.65,stockZ,P.poly).rotation.x=.25;
   part('buttpad',1.7,2.5,.45,0,-.05,compact?6.8:7.6,P.rubber);
   const handLen=compact?3.1:6.8,handZ=compact?-4.25:-6.4;
   part('fore-end',1.45,1.45,handLen,0,.1,handZ,scoped?P.wood:P.poly);
-  for(const side of [-1,1])for(let i=0;i<(compact?4:8);i++)part('vent recess',.035,.3,.46,side*.74,.25,handZ-handLen*.4+i*.7,P.black);
+  for(const side of [-1,1])for(let i=0;i<(compact?4:8);i++)part('vent recess',.035,.3,.46,side*.84,.25,handZ-handLen*.4+i*.7,P.black);
   tube('barrel',.2,compact?3.4:6.2,0,.4,(front+handZ)/2);tube('muzzle collar',.31,.65,0,.4,front+.35);muzzle(front,.4,.31);
+  part('continuous rail spine',1.1,.5,compact?7:11,0,1.13,compact?-1.8:-3.8,P.steel);
   for(let i=0;i<(compact?9:17);i++)part('top rail',1.55,.16,.18,0,1.42,2.2-i*.5,P.edge);
   if(scoped){
    for(const z of [-1.4,1.4])part('optic mounts',.75,.8,.5,0,1.85,z,P.black);
@@ -73,7 +78,8 @@ function build(T,id,P){
   }else{
    part('rear aperture base',1.2,.45,.6,0,1.7,1.8,P.black);
    const aperture=new T.Mesh(new T.TorusGeometry(.26,.08,5,12),P.steel);aperture.position.set(0,2,1.8);g.add(aperture);
-   part('front post',.12,.85,.15,0,1.65,front+1.2,P.edge);
+   part('front sight tower',.42,1.2,.5,0,.95,front+1.2,P.steel);
+   part('front post',.12,.6,.15,0,1.8,front+1.2,P.edge);
    for(const side of [-1,1])part('sight ears',.14,.65,.3,side*.45,1.55,front+1.2,P.black);
   }
  }
