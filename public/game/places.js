@@ -115,10 +115,7 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
   const station=level29PoliceInterior.build(THREE,b,base);g.add(station.root);v.furniture.push(...station.solids);v.referencePolice=true;v.policePlan=station.plan;staff(v,g,station.plan.staff.x,station.plan.staff.y,base);
 
  }else if(v.id==='fire'){
-  item(b.x+b.w/2,b.y+58,84,13,22,dark);sign('FIRE CAPTAIN · PAID RESCUE JOBS',b.x+b.w/2,b.y+4,190);staff(v,g,b.x+b.w/2,b.y+30,base);
-  for(let k=0;k<4;k++){const x=b.x+36+k*26;item(x,b.y+112,20,36,18,steel);q.box(13,18,2,x,base+22,b.y+122,material('#bd5033'));}
-  for(const x of [b.x+38,b.x+b.w-38]){item(x,b.y+b.h-55,24,6,30,wood);q.box(9,14,9,x,base+13,b.y+b.h-55,material('#e5c24b'));}
-  sign('RESCUE GEAR / DISPATCH',b.x+b.w/2,b.y+94,170);
+  const station=level29FireStation.build(THREE,b,base);g.add(station.root);v.furniture.push(...station.solids);v.referenceFire=true;staff(v,g,station.plan.staff.x,station.plan.staff.y,base);sign('FIRE CAPTAIN · PAID RESCUE JOBS',b.x+b.w/2,b.y+5,180);
  }else if(v.id==='hospital'){
   level29HospitalDepartments.build(v,g,q,base,level,staff);
  }
