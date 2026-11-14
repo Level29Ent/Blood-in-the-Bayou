@@ -1,0 +1,35 @@
+'use strict';
+(function(){
+const matches=v=>v?.depth==='warehouse';
+function plan(b){const racks=[{x:b.x+8,y:b.y+10,w:30,h:b.h-78,kind:'rack'},{x:b.x+b.w-38,y:b.y+10,w:30,h:b.h-78,kind:'rack'}];if(b.w>=240)for(const side of [-1,1])racks.push({x:b.x+b.w/2+side*57-13,y:b.y+12,w:26,h:b.h-106,kind:'rack'});
+ const packing={x:b.x+45,y:b.y+b.h-53,w:57,h:12,kind:'packing-line'},forklift={x:b.x+b.w-86,y:b.y+b.h-57,w:22,h:34,kind:'forklift'},staging={x:b.x+b.w-53,y:b.y+b.h-42,w:26,h:20,kind:'staging'};
+ return {racks,packing,forklift,staging,solids:[...racks,packing,forklift,staging],entry:{x:b.x+b.w/2,y:b.y+b.h},service:{x:b.x+b.w/2,y:b.y+b.h-40}};}
+function build(T,b,{base=0}={}){
+ const root=new T.Group();root.name='Bayou Loading Warehouse · pallet racks and dispatch';root.position.y=base;root.userData.noBatch=true;const p=plan(b),batches=new Map(),dummy=new T.Object3D(),textures=[],stats={racks:p.racks.length,pallets:0,cartons:0,wrappedLoads:0,forklifts:1};
+ const mat=(color,extra={})=>new T.MeshStandardMaterial({color,roughness:.84,...extra}),blue=mat('#2f526a',{metalness:.4}),orange=mat('#c9662e',{metalness:.3}),steel=mat('#66797d',{metalness:.55}),wood=mat('#a98a56'),kraft=mat('#b49a70'),kraft2=mat('#cab68d'),cartonBlue=mat('#365f86'),white=mat('#eee9d9'),black=mat('#263033'),yellow=mat('#dfbb48'),concrete=mat('#a3a9a4'),tape=mat('#d3c4a2'),wrap=mat('#bacac5',{transparent:true,opacity:.15,depthWrite:false}),glow=new T.MeshBasicMaterial({color:'#fff3ce'});
+ const cube=new T.BoxGeometry(),cyl=new T.CylinderGeometry(1,1,1,12),dummyVec=new T.Vector3();
+ function emit(geo,m,w,h,d,x,y,z,rx=0,ry=0,rz=0){if(!batches.has(m))batches.set(m,new Map());const g=batches.get(m);if(!g.has(geo))g.set(geo,[]);g.get(geo).push({w,h,d,x:b.x+x,y,z:b.y+z,rx,ry,rz});}
+ const box=(m,w,h,d,x,y,z)=>emit(cube,m,w,h,d,x,y,z);
+ function beam(m,x,y,z,xx,yy,zz,width=.3){const len=Math.hypot(xx-x,yy-y,zz-z),o=new T.Object3D();o.quaternion.setFromUnitVectors(new T.Vector3(0,1,0),dummyVec.set(xx-x,yy-y,zz-z).normalize());emit(cube,m,width,len,width,(x+xx)/2,(y+yy)/2,(z+zz)/2,o.rotation.x,o.rotation.y,o.rotation.z);}
+ function pallet(x,y,z,w,d){for(const side of [-1,1])box(wood,1.4,1.2,d,x+side*(w/2-1),y+.6,z);for(let i=0;i<5;i++)box(wood,w,.5,d/6,x,y+1.4,z-d/2+(i+.5)*d/5);stats.pallets++;}
+ function carton(x,y,z,w,h,d,i){box(i%7===0?cartonBlue:i%2?kraft:kraft2,w,h,d,x,y+h/2,z);box(tape,.6,.08,d+.1,x,y+h+.05,z);box(white,w*.4,h*.3,.08,x,y+h*.6,z+d/2+.05);box(black,.15,h*.22,.09,x-w*.14,y+h*.6,z+d/2+.1);box(black,.15,h*.22,.09,x-w*.05,y+h*.6,z+d/2+.1);stats.cartons++;}
+ function load(x,y,z,w,d,seed=0){pallet(x,y,z,w,d);for(let row=0;row<2;row++)for(let xx=0;xx<2;xx++)for(let zz=0;zz<2;zz++)carton(x+(xx-.5)*(w/2),y+1.7+row*4.5,z+(zz-.5)*(d/2),w/2-.5,4.3,d/2-.5,seed+row+xx+zz);if(seed%3===0){box(wrap,w+.5,9.2,d+.5,x,y+6.1,z);for(let j=0;j<3;j++)box(white,w+.6,.12,.08,x,y+3+j*2.5,z+d/2+.3);stats.wrappedLoads++;}}
+ function sign(text,x,y,z,w,h){if(typeof document==='undefined')return;const c=document.createElement('canvas');c.width=1024;c.height=160;const ctx=c.getContext('2d');ctx.fillStyle='#2b414b';ctx.fillRect(0,0,1024,160);ctx.fillStyle='#f3d27b';ctx.textAlign='center';ctx.font='bold 70px sans-serif';ctx.fillText(text,512,108,985);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;textures.push(t);const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:t}));m.userData.noBatch=true;m.position.set(b.x+x,y,b.y+z);root.add(m);}
+ const n=64,data=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){const v=207+(x*7+y*11)%31;data.set([v,v,v,255],(y*n+x)*4);}const floorMap=new T.DataTexture(data,n,n);floorMap.encoding=T.sRGBEncoding;floorMap.wrapS=floorMap.wrapT=T.RepeatWrapping;floorMap.repeat.set(8,8);floorMap.needsUpdate=true;textures.push(floorMap);concrete.map=floorMap;
+ box(concrete,b.w-8,.25,b.h-8,b.w/2,1,b.h/2);for(const x of [b.w/2-22,b.w/2+22])box(yellow,.6,.05,b.h-18,x,1.2,b.h/2);for(let z=10;z<b.h-10;z+=24)box(steel,b.w-8,.02,.1,b.w/2,1.16,z);
+ // Blue uprights, orange beams, tiered pallets and labeled cartons with open shelf fronts.
+ for(const [index,r]of p.racks.entries()){const x=r.x-b.x+r.w/2,z0=r.y-b.y,bays=Math.max(2,Math.floor(r.h/28)),step=r.h/bays;for(let bay=0;bay<=bays;bay++){const z=z0+bay*step;for(const side of [-1,1]){const xx=x+side*(r.w/2-.5);box(blue,1,43,1,xx,22,z);box(yellow,1.6,5,1.6,xx,3.5,z);}beam(steel,x-r.w/2+1,4,z,x+r.w/2-1,41,z,.35);}
+ for(let tier=0;tier<3;tier++){const yy=3+tier*13;for(const side of [-1,1])box(orange,1.1,1.5,r.h,x+side*(r.w/2-.4),yy,z0+r.h/2);for(let bay=0;bay<bays;bay++){const z=z0+(bay+.5)*step;box(steel,r.w,.5,1,x,yy,z-step/2);load(x,yy+.9,z,r.w-4,step-4,index+bay+tier);}}sign('RACK '+String.fromCharCode(65+index),x,43,z0+r.h+1,Math.min(25,r.w),4);}
+ // A roller packing bench and parcel trays stay to the left of the service aisle.
+ const t=p.packing,tx=t.x-b.x+t.w/2,tz=t.y-b.y+t.h/2;box(steel,t.w,1,t.h,tx,9,tz);for(let i=0;i<18;i++)emit(cyl,steel,1,10,1,tx-t.w/2+2+i*3,10,tz,Math.PI/2);for(const side of [-1,1])for(const end of [-1,1])box(steel,1.1,8,1.1,tx+side*(t.w/2-2),5,tz+end*4);for(let i=0;i<3;i++)carton(tx-17+i*16,10.8,tz,10,6,8,i);box(blue,7,5,.6,tx-22,16,tz-4);box(black,2,4,2,tx-22,12,tz-4);sign('PACK / DISPATCH',tx,30,tz-5,54,5);
+ // Parked forklift is decorative and shares one exact blocker; it is not a driveable vehicle.
+ const f=p.forklift,x=f.x-b.x+f.w/2,z=f.y-b.y+19;box(orange,16,7,17,x,5,z);box(black,12,3,12,x,9,z-2);box(black,8,5,2,x,12,z-4);for(const side of [-1,1]){for(const zz of [-6,6])emit(cyl,black,3.3,1.7,3.3,x+side*8,3.5,z+zz,0,0,Math.PI/2);box(steel,.7,17,.7,x+side*6,17,z-6);box(steel,.7,17,.7,x+side*6,17,z+6);box(black,.8,24,1.2,x+side*5,14,z-11);box(steel,1.5,.7,8,x+side*4,2.2,z-15);}box(black,14,.8,15,x,26,z);box(black,11,2,1,x,4,z-11);box(glow,2,1,1,x-6,8,z-8);emit(cyl,yellow,.9,1,.9,x+5,27,z);sign('FORKLIFT BAY',x,34,z+1,28,4);
+ const st=p.staging;load(st.x-b.x+st.w/2,1.3,st.y-b.y+st.h/2,st.w-1,st.h-1,9);box(yellow,st.w+3,.06,1,st.x-b.x+st.w/2,1.3,st.y-b.y+st.h+2);
+ // Steel roof trusses and self-lit fixtures create industrial scale without extra light sources.
+ for(let z=12;z<b.h-6;z+=38){box(steel,b.w-12,.8,1,b.w/2,46,z);for(let x=10;x<b.w-14;x+=24){beam(steel,x,46,z,x+12,50,z,.4);beam(steel,x+12,50,z,x+24,46,z,.4);}for(const x of [b.w*.25,b.w*.75]){box(steel,.3,2,.3,x,47,z);box(glow,12,.4,4,x,45.5,z);}}
+ sign('BAYOU LOADING / WAREHOUSE',b.w/2,43,4,b.w*.6,7);sign('KEEP AISLE CLEAR',b.w/2,29,4,52,5);
+ for(const [m,geos]of batches)for(const [geo,items]of geos){const mesh=new T.InstancedMesh(geo,m,items.length);mesh.userData.noBatch=true;items.forEach((a,i)=>{dummy.position.set(a.x,a.y,a.z);dummy.rotation.set(a.rx,a.ry,a.rz);dummy.scale.set(a.w,a.h,a.d);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});root.add(mesh);}
+ root.userData.warehouse={...stats,textures:textures.length};return {root,solids:p.solids};
+}
+const api={matches,plan,build};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29LoadingWarehouse=api;
+})();

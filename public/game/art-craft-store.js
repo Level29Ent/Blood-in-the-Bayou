@@ -1,0 +1,38 @@
+'use strict';
+(function(){
+function plan(b,dir=1){const depth=Math.min(12,Math.max(3,(b.w-28)/2)),rear=Math.min(10,b.h-36),flip=r=>dir===-1?{...r,x:2*b.x+b.w-r.x-r.w,y:2*b.y+b.h-r.y-r.h}:r;
+ const rows=[{x:b.x+3,y:b.y+rear+6,w:depth,h:b.h-rear-20,kind:'paint-paper-rack'},{x:b.x+b.w-depth-3,y:b.y+rear+6,w:depth,h:b.h-rear-20,kind:'yarn-pottery-rack'},{x:b.x+3,y:b.y+3,w:b.w-6,h:rear,kind:'craft-wall'}];if(b.h>=60)rows.push({x:b.x+b.w/2-13,y:b.y+15,w:26,h:10,kind:'pink-worktable'});
+ return {depth,rear,solids:rows.map(flip),entry:{x:b.x+b.w/2,y:dir===1?b.y+b.h:b.y},service:{x:b.x+b.w/2,y:dir===1?b.y+b.h-20:b.y+20}};}
+function build(T,b,{base=0,dir=1}={}){
+ const root=new T.Group();root.name='Art & Craft Store · yarn, paint and makers supplies';root.userData.noBatch=true;root.position.y=base;const p=plan(b),batches=new Map(),dummy=new T.Object3D(),textures=[],stats={yarn:0,paints:0,brushes:0,paper:0,fabric:0,ceramics:0,kits:0};
+ const mat=(color,extra={})=>new T.MeshStandardMaterial({color,roughness:.78,...extra});
+ function texture(kind){const n=64,data=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){let v=225;if(kind==='weave')v=(x%5===0||y%5===0)?170:239;else if(kind==='wood')v=220+Math.sin(x*.35+Math.sin(y*.1)) *19;else v=(Math.floor(x/8)+Math.floor(y/8))%2?190:245;data.set([v,v,v,255],(y*n+x)*4);}const t=new T.DataTexture(data,n,n);t.encoding=T.sRGBEncoding;t.wrapS=t.wrapT=T.RepeatWrapping;t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.needsUpdate=true;textures.push(t);return t;}
+ const weave=texture('weave'),wood=mat('#b99866',{map:texture('wood')}),cream=mat('#ece5d3'),pink=mat('#c8769b'),dark=mat('#3c4140'),silver=mat('#aab8b6',{metalness:.65,roughness:.28}),mint=mat('#91b5a0'),floor=mat('#b79461',{map:wood.map}),cloth=mat('#c77a8d',{map:texture('checks')}),ceramic=mat('#91aebe',{roughness:.35}),colors=['#d26b80','#dc9c46','#d7c866','#67a59b','#3b7997','#7d6aa5','#b5c1a1','#e9deca'].map(c=>mat(c)),yarns=colors.map(m=>mat(m.color,{map:weave}));
+ const cube=new T.BoxGeometry(),cyl=new T.CylinderGeometry(1,1,1,12),sphere=new T.SphereGeometry(1,10,8),torus=new T.TorusGeometry(1,.1,6,16),pot=new T.CylinderGeometry(1,.75,1,12),bowl=new T.LatheGeometry([[0,0],[.4,0],[1,.55],[1,.8],[.9,.8],[.72,.5],[0,.18]].map(([x,y])=>new T.Vector2(x,y)),16);
+ function emit(geo,m,w,h,d,x,y,z,rx=0,ry=0,rz=0){if(!batches.has(m))batches.set(m,new Map());const g=batches.get(m);if(!g.has(geo))g.set(geo,[]);g.get(geo).push({w,h,d,x:b.x+x,y,z:b.y+z,rx,ry,rz});}
+ const box=(m,w,h,d,x,y,z)=>emit(cube,m,w,h,d,x,y,z);
+ function sign(text,x,y,z,w,h,rotation=0,bg='#3a685f'){if(typeof document==='undefined')return;const c=document.createElement('canvas');c.width=1024;c.height=192;const ctx=c.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,1024,192);ctx.fillStyle='#fff0d3';ctx.textAlign='center';ctx.font='bold 76px sans-serif';ctx.fillText(text,512,126,985);const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;textures.push(t);const m=new T.Mesh(new T.PlaneGeometry(w,h),new T.MeshBasicMaterial({map:t}));m.position.set(b.x+x,y,b.y+z);m.rotation.y=rotation;m.userData.noBatch=true;root.add(m);}
+ function paint(x,y,z,i){emit(cyl,colors[i%8],.65,2.8,.65,x,y+1.4,z);emit(cyl,cream,.69,.5,.69,x,y+3,z);box(cream,.85,.9,.08,x,y+1.55,z+.65);stats.paints++;}
+ function brushes(x,y,z,i){emit(pot,ceramic,1.1,2.8,1.1,x,y+1.4,z);for(let j=0;j<5;j++){const xx=x+(j-2)*.28;box(wood,.13,4.2,.13,xx,y+4.3,z+(j%2)*.35);box(silver,.25,.8,.2,xx,y+6.4,z+(j%2)*.35);emit(sphere,colors[(i+j)%8],.18,.55,.15,xx,y+7,z+(j%2)*.35);stats.brushes++;}}
+ function ball(x,y,z,i,r=1.6){emit(sphere,yarns[i%8],r,r*.83,r*.83,x,y,z,0,i*.4);emit(torus,yarns[i%8],r*.93,r*.75,r*.82,x,y,z,Math.PI/2);stats.yarn++;}
+ function pottery(x,y,z,i){const m=i%2?ceramic:cream;emit(pot,m,1.6,3.5,1.6,x,y+1.75,z);emit(torus,m,1.6,1.6,1.6,x,y+3.5,z,Math.PI/2);emit(cyl,dark,1.4,.1,1.4,x,y+3.45,z);emit(bowl,colors[(i+3)%8],2.1,1.8,2.1,x+4,y,z);stats.ceramics+=2;}
+ box(floor,b.w-4,.25,b.h-4,b.w/2,1.8,b.h/2);for(let z=5;z<b.h-3;z+=7)box(dark,b.w-4,.02,.08,b.w/2,1.95,z);for(const x of [2,b.w-2])box(cream,.4,42,b.h-4,x,24,b.h/2);box(mint,b.w-4,42,.4,b.w/2,24,2);
+ // Open wall racks: narrow posts/boards, no opaque solid volume hiding the stock.
+ for(const [side,r]of p.solids.slice(0,2).entries()){const x=r.x-b.x+r.w/2,z=r.y-b.y+r.h/2,inner=side?r.x-b.x:r.x-b.x+r.w;box(wood,.5,32,r.h,side?b.w-3.2:3.2,18,z);for(const end of [-1,1])box(wood,r.w,33,.6,x,18,z+end*r.h/2);
+ for(let row=0;row<4;row++){const yy=4+row*8;box(wood,r.w,.6,r.h,x,yy,z);const cells=Math.max(2,Math.floor(r.h/10)),step=r.h/cells;for(let cell=0;cell<cells;cell++){const zz=r.y-b.y+(cell+.5)*step;if(!side){if(row<2){for(let j=0;j<4;j++)paint(x+(j%2)*2-1,yy+.4,zz-2+Math.floor(j/2)*3,row+cell+j);}else if(row===2){brushes(x,yy+.4,zz,cell);}else{for(let j=0;j<6;j++){box(colors[(j+cell)%8],5,.4,4,x,yy+.6+j*.45,zz);stats.paper++;}}}else if(row===0){pottery(x-2,yy+.4,zz,cell);}else{for(let j=0;j<4;j++)ball(x+(j%2?1.65:-1.65),yy+1.8+Math.floor(j/2)*2.9,zz,cell+j+row);}}}
+ sign(side?'YARN • TEXTILES':'PAINT • PAPER • BRUSHES',inner+(side?-.25:.25),39,z,r.h,4,side?-Math.PI/2:Math.PI/2);}
+ // Rear wall cubbies hold colorful yarn, craft kits and short fabric bolts.
+ const cols=Math.max(2,Math.floor((b.w-10)/8)),cell=(b.w-10)/cols,cz=3+p.rear/2;box(wood,b.w-6,31,.6,b.w/2,18,3.3);for(let row=0;row<3;row++){const yy=4+row*10;box(wood,b.w-6,.6,p.rear,b.w/2,yy,cz);for(let i=0;i<cols;i++){const x=5+(i+.5)*cell;box(wood,.4,30,p.rear,5+i*cell,19,cz);if(row===2){for(let j=0;j<4;j++)ball(x+(j%2?1.5:-1.5),yy+1.8+Math.floor(j/2)*2.8,cz+1,i+j,1.5);}else if(row===1){for(let j=0;j<4;j++){box(colors[(i+j)%8],.7,6,5,x-1.5+j,yy+3.4,cz);box(cream,.15,3,4.8,x-1.5+j,yy+3.4,cz+.1);stats.paper++;}}else{box(colors[i%8],cell*.76,5.7,3,x,yy+3.2,cz+1);box(cream,cell*.65,2.5,.1,x,yy+3.5,cz+2.55);for(let j=0;j<3;j++)box(colors[(i+j+2)%8],.5,1.6,.15,x-1+j,yy+3.5,cz+2.65);stats.kits++;}}}
+ sign('ART & CRAFT',b.w/2,42,3,b.w-10,6,0,'#815570');
+ // Fabric/paper rolls occupy the rear corners, never the doorway.
+ for(const side of [-1,1]){const x=side<0?7:b.w-7;for(let j=0;j<3;j++){emit(cyl,j%2?cloth:colors[(j+3)%8],1.1,12,1.1,x+j*.8,36,cz,0,0,.15*side);emit(cyl,cream,.5,.2,.5,x+j*.8,42.1,cz);stats.fabric++;}}
+ const table=p.solids.find(r=>r.kind==='pink-worktable');if(table){const x=b.w/2,z=20;box(pink,26,1,10,x,12.5,z);for(const xx of [-11,11])for(const zz of [-4,4])box(pink,1,11,1,x+xx,7,z+zz);box(mint,15,.18,8,x+3,13.1,z);for(let j=0;j<4;j++){box(colors[j],6,.4,5,x-8,13.2+j*.5,z-1);stats.paper++;}brushes(x+9,13.1,z-2,2);box(cream,5,1,3,x-4,13.8,z+2);}
+ // Small maker-gallery shelf recalls handcrafted ceramics and decorative glassware.
+ for(let i=0;i<3;i++){const x=b.w*.25+i*b.w*.25;box(wood,8,6,.4,x,45,3);box(cream,7,5,.15,x,45,3.3);emit(sphere,colors[i+2],1.5,1.2,.1,x-1,45,3.5);box(colors[i+4],2,1.4,.1,x+1,44,3.5);}
+ for(const x of [b.w*.28,b.w*.72]){box(cream,3,.6,b.h-12,x,48,b.h/2);box(new T.MeshBasicMaterial({color:'#fff4dc'}),1.8,.2,b.h-14,x,47.6,b.h/2);}
+ for(const [m,geos]of batches)for(const [geo,items]of geos){const mesh=new T.InstancedMesh(geo,m,items.length);mesh.userData.noBatch=true;items.forEach((a,i)=>{dummy.position.set(a.x,a.y,a.z);dummy.rotation.set(a.rx,a.ry,a.rz);dummy.scale.set(a.w,a.h,a.d);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});root.add(mesh);}
+ if(dir===-1){root.rotation.y=Math.PI;root.position.x=2*b.x+b.w;root.position.z=2*b.y+b.h;}
+ root.userData.artCraft={...stats,textures:textures.length};return {root,solids:plan(b,dir).solids};
+}
+const api={plan,build};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29ArtCraftStore=api;
+})();
