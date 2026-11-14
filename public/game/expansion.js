@@ -316,13 +316,7 @@ function buildVenue(v){
     addSign(group,'REPAIR · $150',68,9,b.x+b.w/2,21,b.y+3,v.col);
     for(let k=0;k<4;k++){const wheel=new THREE.Mesh(new THREE.TorusGeometry(4,1.5,6,12),MAT.tire);wheel.position.set(b.x+17,13+k*3,b.y+78);wheel.rotation.x=Math.PI/2;group.add(wheel);}
   }else if(v.id==='spray'){
-    for(const x of [b.x+24,b.x+b.w-24]){
-      addPart(group,3,34,3,x,17,b.y+60,trim);
-      const brush=new THREE.Mesh(new THREE.CylinderGeometry(6,6,25,16),new THREE.MeshStandardMaterial({color:'#3a9fab',roughness:.9}));brush.position.set(x,14,b.y+85);group.add(brush);(v.brushes||(v.brushes=[])).push(brush);
-      for(let k=0;k<5;k++)addPart(group,17,.5,2,x,4+k*5,b.y+85,new THREE.MeshStandardMaterial({color:'#70c9c6',roughness:1}));
-    }
-    addPart(group,b.w-45,3,4,b.x+b.w/2,35,b.y+60,trim);
-    addSign(group,'WASH + RESPRAY · $250',100,9,b.x+b.w/2,21,b.y+3,v.col);
+    const wash=level29CarwashInterior.build(THREE,b);group.add(wash.root);v.furniture.push(...wash.solids);v.brushes=wash.brushes;v.washSpray=wash.spray;v.referenceCarwash=true;
   }else if(v.id==='armory'){
     if(window.level29ArmoryShowroom)level29ArmoryShowroom.build(v,group);
     addSign(group,'U · WEAPONS / ARMOR',Math.min(48,b.w-76),4,b.x+b.w/2,6,b.y+20,v.col);
@@ -490,7 +484,8 @@ syncDynamic=function(){
     v.slide+=(Number(v.open)-v.slide)*.16;
     // Roll-up: keep the door's top edge under the lintel instead of sliding it through the floors above.
     if(v.door){const s=1-v.slide*.94;v.door.scale.y=s;v.door.position.y=41-20.5*s;}
-    if(v.brushes)for(const b of v.brushes)b.rotation.y+=v.wash?.12:.006;
+    if(v.brushes)for(const b of v.brushes)b.rotateY(v.wash?.12:.006);
+    if(v.washSpray)v.washSpray.visible=!!v.wash;
   }
 };
 const _expSyncLights=syncLights;
