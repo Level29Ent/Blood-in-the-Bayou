@@ -275,7 +275,7 @@ function venueFloorTex(v){
   const t=new THREE.CanvasTexture(cv);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(v.b.w/64,v.b.h/64);t.encoding=THREE.sRGBEncoding;return floorTexCache[key]=t;
 }
 function buildVenue(v){
-  const b=v.b,group=new THREE.Group(),height=52,referenceRecording=window.level29RecordingStudio?.matches(v),referenceFreight=window.level29FreightDepot?.matches(v),referenceRepair=window.level29RepairGarage?.matches(v),referenceLiquor=window.level29LiquorStore?.matches(v),referenceDonut=window.level29DonutShop?.matches(v),referenceLaundry=window.level29LaundryInterior?.matches(v),referenceBotanica=window.level29Botanica?.matches(v);group.position.y=terrainHeight(b.x+b.w/2,b.y+b.h/2);cityGroup.add(group);v.mesh=group;
+  const b=v.b,group=new THREE.Group(),height=52,referenceFilm=window.level29FilmStudio?.matches(v),referenceRecording=window.level29RecordingStudio?.matches(v),referenceFreight=window.level29FreightDepot?.matches(v),referenceRepair=window.level29RepairGarage?.matches(v),referenceLiquor=window.level29LiquorStore?.matches(v),referenceDonut=window.level29DonutShop?.matches(v),referenceLaundry=window.level29LaundryInterior?.matches(v),referenceBotanica=window.level29Botanica?.matches(v);group.position.y=terrainHeight(b.x+b.w/2,b.y+b.h/2);cityGroup.add(group);v.mesh=group;
   const wall=new THREE.MeshStandardMaterial({color:v.id==='safe'?'#d8cbaa':'#e6dfcf',roughness:.88,emissive:v.id==='safe'?'#4a3f2e':'#4b463c'}),trim=new THREE.MeshStandardMaterial({color:'#3f4b50',metalness:.4,roughness:.55});
   const floorMat=new THREE.MeshStandardMaterial({map:venueFloorTex(v),roughness:.55,metalness:.05,emissive:'#2c2a26'});
   addPart(group,b.w,.6,b.h,b.x+b.w/2,.3,b.y+b.h/2,floorMat);
@@ -301,7 +301,8 @@ function buildVenue(v){
     const pool=new THREE.Mesh(new THREE.PlaneGeometry(110,90).rotateX(-Math.PI/2),new THREE.MeshBasicMaterial({color:'#fff1d4',map:softTex,transparent:true,opacity:.12,depthWrite:false}));pool.position.set(b.x+b.w/2,.7,z);group.add(pool);
   }
   const furniture=(x,z,w,h,d,color)=>{const m=addPart(group,w,h,d,x,h/2,z,new THREE.MeshStandardMaterial({color,roughness:.8,emissive:color,emissiveIntensity:.28}));v.furniture.push({x:x-w/2,y:z-d/2,w,h:d});return m;};
-  if(referenceRecording){const studio=level29RecordingStudio.build(THREE,b,{sign:addSign});group.add(studio.root);v.furniture.push(...studio.solids);v.referenceRecording=true;
+  if(referenceFilm){const store=level29FilmStudio.build(THREE,b,{sign:addSign});group.add(store.root);v.furniture.push(...store.solids);v.referenceFilm=true;
+  }else if(referenceRecording){const studio=level29RecordingStudio.build(THREE,b,{sign:addSign});group.add(studio.root);v.furniture.push(...studio.solids);v.referenceRecording=true;
   }else if(referenceFreight){const store=level29FreightDepot.build(THREE,b,{sign:addSign});group.add(store.root);v.furniture.push(...store.solids);v.referenceFreight=true;
   }else if(referenceRepair){const store=level29RepairGarage.build(THREE,b,{sign:addSign});group.add(store.root);v.furniture.push(...store.solids);v.referenceRepair=true;
   }else if(referenceBotanica){const store=level29Botanica.build(THREE,b,0,addSign);group.add(store.root);v.furniture.push(...store.solids);v.referenceBotanica=true;

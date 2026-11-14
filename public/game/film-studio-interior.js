@@ -1,0 +1,40 @@
+'use strict';
+(function(){
+function matches(v){return v?.depth==='studio';}
+function plan(b){const r=(x,y,w,h,kind)=>({x:b.x+x,y:b.y+y,w,h,kind});const solids=[r(51,4,186,3,'green-screen'),r(61,112,26,28,'dolly-camera'),r(184,111,24,24,'tripod-camera'),r(222,99,35,87,'camera-crane'),r(16,82,18,22,'softbox'),r(251,76,20,20,'softbox'),r(34,59,20,20,'studio-lamp'),r(27,144,26,24,'director-chair'),r(13,184,68,17,'video-village'),r(263,14,17,51,'flight-cases'),r(12,13,24,22,'set-sofa'),r(13,38,22,12,'set-table'),r(57,151,20,14,'clapper-table')];return {solids,entry:{x:b.x+b.w/2,y:b.y+b.h-13},service:{x:b.x+b.w/2,y:b.y+b.h*.35},views:{stage:{x:b.x+144,y:b.y+103},director:{x:b.x+100,y:b.y+163},camera:{x:b.x+176,y:b.y+143}}};}
+function build(T,b,{base=0,sign=null}={}){
+ const root=new T.Group();root.name='Level 29 Production · green-screen soundstage';const p=plan(b),batches=new Map(),textures=[];
+ function surface(kind){const n=128,data=new Uint8Array(n*n*4);for(let y=0;y<n;y++)for(let x=0;x<n;x++){let v=225+((x*19+y*31+x*y)%23-11);if(kind==='concrete'){v+=Math.sin(x*.14+y*.07)*7;if(x===1||y===1)v-=24;}else if(kind==='fabric')v=230+(x%3?0:-20)+(y%3?0:-15);data.set([v,v,v,255],(y*n+x)*4);}const t=new T.DataTexture(data,n,n);t.encoding=T.sRGBEncoding;t.wrapS=t.wrapT=T.RepeatWrapping;t.generateMipmaps=true;t.minFilter=T.LinearMipmapLinearFilter;t.needsUpdate=true;textures.push(t);return t;}
+ const mat=(color,o={})=>new T.MeshStandardMaterial({color,roughness:.8,...o}),dark=mat('#1c2022'),steel=mat('#8d9597',{metalness:.7,roughness:.34}),rubber=mat('#101418',{roughness:.95}),floor=mat('#777367',{map:surface('concrete'),roughness:.35,metalness:.12}),green=mat('#169848',{roughness:1}),cloth=mat('#303338',{map:surface('fabric'),roughness:1}),wood=mat('#9d7747'),cream=mat('#dddbcc'),olive=mat('#77754e'),glass=mat('#233c4d',{metalness:.45,roughness:.16}),glow=new T.MeshBasicMaterial({color:'#fff3da'}),screen=new T.MeshBasicMaterial({color:'#2b6856'}),red=mat('#a94d39');floor.map.repeat.set(8,6);
+ const cube=new T.BoxGeometry(1,1,1),cyl=new T.CylinderGeometry(1,1,1,10),dummy=new T.Object3D(),up=new T.Vector3(0,1,0);
+ function emit(geo,m,size,pos,rotation){if(!batches.has(m))batches.set(m,new Map());const g=batches.get(m);if(!g.has(geo))g.set(geo,[]);dummy.position.set(b.x+pos[0],base+pos[1],b.y+pos[2]);dummy.scale.set(...size);dummy.quaternion.identity();if(rotation)dummy.quaternion.copy(rotation);dummy.updateMatrix();g.get(geo).push(dummy.matrix.clone());}
+ const box=(m,w,h,d,x,y,z)=>emit(cube,m,[w,h,d],[x,y,z]);
+ function rod(m,a,b,r=.35){const av=new T.Vector3(...a),v=new T.Vector3(...b).sub(av),mid=av.clone().addScaledVector(v,.5);emit(cyl,m,[r,v.length(),r],mid.toArray(),new T.Quaternion().setFromUnitVectors(up,v.normalize()));}
+ function wheel(x,y,z,r=1.7){emit(cyl,rubber,[r,1.2,r],[x,y,z],new T.Quaternion().setFromAxisAngle(new T.Vector3(1,0,0),Math.PI/2));}
+ box(floor,b.w-7,.25,b.h-7,b.w/2,1.2,b.h/2);box(dark,b.w-7,45,.5,b.w/2,24,3.3);for(const x of [3.4,b.w-3.4]){box(dark,.6,45,b.h-7,x,24,b.h/2);for(let z=15;z<b.h-10;z+=21)box(cloth,.8,22,16,x,27,z);}
+ // Seamless cyclorama with a quarter-round floor/wall cove, rather than a sharp green corner.
+ box(green,186,39,.5,144,23,5.75);box(green,186,.2,53,144,1.65,39.5);for(let i=0;i<12;i++){const a=i*Math.PI/24,c=(i+1)*Math.PI/24,z1=13-7*Math.cos(a),y1=8.75-7*Math.sin(a),z2=13-7*Math.cos(c),y2=8.75-7*Math.sin(c);const geo=new T.BufferGeometry(),pos=[51,y1,z1,237,y1,z1,237,y2,z2,51,y1,z1,237,y2,z2,51,y2,z2];geo.setAttribute('position',new T.Float32BufferAttribute(pos,3));geo.computeVertexNormals();emit(geo,green,[1,1,1],[0,0,0]);}
+ // Dark warehouse ceiling, cable trays and open, braced lighting trusses.
+ box(dark,b.w-7,.4,b.h-7,b.w/2,50,b.h/2);for(const z of [32,100,171]){for(const y of [44,48])for(const dx of [-2,2])rod(steel,[14,y,z+dx],[b.w-14,y,z+dx],.3);for(let x=14;x<b.w-18;x+=16){rod(steel,[x,44,z-2],[x+16,48,z-2],.22);rod(steel,[x,48,z+2],[x+16,44,z+2],.22);}for(const x of [17,b.w-17])rod(dark,[x,48,z],[x,50,z],.5);}
+ for(const x of [65,144,222])for(const z of [40,160]){box(dark,32,1.2,21,x,41.5,z);box(glow,29,.25,18,x,40.7,z);rod(steel,[x,42,z],[x,47,z],.3);}
+ function tripod(x,z,h){for(const a of [0,Math.PI*2/3,Math.PI*4/3])rod(steel,[x+Math.cos(a)*8,2,z+Math.sin(a)*8],[x,h,z],.45);rod(dark,[x,5,z],[x,h+2,z],.7);}
+ function camera(x,z,dolly=false){tripod(x,z,17);box(dark,8,7,12,x,22,z);box(steel,7,2,14,x,18,z);box(dark,11,8,2,x,22,z-9);emit(cyl,glass,[2.8,5,2.8],[x,22,z-6],new T.Quaternion().setFromAxisAngle(new T.Vector3(1,0,0),Math.PI/2));box(glass,5,3,.5,x-5,27,z);rod(steel,[x,25,z+2],[x,29,z+2],.3);box(rubber,5,.7,1,x,29,z+2);rod(steel,[x+3,18,z+3],[x+5,15,z+10],.35);box(red,.6,.6,.3,x+4.2,24,z-1);if(dolly){box(dark,24,1.5,26,x,2,z);for(const dx of [-10,10])for(const dz of [-11,11])wheel(x+dx,2,z+dz);for(const dx of [-7,7])rod(steel,[x+dx,1.1,z-23],[x+dx,1.1,z+23],.45);}}
+ camera(74,126,true);camera(196,123);
+ // Jib is static scenery: its footprint is reserved, and its boom stays above head height.
+ box(dark,30,2,28,239,3,171);for(const dx of [-12,12])for(const dz of [-11,11])wheel(239+dx,3,171+dz,2);rod(steel,[239,4,171],[239,25,171],1.2);for(const dx of [-3,3]){rod(dark,[239+dx,24,183],[239+dx,36,105],.7);rod(steel,[239+dx,26,167],[239+dx,38,128],.24);}box(dark,13,7,13,239,23,180);rod(steel,[239,36,105],[239,29,105],.6);box(dark,8,6,10,239,29,104);box(glass,5,4,.4,239,29,98.8);
+ function lamp(x,z,soft){tripod(x,z,24);rod(steel,[x,24,z],[x,32,z],.4);box(dark,soft?17:9,soft?13:9,4,x,32,z);box(glow,soft?15:7,soft?11:7,.3,x,32,z+.1-2.2);for(const dx of [-1,1])box(cloth,2,soft?16:11,6,x+dx*(soft?9:5.5),32,z-1);}
+ lamp(25,93,true);lamp(261,86,true);lamp(44,69,false);
+ // Director's canvas chair, folding cross-braces, clapperboard and monitor village.
+ for(const dx of [-9,9]){rod(wood,[40+dx,2,145],[40-dx,15,164],.65);rod(wood,[40+dx,2,164],[40-dx,15,145],.65);rod(wood,[40+dx,12,145],[40+dx,25,145],.6);box(wood,1,1.2,19,40+dx,17,155);}
+ box(cloth,17,.6,16,40,13,155);box(cloth,18,7,.8,40,22,145);box(wood,19,.8,2,40,5,164);
+ box(dark,20,1,12,67,15,158);for(const dx of [-8,8])for(const dz of [-4,4])rod(steel,[67+dx,2,158+dz],[67-dx,14,158-dz],.35);box(cream,12,7,.5,67,19,158);for(let i=0;i<6;i++)box(i%2?cream:dark,2,1.8,.6,62+i*2,23,158);
+ box(wood,68,1,17,47,15,192);for(const dx of [-29,29])for(const dz of [-6,6])rod(steel,[47+dx,1.5,192+dz],[47+dx,15,192+dz],.55);for(const x of [29,61]){box(dark,21,12,1.2,x,24,188);box(screen,19,10,.2,x,24,188.8);box(dark,9,.5,5,x,15.8,191);rod(steel,[x,16,188],[x,19,188],.6);box(dark,13,.6,5,x,16,197);}box(cream,7,.4,4,47,16,196);
+ for(let i=0;i<3;i++)for(let k=0;k<2;k++){const x=271,z=23+i*17,y=2+k*12;box(dark,16,11,15,x,y+5.5,z);for(const dx of [-7,7])box(steel,1,11,15,x+dx,y+5.5,z);box(steel,15,.7,15,x,y+1,z);box(steel,15,.7,15,x,y+10,z);box(steel,5,1,.5,x,y+6,z+7.8);}
+ // Small practical lounge set; the center service marker is deliberately kept open.
+ box(wood,24,2,21,24,3,23);box(olive,24,5,17,24,6,23);box(olive,24,10,3,24,11,14);for(const x of [13,35])box(olive,3,8,19,x,9,23);box(wood,22,1,12,24,6,44);for(const x of [15,33])rod(wood,[x,1.6,44],[x,6,44],.5);
+ for(const [m,by]of batches)for(const [geo,list]of by){const mesh=new T.InstancedMesh(geo,m,list.length);list.forEach((matrix,i)=>mesh.setMatrixAt(i,matrix));mesh.name='Film studio · '+(m===green?'cyclorama':m===glow?'soft lights':m===steel?'rigging / equipment':'soundstage fixtures');mesh.userData.noBatch=true;mesh.frustumCulled=false;root.add(mesh);}
+ if(sign){sign(root,'LEVEL 29 · SOUNDSTAGE A',146,6,b.x+144,base+44,b.y+7,'#e9dfc5');sign(root,'DIRECTOR',17,3,b.x+40,base+22,b.y+144.4,'#eee4c7');sign(root,'VIDEO VILLAGE',55,4,b.x+47,base+35,b.y+204,'#ddd8be');}
+ root.userData.film={cameras:3,softboxes:2,cranes:1,cases:6,textures:textures.length};return {root,solids:p.solids,plan:p};
+}
+const api={matches,plan,build};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29FilmStudio=api;
+})();
