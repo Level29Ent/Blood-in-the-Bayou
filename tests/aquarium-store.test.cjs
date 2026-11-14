@@ -6,3 +6,18 @@ test('fish animate deterministically with bounded movement and return all body p
 test('mirrored south-gallery fixtures and fish match mirrored colliders and elevated base',()=>{const a=A.build(T,b,{base:56}),c=A.build(T,b,{base:56,dir:-1});a.root.updateMatrixWorld(true);c.root.updateMatrixWorld(true);const ba=new T.Box3().setFromObject(a.root),bc=new T.Box3().setFromObject(c.root);assert.ok(Math.abs(ba.min.x-(2*b.x+b.w-bc.max.x))<.001);assert.ok(Math.abs(ba.min.z-(2*b.y+b.h-bc.max.z))<.001);assert.equal(c.root.position.y,56);assert.deepEqual(c.solids,A.plan(b,-1).solids);});
 test('mall display hook installs only aquarium model and returns exact solid layout',()=>{const ctx={THREE:T,window:{},level29AquariumStore:A};vm.createContext(ctx);vm.runInContext(fs.readFileSync('public/game/mall-displays.js','utf8'),ctx);const s={...shop},g=new T.Group(),built=ctx.window.level29MallDisplays.build(s,g,0);assert.equal(s.referenceAquarium,true);assert.equal(g.children[0],built.root);assert.equal(typeof s.animateAquarium,'function');assert.deepEqual(built.solids,A.plan(b,shop.dir).solids);});
 test('production loads model once, replaces generic counter and excludes duplicate stock/finish passes',()=>{const h=fs.readFileSync('public/game/index.html','utf8');assert.equal((h.match(/src="aquarium-store.js/g)||[]).length,1);assert.ok(h.indexOf('src="aquarium-store.js')<h.indexOf('src="mall-displays.js'));for(const f of ['mall-gardens','business-richness','interior-finish-runtime'])assert.match(fs.readFileSync('public/game/'+f+'.js','utf8'),/referenceAquarium/);const mall=fs.readFileSync('public/game/mall-gardens.js','utf8');assert.match(mall,/BARBER SHOP','FISH AQUARIUM STORE'\]\.includes/);assert.match(mall,/referenceAquarium&&s\.referenceRoot.visible&&state==='play'/);});
+
+test('launcher supplies the aquarium browser global to the real mall display hook',()=>{
+ const html=fs.readFileSync('public/game/index.html','utf8');
+ const scripts=[...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)].map(m=>m[1].split('?')[0]);
+ const model=scripts.indexOf('aquarium-store.js'),display=scripts.indexOf('mall-displays.js');
+ assert.equal(scripts.filter(s=>s==='aquarium-store.js').length,1);
+ assert.ok(model>scripts.indexOf('three.min.js')&&model<display);
+ const ctx={THREE:T};ctx.window=ctx;vm.createContext(ctx);
+ for(const i of [model,display])vm.runInContext(fs.readFileSync('public/game/'+scripts[i],'utf8'),ctx);
+ const tenant={...shop},group=new T.Group();
+ const built=ctx.level29MallDisplays.build(tenant,group,0);
+ assert.equal(tenant.referenceAquarium,true);
+ assert.equal(group.children[0],built.root);
+ assert.ok(built.root.userData.aquarium.fish>=75);
+});
