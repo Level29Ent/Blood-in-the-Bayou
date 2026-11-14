@@ -103,9 +103,7 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
   }
   staff(v,g,b.x+b.w/2,b.y+22,base);for(const [label,x]of [['DRINKS',b.x+38],['FOOD',b.x+b.w-38]])sign(label,x,b.y+5,55);
  }else if(v.id==='bank'){
-  item(b.x+b.w/2,b.y+65,b.w-70,14,20,wood);sign('TELLER · ACCOUNTS / VAULT',b.x+b.w/2,b.y+4,180);staff(v,g,b.x+b.w/2,b.y+42,base);
-  v.furniture.push({x:b.x+14,y:b.y+114,w:42,h:38});sign('VAULT',b.x+35,b.y+112,40);for(let k=0;k<3;k++){q.box(8,3,9,b.x+25+k*9,base+21,b.y+147,green);}
-  for(const x of [b.x+b.w-35,b.x+b.w-65])item(x,b.y+b.h-50,20,9,22,dark);
+  const bank=level29BankInterior.build(THREE,b,base);g.add(bank.root);v.furniture.push(...bank.solids);v.referenceBank=true;staff(v,g,bank.plan.staff.x,bank.plan.staff.y,base);
  }else if(v.id==='gym'){
   for(const x of [b.x+35,b.x+b.w-35])for(const y of [b.y+60,b.y+120]){item(x,y,28,3,40,dark);q.box(3,19,3,x+12,base+11,y-16,steel);q.box(28,2,3,x,base+21,y-16,steel);}
   for(const y of [b.y+40,b.y+95]){item(b.x+90,y,26,8,45,steel);q.box(45,2,3,b.x+90,base+24,y,steel);for(const x of [b.x+70,b.x+110])q.box(4,14,14,x,base+24,y,dark);}
