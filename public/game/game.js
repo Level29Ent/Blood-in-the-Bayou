@@ -7,7 +7,8 @@ const cv = document.getElementById('c'), cx = cv.getContext('2d');
 let SW = 0, SH = 0, DPR = 1;
 function resize(){
   DPR = Math.min(1.5, window.devicePixelRatio || 1);
-  SW = innerWidth; SH = innerHeight;
+  const size = window.level29MobileViewport.viewportSize(cv,innerWidth,innerHeight);
+  SW = size.width; SH = size.height;
   cv.width = Math.round(SW * DPR); cv.height = Math.round(SH * DPR);
 }
 addEventListener('resize', resize); resize();

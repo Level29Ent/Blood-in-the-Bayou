@@ -1,5 +1,11 @@
 'use strict';
 (function(){
+// CSS size is authoritative: an iframe or Safari rotation can change the visible
+// canvas before innerWidth/innerHeight or the window resize event catches up.
+function viewportSize(canvas,width,height){
+ const rect=canvas?.getBoundingClientRect?.();
+ return {width:Math.max(1,Math.round(rect?.width>0?rect.width:width)),height:Math.max(1,Math.round(rect?.height>0?rect.height:height))};
+}
 // Keep a desktop-sized viewmodel from filling a narrow portrait viewport.
 // Apply a clip-space fit, anchored at the lower right. This leaves the world
 // camera and weapon transforms (including muzzle/tracer origins) unchanged.
@@ -21,7 +27,7 @@ function fitText(ctx,text,size,maxWidth,font='800 ',family='Barlow Condensed'){
  return Math.min(size,size*maxWidth/Math.max(1,ctx.measureText(text).width));
 }
 function labelClear(x,y,width,height,missionBottom=160){return x>10&&x<width-10&&y>Math.max(missionBottom+48,height<500?110:190)&&y<height-(height<500?120:230);}
-const api={fitViewmodel,hudLayout,fitText,labelClear};
+const api={viewportSize,fitViewmodel,hudLayout,fitText,labelClear};
 if(typeof module!=='undefined')module.exports=api;
 if(typeof window!=='undefined')window.level29MobileViewport=api;
 })();
