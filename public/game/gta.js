@@ -419,16 +419,25 @@ function updateRadio(){}
 
 
 // ---------- Survivor voice lines ----------
-const _say = say; say = function(t){ _say(t); if (/thank god/i.test(t)) playVO('sv_0', { vol: 1.1 }); };
+let survivorVoiceRequest = 0;
+function survivorVO(key){
+  const origin = mission, request = ++survivorVoiceRequest;
+  // Preserve readable captions when muted or the recording cannot download.
+  subtitle = {name:'SURVIVOR', txt:VO_TEXT[key], t:180};
+  queuedVO(key, {vol:1.1}, () => state === 'play' && mission === origin && request === survivorVoiceRequest, r => {
+    subtitle = {name:'SURVIVOR', txt:VO_TEXT[key], t:Math.round(r.dur*60)+40};
+  });
+}
+const _say = say; say = function(t){ _say(t); if (/thank god/i.test(t)) survivorVO('sv_0'); };
 let svState = { car: false, warnT: 0 };
 function updateSurvivorVO(){
   const s = survivors[0];
   if (!s || !s.following){ svState.car = false; return; }
-  if (s.inCar && !svState.car){ svState.car = true; playVO('sv_2', { vol: 1.1 }); subtitle = { name: 'SURVIVOR', txt: VO_TEXT.sv_2, t: 150 }; }
+  if (s.inCar && !svState.car){ svState.car = true; survivorVO('sv_2'); }
   if (!s.inCar) svState.car = false;
-  if (--svState.warnT <= 0 && !s.inCar && zombiesNear(s.x, s.y, 160) >= 2){ svState.warnT = 600; playVO('sv_1', { vol: 1.1 }); subtitle = { name: 'SURVIVOR', txt: VO_TEXT.sv_1, t: 140 }; }
+  if (--svState.warnT <= 0 && !s.inCar && zombiesNear(s.x, s.y, 160) >= 2){ svState.warnT = 600; survivorVO('sv_1'); }
 }
-const _pass = passMission; passMission = function(){ const wasRescue = mission && mission.info.type === 'rescue'; _pass(); if (wasRescue){ playVO('sv_3', { vol: 1.1 }); subtitle = { name: 'SURVIVOR', txt: VO_TEXT.sv_3, t: 170 }; } };
+const _pass = passMission; passMission = function(){ const wasRescue = mission && mission.info.type === 'rescue'; _pass(); if (wasRescue){ survivorVO('sv_3'); } };
 
 // ---------- Hook into the update loop ----------
 const _update = update;
