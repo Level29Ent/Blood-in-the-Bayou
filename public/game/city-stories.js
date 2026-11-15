@@ -60,7 +60,7 @@ function open(role){if(!player||player.dead||cut)return;currentRole=role;state='
  if(active)h+=btn('cancel','ABANDON CURRENT SIDE STORY (NO REWARD)');h+=btn('close','RETURN TO GAME');panel.innerHTML='<div class="sheet">'+h+'</div>';panel.style.display='flex';
 }
 function nearRole(role){const v=role==='bonnie'?level29Downtown.lots.dealer?.venue:city.storySites?.[role];return v&&!player.car&&insideVenue(v,player);}
-function ready(){return !active&&!boss&&!level29Jobs?.active&&!level29Guard?.shift&&mission?.phase!=='active'&&!mpRole;}
+function ready(){return !window.level29NolaActivities?.active&&!active&&!boss&&!level29Jobs?.active&&!level29Guard?.shift&&mission?.phase!=='active'&&!mpRole;}
 function start(kind){if(mpRole)return toast('CITY STORIES ARE SOLO-ONLY · LEAVE MULTIPLAYER FIRST');if(!ready())return toast('FINISH YOUR CURRENT MISSION / SHIFT / SIDE STORY FIRST');close();active={kind,index:0,entities:[],wave:0,localCity:city,hold:0};gps=null;hold=0;
  if(kind==='gumbo'){if(save.gumbo==='done')save={...save,gumbo:'intro',ingredients:[]};if(save.gumbo==='intro')save.gumbo='ingredients';active.phase=save.gumbo;setGumboTarget();}
  if(kind==='waves'){active.phase='travel';active.target=streetPoint(sites.alex.doorX,sites.alex.doorY,220,440);active.label='Reach Alex’s outdoor test range';}
