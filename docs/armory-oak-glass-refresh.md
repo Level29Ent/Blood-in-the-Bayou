@@ -1,0 +1,9 @@
+# Gun-shop oak/glass cabinet refresh
+
+The existing photo-inspired armory interior is refined toward the latest references rather than replaced: two tall oak-framed handgun vitrines, each with four open glass shelves, warm self-colored strip lighting, 16 detailed handgun models and 16 price cards. Side rifle rack runs are shortened to separate the upright long-gun area from the new cabinet bays. Existing low live-merchandise cases receive wood corner frames; slatwall long guns, ammo cubbies, oak flooring and fluorescent ceiling grid remain.
+
+New cabinets stay against the side walls and register matching ground blockers, preserving the original center radius-ten door-to-dealer path and service circle across 128×128, 192×160 and 256×224 stores. All nine actual inventory display models remain on original slots, distinct from decorative stock. No weapon unlock, purchase, ammunition, damage, stats, inventory or first-person model changes. Price cards are generic visual lines, not new prices or promises of free items.
+
+New cabinet art uses the existing detailed firearm factory, existing palette and production static batch system; no new dependencies, external models/textures, actual lights or update loops. Existing capped high-quality case spotlights are unchanged. The geometry count increases; mobile/GPU performance is not guaranteed by tests. Original stylized interpretation, not a photorealistic scan or copied retailer branding/promotions.
+
+The existing `/game/armory-review.html` loads the same production builders with refreshed cache tokens. Focused tests verify 32 decorative handgun/cabinet/card counts, unchanged nine live displays, clear dealer/entry routes, finite in-bounds art/no new dynamic lights and held-model/inventory regressions. A READY deployment is still needed for rendered appearance, full-city shop interactions and physical-mobile performance verification.

@@ -19,7 +19,7 @@ function build(v,g){
   for(const side of [-1,1]){
    addPart(stand,.3,8,cell.d,side*cell.w/2,cell.top+5,0,P.glass);
    addPart(stand,cell.w,8,.3,0,cell.top+5,side*cell.d/2,P.glass);
-   for(const end of [-1,1])addPart(stand,.6,8,.6,side*cell.w/2,cell.top+5,end*cell.d/2,rim);
+   for(const end of [-1,1])addPart(stand,.6,8,.6,side*cell.w/2,cell.top+5,end*cell.d/2,P.wood);
   }
   addPart(stand,cell.w+1,.4,cell.d+1,0,cell.top+9.2,0,P.glass);
   addPart(stand,cell.w-2,.3,.5,0,cell.top+8.7,-cell.d/2+.6,P.glow);
