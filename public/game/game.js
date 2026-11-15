@@ -1552,12 +1552,14 @@ function loop(now){
   if(state==='menu'&&!city){last=now;accT=0;return;}
   // Avoid a catch-up spiral on a slow phone: at most three simulation steps per rendered frame.
   accT = Math.min(50, accT + Math.min(50, now - last)*(mpRole?1:(window.level29TimeScale||1))); last = now;
-  let stepped = false; const stepStart=performance.now(); let steps=0;
-  while (accT >= 1000/60){
-    accT -= 1000/60; stepped = true;
+  // Consume the bounded elapsed time even when one update costs more than 8ms.
+  // A wall-clock cutoff here dropped valid ticks at 20/30fps, slowing the whole game.
+  let stepped = false; let steps=0;
+  while (accT + 1e-7 >= 1000/60){
+    accT = Math.max(0, accT - 1000/60); stepped = true;
     try { if (state==='menu'){ frame++; menuBackdrop(); for (const z of zombies){ z.a = z.wander; z.anim += .1; moveCircle(z, Math.cos(z.a)*.3, Math.sin(z.a)*.3, 8) && (z.wander += 2); } } else update(); }
     catch (e) { reportLoopError('update', e); }
-    steps++; if(steps>=3 || performance.now()-stepStart>=8){accT=Math.min(accT,1000/60);break;}
+    steps++; if(steps>=3){accT=Math.min(accT,1000/60);break;}
   }
   try { updateMusic(); updateEngine(); } catch (e) { reportLoopError('audio', e); }
   // On 90/120Hz phones a frame with no simulation step would redraw an identical image; skipping it halves GPU load and heat.
