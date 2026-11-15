@@ -124,7 +124,7 @@ update = function(){
   pollPad();
   const live = state === 'play' && player && !player.dead && !showMap;
   if (coarse){ if (zone) zone.classList.toggle('live', live); joyEl.style.display = live ? 'block' : 'none'; }
-  else joyEl.style.display = live ? 'block' : 'none';
+  else joyEl.style.display = 'none';
   if (!live){ releaseStick();runHeld=false;document.getElementById('runBtn')?.classList.remove('held'); }
   if (!padActive) gp.sprint = runHeld && state === 'play';
   if (state !== 'play' && joyPtr == null && !padActive){ stick.x = 0; stick.y = 0; }

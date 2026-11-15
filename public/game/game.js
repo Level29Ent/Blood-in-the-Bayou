@@ -1470,7 +1470,7 @@ function drawHUD(){
   // boss bar
   if (boss && !boss.dead){ const w = Math.min(560, SW - 60), x = (SW - w)/2, by = SH - (small ? 150 : 58); cx.fillStyle = 'rgba(0,0,0,.7)'; cx.fillRect(x - 4, by - 22, w + 8, 38); hudText(boss.name, SW/2, by - 20, 14, '#ff8a8a', 'center'); cx.fillStyle = '#3a0a0a'; cx.fillRect(x, by - 2, w, 10); cx.fillStyle = boss.hp < boss.maxHp*.4 ? '#ffea00' : '#e83a3a'; cx.fillRect(x, by - 2, w * boss.hp / boss.maxHp, 10); }
   // minimap
-  if(trackers&&!minimal)drawMinimap(small);
+  if(trackers&&!minimal&&!window.level29NolaNavigation?.ownsMap)drawMinimap(small);
   fpHUD(small);
   // area name bottom-right (GTA style)
   if (!minimal&&trackers&&areaShow > 0 && !boss){ cx.globalAlpha = Math.min(1, areaShow / 30); if (small && SH >= 600){ hudText(areaName, 18, SH - 350, window.level29MobileViewport.fitText(cx,areaName,17,SW-36), '#f6f3e6', 'left'); hudText(D.name, 18, SH - 328, 12, '#f4c355', 'left', '600 '); } else { hudText(areaName, SW - 18, SH - (small ? 150 : 104), small ? 20 : 28, '#f6f3e6', 'right'); hudText(D.name, SW - 18, SH - (small ? 124 : 76), 13, '#f4c355', 'right', '600 '); } cx.globalAlpha = 1; }
