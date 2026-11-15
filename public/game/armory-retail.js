@@ -22,6 +22,7 @@ function silhouette(T,id){
 function build(T,v,parent,world,sign,P=palette(T)){
  const b=v.b,g=new T.Group();g.name='Reference gun-store retail';parent.add(g);
  const q=world.batch(g),part=(w,h,d,x,y,z,m)=>q.box(w,h,d,x,y,z,m),mid=b.x+b.w/2;
+ const stats={handgunCabinets:0,displayPistols:0,priceCards:0};
  const solid=(x,z,w,d)=>v.furniture.push({x:x-w/2,y:z-d/2,w,h:d});
  // Oak floorboards and fluorescent ceiling grid; self-lit panels add no dynamic lights.
  part(b.w-8,.25,b.h-8,mid,.85,b.y+b.h/2,P.pale);
@@ -47,8 +48,8 @@ function build(T,v,parent,world,sign,P=palette(T)){
  // Side-wall oak racks with upright long guns above low ammunition cubbies.
  const count=Math.max(5,Math.min(14,Math.floor((b.h-32)/13)));
  for(const side of [-1,1]){
-  const rack=new T.Group();rack.name='Upright oak rifle rack';rack.position.set(side<0?b.x+5:b.x+b.w-5,0,b.y+b.h/2-3);rack.rotation.y=side<0?Math.PI/2:-Math.PI/2;g.add(rack);
-  const qr=world.batch(rack),length=b.h-34;
+  const rack=new T.Group();rack.name='Upright oak rifle rack';rack.position.set(side<0?b.x+5:b.x+b.w-5,0,b.y+14+(b.h-42-Math.min(34,b.h*.25))/2);rack.rotation.y=side<0?Math.PI/2:-Math.PI/2;g.add(rack);
+  const qr=world.batch(rack),length=b.h-42-Math.min(34,b.h*.25);
   qr.box(length,39,1,0,23,0,P.wood);
   for(const y of [5,13,28,41])qr.box(length,1.4,4,0,y,1.6,P.pale);
   for(let i=0;i<count;i++){
@@ -60,6 +61,24 @@ function build(T,v,parent,world,sign,P=palette(T)){
    qr.box(length/count-2,1,.2,x,8,5.1,P.cream);
   }
   qr.finish();
+ }
+ // Oak-framed tall handgun vitrines hug the side walls, behind existing low counters.
+ // Transparent fronts and real open shelves never enclose merchandise in opaque boxes.
+ for(const side of [-1,1]){
+  const run=Math.min(34,b.h*.25),z=b.y+b.h-25-run/2,x=side<0?b.x+6:b.x+b.w-6,front=x-side*3.8;
+  part(7,3,run,x,3,z,P.wood);part(.6,32,run,x+side*2.7,20,z,P.pale);
+  for(const zz of [z-run/2,z+run/2])part(8,37,1,x,20,zz,P.wood);
+  part(8,1.5,run+1,x,39,z,P.wood);
+  for(let row=0;row<4;row++){
+   const y=7+row*7.5;part(7,.3,run-1,x,y,z,P.glass);part(.3,.3,run-2,x+side*2,y+5.7,z,P.glow);
+   for(let j=0;j<4;j++){
+    const zz=z-run/2+4+j*(run-8)/3,gun=silhouette(T,'pistol',P);gun.scale.setScalar(.48);gun.rotation.y=side<0?0:Math.PI;gun.position.set(x,y+2,zz);g.add(gun);stats.displayPistols++;
+    part(.12,1.7,2.3,front,y+.9,zz,P.cream);part(.15,.2,1.7,front-side*.08,y+1.1,zz,P.black);stats.priceCards++;
+   }
+  }
+  part(.12,34,run,front,21,z,P.glass);part(.6,36,.6,front,21,z,P.wood);stats.handgunCabinets++;
+  // Same cabinet depth as the wall stock: central dealer aisle remains entirely untouched.
+  solid(x,z,8,run+1);
  }
  // Rear ammo cabinets and a compact glass service counter stay behind the service pad.
  const counterZ=b.y+13,counterW=Math.min(54,b.w-76);
@@ -85,7 +104,7 @@ function build(T,v,parent,world,sign,P=palette(T)){
  part(7,.3,4,mid-counterW*.25,16,counterZ,P.cream);
  const label=sign(g,'AMMUNITION · SPORTING GOODS',Math.min(100,b.w-16),4,mid,46,b.y+6,'#f4e7c9');
  if(label)label.name='Retail department sign';
- q.finish();v.armoryRetail=g;return {root:g,palette:P};
+ q.finish();g.userData.retailRefresh=stats;v.armoryRetail=g;return {root:g,palette:P};
 }
 const api={palette,silhouette,build};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29ArmoryRetail=api;
 })();
