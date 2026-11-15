@@ -54,7 +54,7 @@ fireWeapon = function(ox, oy, aim){
   } else if (curW === 'bat'){
     batSwing = 14; p.fireCd = 26; snd('bump');
     let hit = false;
-    for (const z of zombies){ if (!z.alive) continue; const d = dist(ox, oy, z.x, z.y); if (d < 46 + z.r && Math.abs(angDiff(aim, Math.atan2(z.y - oy, z.x - ox))) < .9){ z.killSource='player';z.lastHit=0;z.hp -= 3.2 + up.ap; z.flash = 5; z.stun = 30; moveCircle(z, Math.cos(aim)*18, Math.sin(aim)*18, z.r*.8); gore(z.x, z.y, 4); hit = true; if (z.hp <= 0) killZombie(z, Math.cos(aim)*6, Math.sin(aim)*6); else snd('zhit'); } }
+    for (const z of zombies){ if (!z.alive) continue; const d = dist(ox, oy, z.x, z.y); if (d < 46 + z.r && Math.abs(angDiff(aim, Math.atan2(z.y - oy, z.x - ox))) < .9){ z.killSource='player';z.lastHit=0;z.hp -= 3.2 + up.ap + (window.level29Nola?.spikedBat?2:0); z.flash = 5; z.stun = 30; moveCircle(z, Math.cos(aim)*18, Math.sin(aim)*18, z.r*.8); gore(z.x, z.y, 4); hit = true; if (z.hp <= 0) killZombie(z, Math.cos(aim)*6, Math.sin(aim)*6); else snd('zhit'); } }
     if (boss && !boss.dead && dist(ox, oy, boss.x, boss.y) < 60 + boss.r){ damageBoss(4); hit = true; }
     if (hit){ view.hit = 7; shake = Math.max(shake, 4); sfx('splat'); }
   }

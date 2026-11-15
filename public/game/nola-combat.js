@@ -1,0 +1,12 @@
+'use strict';
+(function(){
+function variant(r){return r<.07?'screamer':r<.12?'armored':null;}
+function signal(source,targets,range=260){let count=0;for(const z of targets)if(z!==source&&z.alive&&!z.storyOperation&&!z.anthonyStory&&Math.hypot(z.x-source.x,z.y-source.y)<range){z.alert=true;count++;}return count;}
+const api={variant,signal};if(typeof module!=='undefined')module.exports=api;if(typeof window==='undefined')return;
+const type=zombieType;zombieType=function(){if(window.level29Prologue?.active||mpRole)return type.apply(this,arguments);return variant(Math.random())||type.apply(this,arguments);};
+const make=makeZombie;makeZombie=function(x,y,kind){const z=make.call(this,x,y,kind==='screamer'?'walker':kind==='armored'?'brute':kind);if(kind==='screamer'){z.nolaScreamer=true;z.shirt='#7d668b';z.screamCooldown=6;z.speed*=.85;}if(kind==='armored'){z.nolaArmored=true;z.military=true;z.hp*=1.5;z.shirt='#485a65';}return z;};
+const seen=new WeakMap(),numbers=[];let last=performance.now(),stopUntil=0,lastStop=0;
+const base=update;update=function(){const n=performance.now(),dt=Math.max(0,Math.min(.1,(n-last)/1000));last=n;if(!mpRole&&n<stopUntil&&state==='play')return;base.apply(this,arguments);if(state!=='play'||!player||player.dead||window.level29Prologue?.active)return;for(const z of zombies){if(z.nolaScreamer&&z.alive&&!z.storyOperation&&!z.anthonyStory){z.screamCooldown=Math.max(0,(z.screamCooldown||0)-dt);if(!mpRole&&z.screamCooldown<=0&&Math.hypot(z.x-player.x,z.y-player.y)<230){z.screamCooldown=10;signal(z,zombies);if(typeof snd==='function')snd('roar');toast('SCREAMER · NEARBY HORDE ALERTED');}}const hp=seen.get(z);seen.set(z,z.hp);if(hp!==undefined&&z.hp<hp&&Math.hypot(z.x-player.x,z.y-player.y)<350&&!['ambient','guard','remote'].includes(z.killSource)){numbers.push({x:z.x,y:z.y,amount:Math.round((hp-z.hp)*10)/10,until:n+650});if(numbers.length>16)numbers.shift();if(!mpRole&&n-lastStop>180){stopUntil=n+25;lastStop=n;}view.hit=Math.max(view.hit||0,5);}}while(numbers[0]&&numbers[0].until<n)numbers.shift();};
+const draw=render;render=function(){draw.apply(this,arguments);if(state!=='play')return;const n=performance.now();cx.save();cx.font='bold 13px monospace';for(const a of numbers){const p=project(a.x,a.y,terrainHeight(a.x,a.y)+25+(650-(a.until-n))*.015);if(p){cx.fillStyle='#f1d395';cx.fillText(String(a.amount),p.x,p.y);}}cx.restore();};
+window.level29NolaCombat=api;
+})();

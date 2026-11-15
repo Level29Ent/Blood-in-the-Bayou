@@ -946,7 +946,7 @@ function update(){
       const fw = clamp((kU() ? 1 : 0) - (kD() ? 1 : 0) + stick.y, -1, 1), sf = clamp((keys['d'] || touch.right ? 1 : 0) - (keys['a'] || touch.left ? 1 : 0) + stick.x, -1, 1);
       let mx = Math.cos(view.yaw) * fw + Math.cos(view.yaw + Math.PI/2) * sf, my = Math.sin(view.yaw) * fw + Math.sin(view.yaw + Math.PI/2) * sf;
       const ml = Math.hypot(mx, my);
-      const spd = (keys['shift'] || gp.sprint ? 3.3*(window.level29SurvivalExpansion?.sprintMultiplier()||1) : 2.3) * (p.carrying ? .75 : 1);
+      const spd = (keys['shift'] || gp.sprint ? 3.3*(window.level29SurvivalExpansion?.sprintMultiplier()||1) : 2.3) * (p.carrying ? .75 : 1) * (window.level29Nola?.speed(!!(keys['shift']||gp.sprint))||1);
       p.a = view.yaw;
       if (ml > 1){ mx /= ml; my /= ml; }
       if (ml > .05) p.anim += .25 * Math.min(1, ml);

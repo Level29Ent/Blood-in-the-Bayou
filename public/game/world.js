@@ -137,7 +137,7 @@ makePickup=function(){const m=oldPickup();m.userData.cashStack=moneyStack();m.us
 // Existing pool captured the old factory at init; swap it explicitly as well.
 if(kPool)kPool.make=makePickup;
 // Host-authoritative death drops, including remote players; snapshots already sync all pickups.
-function deathCash(x,y){pickups.push({x,y,kind:'cash',t:0,amt:100,expiresAt:Date.now()+30000});}
+function deathCash(x,y){if(window.level29Nola?.deathStakes)return;pickups.push({x,y,kind:'cash',t:0,amt:100,expiresAt:Date.now()+30000});}
 const oldKillP=killPlayer;killPlayer=function(){const was=player.dead,x=player.car?player.car.x:player.x,y=player.car?player.car.y:player.y;oldKillP();if(!was&&mpRole!=='client')deathCash(x,y);};
 const oldHost=mpHostData;mpHostData=function(id,d){const r=MP.remotes.get(id);if(r&&d){if(d.t==='st'&&!d.dead)r.l29Dropped=false;if((d.t==='die'||(d.t==='st'&&d.dead))&&!r.l29Dropped){deathCash(Number.isFinite(d.x)?d.x:r.x,Number.isFinite(d.y)?d.y:r.y);r.l29Dropped=true;}}oldHost(id,d);};
 // Registered venue roles receive legacy staff; other authored venues own their staffing.
