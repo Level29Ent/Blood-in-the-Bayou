@@ -77,6 +77,7 @@ let dancers=[],animals=[],crew=[],root=null;
 function cFarmEntrance(r){city.farmEntrance={x:r.x+r.w/2,y:r.y+r.h+24};}
 const oldBuild=buildVenue;
 buildVenue=function(v){
+ if(window.level29GoldenHills?.matches(v)){if(v.referenceGoldenHills&&v.mesh?.parent===cityGroup)return;const lot=level29GoldenHills.build(THREE,v.b,{sign:addSign});v.mesh=lot.root;v.mesh.position.y=terrainHeight(v.b.x+v.b.w/2,v.b.y+v.b.h/2);v.roof=lot.roof;v.furniture=lot.solids.slice();v.colliderWalls=[];v.colliderDoor=null;v.door=new THREE.Group();v.mesh.add(v.door);v.referenceGoldenHills=true;v.labelH=80;cityGroup.add(v.mesh);return;}
  if(window.level29ModernOffice?.matches(v))return oldBuild(v);
  if(window.level29SeafoodBait?.matches(v))return oldBuild(v);
  if(!TYPES.some(t=>t.id===v.id))return oldBuild(v);
@@ -121,7 +122,7 @@ const build=buildCity;
 buildCity=function(){farmGPS=false;farmButton.textContent='MAP';dancers=[];animals=[];crew=[];build.apply(this,arguments);if(!city.world)return;root=new THREE.Group();cityGroup.add(root);
  const mat=c=>new THREE.MeshStandardMaterial({color:c,roughness:.8});
  const part=(w,h,d,x,y,z,c)=>addPart(root,w,h,d,x,y,z,mat(c));
- if(city.hollywood){const b=city.hollywood.b;addSign(root,'GOLDEN HILLS · HOLLYWOOD',240,24,b.x+b.w/2,100,b.y,'#f3dfb5');for(let i=0;i<8;i++){part(18,.3,18,b.x+i*28,1,b.y+b.h+22,i%2?'#b39b70':'#74637c');part(14,30,2,b.x+i*30,15,b.y+2,'#a38b6b');}addSign(root,'FILM ROW · CAFES · STUDIO TOURS',220,10,b.x+b.w/2,35,b.y+b.h+2,'#e5d2a4');}
+ if(city.hollywood&&!city.hollywood.referenceGoldenHills){const b=city.hollywood.b;addSign(root,'GOLDEN HILLS · HOLLYWOOD',240,24,b.x+b.w/2,100,b.y,'#f3dfb5');for(let i=0;i<8;i++){part(18,.3,18,b.x+i*28,1,b.y+b.h+22,i%2?'#b39b70':'#74637c');part(14,30,2,b.x+i*30,15,b.y+2,'#a38b6b');}addSign(root,'FILM ROW · CAFES · STUDIO TOURS',220,10,b.x+b.w/2,35,b.y+b.h+2,'#e5d2a4');}
  if(city.farm){const r=city.farm,base=city.heightAt?city.heightAt(r.x+r.w/2,r.y+r.h/2):0;
   // A visible lowland landmark and open entrance, not just a small remote sign.
   const farmGroup=new THREE.Group();farmGroup.name='Bayou Farm landmark';farmGroup.position.y=base;root.add(farmGroup);
