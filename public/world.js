@@ -286,29 +286,9 @@ const debug=document.createElement('div');debug.id='l29-performance';debug.style
 let debugFrames=0,debugLast=performance.now();const oldRender=render;render=function(){oldRender();debugFrames++;const now=performance.now();if(now-debugLast>1000){debug.textContent=Math.round(debugFrames*1000/(now-debugLast))+' FPS · '+renderer.info.render.calls+' draws · '+MW+'×'+MH;debugLast=now;debugFrames=0;}};
 window.level29World={version:1,makeMoney:moneyStack,jobs,facades,batch,material,facade,worker,features:()=>city.features,map:()=>[MW,MH]};
 })();
-// Superdome: original procedural game model based on exterior form, not a scanned replica.
+// Shared reference exterior; retain the existing parcel and gameplay collision.
 function makeLevel29Superdome(b){
- const g=new THREE.Group(),R=Math.min(b.w,b.h)*.49,cx=b.x+b.w/2,cz=b.y+b.h/2;g.position.set(cx,0,cz);
- const cladding=canvasTex(512,512,(c,w,h)=>{
-  const gr=c.createLinearGradient(0,0,0,h);gr.addColorStop(0,'#a99d89');gr.addColorStop(.27,'#81776a');gr.addColorStop(.55,'#b4a791');gr.addColorStop(1,'#d3c4a8');c.fillStyle=gr;c.fillRect(0,0,w,h);
-  for(let x=0;x<w;x+=16){c.fillStyle='rgba(27,25,23,.21)';c.fillRect(x,0,1,h);c.fillStyle='rgba(248,235,210,.22)';c.fillRect(x+1,0,1,h);}c.fillStyle='#435553';for(let x=10;x<w;x+=64)c.fillRect(x,288,40,12);
- },true);cladding.repeat.x=8;
- const mat=new THREE.MeshStandardMaterial({map:cladding,metalness:.45,roughness:.48});
- const profile=[[R,15],[R*.98,24],[R*.93,36],[R*.90,48],[R*.895,59],[R*.91,72],[R*.95,86],[R*.98,98]].map(v=>new THREE.Vector2(...v));
- const shell=new THREE.Mesh(new THREE.LatheGeometry(profile,128),mat);g.add(shell);
- const base=new THREE.Mesh(new THREE.CylinderGeometry(R*1.03,R*1.03,15,96),new THREE.MeshStandardMaterial({color:'#898b81',roughness:.8}));base.position.y=7.5;g.add(base);
- const roofTex=canvasTex(1024,512,(c,w,h)=>{c.fillStyle='#e7e6dc';c.fillRect(0,0,w,h);c.strokeStyle='rgba(60,68,70,.26)';c.lineWidth=2;for(let y=0;y<h;y+=32){c.beginPath();c.moveTo(0,y);c.lineTo(w,y);c.stroke();}for(let x=0;x<w;x+=16){c.beginPath();c.moveTo(x,0);c.lineTo(x,h);c.stroke();}c.fillStyle='rgba(60,68,70,.2)';for(let y=0;y<h;y+=64)c.fillRect(0,y,w,4);});
- const roof=new THREE.Mesh(new THREE.SphereGeometry(R*.98,96,40,0,Math.PI*2,0,Math.PI/2),new THREE.MeshStandardMaterial({map:roofTex,color:'#d4d4cb',roughness:.72}));roof.scale.y=.34;roof.position.y=98;g.add(roof);
- for(const y of [15,98]){const ring=new THREE.Mesh(new THREE.TorusGeometry(y===15?R*1.025:R*.98,1.05,6,128),new THREE.MeshStandardMaterial({color:'#d8d4c6',metalness:.6,roughness:.4}));ring.rotation.x=Math.PI/2;ring.position.y=y;g.add(ring);}
- const q=new THREE.Group();g.add(q);const tmp=new THREE.Object3D(),arr=[];for(let k=0;k<64;k++){const a=k*Math.PI/32;arr.push([a,Math.sin(a)*R*1.035,Math.cos(a)*R*1.035]);}
- const panels=new THREE.InstancedMesh(new THREE.BoxGeometry(6,10,1),new THREE.MeshStandardMaterial({color:'#294548',metalness:.3,roughness:.35}),arr.length);arr.forEach(([a,x,z],i)=>{tmp.position.set(x,7.5,z);tmp.rotation.set(0,a,0);tmp.updateMatrix();panels.setMatrixAt(i,tmp.matrix);});g.add(panels);
- // Four public entrance pavilions and wide, stepped approaches.
- for(let k=0;k<4;k++){
-  const a=k*Math.PI/2,entrance=new THREE.Group();entrance.rotation.y=a;g.add(entrance);
-  addPart(entrance,52,12,14,0,6,R*1.01,new THREE.MeshStandardMaterial({color:'#8f9087'}));addPart(entrance,44,8,1,0,6,R*1.01+7.2,new THREE.MeshStandardMaterial({color:'#263f43',metalness:.4,roughness:.25}));addPart(entrance,56,2,22,0,14,R*1.01+3,new THREE.MeshStandardMaterial({color:'#c0b7a5'}));
-  for(let j=0;j<6;j++)addPart(entrance,50,1+j*.7,3,0,(1+j*.7)/2,R*1.01+22-j*3,new THREE.MeshStandardMaterial({color:'#abae9f',roughness:1}));
- }
- // Roof lettering is placed on the forward slope instead of a floating roadside sign.
-  addSign(g,'CAESARS SUPERDOME',R*1.2,10,0,19,R*1.03+8,'#e2d9bf');
- return g;
+ const root=level29SuperdomeReference.build(THREE,b);
+ root.userData.superdome.shell.onBeforeRender=()=>level29SuperdomeReference.setNight(root,lightMode==='night');
+ return root;
 }

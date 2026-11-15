@@ -10,7 +10,7 @@ const gen=genCity;genCity=function(){const c=gen.apply(this,arguments);if(!c.wor
  c.treme={name:'TREMÉ BAYOU QUARTER',blocks:c.relocation?c.relocation.homes:c.neighborhood.blocks.slice(0,3),homes:c.relocation?.homes||c.neighborhood.homes.filter(h=>h.y<c.neighborhood.blocks[3].y),solids:[]};const gym=c.venues.find(v=>v.id==='gym'&&!v.storyRole);if(!gym)throw Error('Boxing gym requires existing fitness parcel');gym.name='TREMÉ FIGHT HOUSE';gym.short='BOXING / TRAINING';gym.boxingGym=true;c.boxingGym=gym;
  if(typeof indexTrees==='function')indexTrees(c);return c;};
 function build(){if(!city.superdome)return;forCity=city;root=new THREE.Group();root.name='Superdome / Tremé neighborhood / boxing';cityGroup.add(root);const D=level29InteriorModels,metal=D.material('#536669','metal',.45),gold=D.material('#c4ac71','metal',.3),wood=D.material('#a48c69','wood'),colors=['#7b9f96','#c6a46f','#a57981','#899bc0'];const q=level29World.batch(root),box=(w,h,d,x,y,z,m)=>q.box(w,h,d,x,y,z,m);
- const s=city.superdome;addSign(root,'SUPERDOME',220,15,s.x+s.w/2,36,s.y+s.h+2,'#e2cc8b');addSign(root,'DOME PLAZA · RONNIEBABY PENTHOUSE DISTRICT',240,7,s.x+s.w/2,20,s.y+s.h+2,'#d7e1dc');box(s.w+16,1,30,s.x+s.w/2,.5,s.y+s.h+16,D.material('#b4b4a3','tile'));
+ const s=city.superdome;addSign(root,'DOME PLAZA · RONNIEBABY PENTHOUSE DISTRICT',240,7,s.x+s.w/2,20,s.y+s.h+2,'#d7e1dc');box(s.w+16,1,30,s.x+s.w/2,.5,s.y+s.h+16,D.material('#b4b4a3','tile'));
  city.treme.solids=[]; // Dedicated shotgun home shells own their porches; avoid duplicate painted overlays.
 
  const t=city.treme.blocks[0];addSign(root,'TREMÉ BAYOU QUARTER · MUSIC / PORCHES / COMMUNITY',245,10,t.x+t.w/2,32,t.y-16,'#edd196');
