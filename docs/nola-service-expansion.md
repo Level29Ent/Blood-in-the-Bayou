@@ -1,5 +1,7 @@
 # NOLA services — default-everyone foundation release
 
+Historical foundation scope: the subsequent remaining-activities implementation is documented in [nola-activities-release.md](nola-activities-release.md). Its implemented replacements supersede the pending list below.
+
 ## Scope and controls
 
 This PR is the **first playable foundation**, not the entire requested city expansion. New service desks share existing business premises and use their safe exterior pedestrian approaches. No claim of nine newly authored physical buildings. Open **Pause → NOLA BUSINESSES / CITY MAP**, follow the corresponding colored icon, then E (default remapped interaction), legacy U, or the dedicated touch button at its approach. Original premises services remain reachable through **ORIGINAL BUSINESS SERVICES**. Existing input mapping, quick slots and first-/third-person controls stay intact.

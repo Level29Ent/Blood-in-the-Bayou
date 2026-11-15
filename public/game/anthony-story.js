@@ -2,7 +2,7 @@
 (function(){
 if(typeof window==='undefined')return;const C=level29AnthonyCore;let progress=C.restore(null),owner=null,root=null,ant=null,drako=null,women=[],foes=[],points=null,last=performance.now(),cool=0,antHp=100,help=false,failed=false,session=false,modelError='',pickupProps=null,strike=null;
 function save(){window.level29Save?.save();}
-function busy(){return !!(window.level29Prologue?.active||mpRole||mission?.phase==='active'||window.level29Jobs?.active||window.level29CityCareers?.active||window.level29SurvivorStories?.active||window.level29Enterprise?.active||window.level29Heists?.active||window.level29CityStories?.active);}
+function busy(){return !!(window.level29NolaActivities?.active||window.level29Prologue?.active||mpRole||mission?.phase==='active'||window.level29Jobs?.active||window.level29CityCareers?.active||window.level29SurvivorStories?.active||window.level29Enterprise?.active||window.level29Heists?.active||window.level29CityStories?.active);}
 function onFoot(){return player&&!player.dead&&!player.car;}
 function near(p,r=42){return !!p&&!!player&&Math.hypot(player.x-p.x,player.y-p.y)<r&&Math.abs(terrainHeight(player.x,player.y)-(p.base||city.heightAt(p.x,p.y)))<15;}
 function clearFoes(){for(const z of foes){z.alive=false;z.killSource='ambient';}foes=[];}
