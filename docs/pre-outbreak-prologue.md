@@ -50,18 +50,31 @@ watched. An explicit new game restarts the prologue; resuming a legacy save does
 not. Death restores the current prologue objective and items without running the
 original campaign's delayed safehouse/death timer.
 
-## Videos and audio
+## Native story cutscenes and audio
 
-The supplied three video IDs are allowlisted. No iframe or YouTube request is
-created until **PLAY SCENE** is pressed. The game pauses, releases movement/fire
-input and mutes its own audio while the scene panel is open; closing or finishing
-restores the previous sound mode. Video-end messages must come from the exact
-active frame and `https://www.youtube-nocookie.com`.
+The three former YouTube checkpoints now play original 18-second in-game scenes,
+not embedded videos or shot-for-shot copies:
+- **The Experiment:** Ahmad in his lab coat/goggles testing the X29 vial at a lab bench.
+- **The First Signs:** Ahmad in black shirt, jeans and glasses beside the seated man
+  after giving him X29; the man begins reacting.
+- **Blood in the Bayou:** Ronniebaby strikes three staged zombies with a melee bat;
+  they fall and stay down, with no live-world combat rewards or damage.
 
-Embedding depends on the video owner's permissions and an internet connection,
-including in native builds. **SKIP SCENE / CONTINUE STORY** provides an explicit
-fallback for unavailable videos; **RETURN TO GAME · WATCH LATER** keeps the scene
-checkpoint pending. No automatic timeout skips a story scene or blocks the save.
+PLAY SCENE starts a bounded 640×360, pixel-ratio-one WebGL scene only after a
+user gesture. Visual copies preserve live actor materials/geometry/skeletons;
+new materials and baked skinned geometry are released on completion, skip,
+return, pagehide or a render error. No video iframe, external playback request,
+new model download or automatic audio autoplay. Subtitles are original dialogue;
+there is no newly recorded character voice or lip sync. Existing game audio is
+muted while the panel is open and restored afterward. The paused world draw is
+suspended during scene playback to avoid two active world renders.
+
+SKIP SCENE / CONTINUE STORY explicitly advances the existing checkpoint. RETURN
+TO GAME · WATCH LATER leaves it pending. Completion advances only after the
+18-second sequence; hidden-tab time is not counted. Errors offer retry/skip and
+never silently complete a scene. Save format, original scene IDs and campaign
+handoff are unchanged. Physical-device performance and appearance require a
+READY preview and playtest; deterministic tests are not rendered verification.
 
 ## Rendering and compatibility
 
