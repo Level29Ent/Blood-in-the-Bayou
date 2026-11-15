@@ -77,6 +77,7 @@ let dancers=[],animals=[],crew=[],root=null;
 function cFarmEntrance(r){city.farmEntrance={x:r.x+r.w/2,y:r.y+r.h+24};}
 const oldBuild=buildVenue;
 buildVenue=function(v){
+ if(window.level29SeafoodBait?.matches(v))return oldBuild(v);
  if(!TYPES.some(t=>t.id===v.id))return oldBuild(v);
  if(v.mesh&&v.mesh.parent===cityGroup)return;
  if(v.id==='showroom'&&v.lotId==='dealer'){
