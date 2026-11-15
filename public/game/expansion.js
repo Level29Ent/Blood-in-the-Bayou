@@ -333,6 +333,7 @@ function buildVenue(v){
   }else if(v.id==='armory'){
     if(window.level29ArmoryShowroom)level29ArmoryShowroom.build(v,group);
     addSign(group,'U · WEAPONS / ARMOR',Math.min(48,b.w-76),4,b.x+b.w/2,6,b.y+20,v.col);
+  }else if(level29ModernOffice.matches(v)){const office=level29ModernOffice.build(THREE,b,{height:48});group.add(office.root);office.ceiling.position.set(b.x-v.roof.position.x,-v.roof.position.y,b.y-v.roof.position.z);v.roof.add(office.ceiling);v.furniture.push(...office.solids);v.referenceModernOffice=true;const label=addSign(group,'U · BUSINESS SERVICES',Math.min(65,b.w-20),5,b.x+b.w/2,26,b.y+4,v.col);label.name='business-service-sign';
   }else if(v.id==='business'){
     furniture(b.x+30,b.y+30,40,9,24,'#805f42');furniture(b.x+b.w-22,b.y+40,25,22,45,'#5a625b');
     addPart(group,14,10,1,b.x+30,18,b.y+32,new THREE.MeshStandardMaterial({color:'#243840',metalness:.2,roughness:.2}));
