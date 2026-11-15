@@ -20,7 +20,16 @@ function styleWoman(T,actor,variant=0){const u=actor?.userData;if(!u?.body||u.wo
  const styles=[{p:[-.95,18.4,0],s:[1.35,1.75,2.1]},{p:[-2,18.5,0],s:[.85,2,.85]},{p:[-1.25,20.6,0],s:[1.05,1.05,1.05]},{p:[-.3,19.4,0],s:[2.35,1.5,2.35]}],spec=styles[i],hair=new T.Mesh(cache.hairForm,u.hair.material);hair.position.set(...spec.p);hair.scale.set(...spec.s);hair.userData.residentHair=true;u.body.add(hair);u.womanHair=hair;u.hairstyle=['bob','ponytail','bun','natural'][i];
  if(i===2){u.torso.scale.y*=1.12;u.torso.position.y-=.4;}u.outfit=['blouse','jacket','tunic','tee'][i];return actor;
 }
-function styleResident(T,actor,look){if(!actor?.userData?.body||actor.userData.residentStyle)return actor;const u=actor.userData;u.residentStyle={...look};if(look.gender==='woman')styleWoman(T,actor,look.build||0);u.gender=look.gender;u.heritage=look.heritage;
+function naturalResident(T,actor,variant=0){const u=actor?.userData;if(!u?.face||u.naturalResident)return actor;u.naturalResident=true;const i=Math.abs(Math.trunc(variant)||0),width=[.9,1,1.08,.96][i%4];
+ // Apply only to explicitly styled everyday residents, never named or infected actors.
+ u.torso.scale.z*=width;u.head.scale.set(1.76,2.23,1.77);u.jaw.scale.set(1.4,.94,1.48);u.face.scale.set(.86,.95,.9);u.face.position.y=.915;u.hair.scale.multiplyScalar(.9);
+ u.armL.position.z=-4.25*width;u.armR.position.z=4.25*width;
+ // Eyelid aperture and mouth volume are restrained; preserve the existing facial rig and materials.
+ for(const m of u.face.children){if(!m.isMesh)continue;if(m.position.y===18.65){m.scale.y*=.67;m.scale.z*=.86;}if(m.position.y===19.13)m.scale.y*=.7;if(m.position.y===17.15||m.position.y===16.98){m.scale.y*=.65;m.scale.z*=.9;}}
+ const cache=details(T);if(!cache.residentClothing){const sphere=()=>new T.SphereGeometry(1,10,7),box=()=>new T.BoxGeometry();cache.residentClothing=combine(T,[[sphere(),[0,14.5,-3.8],[1.05,1.45,1.15],'#ffffff'],[sphere(),[0,14.5,3.8],[1.05,1.45,1.15],'#ffffff'],[box(),[2.16,13,0],[.12,3.5,.1],'#ffffff']]);}
+ const clothing=new T.Mesh(cache.residentClothing,u.shirt);clothing.userData.residentClothes=true;u.body.add(clothing);return actor;
+}
+function styleResident(T,actor,look){if(!actor?.userData?.body||actor.userData.residentStyle)return actor;const u=actor.userData;u.residentStyle={...look};if(look.gender==='woman')styleWoman(T,actor,look.build||0);u.gender=look.gender;u.heritage=look.heritage;naturalResident(T,actor,look.build||0);
  if(look.skin)u.skin.color.set(look.skin);if(look.hairColor)u.hair.material.color.set(look.hairColor);
  if(look.hairstyle!=='long'&&!look.hairstyle.startsWith('locs'))return actor;
  // Remove only the additional everyday-style hair, leaving named/mission rigs untouched.
@@ -38,11 +47,14 @@ function combine(T,pieces){const pos=[],normal=[],color=[];for(const [geometry,p
 // Merge facial/anatomical cues into the existing nine crowd batches, not per-person draw calls.
 function crowdGeometry(T,kind){const sphere=()=>new T.SphereGeometry(1,12,8),cyl=()=>new T.CylinderGeometry(1,.85,1,12),box=()=>new T.BoxGeometry(),white='#ffffff',dark='#29221f',pieces=[];
  if(kind==='skin'){
-  pieces.push([sphere(),[0,0,0],[1,1,1],white],[sphere(),[.19,-.55,0],[.76,.46,.82],white],[cyl(),[0,-1.02,0],[.42,.58,.42],white],[sphere(),[1.02,-.05,0],[.17,.29,.16],white],[sphere(),[1.13,-.18,0],[.15,.12,.19],white]);
-  for(const side of [-1,1]){pieces.push([sphere(),[-.03,0,side],[.19,.3,.16],white],[sphere(),[.94,.15,side*.39],[.1,.1,.18],'#f2e8d8'],[sphere(),[1.025,.15,side*.39],[.035,.07,.07],dark],[box(),[.93,.31,side*.39],[.07,.045,.38],dark]);}
-  pieces.push([sphere(),[.96,-.48,0],[.06,.055,.25],'#794b43']);
+  pieces.push([sphere(),[0,0,0],[1,1,1],white],[sphere(),[.19,-.55,0],[.72,.38,.79],white],[cyl(),[0,-1.02,0],[.42,.58,.42],white],[sphere(),[.98,-.04,0],[.13,.25,.14],white],[sphere(),[1.08,-.18,0],[.13,.1,.16],white]);
+  for(const side of [-1,1]){pieces.push([sphere(),[-.03,0,side],[.19,.3,.16],white],[sphere(),[.94,.15,side*.39],[.075,.065,.16],'#f2e8d8'],[sphere(),[1.005,.15,side*.39],[.026,.052,.065],dark],[box(),[.93,.29,side*.39],[.055,.03,.32],dark]);}
+  pieces.push([sphere(),[.95,-.45,0],[.035,.025,.22],'#794b43']);
  }
- if(kind==='shirt'){pieces.push([cyl(),[0,0,0],[1,1,1],white],[cyl(),[0,-.47,0],[.86,.07,.88],'#56575a']);for(const side of [-1,1])pieces.push([sphere(),[0,.34,side*.81],[.66,.19,.26],white]);pieces.push([box(),[.91,.08,-.37],[.07,.22,.22],'#bbb7ac']);}
+ if(kind==='shirt'){pieces.push([cyl(),[0,0,0],[1,1,1],white],[cyl(),[0,-.47,0],[.86,.07,.88],'#56575a']);for(const side of [-1,1])pieces.push([sphere(),[0,.34,side*.81],[.63,.23,.29],white]);pieces.push([box(),[.91,.08,-.37],[.035,.19,.22],'#d5d0c3']);
+  // Continuous short sleeves, collar and hem belong to the existing shirt batch.
+  for(const side of [-1,1])pieces.push([sphere(),[0,.18,side*1.04],[.43,.25,.31],white],[sphere(),[.18,.47,side*.17],[.32,.045,.16],'#d2cbbd']);
+  pieces.push([box(),[.92,-.05,0],[.025,.68,.022],'#d2cbbd']);}
  if(kind==='arms'){pieces.push([cyl(),[0,0,0],[1,1,1],white],[sphere(),[0,-.42,0],[.89,.15,.9],white],[sphere(),[.05,-.53,0],[.88,.14,.72],white]);}
  if(kind==='legs'){pieces.push([cyl(),[0,0,0],[1,1,1],white],[sphere(),[.09,-.04,0],[.84,.12,.87],white],[box(),[.02,.08,.96],[.04,.77,.025],'#c0bbae']);}
  if(kind==='shoes'){pieces.push([sphere(),[0,.02,0],[.5,.49,.48],white],[box(),[0,-.38,0],[.96,.16,.96],'#c5c0b3']);}
@@ -50,5 +62,5 @@ function crowdGeometry(T,kind){const sphere=()=>new T.SphereGeometry(1,12,8),cyl
  if(kind==='hat'){pieces.push([new T.CylinderGeometry(1,1,.35,12),[0,0,0],[1,1,1],white],[new T.CylinderGeometry(.7,.75,1,12),[0,.42,0],[1,1,1],white]);}
  return pieces.length?combine(T,pieces):null;
 }
-const api={details,apply,styleWoman,styleResident,combine,crowdGeometry};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29NPCAppearance=api;
+const api={details,apply,styleWoman,styleResident,naturalResident,combine,crowdGeometry};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29NPCAppearance=api;
 })();

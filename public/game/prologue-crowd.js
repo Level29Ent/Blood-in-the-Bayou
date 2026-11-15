@@ -1,6 +1,6 @@
 'use strict';
 (function(){
-const SKIN=['#603d2b','#976b4d','#be8f6b','#d7ad88'],CLOTH=['#436c82','#88734c','#773d87','#3e7a5b','#d6b34b','#a75647'];
+const SKIN=['#603d2b','#976b4d','#be8f6b','#d7ad88'],CLOTH=['#3b566a','#b1a08b','#744b65','#526a5d','#c4b694','#7e4540','#d7d4c7','#333d48','#7d8d99','#a87d65','#566b80','#8b9b91'];
 // Authored mixed crowd identities; hairstyle/clothes never change with animation or camera distance.
 function character(id){const n=Math.abs(Math.trunc(id)||0),woman=n%2===1,pair=Math.floor(n/2),variant=pair%8,build=variant%4,hairstyle=woman?['bob','ponytail','bun','natural','long','locs-shoulder','locs-long','locs-tied'][variant]:['crop','short','curls','long','locs-short','locs-shoulder','locs-long','locs-tied'][variant],black=hairstyle.startsWith('locs');return {gender:woman?'woman':'man',hairstyle,outfit:woman?['blouse','jacket','tunic','tee'][build]:'shirt',build,...(black?{heritage:'African American',skin:['#573827','#754c35','#966b4b'][Math.floor(pair/8)%3],hairColor:variant===6?'#30231b':'#191715'}:{})};}
 
@@ -59,17 +59,17 @@ function create(T,capacity=72){
 function pose(T,root,actors,height){
  const dummy=new T.Object3D(),base=new T.Object3D(),local=new T.Matrix4(),matrix=new T.Matrix4(),color=new T.Color();for(const m of root.children)m.count=0;
  for(const a of actors.slice(0,root.userData.capacity)){
-  const profile=character(a.id),skin=a.skin||profile.skin||SKIN[Math.floor(a.id/2)%SKIN.length],shirt=a.festival?['#713b91','#ceac3e','#32825d'][a.id%3]:CLOTH[a.id%CLOTH.length],sw=a.wait>0?0:Math.sin(a.anim||0),s=a.scale||(.94+(a.id%7)*.018),look={...profile,...a},woman=look.gender==='woman',build=look.build%4;const torsoWidth=woman?[3.25,3.55,3.6,3.45][build]:3.75;
+  const profile=character(a.id),skin=a.skin||profile.skin||SKIN[Math.floor(a.id/2)%SKIN.length],shirt=a.festival?['#713b91','#ceac3e','#32825d'][a.id%3]:CLOTH[(a.id*5+Math.floor(a.id/12))%CLOTH.length],sw=a.wait>0?0:Math.sin(a.anim||0),s=a.scale||(.94+(a.id%7)*.018),look={...profile,...a},woman=look.gender==='woman',build=look.build%4;const torsoWidth=woman?[3.25,3.55,3.6,3.45][build]:[3.45,3.75,4.05,3.6][build];
   base.position.set(a.x,height(a.x,a.y),a.y);base.rotation.set(0,-a.a,0);base.scale.setScalar(s);base.updateMatrix();
   const put=(index,p,scale,c,rz=0,rx=0)=>{const m=root.children[index],i=m.count++;dummy.position.set(...p);dummy.scale.set(...scale);dummy.rotation.set(rx,0,rz);dummy.updateMatrix();local.copy(dummy.matrix);matrix.multiplyMatrices(base.matrix,local);m.setMatrixAt(i,matrix);color.set(c);m.setColorAt(i,color);};
-  put(0,[0,woman&&look.outfit==='tunic'?11.9:12.4,0],[woman?2.15:2.38,woman&&look.outfit==='tunic'?8.2:7.2,torsoWidth],shirt);put(1,[.05,18.3,0],root.userData.detailed?[woman?1.6:1.7,1.85,woman?1.53:1.6]:[2.05,2.35,1.95],skin);
+  put(0,[0,woman&&look.outfit==='tunic'?11.9:12.4,0],[woman?2.15:2.38,woman&&look.outfit==='tunic'?8.2:7.2,torsoWidth],shirt);put(1,[.05,18.3,0],root.userData.detailed?[woman?1.56:1.63,1.98,woman?1.48:1.55]:[2.05,2.35,1.95],skin);
   const reaction=a.reaction||'wave',phase=a.anim||0,cheer=a.cheer;
   for(const side of [-1,1]){
    const wave=cheer&&reaction==='wave',clap=cheer&&reaction==='clap',dance=cheer&&reaction==='dance';
-   const armPos=wave?[0,20,side*4.5]:clap?[3.5,13.5,side*(1.5+Math.sin(phase*2)*.6)]:dance?[1,14,side*5]:[a.festival?2.5:sw*side,11,side*4.5];
+   const armPos=wave?[0,20,side*4.5]:clap?[3.5,13.5,side*(1.5+Math.sin(phase*2)*.6)]:dance?[1,14,side*5]:[a.festival?2.5:sw*side,11,side*(woman?3.95:4.15)];
    put(2,armPos,[woman?.98:1.05,8,woman?.98:1.05],skin,wave?Math.PI+side*.16+Math.sin(phase)*.15:clap?-1.2:dance?side*.8+Math.sin(phase)*.2:a.festival?-1:sw*side*.3);
    put(3,[sw*side,4.4,side*1.8],[1.5,7.5,1.4],['#34465c','#333b36','#57504a','#283039'][a.id%4],sw*side*.28);
-   put(4,[.7+sw*side,.8,side*1.8],[4,1.4,2.6],'#353331');
+   put(4,[.7+sw*side,.8,side*1.8],[3.55,1.25,2.45],'#353331');
    if(!root.userData.detailed)put(5,[2,18.7,side*.8],[.18,.22,.3],'#241b18');
   }
   if(root.userData.detailed){const hair=look.hairColor||['#211c18','#39271c','#66513c','#aaa08b'][Math.floor(a.id/2)%4];
