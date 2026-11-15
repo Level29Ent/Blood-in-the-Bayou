@@ -141,7 +141,7 @@ function deathCash(x,y){pickups.push({x,y,kind:'cash',t:0,amt:100,expiresAt:Date
 const oldKillP=killPlayer;killPlayer=function(){const was=player.dead,x=player.car?player.car.x:player.x,y=player.car?player.car.y:player.y;oldKillP();if(!was&&mpRole!=='client')deathCash(x,y);};
 const oldHost=mpHostData;mpHostData=function(id,d){const r=MP.remotes.get(id);if(r&&d){if(d.t==='st'&&!d.dead)r.l29Dropped=false;if((d.t==='die'||(d.t==='st'&&d.dead))&&!r.l29Dropped){deathCash(Number.isFinite(d.x)?d.x:r.x,Number.isFinite(d.y)?d.y:r.y);r.l29Dropped=true;}}oldHost(id,d);};
 // Every enterable venue has a staff member with role-specific clothing and equipment.
-const jobs={safe:['SAFE HOUSE CARETAKER','#788c67','#4e5e43'],garage:['MECHANIC','#2a4b69','#263e52'],armory:['ARMORY DEALER','#505f38','#2f3828'],spray:['CARWASH ATTENDANT','#31a4b0','#2d5261'],business:['BUSINESS MANAGER','#30394a','#242c39']};
+const jobs={safe:['SAFE HOUSE CARETAKER','#788c67','#4e5e43'],garage:['MECHANIC','#2a4b69','#263e52'],armory:['ARMORY DEALER','#505f38','#2f3828'],spray:['CARWASH ATTENDANT','#31a4b0','#2d5261'],business:['BUSINESS MANAGER','#30394a','#242c39'],retail:['RETAIL CLERK','#486f62','#303e39']};
 function worker(v){
  const job=jobs[v.id],m=makeFigure(false),u=m.userData;setFigureColors(m,['#b17953','#8c573a','#d4a078'][Math.floor(v.b.seed)%3],job[1],job[2],'#28221b');
  const q=batch(u.body),cloth=material(job[1]),boots=material('#272c2b'),white=material('#e1decf');
