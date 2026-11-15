@@ -2,11 +2,14 @@
 (function(){
 function profile(airborne=false){return airborne?{near:900,far:1500,clip:1700}:{near:360,far:660,clip:760};}
 // Only snapshot static scenery; doors, actors, animated props and existing room islands stay owned by their systems.
-function islands(T,root){root.updateWorldMatrix(true,true);const result=[];function walk(o){
- if(o.userData.mobileMoving||o.userData.legs||o.userData.noBatch||o.userData.body||o.userData.wheel||o.userData.dynamic||o.userData.vehicles||o.isSkinnedMesh||o.morphTargetInfluences||o.isSprite||o.isLight)return {dynamic:true,box:new T.Box3(),count:0};
+// Explicit authored static scenery can retain noBatch (geometry ownership) without
+// also bypassing visibility. This never overrides moving/actor/light exclusions.
+function islands(T,root){root.updateWorldMatrix(true,true);const result=[];function walk(o,authored=false){
+ authored=authored||o.userData.mobileStaticScenery===true;
+ if(o.userData.mobileMoving||o.userData.legs||(o.userData.noBatch&&!authored)||o.userData.body||o.userData.wheel||o.userData.dynamic||o.userData.vehicles||o.isSkinnedMesh||o.morphTargetInfluences||o.isSprite||o.isLight)return {dynamic:true,box:new T.Box3(),count:0};
  let dynamic=false,count=0;const box=new T.Box3(),parts=[];
  if(o.isMesh&&o.geometry?.attributes?.position){const geo=o.geometry;if(!geo.boundingBox)geo.computeBoundingBox();if(o.isInstancedMesh){const matrix=new T.Matrix4(),world=new T.Matrix4();for(let i=0;i<o.count;i++){o.getMatrixAt(i,matrix);world.multiplyMatrices(o.matrixWorld,matrix);box.union(geo.boundingBox.clone().applyMatrix4(world));}}else box.union(geo.boundingBox.clone().applyMatrix4(o.matrixWorld));count=1;}
- for(const child of o.children){const part=walk(child);dynamic=dynamic||part.dynamic;count+=part.count;box.union(part.box);parts.push(part);}
+ for(const child of o.children){const part=walk(child,authored);dynamic=dynamic||part.dynamic;count+=part.count;box.union(part.box);parts.push(part);}
  const size=box.getSize(new T.Vector3());if(!dynamic&&count&&Math.max(size.x,size.y,size.z)<=512){return {dynamic:false,box,count,node:o,parts:[]};}
  return {dynamic,box,count,node:null,parts:parts.concat(o.isMesh&&count?[{node:o,box,parts:[]}]:[])};
  }
