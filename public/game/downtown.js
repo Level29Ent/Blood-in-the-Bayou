@@ -253,9 +253,8 @@ buildCity=function(){const r=prevBuild.apply(this,arguments);if(!cityGroup)retur
 // ---------------------------------------------------------------- sky: clouds, the flying jet, birds
 function ensureSky(){
   if(!scene)return;
-  if(!clouds.length){const m=new THREE.MeshBasicMaterial({color:'#edf2ed',transparent:true,opacity:.48,depthWrite:false});
-    for(let i=0;i<26;i++){const c=new THREE.Group();const n=3+Math.floor(Math.random()*3);for(let k=0;k<n;k++){const s=new THREE.Mesh(new THREE.SphereGeometry(rnd(26,46),10,8),m);const angle=k*2.399;s.position.set(Math.cos(angle)*30,rnd(-3,5),Math.sin(angle)*22);s.scale.set(1.6,.28,1.1);c.add(s);}
-      c.name='weather-cloud';c.userData.v=rnd(.15,.45);c.position.set(player.x+rnd(-1300,1300),rnd(300,420),player.y+rnd(-1300,1300));clouds.push(c);}}
+  if(!clouds.length){const kit=level29SoftClouds.build(THREE,document),count=window.level29Graphics?.quality==='low'?12:20;
+    if(kit)for(let i=0;i<count;i++){const c=kit.create();c.name='weather-cloud';c.userData.v=rnd(.15,.45);c.position.set(player.x+rnd(-1300,1300),rnd(300,420),player.y+rnd(-1300,1300));clouds.push(c);}}
   for(const c of clouds)if(!c.parent)scene.add(c);
   if(!flyer){flyer=planeMesh(false);flyer.userData.a=0;}
   if(isWorld(city)&&!flyer.parent)scene.add(flyer);
@@ -396,7 +395,7 @@ function spots(){
     if(id==='smoke')add(L.door,'CROWN SMOKE SHOP',()=>openPanel(shopPanel('smoke')));
     if(id==='truck')add(L.door,"FELICIA'S SNOWBALL TRAILER · WALK INSIDE",()=>window.level29Felicia?.open());}
   const B=window.boomCity;
-  if(B&&isWorld(city)){for(const [i,p]of (city.casinoStations||[]).entries())add(p,['PLAY SLOT MACHINE','PLAY BLACKJACK','PLAY POKER','PLAY ROULETTE'][i%4],()=>{tab=['slots','bj','poker','rr'][i%4];openPanel(casinoPanel);});
+  if(B&&isWorld(city)){if(!city.riverboatHub||window.level29Riverboat?.active&&level29Riverboat.floor===0)for(const [i,p]of (city.casinoStations||[]).entries())add(p,'PLAY '+(p.label||['SLOT MACHINE','BLACKJACK','POKER','ROULETTE'][i%4]),()=>openCasino(p.game||['slots','bj','poker','rr'][i%4],p.machine));
     add({x:B.CAPTAIN.x+T*1.7,y:B.CAPTAIN.y},'BOARD THE NATCHEZ DECK · NET FISHING',()=>openPanel(fishPanel()));}
   if(course){if(!run)add(course.pts[0],'START CONFIDENCE COURSE'+(save.courseBest?' · BEST '+save.courseBest.toFixed(1)+'s':''),startCourse);
     else{const p=course.pts[run.i];if(p.taps)add(p,p.name+' · TAP '+run.taps+' / '+p.taps,climbTap);}}
@@ -450,7 +449,7 @@ fireBtn.addEventListener('pointerdown',e=>{e.preventDefault();fireHeld=true;});
 for(const ev of ['pointerup','pointercancel','pointerleave'])fireBtn.addEventListener(ev,()=>{fireHeld=false;});
 
 let cur=null,anim=0;
-function openPanel(p){cur=p;state='shop';mouse.down=false;for(const k in keys)keys[k]=false;if(player&&player.car)player.car.v=0;panel.style.display='flex';draw();useBtn.style.display='none';}
+function openPanel(p){cur=p;state='shop';mouse.down=false;for(const k in keys)keys[k]=false;if(typeof touch!=='undefined')for(const k in touch)touch[k]=false;if(player&&player.car)player.car.v=0;document.exitPointerLock?.();panel.style.display='flex';draw();panel.querySelector('button')?.focus();useBtn.style.display='none';}
 function closePanel(){if(cur&&cur.close)cur.close();cur=null;cancelAnimationFrame(anim);panel.style.display='none';if(state==='shop')state='play';}
 function draw(){if(!cur)return;panel.className=cur.theme||'';panel.innerHTML='<div class="bx"><button class="x" data-a="close" aria-label="Close">CLOSE</button>'+cur.render()+'</div>';}
 panel.addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||!cur||b.disabled)return;const a=b.dataset.a;if(a==='close')return closePanel();cur.act(a,b.dataset.v);if(cur)draw();});
@@ -475,7 +474,7 @@ const buzz=p=>{try{if(navigator.vibrate)navigator.vibrate(p);}catch(e){}};
 const RED=new Set([1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36]);
 const rColor=n=>n===0?'green':RED.has(n)?'red':'black';
 const RBETS=[['red','Red',2],['black','Black',2],['green','Green 0',36],['odd','Odd',2],['even','Even',2],['low','1-18',2],['high','19-36',2],['num','Number',36]];
-const rWins=(p,n,num)=>p==='red'||p==='black'||p==='green'?rColor(n)===p:n===0?false:p==='odd'?n%2===1:p==='even'?n%2===0:p==='low'?n<=18:p==='high'?n>=19:p==='num'?n===num:false;
+const rWins=(p,n,num)=>p==='red'||p==='black'||p==='green'?rColor(n)===p:p==='num'?n===num:n===0?false:p==='odd'?n%2===1:p==='even'?n%2===0:p==='low'?n<=18:p==='high'?n>=19:p==='num'?n===num:false;
 function slotSpin(){if(cash<bet){msg='Not enough cash.';return;}cash-=bet;addJackpot(Math.round(bet*.029));const r=[pick(),pick(),pick()];reels=r;
   const j=r.filter(s=>s==='JESTER').length;let ret=0;
   if(j===3){ret=Math.round(save.jackpot*Math.min(1,bet/2900));save.jackpot=Math.max(29000,save.jackpot-ret);persist();msg='LEVEL 29 JACKPOT! '+money(ret);}
@@ -490,14 +489,14 @@ const cardHtml=(c,extra)=>'<span class="pc '+(c.s===1||c.s===2?'red ':'')+(extra
 const drawCard=()=>({r:1+Math.floor(Math.random()*13),s:Math.floor(Math.random()*4)});
 const bjVal=h=>{let t=0,a=0;for(const c of h){const v=c.r===1?11:Math.min(10,c.r);t+=v;if(c.r===1)a++;}while(t>21&&a--)t-=10;return t;};
 function bjAct(a){
-  if(a==='deal'){if(cash<bet){msg='Not enough cash.';return;}cash-=bet;bj={stake:bet,p:[drawCard(),drawCard()],d:[drawCard(),drawCard()],done:false};if(bjVal(bj.p)===21)bjSettle();return;}
+  if(a==='deal'){if(bj&&!bj.done)return;if(cash<bet){msg='Not enough cash.';return;}cash-=bet;const deck=newDeck().map(c=>({...c,r:c.r===14?1:c.r}));bj={stake:bet,deck,p:[deck.pop(),deck.pop()],d:[deck.pop(),deck.pop()],done:false};if(bjVal(bj.p)===21||bjVal(bj.d)===21)bjSettle();return;}
   if(!bj||bj.done)return;
-  if(a==='hit'){bj.p.push(drawCard());if(bjVal(bj.p)>21)bjSettle();}
+  if(a==='hit'){bj.p.push(bj.deck.pop());if(bjVal(bj.p)>21)bjSettle();}
   if(a==='stand')bjSettle(true);
-  if(a==='double'&&bj.p.length===2&&cash>=bj.stake){cash-=bj.stake;bj.stake*=2;bj.p.push(drawCard());bjSettle(true);}}
-function bjSettle(play){const p=bjVal(bj.p);if(p<=21&&play!==undefined||p===21)while(bjVal(bj.d)<17)bj.d.push(drawCard());
+  if(a==='double'&&bj.p.length===2&&cash>=bj.stake){cash-=bj.stake;bj.stake*=2;bj.p.push(bj.deck.pop());bjSettle(true);}}
+function bjSettle(play){const p=bjVal(bj.p);if(p<=21&&play!==undefined||p===21)while(bjVal(bj.d)<17)bj.d.push(bj.deck.pop());
   const d=bjVal(bj.d);let ret=0;
-  if(p>21)msg='Bust. Dealer wins.';else if(p===21&&bj.p.length===2&&!(d===21&&bj.d.length===2)){ret=bj.stake*2.5;msg='BLACKJACK! '+money(ret);}
+  if(p>21)msg='Bust. Dealer wins.';else if(d===21&&bj.d.length===2&&!(p===21&&bj.p.length===2))msg='Dealer blackjack.';else if(p===21&&bj.p.length===2&&!(d===21&&bj.d.length===2)){ret=bj.stake*2.5;msg='BLACKJACK! '+money(ret);}
   else if(d>21||p>d){ret=bj.stake*2;msg='You win '+money(ret);}else if(p===d){ret=bj.stake;msg='Push. Bet returned.';}else msg='Dealer wins with '+d+'.';
   if(ret){cash+=ret;sfx('cash');}bj.done=true;}
 function newDeck(){const d=[];for(let s=0;s<4;s++)for(let r=2;r<=14;r++)d.push({r,s});for(let i=d.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[d[i],d[j]]=[d[j],d[i]];}return d;}
@@ -507,22 +506,24 @@ function pokerEval(h){const rs=h.map(c=>c.r).sort((a,b)=>a-b),fl=h.every(c=>c.s=
   if(cv[0]===3&&cv[1]===2)return['FULL HOUSE',9];if(fl)return['FLUSH',6];if(st)return['STRAIGHT',4];if(cv[0]===3)return['THREE OF A KIND',3];
   if(cv[0]===2&&cv[1]===2)return['TWO PAIR',2];if(cv[0]===2&&+Object.keys(cnt).find(k=>cnt[k]===2)>=11)return['JACKS OR BETTER',1];return['NO WIN',0];}
 function pkAct(a,v){
-  if(a==='pdeal'){if(cash<bet){msg='Not enough cash.';return;}cash-=bet;const d=newDeck();pk={deck:d,h:d.splice(0,5),held:[0,0,0,0,0],stake:bet,done:false};msg='Tap cards to hold, then draw.';return;}
+  if(a==='pdeal'){if(pk&&!pk.done)return;if(cash<bet){msg='Not enough cash.';return;}cash-=bet;const d=newDeck();pk={deck:d,h:d.splice(0,5),held:[0,0,0,0,0],stake:bet,done:false};msg='Tap cards to hold, then draw.';return;}
   if(!pk||pk.done)return;
-  if(a==='hold'){pk.held[+v]^=1;return;}
+  if(a==='hold'){if(Number.isInteger(+v)&&+v>=0&&+v<5)pk.held[+v]^=1;return;}
   if(a==='draw'){pk.h=pk.h.map((c,i)=>pk.held[i]?c:pk.deck.pop());const [name,m]=pokerEval(pk.h);const ret=pk.stake*m;if(ret){cash+=ret;sfx('cash');}msg=m?name+' · '+money(ret):'No win.';pk.done=true;}}
 function rrAct(a,v){
-  if(a==='rpick'){rr.pick=v;return;}
-  if(a==='rnum'){rr.num=Math.max(0,Math.min(36,rr.num+(+v)));return;}
+  if(a==='rpick'){if(RBETS.some(b=>b[0]===v))rr.pick=v;return;}
+  if(a==='rnum'){if([-1,1].includes(+v))rr.num=Math.max(0,Math.min(36,rr.num+(+v)));return;}
   if(a==='rspin'){if(cash<bet){msg='Not enough cash.';return;}cash-=bet;
     const n=Math.floor(Math.random()*37);rr.last=n;rr.hist=[n,...rr.hist].slice(0,8);
     const mult=RBETS.find(b=>b[0]===rr.pick)[2];const label=rColor(n).toUpperCase()+' '+n;
     if(rWins(rr.pick,n,rr.num)){const ret=bet*mult;cash+=ret;msg='Ball lands on '+label+' · WIN '+money(ret);sfx('cash');buzz(mult>2?[60,40,60,40,120]:60);}
     else{msg='Ball lands on '+label+'. House wins.';addJackpot(Math.round(bet*.029));buzz(25);}}}
+function liveCasino(){return bj&&!bj.done?'bj':pk&&!pk.done?'poker':null;}
+function openCasino(game,m){if(!player||player.dead||player.car||state!=='play')return;tab=liveCasino()||(['slots','bj','poker','rr'].includes(game)?game:tab);if(Number.isInteger(m)&&m>=0&&m<SLOTS.length)machine=m;openPanel(casinoPanel);}
 const casinoPanel={
   render(){
     let h='<div class="eb">BoomCity casino floor</div><h2>BoomCity</h2>'+wallet()+'<p class="jp">LEVEL 29 JACKPOT '+money(save.jackpot)+'</p>';
-    h+='<div class="row">'+[['slots','Jester slots'],['bj','Blackjack'],['poker','Poker'],['rr','Roulette']].map(([k,l])=>'<button data-a="tab" data-v="'+k+'" class="'+(tab===k?'on':'')+'">'+l+'</button>').join('')+'</div>';
+    h+='<div class="row">'+[['slots','Jester slots'],['bj','Blackjack'],['poker','Poker'],['rr','Roulette']].map(([k,l])=>'<button data-a="tab" data-v="'+k+'" class="'+(tab===k?'on':'')+'" '+(liveCasino()&&liveCasino()!==k?'disabled':'')+'>'+l+'</button>').join('')+'</div>';
     if(tab==='slots'){h+='<div class="grid">'+SLOTS.map((s,i)=>'<button data-a="mach" data-v="'+i+'" class="'+(machine===i?'on':'')+'" style="'+(machine===i?'':'background:'+s.c)+'">'+s.n+'</button>').join('')+'</div>';
       h+='<div class="reels">'+reels.map(r=>'<div class="reel" style="color:'+(r==='JESTER'?'#f2c14e':r==='29'?'#ff6b8a':'#e9dcff')+'">'+r+'</div>').join('')+'</div>';
       h+=betRow()+'<div class="row" style="justify-content:center"><button class="g" data-a="spin" '+(cash<bet?'disabled':'')+'>SPIN '+SLOTS[machine].n+' · '+money(bet)+'</button></div>';
@@ -544,8 +545,17 @@ const casinoPanel={
       h+=betRow()+'<div class="row" style="justify-content:center"><button class="g" data-a="rspin" '+(cash<bet?'disabled':'')+'>SPIN THE WHEEL · '+money(bet)+'</button></div>';}
     if(msg)h+='<p style="font-size:20px;color:#7dffb0" role="status">'+msg+'</p>';
     return h+'<p style="font-size:13px;color:#a89fb0">In-game money only. No real-money gambling.</p>';},
-  act(a,v){if(a==='tab'){tab=v;msg='';return;}if(a==='bet'){bet=+v;return;}if(a==='mach'){machine=+v;return;}if(a==='spin')return slotSpin();
-    if(['deal','hit','stand','double'].includes(a))return bjAct(a);if(a==='pdeal'||a==='hold'||a==='draw')return pkAct(a,v);if(a==='rpick'||a==='rnum'||a==='rspin')return rrAct(a,v);}
+  close(){window.level29Save?.save();},
+  act(a,v){
+    const live=liveCasino();if(a==='tab'){if(!live&&['slots','bj','poker','rr'].includes(v)){tab=v;msg='';}return;}
+    if(a==='bet'){if(!live&&BETS.includes(+v))bet=+v;return;}
+    if(a==='mach'){if(!live&&Number.isInteger(+v)&&+v>=0&&+v<SLOTS.length)machine=+v;return;}
+    const actions={slots:['spin'],bj:['deal','hit','stand','double'],poker:['pdeal','hold','draw'],rr:['rpick','rnum','rspin']};
+    if(!actions[tab]?.includes(a)||live&&live!==tab||!BETS.includes(bet)||!Number.isFinite(cash)||cash<0)return;
+    if(a==='spin')slotSpin();else if(tab==='bj')bjAct(a);else if(tab==='poker')pkAct(a,v);else rrAct(a,v);
+    window.level29Save?.save();
+  }
+
 };
 
 // ---------------------------------------------------------------- the Velvet Jester club
@@ -600,11 +610,11 @@ function quizPanel(){const qs=QUIZ.slice().sort(()=>Math.random()-.5).slice(0,5)
   return{render(){if(i>=qs.length)return '<div class="eb">Bayou State University</div><h2>Class dismissed</h2><p>'+right+' / '+qs.length+' correct · earned '+money(right*290)+'</p>';
     return '<div class="eb">Bayou State University · Louisiana 101 · question '+(i+1)+' of '+qs.length+'</div><h2>'+qs[i].q+'</h2><p>$290 per correct answer.</p><div class="row">'+qs[i].o.map((o,k)=>'<button data-a="ans" data-v="'+k+'">'+o[0]+'</button>').join('')+'</div>'+(m?'<p role="status">'+m+'</p>':'');},
   act(a,v){if(a!=='ans'||i>=qs.length)return;if(qs[i].o[+v][1]){right++;cash+=290;sfx('cash');m='Correct! +$290';}else m='Wrong. Answer: '+qs[i].o.find(o=>o[1])[0];i++;}};}
-function kickPanel(){let k=0,made=0,res='',zone=[40,62];const YARDS=[20,30,40,50,60];
-  const p={render(){if(k>=5)return '<div class="eb">Jester Stadium</div><h2>Field goals</h2><p>'+made+' / 5 good · earned '+money(made*250*3)+'</p>';
-    return '<div class="eb">Jester Stadium · kick '+(k+1)+' of 5</div><h2>'+YARDS[k]+'-yard field goal</h2><p>Stop the needle inside the green. Each kick is worth more.</p><div class="meter"><div class="zone" style="left:'+zone[0]+'%;width:'+(zone[1]-zone[0])+'%"></div><div class="nd" id="l29nd"></div></div><div class="row" style="justify-content:center"><button class="g" data-f="go">KICK (Space)</button></div>'+(res?'<p role="status">'+res+'</p>':'');},
-    act(){},fast(){if(k>=5)return;const n=document.getElementById('l29nd'),v=n?parseFloat(n.style.left):0;const good=v>=zone[0]&&v<=zone[1];
-      if(good){made++;const pay=250*(k+1);cash+=pay;sfx('cash');res='GOOD! +'+money(pay);}else res='No good.';k++;const w=Math.max(8,22-k*3.5),c=rnd(20,80);zone=[c-w/2,c+w/2];draw();}};
+function kickPanel(name='Jester Stadium',mode='kick'){let k=0,made=0,earned=0,res='',lastKick=-Infinity,zone=[40,62];const YARDS=[20,30,40,50,60];
+  const p={render(){if(k>=5)return '<div class="eb">'+name+'</div><h2>'+ (mode==='pass'?'Passing challenge':'Field goals')+'</h2><p>'+made+' / 5 good · earned '+money(earned)+'</p>';
+    return '<div class="eb">'+name+' · '+mode+' '+(k+1)+' of 5</div><h2>'+YARDS[k]+'-yard '+(mode==='pass'?'target pass':'field goal')+'</h2><p>Stop the needle inside the green. Each kick is worth more.</p><div class="meter"><div class="zone" style="left:'+zone[0]+'%;width:'+(zone[1]-zone[0])+'%"></div><div class="nd" id="l29nd"></div></div><div class="row" style="justify-content:center"><button class="g" data-f="go">'+(mode==='pass'?'PASS':'KICK')+' (Space)</button></div>'+(res?'<p role="status">'+res+'</p>':'');},
+    act(){},fast(){const now=performance.now();if(k>=5||now-lastKick<650)return;lastKick=now;const n=document.getElementById('l29nd'),v=n?parseFloat(n.style.left):0;const good=v>=zone[0]&&v<=zone[1];
+      if(good){made++;const pay=250*(k+1);cash+=pay;earned+=pay;window.level29Save?.save();sfx('cash');res='GOOD! +'+money(pay);}else res='No good.';k++;const w=Math.max(8,22-k*3.5),c=rnd(20,80);zone=[c-w/2,c+w/2];draw();}};
   setTimeout(()=>meterLoop(t=>50+48*Math.sin(t*(2.4+k*.5))),0);return p;}
 const CATCH=[['Gulf shrimp',0,40],['Redfish',85,14],['Speckled trout',60,14],['Flounder',70,10],['Red snapper',120,6],['Blue crab',25,10],['Old boot',0,6]];
 function fishPanel(){let casts=10,haul=0,log=[],zone=[38,62];
@@ -638,5 +648,5 @@ drawFullMap=function(){prevFullMap.apply(this,arguments);if(!isWorld(city))retur
   for(const id in lots){const L=lots[id],x=(L.x0+L.x1+1)/2*T,y=(L.y0+L.y1+1)/2*T;cx.font="800 12px 'Barlow Condensed'";cx.textAlign='center';cx.textBaseline='middle';const w=cx.measureText(L.name).width+10;
     cx.fillStyle='rgba(8,10,12,.8)';cx.fillRect(X+x*sc-w/2,Y+y*sc-8,w,16);cx.fillStyle=COL.gold;cx.fillText(L.name,X+x*sc,Y+y*sc);}}catch(_){}};
 
-window.level29Downtown={planeMesh,get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},get birdTargets(){return birds;},hitBird,startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino:()=>openPanel(casinoPanel),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
+window.level29Downtown={planeMesh,get lots(){return lots;},get save(){return save;},get ride(){return ride;},get course(){return course;},get birds(){return birds.length;},get birdTargets(){return birds;},hitBird,startMissionFlight:()=>{const a=window.level29Powell?.active;if(a?.kind?.startsWith('air'))return startBomber(true);},openCasino,openFootball:(name,mode='kick')=>openPanel(kickPanel(name,mode)),openClub:()=>openPanel(clubPanel),startBomber,startCourse,closePanel,spots};
 })();

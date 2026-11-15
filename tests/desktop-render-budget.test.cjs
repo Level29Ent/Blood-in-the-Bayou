@@ -21,3 +21,4 @@ test('fast frames recover resolution gradually without exceeding the cap',()=>{
  const s=setup();for(let i=0;i<180;i++)s.frame(45);const low=s.ratio;
  for(let i=0;i<1100;i++)s.frame(16);assert.ok(s.ratio>low);assert.ok(s.ratio<=1);
 });
+test('menus and hidden tabs clear stale slow-frame history before gameplay resumes',()=>{const s=setup();for(let i=0;i<25;i++)s.frame(45);const before=s.ratio;s.c.state='pause';for(let i=0;i<200;i++)s.frame(200);assert.equal(s.ratio,before);s.c.state='play';for(let i=0;i<30;i++)s.frame(16);assert.equal(s.ratio,before);s.c.document.hidden=true;for(let i=0;i<20;i++)s.frame(1000);s.c.document.hidden=false;for(let i=0;i<40;i++)s.frame(16);assert.equal(s.ratio,before);});

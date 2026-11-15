@@ -521,11 +521,11 @@ function upgradeVehicle(id){const c=carTarget();if(!c)return;const costs={engine
 function persistTarget(c){if(c.saveId){const i=save.garage.findIndex(q=>q.id===c.saveId);if(i>=0)save.garage[i]=carRecord(c);}persist();}
 function paintVehicle(color){const c=carTarget();if(!c||!/^#[0-9a-f]{6}$/i.test(color)||!pay(250))return;c.col=color;persistTarget(c);showStore('custom');}
 function selectSaved(id){const rec=save.garage.find(q=>q.id===id);if(!rec)return;customCar={type:rec.type,saveId:rec.id,col:rec.col,custom:{...rec.custom},hp:CAR_SPECS[rec.type].hp,maxHp:CAR_SPECS[rec.type].hp};applyVehicleTuning(customCar);showStore('custom');}
-function exportSave(){save.cash=cash;save.up={...up};save.arsenal={...arsenal};save.chapter=distIdx;save.mission=missionIdx;save.maxHp=player&&player.maxHp;const str=JSON.stringify(save);const box=panel.querySelector('textarea');if(box)box.value=str;persist();toast('COPY YOUR SAVE TEXT · IMPORT TO RESTORE ON ANY DEVICE');}
+function exportSave(){save.wardrobe=window.level29Wardrobe?.snapshot||null;save.cash=cash;save.up={...up};save.arsenal={...arsenal};save.chapter=distIdx;save.mission=missionIdx;save.maxHp=player&&player.maxHp;const str=JSON.stringify(save);const box=panel.querySelector('textarea');if(box)box.value=str;persist();toast('COPY YOUR SAVE TEXT · IMPORT TO RESTORE ON ANY DEVICE');}
 function importSave(){try{const val=JSON.parse(panel.querySelector('textarea').value);
   if(typeof val.apartment!=='boolean'||!Array.isArray(val.garage)||val.garage.length>12||!val.garage.every(v=>CAR_SPECS[v.type]&&!CAR_SPECS[v.type].boat))throw Error('invalid');
   save=Object.assign({apartment:false,garage:[],custom:{},owned:{},fishCaught:0,caches:[]},val);cash=Math.max(0,Number(save.cash)||0);if(save.up)up={...up,...save.up};if(save.arsenal)arsenal={...arsenal,...save.arsenal};
-  if(player&&save.maxHp){player.maxHp=Math.max(100,Math.min(1000,Number(save.maxHp)||100));player.hp=player.maxHp;}persist();showStore('save');toast('SAVE RESTORED');
+  if(save.wardrobe)window.level29Wardrobe?.restore(save.wardrobe);if(player&&save.maxHp){player.maxHp=Math.max(100,Math.min(1000,Number(save.maxHp)||100));player.hp=player.maxHp;}persist();showStore('save');toast('SAVE RESTORED');
   }catch(_){toast('INVALID SAVE TEXT');}}
 function card(title,desc,button,action,disabled=false){return '<div class="card"><h3>'+title+'</h3><p>'+desc+'</p><button data-action="'+action+'"'+(disabled?' disabled':'')+'>'+button+'</button></div>';}
 function showStore(tab='home'){

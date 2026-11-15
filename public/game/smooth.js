@@ -68,7 +68,7 @@
   let ratio = 0, avg = 16.7, lastFrame = 0, lastChange = 0, slowFor = 0, fastFor = 0;
   function capRatio(){ if(window.level29MobileBudget)return window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio);return mpRole ? Math.min(1, devicePixelRatio || 1) : Math.min(isTouch?1:1.5, devicePixelRatio || 1); }
   function adaptResolution(now, dt){
-    if (!renderer || state !== 'play') return;
+    if (!renderer || state !== 'play' || document.hidden){slowFor=fastFor=0;avg=1000/(window.level29RuntimePolicy?.budget.fps||60);return;}
     const cap = capRatio();
     ratio = renderer.getPixelRatio();
     const floor = Math.min(MIN_RATIO,cap);
@@ -99,7 +99,7 @@
     lastFrame = now;
     if (lockable && isLocked() && (state !== 'play' || wheelIsOpen())){ try { document.exitPointerLock(); } catch (_) {} }
     if (mobile) window.level29RuntimePolicy?.observeMobileFrame?.(elapsed, state === 'play' && !document.hidden);
-    if (!document.hidden) try { adaptResolution(now, dt); } catch (_) {}
+    try { adaptResolution(now, dt); } catch (_) {}
     prevRender();
   };
 
