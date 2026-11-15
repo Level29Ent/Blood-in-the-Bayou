@@ -140,10 +140,12 @@ if(kPool)kPool.make=makePickup;
 function deathCash(x,y){pickups.push({x,y,kind:'cash',t:0,amt:100,expiresAt:Date.now()+30000});}
 const oldKillP=killPlayer;killPlayer=function(){const was=player.dead,x=player.car?player.car.x:player.x,y=player.car?player.car.y:player.y;oldKillP();if(!was&&mpRole!=='client')deathCash(x,y);};
 const oldHost=mpHostData;mpHostData=function(id,d){const r=MP.remotes.get(id);if(r&&d){if(d.t==='st'&&!d.dead)r.l29Dropped=false;if((d.t==='die'||(d.t==='st'&&d.dead))&&!r.l29Dropped){deathCash(Number.isFinite(d.x)?d.x:r.x,Number.isFinite(d.y)?d.y:r.y);r.l29Dropped=true;}}oldHost(id,d);};
-// Every enterable venue has a staff member with role-specific clothing and equipment.
+// Registered venue roles receive legacy staff; other authored venues own their staffing.
 const jobs={safe:['SAFE HOUSE CARETAKER','#788c67','#4e5e43'],garage:['MECHANIC','#2a4b69','#263e52'],armory:['ARMORY DEALER','#505f38','#2f3828'],spray:['CARWASH ATTENDANT','#31a4b0','#2d5261'],business:['BUSINESS MANAGER','#30394a','#242c39'],retail:['RETAIL CLERK','#486f62','#303e39']};
 function worker(v){
- const job=jobs[v.id],m=makeFigure(false),u=m.userData;setFigureColors(m,['#b17953','#8c573a','#d4a078'][Math.floor(v.b.seed)%3],job[1],job[2],'#28221b');
+ // Authored venues can delegate their shell here without using a legacy uniform role.
+ const job=Object.prototype.hasOwnProperty.call(jobs,v.id)?jobs[v.id]:null;if(!job)return;
+ const m=makeFigure(false),u=m.userData;setFigureColors(m,['#b17953','#8c573a','#d4a078'][Math.floor(v.b.seed)%3],job[1],job[2],'#28221b');
  const q=batch(u.body),cloth=material(job[1]),boots=material('#272c2b'),white=material('#e1decf');
  for(const z of [-4.9,4.9])q.box(2.5,4.2,2.6,0,13,z,cloth);
  for(const z of [-1.8,1.8])q.box(5,1.7,3.5,1,1,z,boots);
