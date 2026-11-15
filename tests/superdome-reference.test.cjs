@@ -1,0 +1,19 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),T=require('three'),fs=require('node:fs'),vm=require('node:vm'),S=require('../public/game/superdome-reference.js');
+const b={x:2016,y:1120,w:256,h:256,H:150,baseY:0,kind:'dome'};
+test('photo proportions: low white cap above an inward skirt and flared upper crown',()=>{
+ const p=S.plan(b),g=S.build(T,b),roof=g.getObjectByName('Superdome · shallow white roof');assert.ok(roof);roof.updateMatrix();roof.geometry.computeBoundingBox();const rb=roof.geometry.boundingBox.clone().applyMatrix4(roof.matrix);assert.ok(Math.abs(rb.max.y-(p.roofY+p.roofRise))<.001);assert.ok((rb.max.y-rb.min.y)/(rb.max.x-rb.min.x)<.15);assert.ok(p.profile[3][0]<p.profile[0][0]&&p.profile[3][0]<p.profile[6][0]);assert.equal(roof.material.roughness,.86);
+});
+test('existing city parcel, height, entrance approach and input remain intact',()=>{
+ const copy=JSON.stringify(b),g=S.build(T,b),bounds=new T.Box3(),matrix=new T.Matrix4();g.updateMatrixWorld(true);let calls=0,instances=0;g.traverse(o=>{assert.ok(!o.isLight);if(!o.isMesh)return;calls++;assert.equal(o.userData.noBatch,true);o.geometry.computeBoundingBox();if(o.isInstancedMesh){instances+=o.count;for(let i=0;i<o.count;i++){o.getMatrixAt(i,matrix);assert.ok(matrix.elements.every(Number.isFinite));bounds.union(o.geometry.boundingBox.clone().applyMatrix4(matrix).applyMatrix4(o.matrixWorld));}}else bounds.union(o.geometry.boundingBox.clone().applyMatrix4(o.matrixWorld));});assert.equal(JSON.stringify(b),copy);assert.ok(calls<=12,calls);assert.ok(instances>180);assert.ok(bounds.min.x>b.x&&bounds.max.x<b.x+b.w,JSON.stringify(bounds));assert.ok(bounds.min.z>b.y&&bounds.max.z<b.y+b.h);assert.ok(bounds.min.y>=0&&bounds.max.y<100);assert.ok(bounds.max.z<b.y+b.h+20-18,'story meeting point must stay clear');
+});
+test('night lighting changes only emissive strength, is reversible, and adds no lights',()=>{
+ const g=S.build(T,b),d=g.userData.superdome,m=d.shell.material;assert.equal(m.emissiveIntensity,0);S.setNight(g,true);assert.equal(m.emissiveIntensity,.85);assert.equal(d.night,true);S.setNight(g,true);S.setNight(g,false);assert.equal(m.emissiveIntensity,0);assert.equal(d.night,false);
+});
+test('both launchers load one shared builder before world and retain live day/night updates',()=>{
+ for(const [base,prefix]of [['public/game/',''],['public/','game/']]){const h=fs.readFileSync(base+'index.html','utf8');assert.equal((h.match(/src="(?:game\/)?superdome-reference.js/g)||[]).length,1);assert.ok(h.indexOf('src="'+prefix+'superdome-reference.js')<h.indexOf('src="world.js'));const source=fs.readFileSync(base+'world.js','utf8'),c={THREE:T,level29SuperdomeReference:S,lightMode:'day'};vm.createContext(c);vm.runInContext(source.slice(source.indexOf('function makeLevel29Superdome')),c);const g=c.makeLevel29Superdome(b),shell=g.userData.superdome.shell;shell.onBeforeRender();assert.equal(shell.material.emissiveIntensity,0);c.lightMode='night';shell.onBeforeRender();assert.equal(shell.material.emissiveIntensity,.85);c.lightMode='dusk';shell.onBeforeRender();assert.equal(shell.material.emissiveIntensity,0);}
+ assert.ok(!fs.readFileSync('public/game/treme-landmarks.js','utf8').includes("addSign(root,'SUPERDOME'"),'no floating duplicate sign');
+});
+test('canvas cladding, roof, illumination and mounted lettering use bounded sRGB textures',()=>{
+ const painted=[],context=new Proxy({createLinearGradient:()=>({addColorStop(){}})}, {get:(o,k)=>k in o?o[k]:()=>{}});global.document={createElement(){const c={getContext:()=>context};painted.push(c);return c;}};
+ try{const g=S.build(T,b),d=g.userData.superdome;assert.equal(painted.length,4);assert.equal(d.textures.length,4);for(const t of d.textures){assert.equal(t.encoding,T.sRGBEncoding);assert.ok(t.image.width<=1024&&t.image.height<=512);}assert.ok(d.shell.material.emissiveMap);assert.ok(g.getObjectByName('Superdome · mounted podium lettering'));}finally{delete global.document;}
+});
