@@ -88,7 +88,7 @@ function mpHostData(id, d){
     if(!Number.isFinite(d.x)||!Number.isFinite(d.y)||!Number.isFinite(d.a))return;
     if(d.c&&(!Array.isArray(d.c)||!CAR_SPECS[d.c[0]]||!d.c.slice(2,6).every(Number.isFinite)))return;
     r.name = d.n || r.name; r.dead = !!d.dead; r.safe = !!d.safe; r.hp = d.hp; r.a = d.a;
-    r.height=Number.isFinite(d.h)?clamp(d.h,0,600):0;
+    r.height=Number.isFinite(d.h)?clamp(d.h,0,600):0;r.outfit=window.level29WardrobeCatalog?.outfit(d.outfit)||{};
     if (d.c){ r.car = { type: d.c[0], col: d.c[1], x: d.c[2], y: d.c[3], a: d.c[4], v: d.c[5], z: d.c[6] || 0 }; r.x = r.car.x; r.y = r.car.y; }
     else { r.car = null; r.x = d.x; r.y = d.y; }
   } else if (d.t === 'b'){
@@ -122,8 +122,8 @@ function mpHostData(id, d){
 function mpHurtRemote(r, n, sx, sy){ if (r.conn && r.conn.open) try { r.conn.send({ t: 'h', n, sx: Math.round(sx), sy: Math.round(sy) }); } catch(e){} }
 
 function mpSnapshot(){
-  const pl = [{ i: 'host', n: MP.name, x: Math.round(player.car ? player.car.x : player.x), y: Math.round(player.car ? player.car.y : player.y), h:Math.round(terrainHeight(player.x,player.y)), a: r2(player.car ? player.car.a : player.aim), d: player.dead ? 1 : 0, c: player.car ? [player.car.type, player.car.col, Math.round(player.car.x), Math.round(player.car.y), r2(player.car.a), Math.round(player.car.z || 0)] : 0 }];
-  for (const r of MP.remotes.values()) pl.push({ i: r.id, n: r.name, x: Math.round(r.x), y: Math.round(r.y), h:r.height||0, a: r2(r.a || 0), d: r.dead ? 1 : 0, c: r.car ? [r.car.type, r.car.col, Math.round(r.car.x), Math.round(r.car.y), r2(r.car.a), Math.round(r.car.z || 0)] : 0 });
+  const pl = [{ i: 'host', n: MP.name, outfit:window.level29Wardrobe?.selected||{}, x: Math.round(player.car ? player.car.x : player.x), y: Math.round(player.car ? player.car.y : player.y), h:Math.round(terrainHeight(player.x,player.y)), a: r2(player.car ? player.car.a : player.aim), d: player.dead ? 1 : 0, c: player.car ? [player.car.type, player.car.col, Math.round(player.car.x), Math.round(player.car.y), r2(player.car.a), Math.round(player.car.z || 0)] : 0 }];
+  for (const r of MP.remotes.values()) pl.push({ i: r.id, n: r.name, outfit:r.outfit||{}, x: Math.round(r.x), y: Math.round(r.y), h:r.height||0, a: r2(r.a || 0), d: r.dead ? 1 : 0, c: r.car ? [r.car.type, r.car.col, Math.round(r.car.x), Math.round(r.car.y), r2(r.car.a), Math.round(r.car.z || 0)] : 0 });
   const m = mission;
   return {
     t: 's', di: distIdx, mi: missionIdx, obj: objective, heat: r1(heat),
@@ -314,7 +314,7 @@ update = function(){
       for (const z of zombies) if (z.alive && dist(z.x, z.y, r.car.x, r.car.y) < cr + z.r - 2 && !(z.type === 'brute' && Math.abs(r.car.v) < 4.5)){ z.lastHit = r.id;z.killSource='remote'; killZombie(z, Math.cos(r.car.a) * r.car.v, Math.sin(r.car.a) * r.car.v); }
     }
     if (performance.now()-(MP.lastNet||0)>=100 && MP.conns.size && [...MP.conns.values()].some(c=>mpCanSend(c,true))){ MP.lastNet=performance.now();mpSendAll(mpSnapshot()); }
-    MP.others = [...MP.remotes.values()].map(r => ({ i: r.id, n: r.name, x: r.x, y: r.y, h:r.height||0, a: r.a || 0, d: r.dead ? 1 : 0, c: r.car ? [r.car.type, r.car.col, r.car.x, r.car.y, r.car.a, r.car.z || 0] : 0 }));
+    MP.others = [...MP.remotes.values()].map(r => ({ i: r.id, n: r.name, outfit:r.outfit||{}, x: r.x, y: r.y, h:r.height||0, a: r.a || 0, d: r.dead ? 1 : 0, c: r.car ? [r.car.type, r.car.col, r.car.x, r.car.y, r.car.a, r.car.z || 0] : 0 }));
   } else {
     // smooth the host's world between snapshots
     for (const z of zombies){ if (z.tx == null) continue; const dx = z.tx - z.x, dy = z.ty - z.y, dd = Math.hypot(dx, dy); if (dd > 120){ z.x = z.tx; z.y = z.ty; } else { z.x += dx * .25; z.y += dy * .25; } z.a = z.ta; z.anim += Math.min(1.6, dd * .06 + .02) * .5; if (z.flash > 0) z.flash--; }
@@ -323,7 +323,7 @@ update = function(){
     MP.pkRefs = MP.pkRefs.filter(k => !k.sent);
     if (performance.now()-(MP.lastNet||0)>=100){ MP.lastNet=performance.now();
       const p = player, c = p.car;
-      mpSendHost({ t: 'st', n: MP.name, x: Math.round(p.x), y: Math.round(p.y), h:Math.round(terrainHeight(p.x,p.y)), a: r2(c ? c.a : p.aim), dead: p.dead ? 1 : 0, hp: Math.round(p.hp), safe: (state === 'talk' || state === 'shop' || state === 'cheat') ? 1 : 0, c: c ? [c.type, c.col, Math.round(c.x), Math.round(c.y), r2(c.a), r2(c.v), Math.round(c.z || 0)] : 0 });
+      mpSendHost({ t: 'st', n: MP.name, outfit:window.level29Wardrobe?.selected||{}, x: Math.round(p.x), y: Math.round(p.y), h:Math.round(terrainHeight(p.x,p.y)), a: r2(c ? c.a : p.aim), dead: p.dead ? 1 : 0, hp: Math.round(p.hp), safe: (state === 'talk' || state === 'shop' || state === 'cheat') ? 1 : 0, c: c ? [c.type, c.col, Math.round(c.x), Math.round(c.y), r2(c.a), r2(c.v), Math.round(c.z || 0)] : 0 });
     }
   }
 };
@@ -332,7 +332,7 @@ addEventListener('keydown', e => { if (mpRole && state === 'play' && (e.key.toLo
 addEventListener('keydown', e => { if (e.key === 'Escape' && mpEl.style.display === 'flex'){ closeMP(); } });
 
 // ---------- Rendering teammates ----------
-function makeJester(col){
+function makeJester(col,{local=false}={}){
   const g = makeFigure(false), u = g.userData;
   const PURPLE = '#8a1fb0', GREEN = '#2fb33a', GOLD = '#f2b51c', SKIN = '#e4bd72';
   setFigureColors(g, SKIN, PURPLE, GREEN, '#1a1208');
@@ -355,7 +355,7 @@ function makeJester(col){
     prong(GOLD, 0, 20.4, 2.2, 1.9, -.1, 6, 1.4));
   const band = new THREE.Mesh(new THREE.TorusGeometry(2.55, .55, 6, 18).rotateX(Math.PI / 2), lam(GOLD)); band.position.y = 20.3;
   const brow = bell(.9); brow.position.set(2.2, 21, 0);
-  hat.add(band, brow); u.body.add(hat);
+  hat.add(band, brow); u.body.add(hat);u.jesterHat=hat;u.isJester=true;
   for (const z of [-1.05, 1.05]){
     const socket = box(.3, 1, 1.35, ink); socket.position.set(2.26, 18.5, z); socket.rotation.x = z > 0 ? -.35 : .35;
     const eye = box(.32, .5, .95, lam('#ffffff', { emissive: 0x555555 })); eye.position.set(2.32, 18.45, z * 1.05); eye.rotation.x = socket.rotation.x;
@@ -374,9 +374,9 @@ function makeJester(col){
     const t = bell(.5); t.position.set(4.4, -.3, 0); p.add(c, t); ruff.add(p);
   }
   const tag = new THREE.Mesh(new THREE.TorusGeometry(2.3, .4, 6, 18).rotateX(Math.PI / 2), lam(col, { emissive: 0x111111 })); tag.position.y = .2;
-  ruff.add(tag); u.body.add(ruff);
-  const gun = box(9, 2, 1.6, lam('#1b1d1f')); gun.position.set(5, 12, 2.4); u.body.add(gun);
-  g.scale.setScalar(1.05); scene.add(g); return g;
+  ruff.add(tag); u.body.add(ruff);u.jesterRuff=ruff;
+  if(!local){const gun = box(9, 2, 1.6, lam('#1b1d1f')); gun.position.set(5, 12, 2.4); u.body.add(gun);}
+  g.scale.setScalar(1.05);if(!local)scene.add(g);return g;
 }
 function syncTeam(){
   if (!scene) return;
@@ -385,6 +385,7 @@ function syncTeam(){
     live.add(o.i);
     let av = MP.avatars.get(o.i);
     if (!av){ av = { fig: makeJester(mpColor(o.i)), car: null, carKey: '', x: o.x, y: o.y, anim: 0 }; MP.avatars.set(o.i, av); }
+    const outfit=window.level29WardrobeCatalog?.outfit(o.outfit)||{},stamp=JSON.stringify(outfit);if(window.level29Wardrobe&&av.outfitStamp!==stamp){level29Wardrobe.dress(av.fig,outfit);av.outfitStamp=stamp;}
     const dx = o.x - av.x, dy = o.y - av.y, dd = Math.hypot(dx, dy);
     if (dd > 150){ av.x = o.x; av.y = o.y; } else { av.x += dx * .25; av.y += dy * .25; }
     if (o.c){

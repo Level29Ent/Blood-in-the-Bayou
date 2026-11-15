@@ -31,7 +31,7 @@ function build(T,b){
    for(let row=0;row<3;row++)for(let col=0;col<3;col++){const x=25+col*70,y=204+row*65;a.fillStyle='#fff0c7';a.fillRect(x,y,64,59);a.fillStyle=(row+col)%2?'#a52145':'#613e99';a.font='bold 42px Georgia';a.fillText(['7','♠','♦'][(row+col)%3],x+32,y+45);}
    a.fillStyle='#ffe294';a.font='bold 20px sans-serif';a.fillText('BAYOU JACKPOT',128,453);a.font='16px sans-serif';a.fillText('FICTIONAL GAME CREDITS',128,482);
   }else{
-   a.fillStyle='#147e61';a.fillRect(0,0,512,512);a.strokeStyle='#e8d99b';a.lineWidth=3;a.beginPath();a.ellipse(256,285,210,170,0,Math.PI,Math.PI*2);a.stroke();a.textAlign='center';a.fillStyle='#f3e9bc';a.font='bold 29px Georgia';a.fillText('BOOMCITY',256,206);a.font='19px Georgia';a.fillText('BLACKJACK PAYS 3 TO 2',256,245);a.font='14px sans-serif';a.fillText('FICTIONAL CREDITS ONLY',256,275);for(let i=0;i<5;i++)a.strokeRect(60+i*83,340,54,75);
+   a.fillStyle='#147e61';a.fillRect(0,0,512,512);a.strokeStyle='#e8d99b';a.lineWidth=3;a.beginPath();a.ellipse(256,285,210,170,0,Math.PI,Math.PI*2);a.stroke();a.textAlign='center';a.fillStyle='#f3e9bc';a.font='bold 29px Georgia';a.fillText('BOOMCITY',256,206);a.font='19px Georgia';a.fillText(kind==='poker'?'DRAW POKER · JACKS OR BETTER':kind==='roulette'?'SINGLE ZERO · ROULETTE':'BLACKJACK PAYS 3 TO 2',256,245);a.font='14px sans-serif';a.fillText('FICTIONAL CREDITS ONLY',256,275);for(let i=0;i<5;i++)a.strokeRect(60+i*83,340,54,75);
   }
   const t=new T.CanvasTexture(c);t.encoding=T.sRGBEncoding;if(kind==='carpet'){t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(5,3);}return t;
  };
@@ -39,6 +39,7 @@ function build(T,b){
  const linear=m=>{m.color.convertSRGBToLinear();if(m.emissive)m.emissive.convertSRGBToLinear();return m;},mat=(color,roughness=.7,extra={})=>linear(new T.MeshStandardMaterial({color,roughness,...extra})),basic=(color,extra={})=>linear(new T.MeshBasicMaterial({color,...extra}));
  const gold=mat('#c2984d',.34,{metalness:.65}),cream=mat('#e1c693',.65,{emissive:'#9a6831',emissiveIntensity:.18}),wine=mat('#682d40'),wood=mat('#35202b',.48),black=mat('#141925',.4,{metalness:.28}),leather=mat('#352132',.82),felt=mat('#137857',.95),carpet=mat('#ffffff',1,{map:texture('carpet')}),blue=basic('#6367ff'),amber=basic('#ffe1a0'),screen=basic('#ffffff',{map:texture('screen')}),markings=basic('#ffffff',{map:texture('felt')});
  if(!carpet.map)carpet.color.set('#72283e');if(!screen.map)screen.color.set('#7565cf');if(!markings.map)markings.color.set('#147e61');
+ const tableMarks=[markings,basic('#ffffff',{map:texture('poker')}),basic('#ffffff',{map:texture('roulette')}),markings];for(const m of tableMarks)if(!m.map)m.color.set('#147e61');
  const box=new T.BoxGeometry(1,1,1),cyl=new T.CylinderGeometry(1,1,1,16),sphere=new T.SphereGeometry(1,12,8),plane=new T.PlaneGeometry(1,1);
  function emit(geo,m,w,h,d,x,y,z,angle=0,rx=0){if(!batches.has(m))batches.set(m,new Map());const bucket=batches.get(m);if(!bucket.has(geo))bucket.set(geo,[]);bucket.get(geo).push({w,h,d,x,y,z,angle,rx});}
  const B=(w,h,d,x,y,z,m,angle=0)=>emit(box,m,w,h,d,x,y,z,angle),C=(r,h,rz,x,y,z,m)=>emit(cyl,m,r,h,rz,x,y,z),cx=b.x+b.w/2,cz=b.y+b.h/2;
@@ -70,14 +71,15 @@ function build(T,b){
   part(18,4,3,0,35,-2,gold);part(16,2.8,.3,0,35,-.3,i%2?blue:amber);
   chair(s.x+Math.sin(a)*15,s.z+Math.cos(a)*15,a);
  }
- for(const s of p.tables){
+ for(const [tableIndex,s] of p.tables.entries()){
   for(const dx of [-14,14])C(1.5,9,1.5,s.x+dx,6,s.z,wood);C(23,2,14,s.x,11,s.z,wood);C(21.5,.4,12.5,s.x,12.2,s.z,gold);C(20.5,.3,11.5,s.x,12.55,s.z,felt);
-  emit(plane,markings,31,16,1,s.x,12.73,s.z,0,-Math.PI/2);
+  emit(plane,tableMarks[tableIndex],31,16,1,s.x,12.73,s.z,0,-Math.PI/2);
   B(8,.5,3,s.x,13,s.z-7,black);for(let i=0;i<6;i++)C(.6,.5,.6,s.x-4+i*1.4,13.2,s.z-5,i%2?gold:cream);
   for(const dx of [-13,13])chair(s.x+dx,s.z+22,0);
  }
  const dummy=new T.Object3D();for(const [m,geos]of batches)for(const [geo,list]of geos){const mesh=new T.InstancedMesh(geo,m,list.length);mesh.name='Casino · '+(m===screen?'illuminated reel displays':m===carpet?'patterned carpet':'batched furnishings');list.forEach((v,i)=>{dummy.position.set(v.x,v.y,v.z);dummy.rotation.set(v.rx,v.angle,0);dummy.scale.set(v.w,v.h,v.d);dummy.updateMatrix();mesh.setMatrixAt(i,dummy.matrix);});mesh.userData.noBatch=true;mesh.frustumCulled=false;root.add(mesh);}
  root.userData.casino={slots:p.slots.length,tables:p.tables.length,chandeliers:3,plan:p};return {root,solids:p.solids,plan:p};
 }
-const api={plan,build};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29CasinoInterior=api;
+function stations(b){const p=plan(b),cx=b.x+b.w/2;return [{x:cx,y:b.y+b.h-35,game:'slots',label:'CASINO GAMES'},...p.slots.map((s,i)=>({x:s.x+Math.sin(s.angle)*34,y:s.z+Math.cos(s.angle)*34,game:'slots',machine:i%6,label:'SLOT '+(i+1)})),...p.tables.map((s,i)=>({x:s.x+Math.sign(cx-s.x)*34,y:s.z,game:['bj','poker','rr','bj'][i],label:['BLACKJACK','DRAW POKER','ROULETTE','BLACKJACK'][i]}))];}
+const api={plan,build,stations};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29CasinoInterior=api;
 })();

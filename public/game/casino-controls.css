@@ -8,3 +8,6 @@
 .riverboat-controls-card button[hidden]{display:none!important}
 @media(max-width:760px),(pointer:coarse){#riverboatControls{left:16px;transform:none;bottom:calc(env(safe-area-inset-bottom,0px) + 198px);max-width:125px}#riverboatControlsToggle{max-width:125px}#prologueAction{bottom:calc(env(safe-area-inset-bottom,0px) + 250px)!important;max-width:calc(100vw - 32px)!important;font-size:12px!important}}
 @media(max-height:500px){#riverboatControls{bottom:calc(env(safe-area-inset-bottom,0px) + 150px);left:16px;transform:none}#prologueAction{bottom:calc(env(safe-area-inset-bottom,0px) + 165px)!important;left:65%!important;max-width:55vw!important}#riverboatControlsPanel{align-items:flex-start}}
+/* The playable table/slot panels use the downtown dialog, not the boarding drawer. */
+#l29Panel button{min-height:44px;touch-action:manipulation}
+#l29Panel .bx{padding-bottom:max(22px,env(safe-area-inset-bottom))}
