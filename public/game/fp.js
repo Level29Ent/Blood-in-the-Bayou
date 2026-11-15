@@ -48,11 +48,11 @@ function signTex(text, bg, fg, w, h){
 function initGL(){
   const glCv = document.getElementById('gl');
   renderer = new THREE.WebGLRenderer({ canvas: glCv, antialias: false, powerPreference: 'default' });
-  renderer.setPixelRatio(window.level29MobileBudget?.pixelRatio(innerWidth,innerHeight,devicePixelRatio)||Math.min(1, devicePixelRatio || 1));
-  renderer.setSize(innerWidth, innerHeight, false);
+  renderer.setPixelRatio(window.level29MobileBudget?.pixelRatio(SW,SH,devicePixelRatio)||Math.min(1, devicePixelRatio || 1));
+  renderer.setSize(SW, SH, false);
   renderer.autoClear = false; renderer.info.autoReset = false;
   scene = new THREE.Scene();
-  camera = new THREE.PerspectiveCamera(74, innerWidth / innerHeight, 1, 1500);
+  camera = new THREE.PerspectiveCamera(74, SW / SH, 1, 1500);
   scene.fog = new THREE.Fog(0x9fb7c9, 240, 1150);
   hemi = new THREE.HemisphereLight(0xdfe8f0, 0x4a4436, .9); scene.add(hemi);
   sun = new THREE.DirectionalLight(0xfff1d8, .8); sun.position.set(-.5, 1, .35); scene.add(sun);
@@ -89,7 +89,7 @@ function initGL(){
   const slam = new THREE.Mesh(new THREE.RingGeometry(160, 170, 48).rotateX(-Math.PI/2), new THREE.MeshBasicMaterial({ color: 0xffc850, transparent: true, opacity: .6, depthWrite: false, side: THREE.DoubleSide })); slam.name = 'slam'; slam.position.y = .9;
   bossFx.add(tele, slam); scene.add(bossFx);
   buildViewModel();
-  addEventListener('resize', () => { if(window.level29MobileBudget?.mobile)renderer.setPixelRatio(Math.min(renderer.getPixelRatio(),window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio)));renderer.setSize(innerWidth, innerHeight, false); camera.aspect = innerWidth / innerHeight; camera.updateProjectionMatrix(); window.level29MobileViewport.fitViewmodel(vmCam,innerWidth,innerHeight); });
+  addEventListener('resize', syncViewport);
 }
 
 // ---------- Generic object pool ----------
@@ -453,8 +453,8 @@ decal = function(x, y, kind, s){
 
 // ---------- View model (gun + hands, dashboard) ----------
 function buildViewModel(){
-  vmScene = new THREE.Scene(); vmCam = new THREE.PerspectiveCamera(58, innerWidth / innerHeight, .1, 100);
-  window.level29MobileViewport.fitViewmodel(vmCam,innerWidth,innerHeight);
+  vmScene = new THREE.Scene(); vmCam = new THREE.PerspectiveCamera(58, SW / SH, .1, 100);
+  window.level29MobileViewport.fitViewmodel(vmCam,SW,SH);
   vmScene.add(new THREE.HemisphereLight(0xffffff, 0x404040, .9)); const dl = new THREE.DirectionalLight(0xffffff, .6); dl.position.set(-1, 2, 1); vmScene.add(dl); vmScene.userData.lights = [vmScene.children[0], dl];
   gun = new THREE.Group();
   const blk = lam('#1d1e1f'), gry = lam('#3a3c3e'), olv = lam('#4b5320'), gold = lam('#d4a017', { emissive: 0x2a1c00 }), glove = lam('#2b2620'), sleeve = lam('#0d0d0d');
@@ -729,9 +729,28 @@ function syncViewModel(){
   if (inCar){ const st = (kR() ? 1 : 0) - (kL() ? 1 : 0); wheel.rotation.z += (-st * 1.6 - wheel.rotation.z) * .15; dash.rotation.y = -view.look; }
 }
 
+// Repair missed/delayed iframe/Safari resize events before drawing either layer.
+// Unchanged dimensions never reallocate buffers or reset the fitted weapon camera.
+const viewportRenderSize = new THREE.Vector2();
+function syncViewport(){
+  const size = window.level29MobileViewport.viewportSize(cv,innerWidth,innerHeight);
+  if (SW !== size.width || SH !== size.height) resize();
+  if (!renderer || !camera || !vmCam) return;
+  renderer.getSize(viewportRenderSize);
+  if (viewportRenderSize.x !== SW || viewportRenderSize.y !== SH){
+    if(window.level29MobileBudget?.mobile)renderer.setPixelRatio(Math.min(renderer.getPixelRatio(),window.level29MobileBudget.pixelRatio(SW,SH,devicePixelRatio)));
+    renderer.setSize(SW,SH,false);
+  }
+  if (camera.aspect !== SW/SH || vmCam.aspect !== SW/SH){
+    camera.aspect = SW/SH; camera.updateProjectionMatrix();
+    window.level29MobileViewport.fitViewmodel(vmCam,SW,SH);
+  }
+}
+
 // ---------- Main render ----------
 function render(){
   if (!renderer) initGL();
+  syncViewport();
   if (city && city !== builtCity) buildCity();
   applyLightMode();
   viewTick();
