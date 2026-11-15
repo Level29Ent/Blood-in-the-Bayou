@@ -77,6 +77,7 @@ let dancers=[],animals=[],crew=[],root=null;
 function cFarmEntrance(r){city.farmEntrance={x:r.x+r.w/2,y:r.y+r.h+24};}
 const oldBuild=buildVenue;
 buildVenue=function(v){
+ if(v.millRoad&&['liquor','laundry','donuts'].includes(v.millRoadType))return oldBuild(v);
  if(window.level29GoldenHills?.matches(v)){if(v.referenceGoldenHills&&v.mesh?.parent===cityGroup)return;const lot=level29GoldenHills.build(THREE,v.b,{sign:addSign});v.mesh=lot.root;v.mesh.position.y=terrainHeight(v.b.x+v.b.w/2,v.b.y+v.b.h/2);v.roof=lot.roof;v.furniture=lot.solids.slice();v.colliderWalls=[];v.colliderDoor=null;v.door=new THREE.Group();v.mesh.add(v.door);v.referenceGoldenHills=true;v.labelH=80;cityGroup.add(v.mesh);return;}
  if(window.level29ModernOffice?.matches(v))return oldBuild(v);
  if(window.level29SeafoodBait?.matches(v))return oldBuild(v);
