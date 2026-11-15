@@ -818,7 +818,7 @@ function sfx(type, arg){
 function updateEngine(){
   if (!actx) return;
   const c = player && player.car;
-  const on = c && state==='play' && soundMode!==2;
+  const on = c && !c.spec.bicycle && state==='play' && soundMode!==2;
   if (on && !engine){
     const o1 = actx.createOscillator(), o2 = actx.createOscillator(), f = actx.createBiquadFilter(), g = actx.createGain();
     o1.type = 'sawtooth'; o2.type = 'square'; f.type = 'lowpass'; f.frequency.value = 500; g.gain.value = 0;
