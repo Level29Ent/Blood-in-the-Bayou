@@ -1,0 +1,7 @@
+# Tremé shotgun-home facades
+
+Existing non-apartment homes in the main Tremé neighborhood receive narrow colorful shotgun-style shells: teal/pink/purple and turquoise/yellow/red restored variants, muted historic colors and weathered wood. Horizontal clapboard seams, paired tall louvered shutters/transoms, painted trim, gabled roof/fan ornament, small chimney details, decorative porch brackets/posts, raised porch/steps and dark side rail accents interpret supplied New Orleans references. No reference photo/stock watermarks copied.
+
+Original home objects, plots, map collision, neighborhood paths and prologue/ownership locations remain unchanged. Apartments and homes outside the main Tremé selection remain unchanged. This does not replace the separately placed 18-cottage NOLA landmark exhibit. Existing generic/imported shells are skipped only for these non-apartment homes; old overlaid Tremé porch/planter props are removed to prevent duplicate facades and path blockers. Doors are decorative on existing solid home footprints; no new enterable interior, raised walking simulation or roof-damage mechanics introduced. Weathered variation uses siding colors/seams, not fully destroyed roofs.
+
+Shared geometry/material instances need no external assets/dependencies, dynamic lights or new update loops. Gable roof fits existing house footprint with small eaves; porch extends into the original porch apron. Full-world appearance and porch/road/mission clearance still require deployed verification. Original stylized interpretation, not photographic reconstruction.
