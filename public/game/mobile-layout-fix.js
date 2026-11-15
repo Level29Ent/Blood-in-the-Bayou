@@ -5,7 +5,7 @@ if(typeof module!=='undefined')module.exports={category};if(typeof window==='und
 const style=document.createElement('style');style.textContent=`
 @media(max-width:760px),(pointer:coarse){
  .mobile-secondary-source{display:none!important}
- #mobileActionsToggle{display:block!important;position:fixed;top:calc(env(safe-area-inset-top,0px) + var(--hud-status-bottom,162px) + 8px);right:max(10px,env(safe-area-inset-right));z-index:44;min-height:40px;padding:8px 12px;background:#162b34ed;color:#ebd89f;border:1px solid #b09a5e;font:12px monospace}
+ #mobileActionsToggle{display:block!important;position:fixed;top:calc(env(safe-area-inset-top,0px) + var(--hud-status-bottom,162px) + var(--hud-navigation-height,0px) + 8px);right:max(10px,env(safe-area-inset-right));z-index:44;min-height:40px;padding:8px 12px;background:#162b34ed;color:#ebd89f;border:1px solid #b09a5e;font:12px monospace}
  #hudDrawerToggle{display:none!important}
  #touch #jumpControl{position:static!important;inset:auto!important;min-width:44px!important}
  #missionWaypoints{top:calc(var(--hud-mission-bottom,128px) + 8px)!important;left:10px!important;max-width:48vw!important;font-size:10px!important;max-height:65px;overflow:hidden}

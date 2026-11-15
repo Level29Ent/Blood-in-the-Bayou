@@ -20,7 +20,7 @@ function fitViewmodel(camera,width,height){
 function hudLayout(width,height){
  const small=width<700||height<500;
  const statusWidth=small?Math.min(140,Math.max(100,width*.34)):190;
- return {statusWidth,missionWidth:small?Math.max(100,width-statusWidth-44):430,missionFont:small?11:14,lineHeight:small?15:18};
+ return {statusWidth,missionWidth:small?Math.max(100,width-statusWidth-44):430,missionFont:small?12:14,lineHeight:small?16:18};
 }
 function fitText(ctx,text,size,maxWidth,font='800 ',family='Barlow Condensed'){
  ctx.font=font+size+"px '"+family+"'";
