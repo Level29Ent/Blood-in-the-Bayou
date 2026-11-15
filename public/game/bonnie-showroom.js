@@ -13,7 +13,7 @@ function plan(b){
  return {reception,offices,cars,columns,solids,entry:{x:b.x+b.w/2,y:b.y+b.h},bonnie:{x:b.x+64*sx,y:b.y+38*sz}};
 }
 function build(T,b,options={}){
- const p=plan(b),root=new T.Group(),batches=new Map();root.name='Bonnie De Vette · reference showroom';const sx=b.w/352,sz=b.h/256;
+ const p=plan(b),root=new T.Group(),batches=new Map();root.name='Bonnie De Vette · reference showroom';root.userData.mobileStaticScenery=true;const sx=b.w/352,sz=b.h/256;
  const mat=(color,extra={})=>new T.MeshStandardMaterial({color,roughness:.72,...extra});
  const white=mat('#e5e5e1'),tile=mat('#d2cec1',{roughness:.28,metalness:.08}),seam=mat('#a4a69f'),dark=mat('#202a30'),metal=mat('#74878d',{roughness:.3,metalness:.65}),wood=mat('#ba9566'),blue=mat('#194563'),black=mat('#141c20');
  const glass=mat('#c1dee0',{transparent:true,opacity:.13,roughness:.14,depthWrite:false}),glow=new T.MeshBasicMaterial({color:'#f8fbf5'}),screen=new T.MeshBasicMaterial({color:'#78b9c8'});
