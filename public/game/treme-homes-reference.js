@@ -15,6 +15,6 @@ function build(T,b,{index=0,base=0}={}){const root=new T.Group();root.name='Trem
  box(stone,w-2,2,14,cx,4,front+6);for(let i=0;i<4;i++)box(stone,Math.min(22,w*.47),1,3,cx,.5+i,front+18-i*3);box(trim,w+2,2,17,cx,H-1,front+7);
  for(const side of[-1,1]){const x=cx+side*(w/2-3);box(trim,.9,H-7,.9,x,(H+3)/2,front+12);for(const y of[8,H-6])box(shutter,1.7,1,1.7,x,y,front+12);for(let k=0;k<4;k++){box(trim,3.8-k*.6,.6,.7,x+side*(1.3+k*.3),H-4-k*.8,front+12);box(trim,.6,3.8-k*.6,.7,x+side*2,H-4-k*.4,front+12);}box(iron,.6,6,10,x,7,front+7);}
  for(const x of[cx-w*.28,cx+w*.28]){box(stone,5,3,5,x,1.5,b.y+9);box(wood,5,3,5,x,H+8,b.y+15);}
- for(const{g,m,list}of buckets.values()){const mesh=new T.InstancedMesh(g,m,list.length);list.forEach((a,i)=>mesh.setMatrixAt(i,a));mesh.userData.noBatch=true;root.add(mesh);}root.userData.tremeReference={palette:index%6,boards,openings:count,weathered:index%6===4};return {root};}
+ for(const{g,m,list}of buckets.values()){const mesh=new T.InstancedMesh(g,m,list.length);list.forEach((a,i)=>mesh.setMatrixAt(i,a));mesh.userData.noBatch=true;root.add(mesh);}const details=typeof require==='function'?require('./neighborhood-details.js'):window.level29NeighborhoodDetails;root.add(details.build(T,b,{index,treme:true,base}).root);root.userData.tremeReference={palette:index%6,boards,openings:count,weathered:index%6===4};return {root};}
 const api={PALETTES,build};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29TremeHomesReference=api;
 })();

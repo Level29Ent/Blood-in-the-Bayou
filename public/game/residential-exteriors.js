@@ -17,10 +17,15 @@ for(const side of[-1,1])box(trim,4,H+6,16,W/2+side*W*.29,H/2+3,D-8);
 }else{gable(W/2,(front+back)/2,W-2,bodyD+4,H,colonial?14:12);if(!colonial)for(const side of[-1,1])gable(W/2+side*W*.29,front-13,W*.34,29,H+1,9);const rows=colonial?2:1;for(let floor=0;floor<rows;floor++)for(const side of[-1,1])window(W/2+side*W*.29,colonial?H*.25+floor*(H*.47):17,front,colonial?16:22,colonial?Math.min(20,H*.29):19,true);if(colonial){window(W/2,H*.74,front,14,Math.min(19,H*.29),true);for(const side of[-1,1]){box(wall,6,18,7,W/2+side*W*.36,H+10,9);box(trim,8,1.5,9,W/2+side*W*.36,H+19,9);}}
 const porchW=colonial?27:W*.38;box(trim,porchW,2.5,13,W/2,2,front+6);box(trim,porchW+3,2,15,W/2,29,front+6);for(const side of[-1,1])box(trim,1.8,26,1.8,W/2+side*(porchW/2-2),15,D-5);
 }
+// Side elevations read as homes from cross streets, rather than blank cuboids.
+for(const side of[-1,1])for(const z of[D*.26,D*.59])for(let floor=0;floor<(apartment?Math.max(2,Math.min(9,Math.round(H/32))):colonial?2:1);floor++){
+ const y=apartment?16+floor*(H/Math.max(2,Math.min(9,Math.round(H/32)))):colonial?H*.25+floor*H*.47:18,x=side<0?2.8:W-2.8,hh=apartment?19:colonial?Math.min(18,H*.28):18;
+ box(trim,1,hh+2,15,x,y,z);box(glass,1.2,hh,13,x,y,z);box(trim,1.3,.6,13,x,y,z);box(trim,1.3,hh,.65,x,y,z);box(trim,2,1,17,x,y-hh/2-1,z);
+}
 box(trim,18,27,1.4,W/2,14,front+.7);box(door,14,24,1,W/2,13,front+1.6);box(wood,.7,1,.5,W/2+4,12,front+2.2);for(const side of[-1,1]){box(iron,2,5,1,W/2+side*12,23,front+1);box(yellow,1,3,1.1,W/2+side*12,23,front+1.4);}
 // Walk and planted beds stop inside lot, with an unobstructed central 24-unit approach.
 box(trim,24,.2,14,W/2,.15,D-7);for(const side of[-1,1]){const x=W/2+side*W*.32;box(mulch,W*.25,.3,8,x,.2,D-5);for(let j=0;j<3;j++){const xx=x+(j-1)*W*.07;shrub(xx,2.5,D-5,3);emit(K.ball,j%2?pink:yellow,1.7,1,1.7,xx,4.8,D-4);}}
-for(const {g,m,list}of batches.values()){const mesh=new T.InstancedMesh(g,m,list.length);list.forEach((a,i)=>mesh.setMatrixAt(i,a));mesh.userData.noBatch=true;root.add(mesh);}root.userData.residentialReference={style:apartment?'apartment':style,windows,balconies,entry:{x:b.x+W/2,y:b.y+D+24},visualOnly:true};return {root};
+for(const {g,m,list}of batches.values()){const mesh=new T.InstancedMesh(g,m,list.length);list.forEach((a,i)=>mesh.setMatrixAt(i,a));mesh.userData.noBatch=true;root.add(mesh);}const details=typeof require==='function'?require('./neighborhood-details.js'):window.level29NeighborhoodDetails;root.add(details.build(T,{...b,x:0,y:0},{index,address:2900+Math.abs(Math.floor(b.x/32+b.y/32*7))%700}).root);root.userData.residentialReference={style:apartment?'apartment':style,windows,balconies,entry:{x:b.x+W/2,y:b.y+D+24},visualOnly:true};return {root};
 }
 const api={build};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29ResidentialExteriors=api;
 })();
