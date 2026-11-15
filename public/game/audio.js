@@ -21,7 +21,7 @@ function ensureAudio(){
   }
   if (actx.state === 'suspended') actx.resume();
 }
-function setSoundMode(m){ soundMode = (m + 3) % 3; applyVolumes(); const b = document.getElementById('audio'); if (b) b.textContent = ['SOUND ON','MUSIC OFF','MUTED'][soundMode]; }
+function setSoundMode(m){ soundMode = (m + 3) % 3; if (soundMode === 2) voQueueEpoch++; applyVolumes(); const b = document.getElementById('audio'); if (b) b.textContent = ['SOUND ON','MUSIC OFF','MUTED'][soundMode]; }
 function applyVolumes(){
   if (!actx) return;
   const t = actx.currentTime;
@@ -254,20 +254,43 @@ let zVoiceUntil = 0, zDeathUntil = 0, bossVoice = null, bossVoiceEnd = 0, subtit
 function loadVoices(){
   if (voLoading || !actx) return; voLoading = true;
   voiceBus = actx.createGain(); voiceBus.gain.value = soundMode===2 ? 0 : VOICE_GAIN; voiceBus.connect(master);
-  const data = window.VO_DATA || {};
-  for (const k of Object.keys(VO_TEXT)){
-    if (!data[k]) continue;
-    try {
-      const bin = atob(data[k]), bytes = new Uint8Array(bin.length);
-      for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
-      new Promise((res, rej) => actx.decodeAudioData(bytes.buffer, res, rej)).then(buf => { voBufs[k] = buf; }).catch(() => {});
-    } catch(e){}
-  }
 }
+// Cache only requested clips. Deduplicate requests; failed downloads may retry.
+const voPending = new Map();
+function prepareVO(key){
+  if (voBufs[key]) return Promise.resolve(voBufs[key]);
+  if (voPending.has(key)) return voPending.get(key);
+  const url = window.level29VoiceFiles?.[key];
+  if (!actx || !url) return Promise.resolve(null);
+  const context = actx;
+  const pending = fetch(url).then(res => {
+    if (!res.ok) throw new Error('Voice load failed');
+    return res.arrayBuffer();
+  }).then(bytes => new Promise((resolve, reject) => context.decodeAudioData(bytes, resolve, reject)))
+    .then(buf => { voBufs[key] = buf; return buf; })
+    .catch(() => null).finally(() => voPending.delete(key));
+  voPending.set(key, pending);
+  return pending;
+}
+// Story speech waits for its own recording, but never plays after leaving the
+// originating scene. Ambient cries simply warm the cache for a later cue.
+let voQueueEpoch = 0;
+for (const event of ['blur', 'pagehide']) window.addEventListener?.(event, () => voQueueEpoch++);
+document.addEventListener?.('visibilitychange', () => { if (document.hidden) voQueueEpoch++; });
+function queuedVO(key, options, valid, started){
+  if (soundMode === 2 || !valid()) return;
+  const epoch = voQueueEpoch;
+  prepareVO(key).then(buf => {
+    if (!buf || epoch !== voQueueEpoch || soundMode === 2 || document.hidden || !valid()) return;
+    const result = playVO(key, options);
+    if (result) started?.(result);
+  });
+}
+
 function playVO(key, o){
   o = o || {};
   if (!actx || !voiceBus || soundMode===2) return null;
-  const buf = voBufs[key]; if (!buf) return null;
+  const buf = voBufs[key]; if (!buf) { prepareVO(key); return null; }
   const s = actx.createBufferSource(); s.buffer = buf; s.playbackRate.value = o.rate || 1;
   const g = actx.createGain(); g.gain.value = o.vol == null ? 1 : o.vol;
   s.connect(g);
@@ -277,5 +300,6 @@ function playVO(key, o){
   return { src:s, dur: buf.duration / (o.rate || 1) };
 }
 const VO_COUNT = { zm:6, zf:6, zmar:4, zd:3, zfd:3, sv:4 };
-function stopBossVoice(){ if (bossVoice){ try { bossVoice.src.stop(); } catch(e){} bossVoice = null; } bossVoiceEnd = 0; }
+let bossVoiceRequest = 0;
+function stopBossVoice(){ bossVoiceRequest++; if (bossVoice){ try { bossVoice.src.stop(); } catch(e){} bossVoice = null; } bossVoiceEnd = 0; }
 

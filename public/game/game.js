@@ -526,11 +526,12 @@ function bossSay(i, force){
   const now = actx.currentTime;
   if (!force && now < bossVoiceEnd) return;
   stopBossVoice();
-  const key = bossKey(i), r = playVO(key, { vol:1.25 });
-  if (!r) return;
-  bossVoice = r; bossVoiceEnd = now + r.dur;
-  subtitle = { name: boss.name, txt: VO_TEXT[key], t: Math.round(r.dur*60) + 40 };
-  applyVolumes();
+  const key = bossKey(i), speaker = boss, request = ++bossVoiceRequest;
+  queuedVO(key, { vol:1.25 }, () => boss === speaker && state === 'play' && request === bossVoiceRequest, r => {
+    bossVoice = r; bossVoiceEnd = actx.currentTime + r.dur;
+    subtitle = { name: speaker.name, txt: VO_TEXT[key], t: Math.round(r.dur*60) + 40 };
+    applyVolumes();
+  });
 }
 function updateBoss(){
   const B = boss; if (!B) return;

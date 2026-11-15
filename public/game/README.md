@@ -158,3 +158,12 @@ The farm-map action now displays **MAP** in every state. Its existing open-map /
 - **Crew** provides code-based joining and copyable invite links; an invite prefills a join action but never joins automatically. Hosting requires the original PeerJS/WebRTC service and the host staying online. No public matchmaking broker is configured.
 - **Local records** are explicitly browser-only. Global/friend leaderboards require a separately configured authenticated backend and server-side score validation; no public ranking claims or client-writable shared scores are implemented here.
 - `/game/experience-review.html` is an isolated review of the actual UI modules/interior builders with fixture state. It is not evidence of full-city or device performance. Run `node --test tests/*.test.cjs` with the repository dev dependencies for regression coverage.
+
+
+## Mobile responsiveness update
+
+- Phones attempt 60 render FPS using the same Low effects/particle budget (no dynamic shadows or reflections). Sustained frame intervals above 24ms for two seconds trigger a stable 30 FPS fallback for the remainder of the page session. Single long loading gaps and non-play states reset the measurement, not the simulation clock. This is a target, not a physical-device FPS guarantee.
+- Touch camera deltas apply immediately; there is no render-time smoothing queue or acceleration tail. Desktop pointer lock and gamepad handling stay unchanged.
+- The primary game launcher replaces the 2.29 MB embedded `vo.js` bank with a small URL manifest. Its original recordings are fetched/decoded individually when requested, with deduplicated requests and retryable failures. Boss/survivor speech waits for its recording and rechecks scene validity; uncached ambient cries warm their cache without playing a stale cry later. Muted survivor captions remain available. The legacy standalone launcher/bank is retained.
+- Regenerate the byte-identical voice clips/manifest with `node scripts/extract-voice-clips.cjs`. Service-worker caching remains network-first; only previously requested clips are available offline. Native/offline bundles need their usual asset refresh; this PR does not rebuild downloadable native archives.
+- Physical iPhone 16 Pro Max loading time, touch-to-photon latency and sustained FPS require device testing. No save data, map content, billing or production configuration is changed.

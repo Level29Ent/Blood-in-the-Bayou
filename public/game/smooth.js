@@ -2,7 +2,7 @@
 // =====================================================================
 // Smoother controls and frame pacing on desktop and mobile:
 //  - desktop: pointer-lock mouse look (no more cursor hitting the screen edge)
-//  - mobile: touch look is smoothed per frame with a gentle response curve
+//  - mobile: touch look is applied immediately, without a multi-frame tail
 //  - adaptive render resolution keeps the frame rate steady on slower devices
 //  - inputs are released when the tab loses focus so nothing gets stuck
 // =====================================================================
@@ -28,26 +28,8 @@
     lastTap = now;
   }, { passive: false });
 
-  // ---------- Touch look smoothing ----------
-  const pending = { x: 0, y: 0 };
-  const rawTurn = turnView;
-  const padInUse = () => { try { return padActive; } catch (_) { return false; } };
-  turnView = function(dx, dy){
-    if (!isTouch || padInUse()) return rawTurn(dx, dy);
-    // Slight acceleration: slow drags stay precise, quick flicks turn further.
-    const m = Math.hypot(dx, dy), boost = 1 + Math.min(.8, m * 9);
-    pending.x += dx * boost; pending.y += dy * boost;
-  };
-  function flushLook(dtMs){
-    if (!pending.x && !pending.y) return;
-    if (state !== 'play'){ pending.x = pending.y = 0; return; }
-    const k = 1 - Math.pow(.35, dtMs / 16.7);
-    const ax = pending.x * k, ay = pending.y * k;
-    pending.x -= ax; pending.y -= ay;
-    if (Math.abs(pending.x) < 1e-4) pending.x = 0;
-    if (Math.abs(pending.y) < 1e-4) pending.y = 0;
-    rawTurn(ax, ay);
-  }
+  // Touch events already arrive at the browser's input cadence. Do not queue
+  // camera deltas until render: movement/fire simulation must see current aim.
 
   // ---------- Desktop pointer lock ----------
   const lockable = !isTouch && 'requestPointerLock' in cv;
@@ -74,7 +56,6 @@
     for (const k in touch) touch[k] = false;
     stick.x = 0; stick.y = 0;
     gp.fire = gp.sprint = gp.brake = false;
-    pending.x = pending.y = 0;
   }
   addEventListener('blur', releaseAll);
   document.addEventListener('visibilitychange', () => { if (document.hidden) releaseAll(); });
@@ -82,7 +63,7 @@
   // ---------- Adaptive resolution ----------
   const mobile = isTouch || !!window.level29MobileBudget?.mobile;
   const MIN_RATIO = mobile ? .85 : .5;
-  // A stable 30fps is normal on phones; do not downscale it toward a 60fps target.
+  // Follow the runtime pacing target; fallback phones must not chase 60fps.
   const slowMs = mobile ? 38 : 24, fastMs = mobile ? 30 : 18;
   let ratio = 0, avg = 16.7, lastFrame = 0, lastChange = 0, slowFor = 0, fastFor = 0;
   function capRatio(){ if(window.level29MobileBudget)return window.level29MobileBudget.pixelRatio(innerWidth,innerHeight,devicePixelRatio);return mpRole ? Math.min(1, devicePixelRatio || 1) : Math.min(isTouch?1:1.5, devicePixelRatio || 1); }
@@ -113,10 +94,11 @@
   const prevRender = render;
   render = function(){
     const now = performance.now();
-    const dt = lastFrame ? Math.min(200, now - lastFrame) : 16.7;
+    const elapsed = lastFrame ? now - lastFrame : 16.7;
+    const dt = Math.min(200, elapsed);
     lastFrame = now;
-    try { flushLook(dt); } catch (_) {}
     if (lockable && isLocked() && (state !== 'play' || wheelIsOpen())){ try { document.exitPointerLock(); } catch (_) {} }
+    if (mobile) window.level29RuntimePolicy?.observeMobileFrame?.(elapsed, state === 'play' && !document.hidden);
     if (!document.hidden) try { adaptResolution(now, dt); } catch (_) {}
     prevRender();
   };

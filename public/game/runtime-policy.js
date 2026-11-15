@@ -10,9 +10,26 @@
     return {
       ...PRESETS[name],
       name,
-      fps: mobile ? Math.min(30, PRESETS[name].fps) : PRESETS[name].fps,
+      fps: mobile ? 60 : PRESETS[name].fps,
       shadow: mobile ? 0 : PRESETS[name].shadow,
       reflections: !mobile && PRESETS[name].reflections,
+    };
+  }
+  // Try 60fps with the existing cheap phone graphics. Fall back for the rest
+  // of this page session after sustained missed frames, not a single load spike.
+  function mobilePacing() {
+    let fps = 60, average = 1000 / 60, slowFor = 0;
+    return {
+      get fps() { return fps; },
+      observe(dt, active = true) {
+        if (!active || !Number.isFinite(dt) || dt <= 0 || dt > 250) {
+          average = 1000 / 60; slowFor = 0; return fps;
+        }
+        average += (dt - average) * .05;
+        slowFor = average > 24 ? slowFor + dt : 0;
+        if (slowFor >= 2000) fps = 30;
+        return fps;
+      },
     };
   }
   function reupload(roots) {
@@ -96,23 +113,28 @@
   if (typeof module !== "undefined")
     module.exports = {
       PRESETS,
+      mobilePacing,
       preset,
       reupload,
       disposeOwned,
       figureOwnership,
     };
   if (typeof window === "undefined") return;
+  const pacing = mobilePacing();
   window.level29RuntimePolicy = {
+    observeMobileFrame: (dt, active) => pacing.observe(dt, active),
     PRESETS,
     preset,
     reupload,
     disposeOwned,
     figureOwnership,
     get budget() {
-      return preset(
+      const budget = preset(
         window.level29Graphics?.quality,
         !!window.level29MobileBudget?.mobile,
       );
+      if (window.level29MobileBudget?.mobile) budget.fps = pacing.fps;
+      return budget;
     },
   };
 })();

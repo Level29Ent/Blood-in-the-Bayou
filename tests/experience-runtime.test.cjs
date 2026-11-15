@@ -12,7 +12,7 @@ test("quality budgets bound particles, cap mobile and reserve reflections for de
   for (const q of ["low", "medium", "high"]) {
     assert.equal(policy.preset(q, true).reflections, false);
     assert.equal(policy.preset(q, true).shadow, 0);
-    assert.equal(policy.preset(q, true).fps, 30);
+    assert.equal(policy.preset(q, true).fps, 60);
   }
   assert.equal(policy.preset("high").reflections, true);
   assert.equal(policy.preset("junk").name, "low");
