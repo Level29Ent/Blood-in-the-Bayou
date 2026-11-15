@@ -79,8 +79,10 @@ function shell(v,g,q,base,level){const b=v.b,st=wallStyle[v.id],fm=facade(st[0],
  fw(g,b.w,52,3,b.x+b.w/2,base+26,b.y+1.5,fm);for(const x of [b.x+1.5,b.x+b.w-1.5])fw(g,3,52,b.h,x,base+26,b.y+b.h/2,fm);
  if(level===0){const sw=(b.w-v.doorW)/2;for(const x of [b.x+sw/2,b.x+b.w-sw/2])fw(g,sw,52,3,x,26,v.doorY-1.5,fm);fw(g,v.doorW,10,3,v.doorX,47,v.doorY-1.5,fm);v.door=addPart(g,v.doorW-1,41,1.5,v.doorX,20.5,v.doorY-1,material('#3c646b',.3));}
  else fw(g,b.w,52,3,b.x+b.w/2,base+26,v.doorY-1.5,fm);
+ if(v.id!=='grocery'){
  const ceil=new THREE.Mesh(new THREE.PlaneGeometry(b.w-6,b.h-6).rotateX(Math.PI/2),new THREE.MeshBasicMaterial({color:'#d7ded4'}));ceil.position.set(b.x+b.w/2,base+51,b.y+b.h/2);g.add(ceil);
  for(const x of [b.x+b.w*.28,b.x+b.w*.72])for(const y of [b.y+b.h*.23,b.y+b.h*.7])q.box(38,1,4,x,base+50,y,material('#f3eed6'));
+ }
 }
 function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=material('#253842'),wood=material('#866944'),steel=material('#7c8a8f',.6),green=material('#5c8e67');
  const item=(x,y,w,h,d,m,solid=true)=>{q.box(w,h,d,x,base+h/2,y,m);if(solid)v.furniture.push({x:x-w/2,y:y-d/2,w,h:d});};
@@ -90,19 +92,8 @@ function furnish(v,g,q,base,level){const b=v.b,white=material('#d9ded6'),dark=ma
   const store=level29GasStation.build(THREE,b,base);g.add(store.root);v.furniture.push(...store.solids);v.referenceGas=true;
   staff(v,g,store.plan.staff.x,store.plan.staff.y,base);
  }else if(v.id==='grocery'){
-  item(b.x+b.w/2,b.y+40,80,12,18,wood);sign('CHECKOUT · U',b.x+b.w/2,b.y+4,100);
-  for(const x of [b.x+38,b.x+b.w-38])for(const y of [b.y+90,b.y+145]){
-   if(y>b.y+b.h-35)continue;
-   v.furniture.push({x:x-14,y:y-19,w:28,h:38});
-   q.box(28,25,1,x,base+12.5,y-18,steel);
-   for(const s of [-1,1])q.box(1,25,38,x+s*13.5,base+12.5,y,steel);
-   for(const h of [2,10,18,25])q.box(28,1,38,x,base+h,y,steel);
-   for(let row=0;row<3;row++)for(let k=0;k<3;k++){
-    q.box(6,5,10,x-8+k*8,base+6+row*8,y+10,material(['#b74737','#a9b765','#d2ad59'][k]));
-    q.box(4,1.4,.2,x-8+k*8,base+6+row*8,y+15.1,white);
-   }
-  }
-  staff(v,g,b.x+b.w/2,b.y+22,base);for(const [label,x]of [['DRINKS',b.x+38],['FOOD',b.x+b.w-38]])sign(label,x,b.y+5,55);
+  const market=level29FreshMarket.build(THREE,b,base);g.add(market.root);v.furniture.push(...market.solids);v.referenceFreshMarket=true;
+  staff(v,g,market.plan.staff.x,market.plan.staff.y,base);
  }else if(v.id==='bank'){
   const bank=level29BankInterior.build(THREE,b,base);g.add(bank.root);v.furniture.push(...bank.solids);v.referenceBank=true;staff(v,g,bank.plan.staff.x,bank.plan.staff.y,base);
  }else if(v.id==='gym'&&v.boxingGym){
