@@ -367,7 +367,47 @@
       return Math.hypot(x - px, y - py) < r;
     });
   }
+  function guidance(from, to, yaw = 0) {
+    const dx = to.x - from.x,
+      dy = to.y - from.y,
+      distance = Math.hypot(dx, dy),
+      angle = Math.atan2(dy, dx),
+      delta = Math.atan2(Math.sin(angle - yaw), Math.cos(angle - yaw));
+    return {
+      metres: Math.round(distance / 10),
+      compass: ["E", "SE", "S", "SW", "W", "NW", "N", "NE"][
+        (Math.round(angle / (Math.PI / 4)) + 8) % 8
+      ],
+      turn:
+        distance < 30
+          ? "ARRIVED"
+          : Math.abs(delta) < 0.35
+            ? "AHEAD"
+            : Math.abs(delta) > 2.5
+              ? "TURN AROUND"
+              : delta > 0
+                ? "RIGHT"
+                : "LEFT",
+    };
+  }
+  function recoverKart(r) {
+    if (!r || r.done || r.failed || Math.abs(r.speed) > 5) return false;
+    const index = (r.next - 10 + TRACK.length) % TRACK.length,
+      p = TRACK[index],
+      next = TRACK[(index + 1) % TRACK.length];
+    r.x = p.x;
+    r.y = p.y;
+    r.h = p.h;
+    r.index = index;
+    r.angle = Math.atan2(next.y - p.y, next.x - p.x);
+    r.speed = 0;
+    r.penalty += 5;
+    r.wallCooldown = 1;
+    return true;
+  }
   const api = {
+    guidance,
+    recoverKart,
     SIZE,
     BUSINESSES,
     BUILDINGS,

@@ -58,3 +58,15 @@ pnpm run build
 Tests cover entry gates, real runtime isolation/return/cleanup, touch pause recovery, early key routing, correct fees and one-time rewards, all six harvest plots, buy-once deeds/save restore, ball friction/bunkers/cup capture, complete physically simulated golf rounds, the real ramp geometry/winding/clearance, ordered manual three-lap steering, crossing-layer selection, wall/reverse/timeout rejection, finite model resources and launcher order. These are deterministic/VM/Three checks, not browser-rendered evidence.
 
 Release acceptance still requires a READY preview of the PR head: locate the shuttle in the generated city, board/return, walk through all five buildings, play a full golf round/harvest shift/race, buy one deed, export/import its save, and inspect portrait/short-landscape controls. Repeat on a physical phone with a long session and interrupted focus/context. The usual iOS source-archive refresh updates the download; it is not a signed/compiled native app or store release.
+
+
+## Navigation and control polish
+
+- The grounds board now offers per-business tracking with live distance, compass bearing and relative turn guidance. This is a direct bearing, not an obstacle-aware walking route. Activities override manual tracking with the golf ball, the **center** of the next unharvested plot, the delivery counter or the ordered kart gate.
+- A wrapping DOM navigation/progress card replaces the long single-line canvas status, including an event-only accessible status message. Short-landscape control stacks scroll rather than spilling out of the viewport.
+- Golf adds **AIM AT CUP** (direction only; no automatic power/shot), visible power/cup distance and a disabled swing when the ball is moving or too far away.
+- **RESET STUCK KART · +5s** in the board returns a nearly stopped kart to its last passed checkpoint. Time and ordered lap progress are retained, velocity is cleared and each reset adds five seconds. Moving/finished rentals cannot reset.
+- Held on-screen driving buttons also support Enter/Space and clear on key release/focus loss. Harvest holds clear on interruption while collected crates remain.
+- Booking buttons explain counter proximity, available cash, active jobs and rebooking cooldown. Cancelling/returning during an activity requires a second explicit confirmation, with **KEEP PLAYING** preserving the session and fee.
+
+Prices, rewards, business ownership and the saved-record schema are unchanged. Existing interrupted activity/reload rules still apply; navigation selection is session-only. New deterministic tests cover the above behavior; visual acceptance still requires the PR-head preview and phone testing.
