@@ -75,6 +75,7 @@ test("real keyboard adapter translates press/release, prevents stale defaults an
     seen = [],
     ctx = {
       window: null,
+      document: { querySelector:()=>null, querySelectorAll:()=>[] },
       state: "play",
       KeyboardEvent: class {
         constructor(type, options) {

@@ -24,6 +24,10 @@ const sections = [
     p: 'All casino games, shops and cash in Level 29 use fictional in-game money only. No real money can be wagered, won or withdrawn.',
   },
   {
+    h: 'Optional cloud backups',
+    p: 'If you sign in to Online Community and explicitly upload a backup, your game progress and settings are stored with your account using Supabase. Backups are private to that account. No backup is uploaded automatically. Use Cloud Save / Backups to delete the cloud copy; clearing browser storage only removes local progress and does not delete an uploaded copy.',
+  },
+  {
     h: 'Children',
     p: 'Level 29 is intended for players aged 17 and older. We do not knowingly collect information from children.',
   },

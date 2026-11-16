@@ -36,30 +36,35 @@ function openMP(){
   document.getElementById('mpJoin').onclick = () => mpJoin(codeIn.value);
   document.getElementById('mpClose').onclick = closeMP;
 }
-function closeMP(){ mpEl.style.display = 'none'; }
+function closeMP(){ if(MP.recovering)return;mpEl.style.display = 'none';if(state==='menu'){const menu=document.getElementById('menu');if(menu)menu.style.display='flex';if(!mpRole){mpReset();MP.resume=null;}} }
+for(const type of ['keydown','keyup'])addEventListener(type,e=>{if(!MP.recovering)return;e.stopImmediatePropagation();if(!['Tab','Enter',' '].includes(e.key))e.preventDefault();},true);
+
 function mpSetStatus(t, bad){ MP.status = t; const s = document.getElementById('mpStatus'); if (s){ s.textContent = t; s.classList.toggle('bad', !!bad); } }
 function mpReadName(){ const n = document.getElementById('mpName'); MP.name = ((n && n.value) || 'JESTER').toUpperCase().replace(/[^A-Z0-9 _-]/g, '').slice(0, 12) || 'JESTER'; }
-function mpReset(){ try { MP.peer && MP.peer.destroy(); } catch(e){} MP.peer = null; MP.conns.clear(); MP.remotes.clear(); mpRemotes = []; MP.hostConn = null; MP.others = []; MP.pending=null; MP.zmap.clear(); MP.pkRefs=[]; MP.lastNet=0; mpRole=null; }
+function mpReset(){ const oldPeer=MP.peer;MP.peer=null;MP.hostConn=null;try { oldPeer && oldPeer.destroy(); } catch(e){} MP.conns.clear(); MP.remotes.clear(); mpRemotes = []; MP.hostConn = null; MP.others = []; MP.pending=null; MP.zmap.clear(); MP.pkRefs=[]; MP.lastNet=0; MP.recovering=false; mpRole=null; }
 
 // ---------- Hosting ----------
 function mpHost(tries){
-  if (typeof Peer === 'undefined'){ mpSetStatus('Multiplayer could not load. Check your connection and reload.', true); return; }
+  if (typeof Peer === 'undefined'){ mpSetStatus('Loading multiplayer…');window.level29Peer?.load().then(()=>mpHost(tries)).catch(e=>mpSetStatus(e.message,true));return; }
   mpReadName(); mpReset(); tries = tries || 0;
   const code = mpCode();
   mpSetStatus('Opening room...');
+  MP.sessionId=String(Date.now())+'-'+Math.random().toString(36).slice(2);
   const peer = new Peer(MP_PREFIX + code, { debug: 0, config: MP_ICE }); MP.peer = peer;
   peer.on('open', () => {
+    if(MP.peer!==peer)return;
     MP.code = code; MP.myId = 'host'; mpRole = 'host';
     closeMP(); startGame(+document.getElementById('district').value);
     banner = { big: 'ROOM ' + code, small: 'SEND THIS CODE TO YOUR CREW · THEY PICK MULTIPLAYER > JOIN', t: 420 };
   });
   peer.on('connection', conn => mpHostConn(conn));
   peer.on('error', e => {
+    if(MP.peer!==peer)return;
     if (e.type === 'unavailable-id' && tries < 4) return mpHost(tries + 1);
     if (mpRole === 'host' && state !== 'menu') toast('MULTIPLAYER: ' + (e.type || 'error').toUpperCase());
     else mpSetStatus('Could not open a room (' + (e.type || 'network') + '). Try again.', true);
   });
-  peer.on('disconnected', () => { try { peer.reconnect(); } catch(e){} });
+  peer.on('disconnected', () => { try { if(MP.peer===peer)peer.reconnect(); } catch(e){} });
 }
 function mpHostConn(conn){
   conn.on('open', () => {
@@ -68,7 +73,7 @@ function mpHostConn(conn){
     MP.conns.set(id, conn);
     MP.remotes.set(id, { id, name: (conn.metadata && conn.metadata.name) || 'JESTER', x: player.x, y: player.y, a: 0, dead: false, car: null, safe: true, conn, anim: 0, lastSeen:performance.now() });
     mpRemotes = [...MP.remotes.values()];
-    conn.send({ t: 'welcome', id, di: distIdx, mi: missionIdx, code: MP.code, host: MP.name });
+    conn.send({ t: 'welcome', id, di: distIdx, mi: missionIdx, code: MP.code, sessionId:MP.sessionId, host: MP.name });
     toast(MP.remotes.get(id).name + ' JOINED THE ROOM'); sfx('tune');
     mpSendAll({ t: 'msg', txt: MP.remotes.get(id).name + ' JOINED THE ROOM' }, id);
   });
@@ -140,43 +145,51 @@ function mpSnapshot(){
 // ---------- Joining ----------
 function mpJoin(code){
   code = String(code || '').toUpperCase().trim();
-  if (code.length !== 4){ mpSetStatus('Room codes are 4 letters or numbers.', true); return; }
-  if (typeof Peer === 'undefined'){ mpSetStatus('Multiplayer could not load. Check your connection and reload.', true); return; }
+  if (!/^[A-Z0-9]{4}$/.test(code)){ mpSetStatus('Room codes are 4 letters or numbers.', true); return; }
+  if (typeof Peer === 'undefined'){mpSetStatus('Loading multiplayer…');window.level29Peer?.load().then(()=>mpJoin(code)).catch(e=>mpSetStatus(e.message,true));return;}
   mpReadName(); mpReset();
   mpSetStatus('Connecting to room ' + code + '...');
   const peer = new Peer(undefined, { debug: 0, config: MP_ICE }); MP.peer = peer;
   let joined = false;
-  const fail = setTimeout(() => { if (!joined){ mpSetStatus('Could not reach room ' + code + '. Check the code and that the host is still in the game.', true); mpReset(); } }, 15000);
+  const fail = setTimeout(() => { if (MP.peer===peer&&!joined){ mpSetStatus('Could not reach room ' + code + '. Check the code and that the host is still in the game.', true); mpReset(); } }, 15000);
   peer.on('open', () => {
+    if(MP.peer!==peer)return;
     const conn = peer.connect(MP_PREFIX + code, { reliable: true, serialization: 'json', metadata: { name: MP.name } });
     MP.hostConn = conn;
-    conn.on('data', d => { if (d && d.t === 'welcome'){ joined = true; clearTimeout(fail); } mpClientData(d); });
-    conn.on('close', () => mpHostGone());
-    conn.on('error', () => mpHostGone());
+    conn.on('data', d => { if(MP.peer!==peer||MP.hostConn!==conn)return;if (d && d.t === 'welcome'){ joined = true; clearTimeout(fail); } mpClientData(d); });
+    conn.on('close', () => {if(MP.hostConn===conn)mpHostGone();});
+    conn.on('error', () => {if(MP.hostConn===conn)mpHostGone();});
   });
   peer.on('error', e => {
+    if(MP.peer!==peer)return;
     if (e.type === 'peer-unavailable'){ clearTimeout(fail); mpSetStatus('No room called ' + code + '. Check the code with your host.', true); mpReset(); }
     else if (!joined){ mpSetStatus('Connection problem (' + (e.type || 'network') + '). Try again.', true); }
   });
 }
 function mpHostGone(){
-  if (mpRole !== 'client') return;
-  mpRole = null; MP.hostConn = null; MP.others = []; MP.zmap.clear();
-  banner = { big: 'HOST LEFT', small: 'YOU ARE PLAYING SOLO NOW', t: 260, bad: true };
-  boss = null; survivors = [];
-  for (const z of zombies) z.alert = true;
-  if (state === 'talk') closeRonnie();
-  placeMissionStart();
+  if (mpRole !== 'client'||MP.recovering) return;
+  window.level29UX?.close();window.level29SurvivalExpansion?.close();
+  MP.recovering=true;
+  MP.resume={code:MP.code,sessionId:MP.hostSession,x:player.x,y:player.y,hp:player.hp,cash,arsenal:{...arsenal},curW};
+  MP.pending=null;state='pause';mouse.down=false;for(const k in keys)keys[k]=false;
+  window.level29Bindings?.release();document.exitPointerLock?.();
+  mpEl.replaceChildren();const box=document.createElement('div');box.className='sbox';mpEl.appendChild(box);
+  const text=document.createElement('p');text.textContent='HOST CONNECTION LOST · Gameplay is stopped. Your solo save has not been replaced. Rejoin the same host to recover your position if it remains safe. A restarted host begins a new world; automatic host migration is not supported.';box.appendChild(text);
+  function button(label,fn){const b=document.createElement('button');b.textContent=label;b.style.minHeight='44px';b.onclick=fn;box.appendChild(b);return b;}
+  button('RECONNECT TO '+MP.code,()=>{const code=MP.code;state='menu';openMP();mpJoin(code);});
+  button('RETURN TO TITLE · KEEP SOLO SAVE',()=>{state='menu';mpReset();location.reload();});
+  mpEl.style.display='flex';box.querySelector('button').focus();
 }
 function mpClientData(d){
   if (!d) return;
   if (d.t === 'welcome'){
-    MP.myId = d.id; MP.code = d.code; mpRole = 'client';
+    MP.myId = d.id; MP.code = d.code; MP.recovering=false;MP.hostSession=d.sessionId;MP.lastSnapshot=performance.now();mpRole = 'client';
     closeMP(); startGame(d.mi);
-    zombies = []; MP.zmap.clear(); pickups = [];
+    const resume=MP.resume;MP.resume=null;if(resume&&typeof d.sessionId==='string'&&d.sessionId.length>0&&resume.code===d.code&&resume.sessionId===d.sessionId){cash=resume.cash;arsenal=resume.arsenal;curW=resume.curW;if(!blockedCircle(resume.x,resume.y,player.r)&&Math.abs(terrainHeight(resume.x,resume.y))<5){player.x=resume.x;player.y=resume.y;player.hp=Math.max(1,Math.min(player.maxHp,resume.hp));snapCamera();}}
+    MP.lastSnapshot=performance.now();zombies = []; MP.zmap.clear(); pickups = [];
     banner = { big: 'ROOM ' + d.code, small: 'YOU JOINED ' + (d.host || 'THE HOST') + ' · THE HOST LEADS THE MISSIONS', t: 300 };
   } else if (d.t === 'full'){ mpSetStatus('That room is full (6 players max).', true); mpReset(); }
-  else if (d.t === 's') { if(Array.isArray(d.z)&&d.z.length<=1200&&Array.isArray(d.pk)&&Array.isArray(d.pl))MP.pending=d; }
+  else if (d.t === 's') { if(Array.isArray(d.z)&&d.z.length<=1200&&Array.isArray(d.pk)&&Array.isArray(d.pl)){MP.pending=d;MP.lastSnapshot=performance.now();} }
   else if (d.t === 'h'){ if (state === 'play') hurtPlayer(d.n, d.sx, d.sy); }
   else if (d.t === 'pts'){ cash += d.amt; }
   else if (d.t === 'b'){ for (const q of d.l) bullets.push({ x: q[0], y: q[1], vx: q[2], vy: q[3], life: q[4], dmg: 0, pierce: 0, hit: new Set(), owner: 'x', mpS: 1 }); mpShotSound(d.l[0]); }
@@ -293,6 +306,8 @@ fireWeapon = function(ox, oy, aim){
 // Per-frame: send, receive, interpolate, splats.
 const _updMP = update;
 update = function(){
+  if(MP.recovering)return;
+  if(mpRole==='client'&&performance.now()-(MP.lastSnapshot||0)>20000){mpHostGone();return;}
   if(mpRole==='client'&&MP.pending){const s=MP.pending;MP.pending=null;mpApply(s);}
   if (mpRole && state === 'pause') state = 'play'; // no pausing a shared world
   if (mpRole === 'host' && (state === 'talk' || state === 'shop' || state === 'cheat') && player) player.inv = Math.max(player.inv, 30);
