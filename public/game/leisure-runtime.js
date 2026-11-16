@@ -20,6 +20,7 @@
     notice = "",
     noticeUntil = 0,
     tracked = "exit";
+  const extensions=[];
   const input = { throttle: 0, steer: 0, brake: false };
   function note(t) {
     notice = t;
@@ -42,6 +43,7 @@
   }
   function busy() {
     return !!(
+      window.level29Pursuits?.operation ||
       mpRole ||
       window.level29Prologue?.active ||
       (mission && mission.phase !== "start") ||
@@ -212,6 +214,7 @@
     heat = 0;
     objective = "CYPRESS LEISURE GROUNDS · GOLF / ESTATE FARM / KART RENTALS";
     isolate();
+    for(const extension of extensions)extension.enter?.();
     note(
       "SHUTTLE ARRIVED · VISIT THE THREE WALK-IN BUSINESSES · NO FEE TO EXPLORE",
     );
@@ -219,6 +222,7 @@
   }
   function leave() {
     if (!active) return;
+    for(const extension of extensions)extension.leave?.();
     close();
     clearInput();
     session = null;
@@ -299,7 +303,7 @@
     if (!Object.hasOwn(C.BUSINESSES, id)) return false;
     if (
       !active ||
-      session ||
+      session || extensions.some(e=>e.busy?.()) ||
       !at(C.SERVICES[id]) ||
       player.dead ||
       clock < cooldown[id]
@@ -323,6 +327,7 @@
     if (id === "golf") power.value = "60";
     if (id === "farm") session = { id, game: C.harvest() };
     if (id === "kart") session = { id, game: C.race() };
+    for(const extension of extensions)extension.start?.(session);
     close();
     save();
     note(
@@ -336,6 +341,7 @@
   function finish(id, amount) {
     if (!session || session.game.paid) return;
     session.game.paid = true;
+    for(const extension of extensions)amount=extension.finish?.(session,amount)??amount;
     const pay = C.payout(data, id, amount);
     cash += pay;
     if (id === "golf") {
@@ -560,6 +566,7 @@
         confirmAbandon(leave),
       );
     }
+    for(const extension of extensions)extension.board?.({text,button,close});
     button("CLOSE / RESUME", close);
     if (!dialog.open) dialog.showModal();
   }
@@ -808,7 +815,7 @@
   const mt = missionTarget;
   missionTarget = function () {
     if (!active) return mt.apply(this, arguments);
-    const p = navigation()?.point;
+    const p = extensions.map(e=>e.target?.()).find(Boolean)||navigation()?.point;
     return p
       ? { x: ORIGIN.x + p.x, y: ORIGIN.y + p.y, label: "L", col: "#a9d19b" }
       : null;
@@ -916,6 +923,7 @@
     }
     frame++;
     clock += 1 / 60;
+    for(const extension of extensions)extension.tick?.(1/60);
     if (toastQ && --toastQ.life <= 0) toastQ = null;
     if (session?.id === "kart") {
       const r = session.game,
@@ -1097,6 +1105,7 @@
       );
     }
     camera.updateMatrixWorld(true);
+    for(const extension of extensions)extension.draw?.();
     renderer.info.reset();
     renderer.clear();
     renderer.render(scene, camera);
@@ -1132,7 +1141,8 @@
           ? "RETURN TO MARKET"
           : Math.round((session.game.hold / 3) * 100) +
             "% · HOLD HARVEST AT PLOT");
-    const nav = navigation();
+    const external=extensions.map(e=>e.target?.()).find(Boolean);
+    const nav = external?{point:external,label:external.label||'SERVICE CONTRACT'}:navigation();
     if (nav) {
       const g = C.guidance(
         local(),
@@ -1201,6 +1211,10 @@
     }
   });
   window.level29Leisure = {
+    closeBoard:close,
+    register(extension){extensions.push(extension);},
+    get world(){return world;},get position(){return active?local():null;},atCounter:id=>active&&at(C.SERVICES[id]),
+    get groundsOpen(){return dialog.open;},notice:note,
     show,
     enter,
     leave,
