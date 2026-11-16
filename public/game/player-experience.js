@@ -231,6 +231,7 @@
         draw();
       });
       for (const [label, fn] of [
+        ["FISHING CUP / RECOVERY / SCAVENGER TRAIL", () => window.level29Field?.show()],
         ["SURVIVAL OPERATIONS / PHOTO MODE", () => window.level29Pursuits?.show()],
         ["GOLF / ESTATE FARM / KART BUSINESSES", () => window.level29Leisure?.show()],
         ["BAYOU AFTERMATH / FORAGING", () => window.level29BayouPolish?.show()],

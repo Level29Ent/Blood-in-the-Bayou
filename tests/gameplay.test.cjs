@@ -21,7 +21,7 @@ test('zombie protection accounts for radius outside threshold',()=>{
 function fishing({boat=false,rod=false,caught=0}={}){
  const source=fs.readFileSync('public/game/gulf.js','utf8');
  const bar={style:{},textContent:'',innerHTML:'',querySelector:()=>({style:{}})};
- const ctx=vm.createContext({window:{},city:{world:true},state:'play',player:{x:100,y:100,dead:false,car:boat?{x:100,y:100,boat:true,v:0}:null},T_WATER:2,tileAt:()=>2,cash:0,frame:0,save:{owned:{rod},fishCaught:caught},sfx:()=>{},toast:()=>{},persist:()=>{},dist:Math.hypot.bind(Math),document:{createElement:()=>bar,body:{appendChild:()=>{}}},fishingBar:null,fish:null,Math:Object.assign(Object.create(Math),{random:()=>.5})});
+ const ctx=vm.createContext({window:{},dispatchEvent:()=>{},CustomEvent:class{constructor(type,options){this.type=type;this.detail=options.detail;}},city:{world:true},state:'play',player:{x:100,y:100,dead:false,car:boat?{x:100,y:100,boat:true,v:0}:null},T_WATER:2,tileAt:()=>2,cash:0,frame:0,save:{owned:{rod},fishCaught:caught},sfx:()=>{},toast:()=>{},persist:()=>{},dist:Math.hypot.bind(Math),document:{createElement:()=>bar,body:{appendChild:()=>{}}},fishingBar:null,fish:null,Math:Object.assign(Object.create(Math),{random:()=>.5})});
  vm.runInContext(source.slice(source.indexOf('const fishTable='),source.indexOf('function cacheTick()')),ctx);
  vm.runInContext('drawFishingVisual=()=>{};dist=(x,y,a,b)=>Math.hypot(x-a,y-b)',ctx);
  return {run:s=>vm.runInContext(s,ctx),ctx};

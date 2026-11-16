@@ -19,6 +19,7 @@
   function busy() {
     return !!(
       mpRole ||
+      window.level29Field?.active ||
       window.level29Leisure?.active ||
       window.level29Prologue?.active ||
       (mission && mission.phase !== "start") ||
