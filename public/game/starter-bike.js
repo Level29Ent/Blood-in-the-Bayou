@@ -30,7 +30,7 @@ function ensure(){if(!granted||mpRole||state!=='play'||!player||player.dead||!ci
   for(const d of [0,8,16,24])if(blockedCircle(x+Math.cos(a+Math.PI/2)*d,y+Math.sin(a+Math.PI/2)*d,10))return false;
   return true;
  });
- if(!at)return;const bike=makeCar(at.x,at.y,at.a,TYPE);bike.starterBike=true;bike.ai=null;cars.push(bike);pending=false;window.level29Save?.save();toast('FREE STARTER BICYCLE · FOLLOW THE B MARKER · E / ENTER TO RIDE');
+ if(!at)return;const bike=makeCar(at.x,at.y,at.a,TYPE);bike.starterBike=true;bike.ai=null;cars.push(bike);pending=false;window.level29Save?.save();toast('FREE STARTER BICYCLE · FOLLOW B · '+(window.level29Bindings?.label('vehicle')||'G')+' / ENTER TO RIDE');
 }
 const tick=update;update=function(){const r=tick.apply(this,arguments);ensure();return r;};
 const factory=makeCarMesh;makeCarMesh=function(c){if(c.type!==TYPE)return factory.apply(this,arguments);const m=model(THREE,c.col);scene.add(m);return m;};

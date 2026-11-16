@@ -67,6 +67,13 @@ const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
 
 // ---------- Sound effects ----------
 let lastShot = 0, shotN = 0;
+// Reuse the existing three synth voices; change their envelope/timbre, not volume or damage.
+function weaponShotProfile(id=''){
+  if(/shotgun|scatter|buckshot/i.test(id))return {duration:.15,body:105,filter:1150};
+  if(/smg|machine|mp5|uzi/i.test(id))return {duration:.055,body:220,filter:2850};
+  if(/marksman|sniper|ranger|carbine|rifle/i.test(id))return {duration:.12,body:130,filter:2150};
+  return {duration:.09,body:162,filter:2000};
+}
 function snd(type, arg){
   if (!actx || soundMode===2) return;
   try{
@@ -76,8 +83,9 @@ function snd(type, arg){
     const r = (a, b) => a + Math.random()*(b-a);
     if (type==='shot'){
       shotN++;
-      noiseV(B, t, .09, .22, {type:'bandpass', f:r(1600,2400), fTo:500, q:.8});
-      voice(B, t, r(150,175), .09, {wave:'sine', to:45, vol:.32});
+      const profile=weaponShotProfile(typeof arg==='string'?arg:typeof curW==='string'?curW:'');
+      noiseV(B, t, profile.duration, .22, {type:'bandpass', f:r(profile.filter*.9,profile.filter*1.1), fTo:500, q:.8});
+      voice(B, t, profile.body, profile.duration, {wave:'sine', to:45, vol:.32});
       voice(B, t, 90, .05, {wave:'square', to:40, vol:.04});
       if (shotN % 3 === 0) voice(B, t + r(.18,.3), r(3200,4200), .05, {wave:'triangle', vol:.025});
     }

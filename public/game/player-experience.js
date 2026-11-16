@@ -71,6 +71,7 @@
   }
   function open(tab = "settings") {
     if (
+      window.__mp?.MP.recovering ||
       window.level29RuntimeResources?.lost ||
       !["menu", "play", "pause"].includes(state)
     )
@@ -131,7 +132,7 @@
     add("CLOSE / RESUME", close, nav);
     if (page === "settings") {
       text(
-        "Graphics presets are saved. Mobile uses effective Low quality and a 30 FPS cap; the requested preset stays saved.",
+        "Graphics presets are saved. Mobile uses effective Low quality, attempts 60 FPS and falls back to 30 FPS under sustained load; the requested preset stays saved.",
       );
       const l = document.createElement("label");
       l.textContent = "Graphics quality ";
@@ -230,6 +231,8 @@
         draw();
       });
       for (const [label, fn] of [
+        ["BAYOU AFTERMATH / FORAGING", () => window.level29BayouPolish?.show()],
+        ["CLOUD SAVE / LOCAL BACKUPS", () => window.level29CloudSave?.show()],
         ["CITY JOURNAL / ROUTES", () => window.level29CityCareers?.show("map")],
         ["SURVIVOR OPERATIONS", () => window.level29SurvivorStories?.show()],
         [

@@ -189,6 +189,12 @@
   }
   for (const type of ["keydown", "keyup"]) addEventListener(type, input, true);
   addEventListener("blur", release);
+  function refreshLabels() {
+    const node=document.querySelector('#menu .keys');
+    if(node)node.textContent=Object.entries(bindings).map(([action,key])=>key.toUpperCase()+' · '+action.replace(/^slot/,'weapon ')).join(' • ')+' • MOUSE / DRAG look • CLICK / FIRE shoot • Q weapon wheel • 5–9 additional weapons • U legacy use • TAB map • P settings / pause • SHIFT run • C vehicle camera';
+    for(const node of document.querySelectorAll('[data-binding]'))node.textContent=(bindings[node.dataset.binding]||'').toUpperCase();
+  }
+  addEventListener('DOMContentLoaded',refreshLabels);
   window.level29Bindings = {
     get values() {
       return { ...bindings };
@@ -202,6 +208,7 @@
       try {
         localStorage.setItem("level29.bindings.v1", JSON.stringify(bindings));
       } catch (_) {}
+      refreshLabels();
       return true;
     },
     reset() {
@@ -210,7 +217,9 @@
       try {
         localStorage.removeItem("level29.bindings.v1");
       } catch (_) {}
+      refreshLabels();
     },
+    refreshLabels,
     capture(fn) {
       release();
       capture = fn;

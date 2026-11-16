@@ -471,6 +471,15 @@
         save();
         p(d.name + " applied. Timers advance only while playing.");
       });
+    if(window.level29BayouPolish){
+      p('GATHERED INGREDIENTS · '+Object.entries(level29BayouPolish.ingredients).map(([k,n])=>k.toUpperCase()+' '+n).join(' · '));
+      for(const [id,d] of Object.entries(RECIPES))add('CRAFT '+d.name+' · '+Object.entries(BayouPolishCore.RECIPES[id]).map(([k,n])=>n+' '+k).join(' + '),()=>{
+        if(id==='poultice'&&player.hp>=player.maxHp)return p('Health is full; no ingredients spent.');
+        if(!level29BayouPolish.craft(id))return p('Not enough gathered ingredients. Nothing spent.');
+        if(id==='poultice')player.hp=Math.min(player.maxHp,player.hp+35);else buffs[id]=id==='tonic'?60:120;
+        save();p(d.name+' crafted; no cash spent.');
+      });
+    }
     add("BACK", show);
   }
   function reward() {
