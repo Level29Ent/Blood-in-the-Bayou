@@ -100,6 +100,17 @@
   }
   function input(e) {
     if (generated.has(e)) return;
+    // Leisure has its own paused-city simulation; don't dispatch a city job,
+    // open a weapon wheel, or toggle unrelated world panels from this annex.
+    if(window.level29Leisure?.active && !e.target?.closest?.('input,textarea,select,dialog[open]')){
+      const key=e.key.toLowerCase();
+      if(['escape','p','tab'].includes(key)){
+        stop(e);if(e.type==='keydown'&&!e.repeat)window.level29Leisure.show();return;
+      }
+      const actions=['forward','back','left','right','interact','vehicle'];
+      const allowed=actions.map(a=>bindings[a]).concat(['u','enter','shift',' ','arrowleft','arrowright','arrowup','arrowdown','m','n']);
+      if(!allowed.includes(key)){stop(e);return;}
+    }
     if (capture && e.type === "keydown") {
       stop(e);
       if (e.key === "Escape") {
