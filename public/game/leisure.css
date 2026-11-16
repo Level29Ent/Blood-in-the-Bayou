@@ -1,0 +1,110 @@
+#leisureControls {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  bottom: max(18px, env(safe-area-inset-bottom));
+  z-index: 75;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 7px;
+  max-width: min(360px, 58vw);
+  font: 12px/1.5 monospace;
+  color: #f5dfb4;
+}
+#leisureControls[hidden],
+#leisureControls [hidden] {
+  display: none !important;
+}
+#leisureControls button {
+  min-height: 44px;
+  padding: 10px 13px;
+  max-width: 100%;
+  font: 700 12px/1.3 monospace;
+  white-space: normal;
+  color: #f5dfb4;
+  background: #173534eb;
+  border: 1px solid #b79b5d;
+  border-radius: 5px;
+  touch-action: none;
+}
+#leisureControls label {
+  display: block;
+  background: #10252cde;
+  padding: 5px 9px;
+  border-radius: 4px;
+}
+#leisureControls input {
+  display: block;
+  max-width: 100%;
+  width: 220px;
+  min-height: 30px;
+  accent-color: #d1ae67;
+}
+#leisureControls button:focus-visible,
+#leisureControls input:focus-visible {
+  outline: 3px solid #fff2c7;
+  outline-offset: 3px;
+}
+#leisureDriveControls {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 6px;
+}
+#leisureDriveControls button {
+  min-width: 70px;
+}
+body.leisure-away #touch,
+body.leisure-away #hudMapActions,
+body.leisure-away #experienceButton,
+body.leisure-away #nolaRouteMap,
+body.leisure-away #contextTip,
+body.leisure-away #missionWaypoints,
+body.leisure-away #bayouAction {
+  display: none !important;
+}
+body.leisure-away #joyZone {
+  z-index: 3;
+}
+#leisureDialog {
+  z-index: 140;
+}
+#leisureDialog button {
+  min-height: 44px;
+}
+@media (max-height: 480px) {
+  #leisureControls {
+    bottom: 8px;
+    max-width: 54vw;
+    gap: 4px;
+  }
+  #leisureControls button {
+    padding: 7px 10px;
+  }
+  #leisureGolfControls {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 3px;
+  }
+  #leisureControls input {
+    width: 140px;
+    min-height: 26px;
+  }
+  #leisureControls label {
+    font-size: 10px;
+    padding: 2px 5px;
+  }
+}
+@media (max-width: 430px) {
+  #leisureControls {
+    max-width: 52vw;
+  }
+  #leisureControls input {
+    width: 145px;
+  }
+  #leisureDriveControls button {
+    min-width: 60px;
+    font-size: 10px;
+  }
+}

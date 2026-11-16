@@ -231,6 +231,7 @@
         draw();
       });
       for (const [label, fn] of [
+        ["GOLF / ESTATE FARM / KART BUSINESSES", () => window.level29Leisure?.show()],
         ["BAYOU AFTERMATH / FORAGING", () => window.level29BayouPolish?.show()],
         ["CLOUD SAVE / LOCAL BACKUPS", () => window.level29CloudSave?.show()],
         ["CITY JOURNAL / ROUTES", () => window.level29CityCareers?.show("map")],
