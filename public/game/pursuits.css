@@ -1,0 +1,128 @@
+#pursuitsUse,
+#operationUse {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: max(100px, env(safe-area-inset-bottom));
+  z-index: 78;
+  min-height: 44px;
+  max-width: 80vw;
+  padding: 10px 15px;
+  background: #223e3d;
+  color: #f6dc9c;
+  border: 1px solid #b39a5e;
+  border-radius: 5px;
+  font: 700 12px/1.4 monospace;
+  touch-action: none;
+}
+#pursuitsUse[hidden],
+#operationUse[hidden],
+#photoControls[hidden] {
+  display: none !important;
+}
+#pursuitsBoard,
+#survivalOperations {
+  z-index: 150;
+}
+#pursuitsBoard nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+#pursuitsBoard nav button {
+  display: inline-block;
+}
+#photoControls {
+  position: fixed;
+  right: max(12px, env(safe-area-inset-right));
+  top: max(12px, env(safe-area-inset-top));
+  z-index: 220;
+  box-sizing: border-box;
+  width: min(340px, 94vw);
+  max-height: 94dvh;
+  overflow: auto;
+  overscroll-behavior: contain;
+  padding: 14px;
+  background: #10252cef;
+  color: #f5dfb4;
+  border: 1px solid #bfa76b;
+  border-radius: 6px;
+  font: 12px/1.5 monospace;
+}
+#photoControls h2 {
+  font-size: 18px;
+  margin: 0 0 8px;
+}
+#photoControls label {
+  display: block;
+  margin: 6px 0;
+}
+#photoControls input {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  accent-color: #cfb46c;
+}
+#photoControls button,
+#photoControls a {
+  display: block;
+  box-sizing: border-box;
+  min-height: 44px;
+  padding: 10px;
+  margin: 7px 0;
+  background: #284644;
+  color: #ffe1a5;
+  border: 1px solid #ac975e;
+  font: inherit;
+  text-decoration: none;
+}
+#photoControls a[hidden] {
+  display: none;
+}
+#photoControls button:focus-visible,
+#photoControls input:focus-visible,
+#pursuitsUse:focus-visible,
+#operationUse:focus-visible {
+  outline: 3px solid #fff2cb;
+  outline-offset: 3px;
+}
+body.photo-active
+  > :not(#gl):not(#photoControls):not(#photoRestore):not(script):not(style):not(
+    link
+  ) {
+  visibility: hidden !important;
+}
+body.photo-active #gl {
+  visibility: visible !important;
+}
+@media (max-height: 480px) {
+  #photoControls {
+    top: 6px;
+    right: 6px;
+    padding: 10px;
+    max-height: 96dvh;
+    width: min(320px, 48vw);
+  }
+  #pursuitsUse,
+  #operationUse {
+    bottom: 65px;
+    max-width: 48vw;
+    font-size: 11px;
+  }
+}
+
+#photoRestore {
+  position: fixed;
+  right: 10px;
+  bottom: max(10px, env(safe-area-inset-bottom));
+  z-index: 225;
+  min-height: 44px;
+  padding: 10px;
+  background: #10252ce8;
+  color: #ffe2a7;
+  border: 1px solid #c0a66b;
+  font: 12px monospace;
+}
+#photoRestore[hidden] {
+  display: none !important;
+}

@@ -231,6 +231,7 @@
         draw();
       });
       for (const [label, fn] of [
+        ["SURVIVAL OPERATIONS / PHOTO MODE", () => window.level29Pursuits?.show()],
         ["GOLF / ESTATE FARM / KART BUSINESSES", () => window.level29Leisure?.show()],
         ["BAYOU AFTERMATH / FORAGING", () => window.level29BayouPolish?.show()],
         ["CLOUD SAVE / LOCAL BACKUPS", () => window.level29CloudSave?.show()],
