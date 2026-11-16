@@ -598,6 +598,7 @@ function catchFish(){
   const goal=save.fishCaught%5===0,bonus=goal?350:0;if(goal)cash+=bonus;
   stopFishing(pick[0].toUpperCase()+' CAUGHT · +$'+gain+(goal?' · ANGLER CONTRACT +$350':' · '+(5-save.fishCaught%5)+' TO CONTRACT BONUS'));
   persist();
+  dispatchEvent(new CustomEvent('level29:fish-landed',{detail:{name:pick[0],sequence:save.fishCaught}}));
 }
 function fishingUI(){
   if(!fish)return;
@@ -726,7 +727,7 @@ addEventListener('keydown',e=>{
 function nearVenueStation(){for(const v of city.venues||[])if(dist(player.x,player.y,v.stationX,v.stationY)<60)return true;return false;}
 const touchGroup2=document.querySelector('#touch .group');
 if(touchGroup2){for(const [id,label,fn] of [['storeBtn','STORE',()=>state==='play'&&showStore(nearResidence==='garage'?'garage':nearResidence?'home':'upgrades')],['fishBtn','FISH',reel]]){const b=document.createElement('button');b.id=id;b.textContent=label;b.onclick=fn;touchGroup2.appendChild(b);}}
-window.level29OpenWorld={get fish(){return fish;},get near(){return nearResidence;},nearStation:()=>nearVenueStation(),get save(){return save;},zones:ZONE_NAMES,showStore,startFishing,reel,get interior(){return interior;},get drawCalls(){return renderer.info.render.calls;},get city(){return city;},teleport:(x,y)=>{if(player){player.x=x;player.y=y;snapCamera();}}};
+window.level29OpenWorld={waterSpot:nearWaterSpot,get fish(){return fish;},get near(){return nearResidence;},nearStation:()=>nearVenueStation(),get save(){return save;},zones:ZONE_NAMES,showStore,startFishing,reel,get interior(){return interior;},get drawCalls(){return renderer.info.render.calls;},get city(){return city;},teleport:(x,y)=>{if(player){player.x=x;player.y=y;snapCamera();}}};
 // ---------------------------------------------------------------- vehicle customization visuals
 function decorate(m,c){
   const u=m.userData,q=c.custom||{},p=u.profile;if(!p)return;

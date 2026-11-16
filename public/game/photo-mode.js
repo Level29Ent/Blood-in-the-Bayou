@@ -88,6 +88,7 @@
   button("RETURN TO GAME", close);
   function canOpen() {
     return (
+      !window.level29Field?.active &&
       !window.level29Jobs?.active &&
       !window.level29Powell?.active &&
       !window.level29CityStories?.active &&

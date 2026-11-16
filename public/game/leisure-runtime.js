@@ -43,6 +43,7 @@
   }
   function busy() {
     return !!(
+      window.level29Field?.active ||
       window.level29Pursuits?.operation ||
       mpRole ||
       window.level29Prologue?.active ||
