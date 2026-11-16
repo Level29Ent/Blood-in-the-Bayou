@@ -237,3 +237,39 @@ test("crossing the expected gate facing backwards cannot award progress, and mal
   assert.equal(r.gates, 0);
   assert.deepEqual(C.restore({ v: 1, owned: { includes: 1 } }).owned, []);
 });
+
+test("navigation gives relative turn, compass bearing and distance without mutating positions", () => {
+  const p = { x: 0, y: 0 };
+  assert.deepEqual(C.guidance(p, { x: 100, y: 0 }, 0), {
+    metres: 10,
+    compass: "E",
+    turn: "AHEAD",
+  });
+  assert.equal(C.guidance(p, { x: 0, y: 100 }, 0).turn, "RIGHT");
+  assert.equal(C.guidance(p, { x: 0, y: -100 }, 0).turn, "LEFT");
+  assert.equal(C.guidance(p, { x: -100, y: 0 }, 0).turn, "TURN AROUND");
+  assert.equal(C.guidance(p, { x: 1, y: 0 }, 0).turn, "ARRIVED");
+  assert.deepEqual(p, { x: 0, y: 0 });
+});
+test("stuck-kart reset returns to last passed gate with five-second penalty and no free lap progress", () => {
+  const r = C.race();
+  r.gates = 19;
+  r.next = 40;
+  r.index = 33;
+  r.speed = 0;
+  r.seconds = 80;
+  assert(C.recoverKart(r));
+  assert.equal(r.x, C.TRACK[30].x);
+  assert.equal(r.y, C.TRACK[30].y);
+  assert.equal(r.h, C.TRACK[30].h);
+  assert.equal(r.gates, 19);
+  assert.equal(r.next, 40);
+  assert.equal(r.seconds, 80);
+  assert.equal(r.penalty, 5);
+  assert.equal(r.speed, 0);
+  r.speed = 10;
+  assert(!C.recoverKart(r));
+  r.speed = 0;
+  r.done = true;
+  assert(!C.recoverKart(r));
+});

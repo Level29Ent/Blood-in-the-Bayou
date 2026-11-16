@@ -18,7 +18,8 @@
     clock = 0,
     held = false,
     notice = "",
-    noticeUntil = 0;
+    noticeUntil = 0,
+    tracked = "exit";
   const input = { throttle: 0, steer: 0, brake: false };
   function note(t) {
     notice = t;
@@ -85,6 +86,10 @@
   }
   function clearInput() {
     held = false;
+    if (session?.id === "farm") {
+      session.game.hold = 0;
+      session.game.plot = -1;
+    }
     input.throttle = input.steer = 0;
     input.brake = false;
     mouse.down = false;
@@ -252,6 +257,7 @@
     }
     home = null;
     owner = null;
+    guidance.hidden = true;
     state = "play";
     snapCamera();
     save();
@@ -353,6 +359,57 @@
         " · 60 ACTIVE-SECOND REBOOK COOLDOWN",
     );
   }
+  function navigation() {
+    if (session?.id === "golf")
+      return { point: session.game.ball, label: "GOLF BALL" };
+    if (session?.id === "farm") {
+      if (session.game.delivering)
+        return { point: C.SERVICES.farm, label: "DELIVER TO MARKET" };
+      const index = C.PLOTS.findIndex(
+          (_, i) => !session.game.claimed.includes(i),
+        ),
+        plot = C.PLOTS[index];
+      return plot
+        ? {
+            point: { x: plot.x + plot.w / 2, y: plot.y + plot.h / 2 },
+            label: "PLOT " + (index + 1) + " · " + plot.crop.toUpperCase(),
+          }
+        : null;
+    }
+    if (session?.id === "kart")
+      return { point: C.TRACK[session.game.next], label: "NEXT KART GATE" };
+    return {
+      point: C.SERVICES[tracked] || C.SERVICES.exit,
+      label:
+        tracked === "exit"
+          ? "RETURN SHUTTLE"
+          : C.BUSINESSES[tracked]?.name || "RETURN SHUTTLE",
+    };
+  }
+  function confirmAbandon(action) {
+    if (!session) return action();
+    dialog.replaceChildren();
+    text(
+      "END " +
+        session.id.toUpperCase() +
+        "? Entry fees are not refunded and unfinished progress will be lost. Completed records and deeds stay saved.",
+    );
+    button("KEEP PLAYING", close);
+    button("CONFIRM · END ACTIVITY", action);
+  }
+  function recover() {
+    if (!active || session?.id !== "kart") return;
+    if (!C.recoverKart(session.game))
+      return text(
+        "Slow to walking speed (below 2 km/h) before resetting. No reset or penalty applied.",
+      );
+    const r = session.game;
+    player.x = ORIGIN.x + r.x;
+    player.y = ORIGIN.y + r.y;
+    view.yaw = r.angle;
+    close();
+    note("KART RESET TO LAST CHECKPOINT · +5s PENALTY · LAP PROGRESS KEPT");
+  }
   function show() {
     if (
       window.level29RuntimeResources?.lost ||
@@ -412,6 +469,21 @@
           " · HARVEST SHIFTS " +
           data.harvests,
       );
+      text(
+        "NAVIGATION · Choose a business to see its live distance and relative direction. Active activities automatically guide you to the ball, next plot or checkpoint.",
+      );
+      for (const [id, point] of Object.entries(C.SERVICES)) {
+        const label = id === "exit" ? "RETURN SHUTTLE" : C.BUSINESSES[id].name,
+          g = C.guidance(local(), point, view.yaw);
+        const trackButton = button(
+          "TRACK " + label + " · " + g.metres + "m",
+          () => {
+            tracked = id;
+            close();
+          },
+        );
+        trackButton.disabled = !!session;
+      }
       for (const [id, b] of Object.entries(C.BUSINESSES)) {
         text(
           b.name +
@@ -424,7 +496,7 @@
                     ? "MARKET: EAST-CENTER"
                     : "KART RENTALS: SOUTHEAST")),
         );
-        button(
+        const booking = button(
           id === "golf"
             ? "PLAY THREE HOLES · $50"
             : id === "farm"
@@ -432,6 +504,20 @@
               : "RENT KART · THREE-LAP TIME TRIAL · $100",
           () => start(id),
         );
+        const fee = id === "golf" ? 50 : id === "kart" ? 100 : 0;
+        const reason = session
+          ? "Finish or cancel your current activity."
+          : !at(C.SERVICES[id])
+            ? "Walk to this business counter."
+            : clock < cooldown[id]
+              ? "Reopens in " +
+                Math.ceil(cooldown[id] - clock) +
+                " active seconds."
+              : cash < fee
+                ? "Need $" + fee + " game cash."
+                : "";
+        booking.disabled = !!reason;
+        if (reason) text(reason);
         if (!data.owned.includes(id))
           button("BUY " + id.toUpperCase() + " BUSINESS · $" + b.price, () => {
             if (!at(C.SERVICES[id]) || session)
@@ -441,6 +527,7 @@
               return text("Not enough game cash or deed already owned.");
             cash = balance;
             save();
+            show();
             text(
               "DEED SAVED · 20% bonus on completed activities at this business. No passive income or real-money purchase.",
             );
@@ -453,20 +540,25 @@
             session.id.toUpperCase() +
             " · CANCEL/LEAVE forfeits its entry fee and unfinished reward.",
         );
-        button("CANCEL ACTIVITY · NO REFUND", () => {
-          if (session?.id === "kart") {
-            player.x = ORIGIN.x + C.SERVICES.kart.x;
-            player.y = ORIGIN.y + C.SERVICES.kart.y;
-          }
-          session = null;
-          clearInput();
-          show();
-        });
+        if (session.id === "kart") button("RESET STUCK KART · +5s", recover);
+        button("CANCEL ACTIVITY · NO REFUND", () =>
+          confirmAbandon(() => {
+            if (session?.id === "kart") {
+              player.x = ORIGIN.x + C.SERVICES.kart.x;
+              player.y = ORIGIN.y + C.SERVICES.kart.y;
+            }
+            session = null;
+            clearInput();
+            show();
+          }),
+        );
       }
       text(
         "Farmland: six crop plots (okra, corn, sugarcane). Hold HARVEST for three seconds at each plot, then deliver at the market for $450. Golf: aim/power controls, physical rolling ball and bunkers, eight strokes maximum per hole; finish all three for $150–$600. Karts: accelerate/steer/brake yourself through all checkpoints; three laps pay $600. Deeds add 20%.",
       );
-      button("RETURN SHUTTLE · END CURRENT ACTIVITY", leave);
+      button("RETURN SHUTTLE · END CURRENT ACTIVITY", () =>
+        confirmAbandon(leave),
+      );
     }
     button("CLOSE / RESUME", close);
     if (!dialog.open) dialog.showModal();
@@ -490,6 +582,21 @@
   controls.id = "leisureControls";
   controls.hidden = true;
   document.body.appendChild(controls);
+  const guidance = document.createElement("aside");
+  guidance.id = "leisureGuidance";
+  guidance.hidden = true;
+  guidance.setAttribute("aria-label", "Activity navigation and progress");
+  document.body.appendChild(guidance);
+  const destination = document.createElement("p"),
+    detail = document.createElement("p"),
+    eventStatus = document.createElement("p");
+  eventStatus.setAttribute("role", "status");
+  guidance.appendChild(destination);
+  guidance.appendChild(detail);
+  guidance.appendChild(eventStatus);
+  function setText(node, value) {
+    if (node.textContent !== value) node.textContent = value;
+  }
   const menu = document.createElement("button");
   menu.type = "button";
   menu.textContent = "GROUNDS / BUSINESSES";
@@ -518,6 +625,25 @@
     useButton.addEventListener(t, () => {
       held = false;
     });
+  useButton.addEventListener("keydown", (e) => {
+    if (["Enter", " "].includes(e.key)) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (!e.repeat) {
+        held = true;
+        if (session?.id !== "farm") use();
+      }
+    }
+  });
+  useButton.addEventListener("keyup", (e) => {
+    if (["Enter", " "].includes(e.key)) {
+      e.preventDefault();
+      held = false;
+    }
+  });
+  useButton.addEventListener("blur", () => {
+    held = false;
+  });
   const shot = document.createElement("div");
   shot.id = "leisureGolfControls";
   controls.appendChild(shot);
@@ -553,6 +679,21 @@
   swing.textContent = "SWING";
   swing.onclick = () => swingBall();
   shot.appendChild(swing);
+  const aimCup = document.createElement("button");
+  aimCup.type = "button";
+  aimCup.textContent = "AIM AT CUP";
+  aimCup.onclick = () => {
+    if (state !== "play" || session?.id !== "golf" || session.game.moving)
+      return;
+    const b = session.game.ball,
+      cup = C.HOLES[session.game.hole].cup;
+    session.aim = Math.atan2(cup.y - b.y, cup.x - b.x);
+    aim.value = String(Math.round((session.aim * 180) / Math.PI));
+  };
+  shot.appendChild(aimCup);
+  const shotReadout = document.createElement("output");
+  shotReadout.setAttribute("aria-label", "Golf shot settings");
+  shot.appendChild(shotReadout);
   const driveControls = document.createElement("div");
   driveControls.id = "leisureDriveControls";
   controls.appendChild(driveControls);
@@ -576,6 +717,23 @@
       b.addEventListener(t, () => {
         input[key] = key === "brake" ? false : 0;
       });
+    b.addEventListener("keydown", (e) => {
+      if (!["Enter", " "].includes(e.key)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      if (active && state === "play" && session?.id === "kart")
+        input[key] = value;
+    });
+    const release = () => {
+      input[key] = key === "brake" ? false : 0;
+    };
+    b.addEventListener("keyup", (e) => {
+      if (["Enter", " "].includes(e.key)) {
+        e.preventDefault();
+        release();
+      }
+    });
+    b.addEventListener("blur", release);
     driveControls.appendChild(b);
   }
   for (const t of [
@@ -650,12 +808,7 @@
   const mt = missionTarget;
   missionTarget = function () {
     if (!active) return mt.apply(this, arguments);
-    let p = C.SERVICES.exit;
-    if (session?.id === "golf") p = session.game.ball;
-    else if (session?.id === "farm")
-      p = session.game.delivering
-        ? C.SERVICES.farm
-        : C.PLOTS.find((_, i) => !session.game.claimed.includes(i));
+    const p = navigation()?.point;
     return p
       ? { x: ORIGIN.x + p.x, y: ORIGIN.y + p.y, label: "L", col: "#a9d19b" }
       : null;
@@ -692,6 +845,7 @@
     if (active) leave();
     clock = 0;
     cooldown = { golf: 0, farm: 0, kart: 0 };
+    tracked = "exit";
     data = C.restore();
     return startGameBase.apply(this, arguments);
   };
@@ -718,12 +872,14 @@
   const tick = update;
   update = function () {
     if (dialog.open) {
+      guidance.hidden = true;
       state = "pause";
       controls.hidden = true;
       held = false;
       return;
     }
     if (!active) {
+      guidance.hidden = true;
       tick.apply(this, arguments);
       controls.hidden = !nearShuttle();
       menu.hidden = !active;
@@ -735,6 +891,7 @@
         resolveShuttle();
       return;
     }
+    guidance.hidden = state !== "play";
     menu.hidden = false;
     useButton.textContent =
       session?.id === "farm" ? "USE / HOLD HARVEST" : "USE / SWING";
@@ -855,7 +1012,27 @@
     driveControls.hidden = session?.id !== "kart";
     if (session?.id === "golf") {
       aim.value = String(Math.round((session.aim * 180) / Math.PI));
-      swing.disabled = session.game.moving;
+      swing.disabled =
+        session.game.moving ||
+        Math.hypot(
+          local().x - session.game.ball.x,
+          local().y - session.game.ball.y,
+        ) > 35;
+      aimCup.disabled = session.game.moving;
+      const cup = C.HOLES[session.game.hole].cup;
+      setText(
+        shotReadout,
+        "POWER " +
+          Math.round(session.power * 100) +
+          "% · CUP " +
+          Math.round(
+            Math.hypot(
+              cup.x - session.game.ball.x,
+              cup.y - session.game.ball.y,
+            ) / 10,
+          ) +
+          "m",
+      );
     }
   };
   const draw = render;
@@ -926,12 +1103,6 @@
     cx.setTransform(DPR, 0, 0, DPR, 0, 0);
     cx.clearRect(0, 0, SW, SH);
     cx.save();
-    cx.fillStyle = "#10252cdd";
-    cx.fillRect(8, 8, Math.min(SW - 16, 600), 90);
-    cx.fillStyle = "#eed6a3";
-    cx.font = "bold 13px monospace";
-    cx.fillText("CYPRESS GROUNDS · $" + Math.floor(cash), 18, 28);
-    cx.font = "12px monospace";
     let status = "WEST: GOLF · NORTHEAST: MANOR / CROPS · SOUTHEAST: KARTS";
     if (session?.id === "golf")
       status =
@@ -961,13 +1132,21 @@
           ? "RETURN TO MARKET"
           : Math.round((session.game.hold / 3) * 100) +
             "% · HOLD HARVEST AT PLOT");
-    cx.fillText(status, 18, 49);
-    if (clock < noticeUntil)
-      cx.fillText(
-        notice.slice(0, Math.max(20, Math.floor((SW - 40) / 7))),
-        18,
-        72,
+    const nav = navigation();
+    if (nav) {
+      const g = C.guidance(
+        local(),
+        nav.point,
+        session?.id === "kart" ? session.game.angle : view.yaw,
       );
+      setText(
+        destination,
+        nav.label + " · " + g.metres + "m " + g.compass + " · " + g.turn,
+      );
+    }
+    setText(detail, "$" + Math.floor(cash) + " · " + status);
+    setText(eventStatus, clock < noticeUntil ? notice : "");
+    cx.font = "12px monospace";
     const target = missionTarget();
     if (target && session?.id !== "kart") {
       const q = project(target.x, target.y, 24);

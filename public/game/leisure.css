@@ -108,3 +108,68 @@ body.leisure-away #joyZone {
     font-size: 10px;
   }
 }
+
+#leisureGuidance {
+  position: fixed;
+  top: max(10px, env(safe-area-inset-top));
+  left: max(10px, env(safe-area-inset-left));
+  z-index: 70;
+  box-sizing: border-box;
+  width: min(560px, calc(100vw - 20px));
+  padding: 8px 12px;
+  background: #10252ce8;
+  border: 1px solid #9fb88d;
+  border-radius: 5px;
+  color: #f5dfb4;
+  font: 12px/1.5 monospace;
+  pointer-events: none;
+  overflow-wrap: anywhere;
+}
+#leisureGuidance[hidden] {
+  display: none;
+}
+#leisureGuidance p {
+  margin: 2px 0;
+}
+#leisureGuidance p:first-child {
+  font-weight: 700;
+  color: #d0e9b7;
+}
+#leisureGuidance p:empty {
+  display: none;
+}
+#leisureControls output {
+  display: block;
+  padding: 6px 9px;
+  background: #10252ce8;
+  max-width: 240px;
+  font: 11px/1.4 monospace;
+}
+#leisureDialog button:disabled,
+#leisureControls button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+@media (max-height: 480px) {
+  #leisureGuidance {
+    width: min(480px, 60vw);
+    font-size: 11px;
+    padding: 5px 8px;
+  }
+  #leisureControls {
+    max-height: calc(100dvh - 115px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+  #leisureGolfControls {
+    max-width: 330px;
+  }
+}
+@media (max-width: 430px) {
+  #leisureGuidance {
+    font-size: 11px;
+  }
+  #leisureControls output {
+    max-width: 155px;
+  }
+}

@@ -23,7 +23,10 @@ function node(tag) {
       this.children = [];
     },
     setAttribute() {},
-    addEventListener() {},
+    listeners: {},
+    addEventListener(name, fn) {
+      (this.listeners[name] ??= []).push(fn);
+    },
     showModal() {
       this.open = true;
     },
@@ -280,6 +283,11 @@ test("rental fees require service proximity and cancellation safely returns an o
   assert(c.player.y > 26800);
   c.level29Leisure.show();
   click(c, "CANCEL ACTIVITY · NO REFUND");
+  assert(
+    c.level29Leisure.session,
+    "first click must not discard paid activity",
+  );
+  click(c, "CONFIRM · END ACTIVITY");
   assert(!c.level29Leisure.session);
   assert.equal(c.player.x, 24000 + C.SERVICES.kart.x);
   assert.equal(c.player.y, 26000 + C.SERVICES.kart.y);
@@ -368,6 +376,11 @@ test("touch pause still exposes GROUNDS / BUSINESSES and the isolated renderer u
   c.project = () => null;
   c.render();
   assert.equal(c.drawn, c.scene);
+  const guidance = c.document.body.children.find(
+    (n) => n.id === "leisureGuidance",
+  );
+  assert(guidance.children[1].textContent.includes("$100000"));
+  assert(guidance.children[0].textContent.includes("RETURN SHUTTLE"));
   assert.equal(c.cityRenders, 0);
   assert.equal(c.camera.position.x, c.player.x);
   assert.equal(c.camera.position.z, c.player.y);
@@ -555,4 +568,204 @@ test("an open grounds dialog freezes gamepad resume and unknown booking IDs cann
   assert.equal(c.state, "pause");
   assert(c.document.body.children.find((n) => n.tag === "dialog").open);
   assert.equal(c.cash, before);
+});
+
+test("destination tracking guides to the selected counter and farmland guides to plot centers", () => {
+  const c = fixture();
+  c.level29Leisure.enter();
+  c.level29Leisure.show();
+  const dialog = c.document.body.children.find((n) => n.tag === "dialog");
+  const tracker = dialog.children.find((n) =>
+    n.textContent?.startsWith("TRACK CYPRESS LINKS"),
+  );
+  assert(tracker);
+  tracker.onclick();
+  assert.equal(c.missionTarget().x, 24000 + C.SERVICES.golf.x);
+  assert.equal(c.missionTarget().y, 26000 + C.SERVICES.golf.y);
+  pos(c, C.SERVICES.farm);
+  c.level29Leisure.start("farm");
+  assert.equal(c.missionTarget().x, 24000 + C.PLOTS[0].x + 50);
+  assert.equal(c.missionTarget().y, 26000 + C.PLOTS[0].y + 50);
+});
+
+test("paid activity return asks for confirmation and keep-playing preserves its fee and session", () => {
+  const c = fixture();
+  c.level29Leisure.enter();
+  pos(c, C.SERVICES.kart);
+  c.level29Leisure.start("kart");
+  const session = c.level29Leisure.session,
+    balance = c.cash;
+  c.level29Leisure.show();
+  click(c, "RETURN SHUTTLE · END CURRENT ACTIVITY");
+  assert(c.level29Leisure.active);
+  assert.equal(c.level29Leisure.session, session);
+  click(c, "KEEP PLAYING");
+  assert.equal(c.state, "play");
+  assert.equal(c.cash, balance);
+  assert.equal(c.level29Leisure.session, session);
+  c.level29Leisure.show();
+  click(c, "RETURN SHUTTLE · END CURRENT ACTIVITY");
+  click(c, "CONFIRM · END ACTIVITY");
+  assert(!c.level29Leisure.active);
+  assert.equal(c.cash, balance);
+});
+
+test("golf aim-at-cup adjusts direction only; swing is disabled away from the ball", () => {
+  const c = fixture();
+  c.level29Leisure.enter();
+  pos(c, C.SERVICES.golf);
+  c.level29Leisure.start("golf");
+  const controls = c.document.body.children.find(
+      (n) => n.id === "leisureControls",
+    ),
+    golf = controls.children.find((n) => n.id === "leisureGolfControls"),
+    assist = golf.children.find((n) => n.textContent === "AIM AT CUP"),
+    swing = golf.children.find((n) => n.textContent === "SWING"),
+    g = c.level29Leisure.session;
+  g.aim = 1;
+  g.power = 0.37;
+  assist.onclick();
+  assert(Math.abs(g.aim - Math.atan2(20, 520)) < 1e-6);
+  assert.equal(g.power, 0.37);
+  assert.equal(g.game.strokes, 0);
+  c.update();
+  assert(swing.disabled);
+  pos(c, g.game.ball);
+  c.update();
+  assert.equal(swing.disabled, false);
+  assert(
+    golf.children.find((n) => n.tag === "output").textContent.includes("37%"),
+  );
+});
+
+test("keyboard-held driving buttons accelerate and brake; release/blur clears input", () => {
+  const c = fixture();
+  c.level29Leisure.enter();
+  pos(c, C.SERVICES.kart);
+  c.level29Leisure.start("kart");
+  const controls = c.document.body.children.find(
+      (n) => n.id === "leisureControls",
+    ),
+    drive = controls.children.find((n) => n.id === "leisureDriveControls"),
+    accel = drive.children.find((n) => n.textContent === "ACCELERATE");
+  const e = { key: " ", preventDefault() {}, stopPropagation() {} };
+  for (const fn of accel.listeners.keydown) fn(e);
+  for (let i = 0; i < 20; i++) c.update();
+  assert(c.level29Leisure.session.game.speed > 10);
+  for (const fn of accel.listeners.keyup) fn(e);
+  const before = c.level29Leisure.session.game.speed;
+  c.update();
+  assert(c.level29Leisure.session.game.speed < before);
+  for (const fn of accel.listeners.keydown) fn(e);
+  for (const fn of accel.listeners.blur) fn(e);
+  const next = c.level29Leisure.session.game.speed;
+  c.update();
+  assert(c.level29Leisure.session.game.speed < next);
+});
+
+test("resetting a stopped rental returns to the correct gate with penalty while preserving race progress", () => {
+  const c = fixture();
+  c.level29Leisure.enter();
+  pos(c, C.SERVICES.kart);
+  c.level29Leisure.start("kart");
+  const r = c.level29Leisure.session.game;
+  r.gates = 7;
+  r.next = 80;
+  r.index = 77;
+  r.speed = 0;
+  r.seconds = 40;
+  c.level29Leisure.show();
+  click(c, "RESET STUCK KART · +5s");
+  assert.equal(c.state, "play");
+  assert.equal(r.penalty, 5);
+  assert.equal(r.gates, 7);
+  assert.equal(r.seconds, 40);
+  assert.equal(c.player.x, 24000 + C.TRACK[70].x);
+  assert.equal(c.player.y, 26000 + C.TRACK[70].y);
+});
+
+test("booking availability explains distance and active cooldown without changing prices", () => {
+  const c = fixture();
+  c.level29Leisure.enter();
+  c.level29Leisure.show();
+  const dialog = c.document.body.children.find((n) => n.tag === "dialog");
+  let book = dialog.children.find(
+    (n) => n.textContent === "PLAY THREE HOLES · $50",
+  );
+  assert(book.disabled);
+  assert(
+    dialog.children.some(
+      (n) => n.textContent === "Walk to this business counter.",
+    ),
+  );
+  click(c, "CLOSE / RESUME");
+  pos(c, C.SERVICES.golf);
+  c.level29Leisure.show();
+  book = dialog.children.find(
+    (n) => n.textContent === "PLAY THREE HOLES · $50",
+  );
+  assert.equal(book.disabled, false);
+  click(c, "CLOSE / RESUME");
+  c.level29Leisure.start("golf");
+  for (let i = 0; i < 3; i++) {
+    const g = c.level29Leisure.session.game,
+      p = C.HOLES[i].cup;
+    g.ball = { x: p.x - 2, y: p.y, vx: 10, vy: 0 };
+    g.moving = true;
+    g.strokes = 1;
+    c.update();
+  }
+  pos(c, C.SERVICES.golf);
+  c.level29Leisure.show();
+  book = dialog.children.find(
+    (n) => n.textContent === "PLAY THREE HOLES · $50",
+  );
+  assert(book.disabled);
+  assert(
+    dialog.children.some((n) => n.textContent?.includes("active seconds")),
+  );
+});
+
+test("opening the board interrupts a partial harvest hold without dropping collected crates", () => {
+  const c = fixture();
+  c.level29Leisure.enter();
+  pos(c, C.SERVICES.farm);
+  c.level29Leisure.start("farm");
+  const g = c.level29Leisure.session.game;
+  g.claimed = [0];
+  g.plot = 1;
+  g.hold = 2;
+  c.level29Leisure.show();
+  assert.equal(g.hold, 0);
+  assert.equal(g.plot, -1);
+  assert.deepEqual(g.claimed, [0]);
+  click(c, "CLOSE / RESUME");
+  assert.equal(c.level29Leisure.session.game, g);
+});
+
+test("keyboard brake stops the rental and moving reset requests cannot change penalty or gate", () => {
+  const c = fixture();
+  c.level29Leisure.enter();
+  pos(c, C.SERVICES.kart);
+  c.level29Leisure.start("kart");
+  const r = c.level29Leisure.session.game;
+  r.speed = 20;
+  const next = r.next;
+  c.level29Leisure.show();
+  click(c, "RESET STUCK KART · +5s");
+  assert.equal(r.penalty, 0);
+  assert.equal(r.next, next);
+  assert.equal(c.state, "pause");
+  click(c, "CLOSE / RESUME");
+  const controls = c.document.body.children.find(
+      (n) => n.id === "leisureControls",
+    ),
+    drive = controls.children.find((n) => n.id === "leisureDriveControls"),
+    brake = drive.children.find((n) => n.textContent === "BRAKE"),
+    e = { key: "Enter", preventDefault() {}, stopPropagation() {} };
+  for (const fn of brake.listeners.keydown) fn(e);
+  for (let i = 0; i < 15; i++) c.update();
+  assert.equal(r.speed, 0);
+  for (const fn of brake.listeners.keyup) fn(e);
+  assert.equal(c.level29Leisure.session.game, r);
 });
