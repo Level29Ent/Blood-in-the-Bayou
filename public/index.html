@@ -77,14 +77,22 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 <div class="eyebrow">Level 29 / First-person open-world survival</div>
 <div class="logo" id="jesterLogo"><img src="logo.png" alt="Level 29 jester logo"></div>
 <h1>Blood in<span>the Bayou.</span></h1>
-<p class="blurb">See it through the jester's eyes. Walk the streets, hijack a ride with Ronniebaby on the radio, gear up at Ammu-Nation, and hold the line from the French Quarter to Parris Island.</p>
-<div class="row"><select id="district" hidden aria-hidden="true" tabindex="-1" style="display:none"><option value="0" selected>Level 29 City</option></select>
+<p class="blurb">See it through the jester's eyes. Walk the streets, hijack a ride with Ronniebaby on the radio, gear up at Bayou Arsenal, and hold the line from New Orleans and the French Quarter through Tremé, the Industrial Canal and Bayou Swamp to Level 29 Gardens.</p>
+<div class="row"><select id="district" aria-label="Select campaign zone">
+<option value="0">New Orleans · Missions 1–30</option>
+<option value="30">French Quarter · Missions 31–60</option>
+<option value="60">Tremé · Missions 61–90</option>
+<option value="90">Industrial Canal · Missions 91–120</option>
+<option value="120">Bayou Swamp · Missions 121–150</option>
+<option value="150">Forest Reserve · Missions 151–180</option>
+<option value="180">Level 29 Gardens · Missions 181–210</option>
+</select>
 <button id="start">Enter the city</button></div>
 <div class="keys"><b>MOUSE</b> look &bull; <b>CLICK</b> fire &bull; <b>W/S</b> move &bull; <b>A/D</b> strafe &bull; <b>&larr; &rarr;</b> turn<br>
 <b>E</b> enter / exit vehicle &bull; <b>C</b> car camera &bull; <b>SHIFT</b> sprint / nitro &bull; <b>SPACE</b> brake<br>
-<b>F</b> fire with aim assist &bull; <b>Q</b> weapon wheel &bull; <b>1-5</b> weapons &bull; <b>T</b> cheat code<br>
+<b>F</b> fire with aim assist &bull; <b>Q</b> weapon wheel &bull; <b>1-7</b> weapons &bull; <b>T</b> cheat code<br>
 <b>R</b> Spotify car playlist &bull; <b>TAB</b> map &bull; <b>P</b> pause &bull; <b>N</b> music &bull; <b>M</b> mute<br>
-<b>JOYSTICK</b> on touch screens moves you, drag the screen to look &bull; plug in an Xbox or PlayStation controller to play with sticks. 210 missions, a boss every fifth. <b>MULTIPLAYER</b> lets up to 6 Jesters team up with a room code.</div>
+<b>JOYSTICK</b> on touch screens moves you, drag the screen to look &bull; plug in an Xbox or PlayStation controller to play with sticks. 210 missions across 7 distinct districts (New Orleans, French Quarter, Tremé, Industrial Canal, Bayou Swamp, Forest Reserve, Level 29 Gardens). Dynamic contextual HUD prompts show [E] Enter Vehicle, [U] Haul Net, and number-key building only in Level 29 Construction mode (press <b>B</b>). <b>MULTIPLAYER</b> lets up to 6 Jesters team up with a room code.</div>
 </div></div>
 <button id="audio">SOUND ON</button>
 <div id="touch" class="off"><div class="group"><button id="shoot">FIRE</button><button id="enter">ENTER</button></div></div>
@@ -97,8 +105,19 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 (function(){
   // district list: one entry per chapter, labelled like the original title screen
   var sel=document.getElementById('district'); if(sel&&typeof DISTRICTS!=='undefined'){
+    sel.hidden = false;
+    sel.style.display = '';
+    sel.removeAttribute('aria-hidden');
+    sel.removeAttribute('tabindex');
+    sel.innerHTML = '';
     var t=function(n){return n.toLowerCase().replace(/\b\w/g,function(c){return c.toUpperCase();});};
-    for(var i=0;i<sel.options.length;i++){var v=+sel.options[i].value,k=v/30; if(DISTRICTS[k]) sel.options[i].textContent=t(DISTRICTS[k].name)+' \u00b7 Missions '+(v+1)+'-'+(v+30);}
+    for(var k=0;k<DISTRICTS.length;k++){
+      var opt=document.createElement('option');
+      var v=k*30;
+      opt.value=String(v);
+      opt.textContent=t(DISTRICTS[k].name)+' · Missions '+(v+1)+'–'+(v+30);
+      sel.appendChild(opt);
+    }
   }
   // sound button sits bottom-right on the title screen and stays out of the way in game
   var st=document.createElement('style'); st.textContent='#menu[style*="none"]~#audio{opacity:.75;padding:8px 10px;font-size:10px}'; document.head.appendChild(st);

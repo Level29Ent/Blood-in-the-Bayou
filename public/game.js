@@ -54,21 +54,21 @@ const DISTRICTS = [
   { id:'nola', name:'NEW ORLEANS', grass:'#3f5d35', walk:'#8b8a83', roofs:['#c98f86','#d8c27a','#78aaa3','#a790c7','#d79b6b','#8fb07b','#cfc8b3'], wall:.62,
     v:['CANAL ST','BOURBON ST','ROYAL ST','DECATUR ST','CHARTRES ST','ESPLANADE AVE'], h:['RAMPART ST','ST. CHARLES AVE','FRENCHMEN ST','MAGAZINE ST','TCHOUPITOULAS ST','RIVERFRONT'],
     cars:['sedan','pickup','police','taxi','sedan','van'], hMin:24, hMax:58 },
-  { id:'la', name:'LOS ANGELES', grass:'#5b6b38', walk:'#a39f96', roofs:['#e7dccb','#cfc2b0','#d7a7b4','#a9c4d8','#efe2b9','#bfb7aa'], wall:.66,
-    v:['PACIFIC COAST HWY','LA BREA AVE','HIGHLAND AVE','VINE ST','FAIRFAX AVE','WESTERN AVE'], h:['HOLLYWOOD BLVD','SUNSET BLVD','SANTA MONICA BLVD','MELROSE AVE','WILSHIRE BLVD','VENICE BLVD'],
+  { id:'la', name:'FRENCH QUARTER', grass:'#5b6b38', walk:'#a39f96', roofs:['#e7dccb','#cfc2b0','#d7a7b4','#a9c4d8','#efe2b9','#bfb7aa'], wall:.66,
+    v:['PIRATE ALLEY','ROYAL EXT','BOURBON PASS','ST. PETER ST','DECATUR PLAZA','CHARTRES WAY'], h:['JACKSON SQ','FRENCHMEN ROW','TOULOUSE ST','URSULINES AVE','ORLEANS WAY','ST. ANN ST'],
     cars:['sports','sedan','lowrider','police','convertible','van'], hMin:18, hMax:52 },
-  { id:'hou', name:'HOUSTON', grass:'#456b34', walk:'#8f9294', roofs:['#7c8a96','#9aa4ab','#6c7884','#b4aa98','#8a6f5c','#a8b3ba'], wall:.55,
-    v:['SHEPHERD DR','KIRBY DR','MONTROSE BLVD','MAIN ST','FANNIN ST','EMANCIPATION AVE'], h:['WASHINGTON AVE','ALLEN PKWY','WESTHEIMER RD','RICHMOND AVE','BISSONNET ST','HOLMAN ST'],
+  { id:'hou', name:'TREMÉ', grass:'#456b34', walk:'#8f9294', roofs:['#7c8a96','#9aa4ab','#6c7884','#b4aa98','#8a6f5c','#a8b3ba'], wall:.55,
+    v:['CONGO SQUARE WAY','N. RAMPART ST','CLAIBORNE AVE','BASIN ST','VILLERE ST','MARAIS ST'], h:['ORLEANS AVE','ST. PHILIP ST','GOV. NICHOLLS ST','ESPLANADE RUN','BAYOU RD','KERLEREC ST'],
     cars:['pickup','truck','sedan','police','pickup','sports'], hMin:30, hMax:150 },
-  { id:'lej', name:'CAMP LEJEUNE', grass:'#4a6334', walk:'#8b877a', roofs:['#8d4b38','#7c4436','#97624f','#6b6f5a','#8a8670'], wall:.6,
-    v:['HOLCOMB BLVD','MCHUGH BLVD','BREWSTER BLVD','SNEADS FERRY RD','PIVER RD','ONSLOW BEACH RD'], h:['MAIN GATE RD','STONE ST','FRENCH CREEK RD','MARINE BLVD','DUNCAN ST','RANGE RD'],
+  { id:'lej', name:'INDUSTRIAL CANAL', grass:'#4a6334', walk:'#8b877a', roofs:['#8d4b38','#7c4436','#97624f','#6b6f5a','#8a8670'], wall:.6,
+    v:['CANAL DOCK WAY','FLORIDA AVE BRIDGE','WHARF CORRIDOR','LOCK DISPATCH RD','CARTRIDGE WAY','TURNING BASIN RD'], h:['LEVEE EMBANKMENT','PORT TERMINAL RD','BARGE ACCESS','CANAL INDUSTRIAL PKWY','HARBOR RD','DRAINAGE RUN'],
     cars:['humvee','mtvr','humvee','pickup','humvee','police'], hMin:22, hMax:46 },
-  { id:'pi', name:'PARRIS ISLAND', grass:'#5d6c3e', walk:'#a49e88', roofs:['#d6cdb4','#c6b998','#b8ad94','#cfc6ad','#9b8f73'], wall:.66,
-    v:['BLVD DE FRANCE','PANAMA ST','WAKE BLVD','YELLOW FOOTPRINTS','RIFLE RANGE RD','PAGE FIELD RD'], h:['RECEIVING RD','PARADE DECK','CRUCIBLE TRAIL','DRILL FIELD RD','WEAPONS BATTALION','MARSH RD'],
+  { id:'pi', name:'BAYOU SWAMP', grass:'#5d6c3e', walk:'#a49e88', roofs:['#d6cdb4','#c6b998','#b8ad94','#cfc6ad','#9b8f73'], wall:.66,
+    v:['CYPRESS RUN','BLACKWATER PASS','GATOR LEVEE','MOSS TRACK','FISHERMAN ROAD','MARSH CROSSING'], h:['PELICAN BEND','OUTER WEIR','HOUMA RUN','STILT CABIN ROAD','SALT MARSH RD','BAYOU TRAIL'],
     cars:['humvee','mtvr','humvee','sedan','humvee','pickup'], hMin:18, hMax:40 },
   { id:'forest', name:'FOREST RESERVE', grass:'#36553b', walk:'#827663', roofs:['#566247','#867457'], wall:.6,
     v:['PINE TRAIL','RANGER ROAD','CEDAR TRACK','TIMBER RUN','LAKE ROAD','FOREST EDGE'], h:['SOUTH CAMP','OLD MILL ROAD','RANGER STATION','DEEP WOODS','CREEK ROAD','NORTH CAMP'], cars:['pickup','humvee','sedan','van'], hMin:18, hMax:36 },
-  { id:'mountain', name:'MOUNTAIN PASS', grass:'#697260', walk:'#8a887b', roofs:['#7b807c','#756752'], wall:.6,
+  { id:'mountain', name:'LEVEL 29 GARDENS', grass:'#697260', walk:'#8a887b', roofs:['#7b807c','#756752'], wall:.6,
     v:['SUMMIT ROAD','RIDGELINE','QUARRY TRACK','ALPINE WAY','SWITCHBACK','EAST RIDGE'], h:['BASE CAMP','VALLEY ROAD','MOUNTAIN PASS','SUMMIT TRAIL','SNOWLINE','LOOKOUT ROAD'], cars:['pickup','humvee','sports','mtvr'], hMin:18, hMax:38 },
 ];
 const MISSIONS_PER = 30, CAMPAIGN_TOTAL = DISTRICTS.length * MISSIONS_PER, CAMPAIGN_LAST = CAMPAIGN_TOTAL - 1;
@@ -90,12 +90,12 @@ const CAR_SPECS = {
 const RADIO = [ ['KRZY 29.9 · BRASS', 'nola'], ['SUNSET WAVE 104', 'la'], ['H-TOWN HEAT 97', 'hou'], ['SEMPER FM', 'lej'], ['RECRUIT RADIO', 'pi'], ['NIGHT SIGNAL', 'title'] ];
 const BOSSES = {
   nola:{name:'VOODOO ZOMBIE KING', hat:'tophat', skin:'#7da86a', shirt:'#5a1a7a'},
-  la:{name:'SUNSET STRIP STALKER', hat:'shades', skin:'#93b07a', shirt:'#e8e8e8'},
-  hou:{name:'BAYOU CITY BRUTE', hat:'cowboy', skin:'#8aa070', shirt:'#a8322a'},
-  lej:{name:'THE UNDEAD GUNNY', hat:'helmet', skin:'#7f9a68', shirt:'#4b5320'},
+  la:{name:'FRENCH QUARTER BARON', hat:'shades', skin:'#93b07a', shirt:'#e8e8e8'},
+  hou:{name:'TREMÉ SYNDICATE BOSS', hat:'cowboy', skin:'#8aa070', shirt:'#a8322a'},
+  lej:{name:'INDUSTRIAL CANAL BRUTE', hat:'helmet', skin:'#7f9a68', shirt:'#4b5320'},
+  pi:{name:'BAYOU REVENANT CHIEF', hat:'campaign', skin:'#86a26e', shirt:'#c8b58a'},
   forest:{name:'THE TIMBER REVENANT', hat:'campaign', skin:'#7c9970', shirt:'#3d563e'},
   mountain:{name:'THE RIDGE WARDEN', hat:'helmet', skin:'#a0acac', shirt:'#727e87'},
-  pi:{name:'DRILL INSTRUCTOR Z', hat:'campaign', skin:'#86a26e', shirt:'#c8b58a'},
 };
 const POWERS = [
   ['rapid','RAPID FIRE'],['armor','BODY ARMOR'],['spread','SPREAD SHOT'],['nitro','NITRO BOOST'],['cool','COOLING KIT'],['ap','ARMOR-PIERCING ROUNDS'],['tough','BULLETPROOF RIDES']

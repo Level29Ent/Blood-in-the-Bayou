@@ -3,7 +3,7 @@
 // the Level 29 Tower (apartments + garage + vehicle customization), a store for upgrades / customization, and performance fixes.
 // Load after world.js.
 (function(){
-const ZONE_NAMES={gulf:'THE BAYOU',quarter:'FRENCH QUARTER',marina:'MARINA DISTRICT',hollywood:'HOLLYWOOD HILLS',downtown:'DOWNTOWN HOUSTON',base:'CAMP LEJEUNE',forest:'PINE FOREST',mountain:'LEVEL 29 GARDENS'};
+const ZONE_NAMES={gulf:'THE BAYOU',nola:'NEW ORLEANS',quarter:'FRENCH QUARTER',treme:'TREMÉ',canal:'INDUSTRIAL CANAL',swamp:'BAYOU SWAMP',marina:'MARINA DISTRICT',hollywood:'FRENCH QUARTER',downtown:'TREMÉ',base:'INDUSTRIAL CANAL',forest:'FOREST RESERVE',mountain:'LEVEL 29 GARDENS'};
 const CHAPTER_SAFE=['3,0','5,0','6,5','7,0','8,2','7,4','5,7'];
 const SAVE_KEY='level29.openworld.v1';
 let save={apartment:false,garage:[],custom:{},owned:{},fishCaught:0,caches:[]};
@@ -95,10 +95,10 @@ function teleportChapter(di,announce){
   const s=safeFor(city,di),fr=s.front||{x:s.x,y:s.y+30,a:-Math.PI/2};player.x=fr.x;player.y=fr.y;player.a=fr.a;player.vx=player.vy=0;view.yaw=fr.a;view.pitch=0;view.look=0;view.lastPlayer=player;
   clearSpawn();snapCamera();zombies=zombies.filter(z=>dist(z.x,z.y,player.x,player.y)>500);
   for(let k=0;k<22;k++){const p=randomRoadPoint(player.x,player.y,300,1100);if(p)spawnZombieAt(p.x,p.y);}
-  if(announce)banner={big:ZONE_NAMES[['quarter','hollywood','downtown','base','base','forest','mountain'][di]],small:'CHAPTER '+(di+1)+' OF '+DISTRICTS.length+' · MISSIONS '+(di*MISSIONS_PER+1)+'–'+(di*MISSIONS_PER+MISSIONS_PER),t:240};
+  if(announce)banner={big:ZONE_NAMES[CHAPTER_ZONE[di]],small:'CHAPTER '+(di+1)+' OF '+DISTRICTS.length+' · MISSIONS '+(di*MISSIONS_PER+1)+'–'+(di*MISSIONS_PER+MISSIONS_PER),t:240};
   placeMissionStart();
 }
-const CHAPTER_ZONE=['quarter','hollywood','downtown','base','base','forest','mountain'];
+const CHAPTER_ZONE=['nola','quarter','treme','canal','swamp','forest','mountain'];
 const prevTravel=travelTo;
 travelTo=function(di){
   if(city&&city.world&&builtCity===city&&player){ // same continuous map: no teleport, the next missions simply move to the next area
