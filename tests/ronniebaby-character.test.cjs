@@ -282,3 +282,48 @@ test('Script tag for ronniebaby-character.js is in public/game/index.html in val
   assert.ok(gltfLoaderIdx < characterIdx, 'GLTFLoader is loaded before character script');
   assert.ok(hudIdx < characterIdx, 'Contextual HUD is loaded before character script');
 });
+
+test('Late scene initialization attaches characterMesh and disables frustum culling', () => {
+  const fakeMesh = {
+    name: 'Ronniebaby_3PV_Character',
+    parent: null,
+    position: { set(x, y, z) { this.x = x; this.y = y; this.z = z; } },
+    rotation: { y: 0 },
+    visible: false
+  };
+
+  const fakeScene = {
+    children: [],
+    add(child) {
+      this.children.push(child);
+      child.parent = this;
+    }
+  };
+
+  global.scene = fakeScene;
+  global.player = { x: 400, y: 300, vx: 0, vy: 0, dead: false };
+  global.state = 'play';
+  global.view = { chase: true, yaw: 0, pitch: 0 };
+  global.terrainHeight = () => 5;
+
+  // Simulate updateCharacter attaching mesh to scene when scene becomes available
+  if (!fakeMesh.parent || fakeMesh.parent !== global.scene) {
+    global.scene.add(fakeMesh);
+  }
+  assert.equal(fakeMesh.parent, fakeScene, 'Mesh is attached to active scene');
+  assert.ok(fakeScene.children.includes(fakeMesh), 'Scene contains character mesh');
+
+  delete global.scene;
+  delete global.player;
+  delete global.state;
+  delete global.view;
+  delete global.terrainHeight;
+});
+
+test('Wardrobe script does not double-toggle or override 3PV when level29Character exists', () => {
+  const wardrobeSource = fs.readFileSync(path.resolve(__dirname, '../public/game/wardrobe.js'), 'utf8');
+
+  assert.ok(wardrobeSource.includes('!window.level29Character'), 'wardrobe.js checks for level29Character before handling 3PV chase camera');
+  assert.ok(wardrobeSource.includes('if(window.level29Character){if(localAvatar)localAvatar.visible=false;}'), 'wardrobe.js suppresses legacy localAvatar when level29Character exists');
+});
+

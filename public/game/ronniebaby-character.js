@@ -27,6 +27,8 @@
   let lastTime = 0;
   let isDead = false;
   let targetRotationY = 0;
+  let isLoading = false;
+  let isLoaded = false;
 
   // Root-motion stripping: Zero out horizontal X/Z translation on root bone (Hips)
   // while preserving vertical Y translation (drops, crouches, jumps, defeat fall)
@@ -72,7 +74,7 @@
     return current + diff * alpha;
   }
 
-  // Transition between animation actions with smooth crossfade
+  // Transition between animation actions with smooth crossfade (~0.15s - 0.25s)
   function transitionTo(name, duration, isOneShot) {
     if (!actions[name]) return;
     const nextAction = actions[name];
@@ -278,18 +280,19 @@
 
     const cosYaw = Math.cos(yaw);
     const sinYaw = Math.sin(yaw);
-    const cosPitch = Math.cos(pitch);
-    const sinPitch = Math.sin(pitch);
+    const clampedPitch = Math.max(-0.65, Math.min(0.55, pitch));
+    const cosPitch = Math.cos(clampedPitch);
+    const sinPitch = Math.sin(clampedPitch);
 
     // Right vector (perpendicular to yaw on the XZ plane)
     const rightX = Math.cos(yaw + Math.PI / 2);
     const rightZ = Math.sin(yaw + Math.PI / 2);
 
     // Obstacle avoidance: cast back from player to find clear chase distance
-    let targetDistance = 30;
+    let targetDistance = 32;
     for (let d = 8; d <= 32; d += 4) {
-      const probeX = p.x - cosYaw * d + rightX * (shoulderRight * 0.5);
-      const probeZ = p.y - sinYaw * d + rightZ * (shoulderRight * 0.5);
+      const probeX = p.x - cosYaw * (d * cosPitch) + rightX * (shoulderRight * 0.5);
+      const probeZ = p.y - sinYaw * (d * cosPitch) + rightZ * (shoulderRight * 0.5);
       if (typeof blockedCircle === 'function' && blockedCircle(probeX, probeZ, 2.5)) {
         targetDistance = Math.max(8, d - 4);
         break;
@@ -302,45 +305,70 @@
     const camY = groundY + heightAbove - sinPitch * targetDistance;
 
     // Look-at point: forward focus point down crosshair with slight shoulder compensation
-    const focusDist = 80;
+    const focusDist = 120;
     const focusX = p.x + cosYaw * focusDist + rightX * (shoulderRight * 0.25);
     const focusZ = p.y + sinYaw * focusDist + rightZ * (shoulderRight * 0.25);
     const focusY = groundY + heightAbove + sinPitch * focusDist;
 
     camera.position.set(camX, camY, camZ);
     camera.lookAt(focusX, focusY, focusZ);
+    if (typeof camera.updateMatrixWorld === 'function') {
+      camera.updateMatrixWorld(true);
+    }
   }
 
   // Toggle view between 1st-person and 3rd-person
   function toggleView() {
     if (typeof view === 'undefined') return false;
     view.chase = !view.chase;
+    const is3PV = !!view.chase;
     if (characterMesh) {
-      characterMesh.visible = !!view.chase;
+      characterMesh.visible = (typeof state === 'undefined' || state === 'play') &&
+                             (typeof player !== 'undefined' && player && !player.car) &&
+                             is3PV;
+    }
+    if (is3PV) {
+      if (typeof gun !== 'undefined' && gun) gun.visible = false;
+      if (typeof dash !== 'undefined' && dash) dash.visible = false;
     }
     if (typeof toast === 'function') {
-      toast(view.chase ? 'THIRD PERSON · C TO RETURN' : 'FIRST PERSON · C FOR 3PV');
+      toast(is3PV ? 'THIRD PERSON CHASE · C FOR FIRST PERSON' : 'FIRST PERSON · C FOR THIRD PERSON');
     }
-    return view.chase;
+    return is3PV;
   }
 
   // Main per-frame update for character mesh and mixer
   function updateCharacter(dt) {
     if (mixer) mixer.update(dt);
-    if (!characterMesh || typeof player === 'undefined' || !player) return;
+
+    if (!characterMesh) {
+      if (!isLoading && !isLoaded) loadCharacterModel();
+      return;
+    }
+
+    if (typeof player === 'undefined' || !player) return;
+
+    // Ensure characterMesh is attached to active scene
+    if (typeof scene !== 'undefined' && scene) {
+      if (!characterMesh.parent || characterMesh.parent !== scene) {
+        scene.add(characterMesh);
+      }
+    }
 
     const p = player;
     const inCar = !!p.car;
     const isPlay = (typeof state === 'undefined' || state === 'play');
-    const is3PV = (typeof view !== 'undefined' && view.chase);
+    const is3PV = (typeof view !== 'undefined' && !!view.chase);
 
     // Hide 3PV character mesh in 1PV or while inside car so it doesn't block camera
     characterMesh.visible = isPlay && !inCar && is3PV;
 
     // Suppress legacy procedural avatar and 1st-person gun in 3PV
     if (typeof localAvatar !== 'undefined' && localAvatar) localAvatar.visible = false;
-    if (is3PV && typeof gun !== 'undefined' && gun) gun.visible = false;
-    if (is3PV && typeof dash !== 'undefined' && dash) dash.visible = false;
+    if (is3PV) {
+      if (typeof gun !== 'undefined' && gun) gun.visible = false;
+      if (typeof dash !== 'undefined' && dash) dash.visible = false;
+    }
 
     if (!characterMesh.visible) return;
 
@@ -364,47 +392,56 @@
       // Rotate mesh smoothly toward movement heading
       targetRotationY = Math.atan2(vx, vy);
     }
-    characterMesh.rotation.y = lerpAngle(characterMesh.rotation.y, targetRotationY, 0.18);
+    characterMesh.rotation.y = lerpAngle(characterMesh.rotation.y, targetRotationY, 0.2);
 
     // Update animation state machine
     updateAnimationStateMachine(p, { keys: keysDown, mouseDown, touchShoot, curW: typeof curW !== 'undefined' ? curW : 'm240' });
   }
 
-  // Load the character model
-  function initCharacter() {
-    if (typeof BayouAssets === 'undefined' && (typeof THREE === 'undefined' || !THREE.GLTFLoader)) {
-      console.warn('Ronniebaby Character: GLTFLoader not yet ready.');
+  // Load the character model with fallback paths
+  function loadCharacterModel() {
+    if (isLoaded || isLoading) return;
+
+    const LoaderClass = (typeof BayouAssets !== 'undefined' && BayouAssets.GLTFLoader)
+      ? BayouAssets.GLTFLoader
+      : (typeof THREE !== 'undefined' && THREE.GLTFLoader ? THREE.GLTFLoader : null);
+
+    if (!LoaderClass) {
+      setTimeout(loadCharacterModel, 100);
       return;
     }
-    const LoaderClass = (typeof BayouAssets !== 'undefined' && BayouAssets.GLTFLoader) ? BayouAssets.GLTFLoader : THREE.GLTFLoader;
+
+    isLoading = true;
     const loader = new LoaderClass();
 
     const candidatePaths = [
       'models/Ronniebaby_character.glb',
+      '/game/models/Ronniebaby_character.glb',
       '/models/Ronniebaby_character.glb',
       'public/game/models/Ronniebaby_character.glb'
     ];
 
-    function tryLoad(pathIndex) {
-      if (pathIndex >= candidatePaths.length) {
-        console.error('Failed to load Ronniebaby_character.glb from any candidate path.');
+    function tryPath(idx) {
+      if (idx >= candidatePaths.length) {
+        isLoading = false;
+        console.error('Ronniebaby Character: Failed to load Ronniebaby_character.glb from any candidate path.');
         return;
       }
-      const path = candidatePaths[pathIndex];
+      const path = candidatePaths[idx];
       loader.load(
         path,
         function(gltf) {
+          isLoading = false;
+          isLoaded = true;
           characterMesh = gltf.scene;
           characterMesh.name = 'Ronniebaby_3PV_Character';
-          // Scale to ~16.15 units tall to match EYE = 16
+          // Scale to match game player height (EYE = 16)
           characterMesh.scale.setScalar(16.5);
           characterMesh.traverse(function(node) {
             if (node.isMesh) {
+              node.frustumCulled = false; // Prevent skinned mesh culling when away from origin
               node.castShadow = true;
               node.receiveShadow = true;
-              if (node.material) {
-                node.material.roughness = Math.min(node.material.roughness, 0.65);
-              }
             }
           });
 
@@ -415,25 +452,29 @@
             scene.add(characterMesh);
           }
 
-          setupCharacterAnimations(gltf, THREE);
-          console.log('Ronniebaby playable 3PV character integrated successfully.');
+          setupCharacterAnimations(gltf, typeof THREE !== 'undefined' ? THREE : null);
+          console.log('Ronniebaby playable 3PV character integrated successfully from ' + path);
         },
         undefined,
-        function() {
-          tryLoad(pathIndex + 1);
+        function(err) {
+          console.warn('Ronniebaby Character: Candidate path failed: ' + path, err);
+          tryPath(idx + 1);
         }
       );
     }
 
-    tryLoad(0);
+    tryPath(0);
   }
 
   // Hook into game engine camera and render loops if running in browser
   if (typeof window !== 'undefined') {
-    // Key listener for 'C' view toggle
+    // Key listener for 'C' view toggle on foot
     window.addEventListener('keydown', function(e) {
       if (e.key.toLowerCase() === 'c' && !e.repeat && typeof state !== 'undefined' && state === 'play') {
         if (typeof player !== 'undefined' && player && !player.car) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.stopImmediatePropagation();
           toggleView();
         }
       }
@@ -455,19 +496,34 @@
     if (typeof render === 'function') {
       const baseRender = render;
       render = function() {
-        baseRender.apply(this, arguments);
         const now = performance.now();
         const dt = lastTime ? Math.min((now - lastTime) / 1000, 0.1) : 0.016;
         lastTime = now;
+
+        // Ensure character mesh is added to active scene and updated BEFORE drawing
+        if (typeof scene !== 'undefined' && scene && characterMesh) {
+          if (!characterMesh.parent || characterMesh.parent !== scene) {
+            scene.add(characterMesh);
+          }
+        }
         updateCharacter(dt);
+
+        baseRender.apply(this, arguments);
+
+        // Ensure first-person weapon and legacy avatar remain hidden in 3PV
+        if (typeof view !== 'undefined' && view.chase) {
+          if (typeof gun !== 'undefined' && gun) gun.visible = false;
+          if (typeof dash !== 'undefined' && dash) dash.visible = false;
+          if (typeof localAvatar !== 'undefined' && localAvatar) localAvatar.visible = false;
+        }
       };
     }
 
-    // Kick off initialization on DOM load
+    // Start loading
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initCharacter);
+      document.addEventListener('DOMContentLoaded', loadCharacterModel);
     } else {
-      setTimeout(initCharacter, 0);
+      setTimeout(loadCharacterModel, 0);
     }
   }
 
@@ -485,7 +541,7 @@
     applyOverTheShoulderCamera,
     toggleView,
     updateCharacter,
-    initCharacter,
+    initCharacter: loadCharacterModel,
     get characterMesh() { return characterMesh; },
     get mixer() { return mixer; },
     get actions() { return actions; },
