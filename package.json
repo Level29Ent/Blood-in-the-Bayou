@@ -4,6 +4,7 @@
   "private": true,
   "packageManager": "pnpm@12.3.4",
   "scripts": {
+    "test": "node --test tests/source-integrity.test.cjs tests/contextual-hud-and-zones.test.cjs tests/ronniebaby-character.test.cjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

@@ -1,0 +1,284 @@
+'use strict';
+const { test } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const vm = require('node:vm');
+
+const characterModule = require('../public/game/ronniebaby-character.js');
+
+test('Ronniebaby_character.glb model files exist in public/models and public/game/models', () => {
+  const rootPath = path.resolve(__dirname, '../public/models/Ronniebaby_character.glb');
+  const gamePath = path.resolve(__dirname, '../public/game/models/Ronniebaby_character.glb');
+
+  assert.ok(fs.existsSync(rootPath), 'public/models/Ronniebaby_character.glb exists');
+  assert.ok(fs.existsSync(gamePath), 'public/game/models/Ronniebaby_character.glb exists');
+
+  const rootStat = fs.statSync(rootPath);
+  const gameStat = fs.statSync(gamePath);
+  assert.ok(rootStat.size > 5000000, 'Root model file has expected size (~6MB)');
+  assert.equal(rootStat.size, gameStat.size, 'Both model files match in byte length');
+});
+
+test('GLB binary contains all 19 embedded animation clips', () => {
+  const modelPath = path.resolve(__dirname, '../public/game/models/Ronniebaby_character.glb');
+  const buf = fs.readFileSync(modelPath);
+
+  assert.equal(buf.toString('utf8', 0, 4), 'glTF', 'Valid GLB magic');
+  const jsonLen = buf.readUInt32LE(12);
+  const gltf = JSON.parse(buf.toString('utf8', 20, 20 + jsonLen));
+
+  assert.ok(Array.isArray(gltf.animations), 'GLTF has animations array');
+  assert.equal(gltf.animations.length, 19, 'Contains exactly 19 embedded animation clips');
+
+  const animNames = gltf.animations.map(a => a.name);
+  const expectedClips = [
+    'run', 'shoot', 'defeat_03', 'hit_to_stomach', 'hit_to_body_01', 'hit_to_side',
+    'box_02', 'complain_01', 'dance_05', 'fire', 'box_03', 'slash',
+    'cast_a_spell', 'front_kick_01', 'front_kick_02', 'box_01', 'hit_to_head',
+    'fall', 'walk'
+  ];
+
+  for (const name of expectedClips) {
+    assert.ok(animNames.includes(name), 'Clip ' + name + ' is present in GLB');
+  }
+});
+
+test('Root-motion stripping zeroes out X and Z while preserving Y on hips', () => {
+  const fakeClip = {
+    name: 'run',
+    tracks: [
+      {
+        name: 'mixamorig:Hips.position',
+        times: new Float32Array([0, 1]),
+        values: new Float32Array([
+          12.5, 9.8, -4.2,  // frame 0: X=12.5, Y=9.8, Z=-4.2
+          15.1, 9.5, -8.7   // frame 1: X=15.1, Y=9.5, Z=-8.7
+        ])
+      },
+      {
+        name: 'mixamorig:LeftLeg.position',
+        times: new Float32Array([0, 1]),
+        values: new Float32Array([1.0, 2.0, 3.0, 1.1, 2.1, 3.1])
+      }
+    ]
+  };
+
+  characterModule.stripRootMotionXZ(fakeClip);
+
+  const hipsValues = fakeClip.tracks[0].values;
+  assert.equal(hipsValues[0], 0, 'Frame 0 X stripped to 0');
+  assert.ok(Math.abs(hipsValues[1] - 9.8) < 1e-4, 'Frame 0 Y preserved at 9.8');
+  assert.equal(hipsValues[2], 0, 'Frame 0 Z stripped to 0');
+
+  assert.equal(hipsValues[3], 0, 'Frame 1 X stripped to 0');
+  assert.ok(Math.abs(hipsValues[4] - 9.5) < 1e-4, 'Frame 1 Y preserved at 9.5');
+  assert.equal(hipsValues[5], 0, 'Frame 1 Z stripped to 0');
+
+  // Non-root tracks are untouched
+  const legValues = fakeClip.tracks[1].values;
+  assert.equal(legValues[0], 1.0, 'Leg X preserved');
+  assert.equal(legValues[1], 2.0, 'Leg Y preserved');
+});
+
+test('Auto-maps all animations, aliases defeat_02 <-> defeat_03, and creates idle action', () => {
+  // Mock Three.js environment
+  const mockThree = {
+    LoopOnce: 2200,
+    LoopRepeat: 2201,
+    AnimationClip: class {
+      constructor(name, duration, tracks) {
+        this.name = name;
+        this.duration = duration;
+        this.tracks = tracks;
+      }
+    },
+    AnimationMixer: class {
+      constructor(scene) {
+        this.scene = scene;
+        this._listeners = {};
+      }
+      clipAction(clip) {
+        return {
+          clip,
+          name: clip.name,
+          loop: null,
+          clampWhenFinished: false,
+          running: false,
+          enabled: false,
+          setLoop(mode) { this.loop = mode; },
+          reset() { this.running = true; },
+          play() { this.running = true; },
+          fadeIn() {},
+          crossFadeTo() {},
+          isRunning() { return this.running; },
+          setEffectiveTimeScale() {},
+          setEffectiveWeight() {}
+        };
+      }
+      addEventListener(evt, fn) {
+        this._listeners[evt] = fn;
+      }
+    }
+  };
+
+  const fakeGLTF = {
+    scene: { name: 'RootScene' },
+    animations: [
+      { name: 'run', tracks: [] },
+      { name: 'shoot', tracks: [] },
+      { name: 'defeat_03', tracks: [] },
+      { name: 'hit_to_stomach', tracks: [] },
+      { name: 'hit_to_body_01', tracks: [] },
+      { name: 'box_01', tracks: [] },
+      { name: 'box_02', tracks: [] },
+      { name: 'walk', tracks: [{ name: 'bone.position', times: [0, 1], values: [0,0,0, 0,0,0], clone() { return { name: this.name, times: this.times, values: this.values }; } }] }
+    ]
+  };
+
+  characterModule.setupCharacterAnimations(fakeGLTF, mockThree);
+
+  const actions = characterModule.actions;
+  assert.ok(actions['run'], 'run action exists');
+  assert.ok(actions['shoot'], 'shoot action exists');
+  assert.ok(actions['defeat_03'], 'defeat_03 action exists');
+  assert.ok(actions['defeat_02'], 'defeat_02 alias exists');
+  assert.equal(actions['defeat_02'], actions['defeat_03'], 'defeat_02 aliases defeat_03');
+  assert.equal(actions['defeat_02'].clampWhenFinished, true, 'defeat_02 clamped when finished');
+  assert.equal(actions['defeat_02'].loop, mockThree.LoopOnce, 'defeat_02 uses LoopOnce');
+
+  assert.ok(actions['idle'], 'idle action generated and mapped');
+  assert.equal(actions['idle'].loop, mockThree.LoopRepeat, 'idle loops repeatedly');
+
+  assert.equal(actions['shoot'].loop, mockThree.LoopOnce, 'shoot uses LoopOnce');
+  assert.equal(actions['hit_to_stomach'].loop, mockThree.LoopOnce, 'hit_to_stomach uses LoopOnce');
+  assert.equal(actions['box_01'].loop, mockThree.LoopOnce, 'box_01 uses LoopOnce');
+  assert.equal(actions['run'].loop, mockThree.LoopRepeat, 'run loops repeatedly');
+  assert.equal(actions['walk'].loop, mockThree.LoopRepeat, 'walk loops repeatedly');
+});
+
+test('GTA 5-Style Animation State Machine transitions smoothly based on player state', () => {
+  // Stationary -> idle
+  let state = characterModule.determinePlayerState(
+    { x: 100, y: 100, vx: 0, vy: 0, dead: false, hp: 100 },
+    { keys: {}, mouseDown: false, curW: 'm240' }
+  );
+  assert.equal(state, 'idle', 'Stationary player maps to idle');
+
+  // Walking (WASD) -> walk
+  state = characterModule.determinePlayerState(
+    { x: 100, y: 100, vx: 1.5, vy: 0, dead: false, hp: 100 },
+    { keys: { w: true }, mouseDown: false, curW: 'm240' }
+  );
+  assert.equal(state, 'walk', 'WASD movement maps to walk');
+
+  // Sprinting (Shift + move) -> sprint (run)
+  state = characterModule.determinePlayerState(
+    { x: 100, y: 100, vx: 4.5, vy: 0, dead: false, hp: 100 },
+    { keys: { w: true, shift: true }, mouseDown: false, curW: 'm240' }
+  );
+  assert.equal(state, 'sprint', 'Shift movement maps to sprint');
+
+  // Firing ranged weapon -> shoot
+  state = characterModule.determinePlayerState(
+    { x: 100, y: 100, vx: 0, vy: 0, dead: false, hp: 100 },
+    { keys: {}, mouseDown: true, curW: 'm240' }
+  );
+  assert.equal(state, 'shoot', 'Firing ranged weapon maps to shoot');
+
+  // Melee attack -> melee (box_01/box_02)
+  state = characterModule.determinePlayerState(
+    { x: 100, y: 100, vx: 0, vy: 0, dead: false, hp: 100 },
+    { keys: {}, mouseDown: true, curW: 'bat' }
+  );
+  assert.equal(state, 'melee', 'Firing melee weapon maps to melee');
+
+  // Taking damage -> hit (hit_to_stomach/body)
+  state = characterModule.determinePlayerState(
+    { x: 100, y: 100, vx: 0, vy: 0, dead: false, hp: 80 }, // dropped from 100
+    { keys: {}, mouseDown: false, curW: 'm240' }
+  );
+  assert.equal(state, 'hit', 'Damage taken maps to hit');
+
+  // Dead -> defeat (defeat_02)
+  state = characterModule.determinePlayerState(
+    { x: 100, y: 100, vx: 0, vy: 0, dead: true, hp: 0 },
+    { keys: {}, mouseDown: false, curW: 'm240' }
+  );
+  assert.equal(state, 'defeat', 'Player death maps to defeat');
+});
+
+test('Over-the-shoulder chase camera positions behind right shoulder and looks along heading', () => {
+  let camPos = null, lookTarget = null;
+  global.camera = {
+    position: {
+      set(x, y, z) { camPos = { x, y, z }; }
+    },
+    lookAt(x, y, z) { lookTarget = { x, y, z }; }
+  };
+  global.terrainHeight = () => 0;
+  global.blockedCircle = () => false;
+
+  const player = { x: 500, y: 500, z: 0 };
+  const view = { yaw: 0, pitch: 0 }; // Facing +X
+
+  characterModule.applyOverTheShoulderCamera(player, view);
+
+  assert.ok(camPos, 'Camera position set');
+  assert.ok(lookTarget, 'Camera lookAt target set');
+
+  // Yaw = 0 means looking toward +X
+  // Behind is -X (less than player.x = 500)
+  assert.ok(camPos.x < player.x, 'Camera is positioned behind player (X < 500)');
+  // Right vector for yaw=0 is along +Z (yaw + PI/2)
+  assert.ok(camPos.z > player.y, 'Camera has over-the-shoulder right offset');
+  // Height should be above ground
+  assert.ok(camPos.y > 10, 'Camera height is above ground level (~16.5)');
+  // Target should be ahead of player along +X
+  assert.ok(lookTarget.x > player.x, 'Look target points forward ahead of player');
+
+  delete global.camera;
+  delete global.terrainHeight;
+  delete global.blockedCircle;
+});
+
+test('Clean 1PV/3PV view toggling and mesh visibility management', () => {
+  global.view = { chase: false };
+  global.state = 'play';
+  global.toast = () => {};
+
+  // Initially 1PV
+  assert.equal(global.view.chase, false);
+
+  // Toggle to 3PV
+  const is3PV = characterModule.toggleView();
+  assert.equal(is3PV, true, 'Toggled to 3PV');
+  assert.equal(global.view.chase, true);
+
+  // Toggle back to 1PV
+  const is1PV = !characterModule.toggleView();
+  assert.equal(is1PV, true, 'Toggled back to 1PV');
+  assert.equal(global.view.chase, false);
+
+  delete global.view;
+  delete global.state;
+  delete global.toast;
+});
+
+test('Script tag for ronniebaby-character.js is in public/game/index.html in valid order', () => {
+  const html = fs.readFileSync(path.resolve(__dirname, '../public/game/index.html'), 'utf8');
+  assert.ok(html.includes('ronniebaby-character.js?v=1'), 'Script included in index.html');
+
+  const scripts = [...html.matchAll(/<script\b[^>]*\bsrc="([^"]+)"/g)].map(m => m[1].split('?')[0]);
+  assert.equal(new Set(scripts).size, scripts.length, 'All scripts in index.html remain unique');
+
+  const gltfLoaderIdx = scripts.indexOf('vendor/gltf-loader-r149.js');
+  const hudIdx = scripts.indexOf('contextual-hud.js');
+  const characterIdx = scripts.indexOf('ronniebaby-character.js');
+
+  assert.ok(gltfLoaderIdx >= 0, 'GLTFLoader present');
+  assert.ok(hudIdx >= 0, 'Contextual HUD present');
+  assert.ok(characterIdx >= 0, 'Character script present');
+  assert.ok(gltfLoaderIdx < characterIdx, 'GLTFLoader is loaded before character script');
+  assert.ok(hudIdx < characterIdx, 'Contextual HUD is loaded before character script');
+});
