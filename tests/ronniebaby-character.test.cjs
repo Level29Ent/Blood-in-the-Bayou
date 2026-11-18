@@ -327,3 +327,122 @@ test('Wardrobe script does not double-toggle or override 3PV when level29Charact
   assert.ok(wardrobeSource.includes('if(window.level29Character){if(localAvatar)localAvatar.visible=false;}'), 'wardrobe.js suppresses legacy localAvatar when level29Character exists');
 });
 
+test('Adaptive over-the-shoulder camera framing adjusts for mobile portrait vs landscape viewports', () => {
+  let portraitCamPos = null;
+  let landscapeCamPos = null;
+
+  global.terrainHeight = () => 0;
+  global.blockedCircle = () => false;
+
+  const player = { x: 500, y: 500, z: 0 };
+  const view = { yaw: 0, pitch: 0 }; // Facing +X
+
+  // 1. Mobile Portrait orientation (aspect ~ 0.5)
+  global.camera = {
+    aspect: 0.5,
+    position: { set(x, y, z) { portraitCamPos = { x, y, z }; } },
+    lookAt() {}
+  };
+  characterModule.applyOverTheShoulderCamera(player, view);
+
+  // 2. Desktop Landscape orientation (aspect ~ 1.77)
+  global.camera = {
+    aspect: 1.77,
+    position: { set(x, y, z) { landscapeCamPos = { x, y, z }; } },
+    lookAt() {}
+  };
+  characterModule.applyOverTheShoulderCamera(player, view);
+
+  assert.ok(portraitCamPos, 'Portrait camera position calculated');
+  assert.ok(landscapeCamPos, 'Landscape camera position calculated');
+
+  // Portrait should be backed up farther (distance 40 -> X = 500 - 40 = 460) vs landscape (distance 32 -> X = 500 - 32 = 468)
+  assert.ok(portraitCamPos.x < landscapeCamPos.x, 'Portrait camera backs up further than landscape for narrow mobile FOV');
+  assert.equal(Math.round(player.x - portraitCamPos.x), 40, 'Portrait camera distance is ~40');
+  assert.equal(Math.round(player.x - landscapeCamPos.x), 32, 'Landscape camera distance is ~32');
+
+  // Portrait shoulder offset should be narrower (3.4 vs 5.2) to center the crosshair
+  const portraitShoulderOffset = portraitCamPos.z - player.y;
+  const landscapeShoulderOffset = landscapeCamPos.z - player.y;
+  assert.ok(portraitShoulderOffset < landscapeShoulderOffset, 'Portrait shoulder offset is narrower than landscape');
+  assert.ok(Math.abs(portraitShoulderOffset - 3.4) < 0.1, 'Portrait shoulder offset is ~3.4');
+  assert.ok(Math.abs(landscapeShoulderOffset - 5.2) < 0.1, 'Landscape shoulder offset is ~5.2');
+
+  delete global.camera;
+  delete global.terrainHeight;
+  delete global.blockedCircle;
+});
+
+test('Mobile 3PV touch button #camBtn creation and label synchronization', () => {
+  // Mock DOM environment
+  const mockElements = new Map();
+  const mockTouchGroup = {
+    children: [],
+    appendChild(child) {
+      this.children.push(child);
+      mockElements.set(child.id, child);
+    }
+  };
+
+  global.document = {
+    getElementById(id) { return mockElements.get(id) || null; },
+    querySelector(selector) {
+      if (selector === '#touch .group') return mockTouchGroup;
+      return null;
+    },
+    createElement(tag) {
+      const el = {
+        tagName: tag.toUpperCase(),
+        id: '',
+        textContent: '',
+        classList: {
+          classes: new Set(),
+          add(c) { this.classes.add(c); },
+          remove(c) { this.classes.delete(c); },
+          toggle(c, force) {
+            if (force === undefined) {
+              if (this.classes.has(c)) this.classes.delete(c);
+              else this.classes.add(c);
+            } else if (force) {
+              this.classes.add(c);
+            } else {
+              this.classes.delete(c);
+            }
+          },
+          contains(c) { return this.classes.has(c); }
+        },
+        attrs: {},
+        setAttribute(k, v) { this.attrs[k] = v; },
+        getAttribute(k) { return this.attrs[k]; },
+        listeners: {},
+        addEventListener(evt, fn) { this.listeners[evt] = fn; }
+      };
+      return el;
+    }
+  };
+
+  global.view = { chase: false };
+
+  const btn = characterModule.setupMobileCamButton();
+  assert.ok(btn, '#camBtn created');
+  assert.equal(btn.id, 'camBtn');
+  assert.equal(btn.textContent, '3PV', 'Shows 3PV when in 1st person');
+  assert.equal(btn.classList.contains('on'), false, 'Does not have .on class in 1PV');
+  assert.ok(mockTouchGroup.children.includes(btn), '#camBtn docked inside #touch .group');
+
+  // Trigger button tap to switch to 3PV
+  btn.listeners['pointerdown']({ preventDefault() {}, stopPropagation() {} });
+  assert.equal(global.view.chase, true, 'Tapped #camBtn toggled view.chase to true');
+  assert.equal(btn.textContent, '1PV', 'Shows 1PV when in 3rd person');
+  assert.equal(btn.classList.contains('on'), true, 'Has .on class in 3PV');
+
+  // Trigger button tap again to return to 1PV
+  btn.listeners['pointerdown']({ preventDefault() {}, stopPropagation() {} });
+  assert.equal(global.view.chase, false, 'Tapped #camBtn toggled view.chase back to false');
+  assert.equal(btn.textContent, '3PV', 'Shows 3PV when in 1st person');
+  assert.equal(btn.classList.contains('on'), false, 'Does not have .on class in 1PV');
+
+  delete global.document;
+  delete global.view;
+});
+

@@ -61,3 +61,19 @@ test('Weapon button supports tap-to-cycle and hold-to-wheel on touch', () => {
   assert.ok(gtaCode.includes('openWheel(false, true)'), 'Releasing WEAPON button must commit the selected weapon');
   assert.ok(gtaCode.includes("cv.addEventListener('touchmove'"), 'Canvas must handle touchmove for radial wheel selection');
 });
+
+test('Mobile touch controls provide #camBtn and double-tap view toggling on #lookZone', () => {
+  const joyCode = fs.readFileSync(path.join(__dirname, '../public/game/joy.js'), 'utf8');
+
+  // Verify #touch #camBtn CSS grid placement in Col 1, Row 3
+  assert.ok(joyCode.includes('#touch #camBtn{grid-column:1;grid-row:3'), '#camBtn must be positioned at grid-column 1, grid-row 3');
+  assert.ok(joyCode.includes('#touch #camBtn.on'), '#camBtn must have active .on styling for 3PV mode');
+
+  // Verify double-tap shortcut on #lookZone
+  assert.ok(joyCode.includes('lastLookTapTime'), 'lookZone must track tap time for double-tap detection');
+  assert.ok(joyCode.includes('toggleView()'), 'Double-tap must invoke toggleView to switch 1PV/3PV');
+
+  // Verify mobile #camBtn button creation
+  assert.ok(joyCode.includes("cam.id = 'camBtn'"), '#camBtn must be created on coarse pointer devices');
+  assert.ok(joyCode.includes("cam.textContent = (typeof view !== 'undefined' && view.chase) ? '1PV' : '3PV'"), '#camBtn must reflect current 1PV/3PV state');
+});

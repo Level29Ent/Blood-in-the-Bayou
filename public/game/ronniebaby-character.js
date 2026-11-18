@@ -268,15 +268,23 @@
     }
   }
 
-  // GTA 5-style Over-The-Shoulder Chase Camera
+  // GTA 5-style Over-The-Shoulder Chase Camera (optimized for mobile & desktop)
   function applyOverTheShoulderCamera(p, v) {
     if (typeof camera === 'undefined' || !camera) return;
     const yaw = v ? v.yaw : (typeof view !== 'undefined' ? view.yaw : 0);
     const pitch = v ? (v.pitch || 0) : (typeof view !== 'undefined' ? (view.pitch || 0) : 0);
 
     const groundY = typeof terrainHeight === 'function' ? terrainHeight(p.x, p.y) : (p.z || 0);
-    const heightAbove = 16.5; // Shoulder/head eye level
-    const shoulderRight = 5.2; // Over-the-shoulder right offset
+
+    // Dynamic framing for mobile viewports (portrait phones vs landscape)
+    const aspect = camera.aspect || ((typeof innerWidth !== 'undefined' && typeof innerHeight !== 'undefined') ? (innerWidth / innerHeight) : 1.77);
+    const isPortrait = aspect < 1.0;
+
+    // In portrait orientation, back up camera slightly and moderate shoulder offset so Ronniebaby
+    // frames nicely on narrow phone screens without covering the center crosshair
+    const heightAbove = isPortrait ? 17.5 : 16.5; // Shoulder/head eye level
+    const shoulderRight = isPortrait ? 3.4 : 5.2; // Over-the-shoulder right offset
+    const maxChaseDistance = isPortrait ? 40 : 32;
 
     const cosYaw = Math.cos(yaw);
     const sinYaw = Math.sin(yaw);
@@ -289,8 +297,8 @@
     const rightZ = Math.sin(yaw + Math.PI / 2);
 
     // Obstacle avoidance: cast back from player to find clear chase distance
-    let targetDistance = 32;
-    for (let d = 8; d <= 32; d += 4) {
+    let targetDistance = maxChaseDistance;
+    for (let d = 8; d <= maxChaseDistance; d += 4) {
       const probeX = p.x - cosYaw * (d * cosPitch) + rightX * (shoulderRight * 0.5);
       const probeZ = p.y - sinYaw * (d * cosPitch) + rightZ * (shoulderRight * 0.5);
       if (typeof blockedCircle === 'function' && blockedCircle(probeX, probeZ, 2.5)) {
@@ -317,6 +325,66 @@
     }
   }
 
+  // Mobile camera toggle button state and setup (#camBtn)
+  let camBtn = null;
+  function updateMobileCamButton() {
+    if (!camBtn) {
+      if (typeof document !== 'undefined') camBtn = document.getElementById('camBtn');
+      if (!camBtn) return;
+    }
+    const is3PV = (typeof view !== 'undefined' && !!view.chase);
+    camBtn.textContent = is3PV ? '1PV' : '3PV';
+    camBtn.classList.toggle('on', is3PV);
+    camBtn.setAttribute('aria-pressed', String(is3PV));
+  }
+
+  function setupMobileCamButton() {
+    if (typeof document === 'undefined') return null;
+    if (camBtn && camBtn.parentElement) return camBtn;
+    const existing = document.getElementById('camBtn');
+    if (existing) {
+      camBtn = existing;
+      return camBtn;
+    }
+
+    camBtn = document.createElement('button');
+    camBtn.id = 'camBtn';
+    camBtn.setAttribute('type', 'button');
+    camBtn.setAttribute('aria-label', 'Toggle 3rd Person View (1PV / 3PV)');
+    camBtn.textContent = (typeof view !== 'undefined' && view.chase) ? '1PV' : '3PV';
+    if (typeof view !== 'undefined' && view.chase) camBtn.classList.add('on');
+
+    camBtn.addEventListener('pointerdown', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (typeof ensureAudio === 'function') ensureAudio();
+
+      if (typeof player !== 'undefined' && player && player.car) {
+        if (typeof view !== 'undefined') {
+          view.chase = !view.chase;
+          if (typeof toast === 'function') {
+            toast(view.chase ? 'CHASE CAMERA' : 'COCKPIT CAMERA');
+          }
+        }
+      } else {
+        toggleView();
+      }
+      updateMobileCamButton();
+    });
+
+    for (const evt of ['click', 'pointerup', 'touchstart', 'touchend']) {
+      camBtn.addEventListener(evt, e => e.stopPropagation());
+    }
+
+    const touchGroup = document.querySelector('#touch .group');
+    if (touchGroup) {
+      touchGroup.appendChild(camBtn);
+    } else {
+      document.body.appendChild(camBtn);
+    }
+    return camBtn;
+  }
+
   // Toggle view between 1st-person and 3rd-person
   function toggleView() {
     if (typeof view === 'undefined') return false;
@@ -326,13 +394,31 @@
       characterMesh.visible = (typeof state === 'undefined' || state === 'play') &&
                              (typeof player !== 'undefined' && player && !player.car) &&
                              is3PV;
+    } else {
+      if (!isLoading && !isLoaded) loadCharacterModel();
     }
     if (is3PV) {
       if (typeof gun !== 'undefined' && gun) gun.visible = false;
       if (typeof dash !== 'undefined' && dash) dash.visible = false;
+      if (typeof localAvatar !== 'undefined' && localAvatar) localAvatar.visible = false;
+      if (typeof extraWeap !== 'undefined' && extraWeap) {
+        for (const k in extraWeap) if (extraWeap[k]) extraWeap[k].visible = false;
+      }
+      if (typeof vmScene !== 'undefined' && vmScene) {
+        for (const child of vmScene.children) {
+          if (child.isGroup) child.visible = false;
+        }
+      }
     }
+    updateMobileCamButton();
     if (typeof toast === 'function') {
-      toast(is3PV ? 'THIRD PERSON CHASE · C FOR FIRST PERSON' : 'FIRST PERSON · C FOR THIRD PERSON');
+      const isTouch = (typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches) ||
+                      (typeof document !== 'undefined' && document.body.classList.contains('is-touch'));
+      if (isTouch) {
+        toast(is3PV ? 'THIRD PERSON VIEW · TAP 1PV TO SWITCH' : 'FIRST PERSON VIEW · TAP 3PV TO SWITCH');
+      } else {
+        toast(is3PV ? 'THIRD PERSON CHASE · C FOR FIRST PERSON' : 'FIRST PERSON · C FOR THIRD PERSON');
+      }
     }
     return is3PV;
   }
@@ -407,7 +493,9 @@
       : (typeof THREE !== 'undefined' && THREE.GLTFLoader ? THREE.GLTFLoader : null);
 
     if (!LoaderClass) {
-      setTimeout(loadCharacterModel, 100);
+      if (typeof window !== 'undefined') {
+        setTimeout(loadCharacterModel, 100);
+      }
       return;
     }
 
@@ -500,6 +588,14 @@
         const dt = lastTime ? Math.min((now - lastTime) / 1000, 0.1) : 0.016;
         lastTime = now;
 
+        // Ensure mobile camera toggle button is created and synced
+        if (!camBtn && typeof document !== 'undefined') {
+          setupMobileCamButton();
+        }
+        if (camBtn) {
+          updateMobileCamButton();
+        }
+
         // Ensure character mesh is added to active scene and updated BEFORE drawing
         if (typeof scene !== 'undefined' && scene && characterMesh) {
           if (!characterMesh.parent || characterMesh.parent !== scene) {
@@ -517,6 +613,15 @@
           if (typeof localAvatar !== 'undefined' && localAvatar) localAvatar.visible = false;
         }
       };
+    }
+
+    // Set up mobile camera toggle button if DOM is ready
+    if (typeof document !== 'undefined') {
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setupMobileCamButton);
+      } else {
+        setupMobileCamButton();
+      }
     }
 
     // Start loading
@@ -542,6 +647,9 @@
     toggleView,
     updateCharacter,
     initCharacter: loadCharacterModel,
+    setupMobileCamButton,
+    updateMobileCamButton,
+    get camBtn() { return camBtn; },
     get characterMesh() { return characterMesh; },
     get mixer() { return mixer; },
     get actions() { return actions; },

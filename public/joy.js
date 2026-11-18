@@ -31,12 +31,15 @@ joyCss.textContent = `
  #touch #jumpBtn{grid-column:2;grid-row:2}
  #touch #shoot{grid-column:3;grid-row:2;width:72px!important;height:72px!important;margin:-14px 0 0 -6px;border-radius:50%!important;background:radial-gradient(circle at 35% 30%,#e6392f,#8b140f 75%)!important;border:2.5px solid #ffde59!important;font-size:15px!important;font-weight:900!important;box-shadow:0 4px 16px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.3)!important}
  #touch #shoot:active,#touch #shoot.held{background:radial-gradient(circle at 35% 30%,#ff5a4e,#b22018 75%)!important;border-color:#fff!important;transform:scale(.96)}
+ #touch #camBtn{grid-column:1;grid-row:3;color:#ffde59;border-color:rgba(255,222,89,.75)}
+ #touch #camBtn.on{background:rgba(240,196,90,.32);border-color:#ffffff;color:#ffffff;box-shadow:0 0 12px rgba(240,196,90,.55)}
  @media (max-height:430px){
   #joy{width:110px;height:110px}
   #joyKnob{width:44px;height:44px;margin:-22px 0 0 -22px}
   #touch .group{grid-template-columns:repeat(3,52px);grid-auto-rows:38px;gap:6px}
   #touch .group button{width:52px;min-height:38px;font-size:11px}
   #touch #shoot{width:62px!important;height:62px!important;margin:-12px 0 0 -5px;font-size:13px!important}
+  #touch #camBtn{width:52px;min-height:38px;font-size:11px}
   body.is-touch #touch:not(.off){bottom:20px}
  }
 `;
@@ -85,7 +88,7 @@ if (coarse){
   lookZone.id = 'lookZone';
   document.body.appendChild(lookZone);
 
-  let lookPtr = null, lastLookX = 0, lastLookY = 0;
+  let lookPtr = null, lastLookX = 0, lastLookY = 0, lastLookTapTime = 0, lookMoved = false;
   lookZone.addEventListener('pointerdown', e => {
     if (lookPtr != null) return;
     if (e.target !== lookZone) return;
@@ -93,6 +96,25 @@ if (coarse){
     lookPtr = e.pointerId;
     lastLookX = e.clientX;
     lastLookY = e.clientY;
+    lookMoved = false;
+
+    // Double-tap shortcut to toggle 1PV / 3PV camera
+    const now = performance.now();
+    if (now - lastLookTapTime < 340) {
+      if (typeof window !== 'undefined' && window.level29Character && (!player || !player.car)) {
+        window.level29Character.toggleView();
+      } else if (typeof view !== 'undefined') {
+        view.chase = !view.chase;
+        if (typeof toast === 'function') toast(view.chase ? 'CHASE CAMERA' : 'COCKPIT CAMERA');
+        if (typeof window !== 'undefined' && window.level29Character && window.level29Character.updateMobileCamButton) {
+          window.level29Character.updateMobileCamButton();
+        }
+      }
+      lastLookTapTime = 0;
+    } else {
+      lastLookTapTime = now;
+    }
+
     try { lookZone.setPointerCapture(e.pointerId); } catch (_) {}
   });
 
@@ -100,6 +122,7 @@ if (coarse){
     if (e.pointerId !== lookPtr) return;
     e.preventDefault();
     const dx = e.clientX - lastLookX, dy = e.clientY - lastLookY;
+    if (Math.abs(dx) > 6 || Math.abs(dy) > 6) lookMoved = true;
     lastLookX = e.clientX;
     lastLookY = e.clientY;
     if (typeof turnView === 'function') turnView(dx * 0.0065, dy * 0.005);
@@ -108,6 +131,7 @@ if (coarse){
   const lookEnd = e => {
     if (e.pointerId !== lookPtr) return;
     lookPtr = null;
+    if (lookMoved) lastLookTapTime = 0;
   };
   lookZone.addEventListener('pointerup', lookEnd);
   lookZone.addEventListener('pointercancel', lookEnd);
@@ -159,6 +183,33 @@ if (coarse){
     run.addEventListener('pointerdown', e => { e.preventDefault(); ensureAudio(); runHeld = true; press(run, true); try { run.setPointerCapture(e.pointerId); } catch (_) {} });
     for (const ev of ['pointerup', 'pointercancel', 'lostpointercapture']) run.addEventListener(ev, () => { runHeld = false; press(run, false); });
     grp.appendChild(run);
+
+    // Extra touch button: 3PV / 1PV Camera View Toggle
+    if (!document.getElementById('camBtn')){
+      if (typeof window !== 'undefined' && window.level29Character && window.level29Character.setupMobileCamButton) {
+        window.level29Character.setupMobileCamButton();
+      } else {
+        const cam = document.createElement('button');
+        cam.id = 'camBtn';
+        cam.setAttribute('type', 'button');
+        cam.setAttribute('aria-label', 'Toggle 3rd Person View (1PV / 3PV)');
+        cam.textContent = (typeof view !== 'undefined' && view.chase) ? '1PV' : '3PV';
+        if (typeof view !== 'undefined' && view.chase) cam.classList.add('on');
+        cam.addEventListener('pointerdown', e => {
+          e.preventDefault(); e.stopPropagation(); ensureAudio();
+          if (typeof window !== 'undefined' && window.level29Character && (!player || !player.car)){
+            window.level29Character.toggleView();
+          } else if (typeof view !== 'undefined'){
+            view.chase = !view.chase;
+            if (typeof toast === 'function') toast(view.chase ? 'CHASE CAMERA' : 'COCKPIT CAMERA');
+            cam.textContent = view.chase ? '1PV' : '3PV';
+            cam.classList.toggle('on', view.chase);
+          }
+        });
+        for (const ev of ['click', 'pointerup', 'touchstart', 'touchend']) cam.addEventListener(ev, e => e.stopPropagation());
+        grp.appendChild(cam);
+      }
+    }
   }
 }
 
