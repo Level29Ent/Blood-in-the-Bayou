@@ -254,14 +254,24 @@ function loadVoices(){
   if (voLoading || !actx) return; voLoading = true;
   voiceBus = actx.createGain(); voiceBus.gain.value = soundMode===2 ? 0 : VOICE_GAIN; voiceBus.connect(master);
   const data = window.VO_DATA || {};
-  for (const k of Object.keys(VO_TEXT)){
-    if (!data[k]) continue;
-    try {
-      const bin = atob(data[k]), bytes = new Uint8Array(bin.length);
-      for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
-      new Promise((res, rej) => actx.decodeAudioData(bytes.buffer, res, rej)).then(buf => { voBufs[k] = buf; }).catch(() => {});
-    } catch(e){}
+  const keys = Object.keys(VO_TEXT).filter(k => !!data[k]);
+  let idx = 0;
+  function processChunk(){
+    const end = Math.min(idx + 4, keys.length);
+    for (; idx < end; idx++){
+      const k = keys[idx];
+      try {
+        const bin = atob(data[k]), bytes = new Uint8Array(bin.length);
+        for (let i=0;i<bin.length;i++) bytes[i] = bin.charCodeAt(i);
+        new Promise((res, rej) => actx.decodeAudioData(bytes.buffer, res, rej)).then(buf => { voBufs[k] = buf; }).catch(() => {});
+      } catch(e){}
+    }
+    if (idx < keys.length){
+      if (typeof requestIdleCallback === 'function') requestIdleCallback(processChunk);
+      else setTimeout(processChunk, 20);
+    }
   }
+  processChunk();
 }
 function playVO(key, o){
   o = o || {};
