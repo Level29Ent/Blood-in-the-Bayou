@@ -526,8 +526,8 @@ addEventListener('blur',()=>openWheel(false,false));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)openWheel(false,false);});
 // touch: weapon button
 const wBtn = document.createElement('button'); wBtn.id = 'wbtn'; wBtn.textContent = 'WEAPON';
-const touchGroup = document.querySelector('#touch .group:last-child') || document.querySelector('#touch .group');
-if (touchGroup) touchGroup.prepend(wBtn);
+const wTouchGroup = document.querySelector('#touch .group:last-child') || document.querySelector('#touch .group');
+if (wTouchGroup) wTouchGroup.prepend(wBtn);
 let wBtnPressTimer = null, wBtnHeld = false;
 wBtn.addEventListener('pointerdown', e => {
   e.preventDefault(); e.stopPropagation(); ensureAudio();
