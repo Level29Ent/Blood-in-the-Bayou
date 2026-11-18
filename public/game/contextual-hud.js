@@ -433,14 +433,33 @@
     }
   }, true);
 
+  // Defensively remove any floating HUD buttons for Fireworks or Flare Gun
+  // so they exist strictly within the Weapon Wheel
+  function purgeFloatingWeapons(){
+    if(typeof document==='undefined' || typeof document.querySelectorAll !== 'function') return;
+    const allBtns = document.querySelectorAll('button, .hud-btn, [role="button"]');
+    for (const b of allBtns) {
+      if (b.id === 'wbtn') continue;
+      const txt = (b.textContent || '').trim().toUpperCase();
+      if (/FIREWORK|FLARE\s*GUN|F10|F11/.test(txt)) {
+        b.style.display = 'none';
+        if (typeof b.remove === 'function') b.remove();
+      }
+    }
+  }
+
   // Hook into game render loop
   if(typeof render==='function'){
     const prevRender = render;
     render = function(){
       prevRender.apply(this, arguments);
       updatePromptUI();
+      purgeFloatingWeapons();
     };
   } else {
-    setInterval(updatePromptUI, 120);
+    setInterval(() => {
+      updatePromptUI();
+      purgeFloatingWeapons();
+    }, 120);
   }
 })(typeof window!=='undefined' ? window : globalThis);

@@ -16,14 +16,29 @@ joyCss.textContent = `
  body.is-touch #joy{pointer-events:none}
  #joy::before{content:'';position:absolute;inset:30%;border-radius:50%;border:1px dashed rgba(240,196,90,.35)}
  #joyKnob{position:absolute;left:50%;top:50%;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#f8dc8c,#d9a93c 70%);border:2px solid #fff3c4;box-shadow:0 3px 10px rgba(0,0,0,.5);pointer-events:none;will-change:transform}
- #joyZone{position:fixed;left:0;bottom:0;width:46vw;height:68vh;z-index:3;display:none;touch-action:none;-webkit-tap-highlight-color:transparent}
+ #joyZone{position:fixed;left:0;bottom:0;width:44vw;height:70vh;z-index:3;display:none;touch-action:none;-webkit-tap-highlight-color:transparent}
  body.is-touch #joyZone.live{display:block}
- body.is-touch #touch:not(.off){display:block;position:fixed;right:12px;bottom:66px;z-index:6}
- #touch .group{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:8px;width:204px}
- #touch .group button,#touch .group #jobBoardButton,#touch .group #jobWorkButton{position:static!important;width:62px;min-height:48px;padding:4px;border-radius:10px;font-size:12px;border:2px solid rgba(240,196,90,.55);background:rgba(12,18,22,.62);color:#f6f3e6;font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:.04em;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+ #lookZone{position:fixed;right:0;top:0;width:56vw;height:100vh;z-index:4;display:none;touch-action:none;-webkit-tap-highlight-color:transparent}
+ body.is-touch #lookZone.live{display:block}
+ body.is-touch #touch:not(.off){display:block;position:fixed;right:14px;bottom:36px;z-index:6}
+ #touch .group{display:grid;grid-template-columns:repeat(3,60px);grid-auto-rows:44px;gap:8px;align-items:center;justify-items:center;width:auto}
+ #touch .group button,#touch .group #jobBoardButton,#touch .group #jobWorkButton{position:static!important;width:60px;min-height:44px;padding:3px;border-radius:10px;font-size:12px;border:2px solid rgba(240,196,90,.55);background:rgba(12,18,22,.72);color:#f6f3e6;font:800 13px 'Barlow Condensed',sans-serif;letter-spacing:.04em;touch-action:none;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;box-shadow:0 3px 10px rgba(0,0,0,.45)}
  #touch .group button:active,#touch .group button.held{background:rgba(240,196,90,.4);border-color:#f4c355}
- #touch #shoot{background:rgba(150,36,28,.55)}
- @media (max-height:430px){#joy{width:116px;height:116px}#joyKnob{width:46px;height:46px;margin:-23px 0 0 -23px}#touch .group button,#touch .group #jobBoardButton,#touch .group #jobWorkButton{width:58px;min-height:40px;font-size:12px}#touch .group{width:186px;gap:6px}body.is-touch #touch:not(.off){bottom:58px}}
+ #touch #wbtn{grid-column:1;grid-row:1}
+ #touch #enter{grid-column:2;grid-row:1}
+ #touch #venueAction{grid-column:3;grid-row:1}
+ #touch #runBtn{grid-column:1;grid-row:2}
+ #touch #jumpBtn{grid-column:2;grid-row:2}
+ #touch #shoot{grid-column:3;grid-row:2;width:72px!important;height:72px!important;margin:-14px 0 0 -6px;border-radius:50%!important;background:radial-gradient(circle at 35% 30%,#e6392f,#8b140f 75%)!important;border:2.5px solid #ffde59!important;font-size:15px!important;font-weight:900!important;box-shadow:0 4px 16px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.3)!important}
+ #touch #shoot:active,#touch #shoot.held{background:radial-gradient(circle at 35% 30%,#ff5a4e,#b22018 75%)!important;border-color:#fff!important;transform:scale(.96)}
+ @media (max-height:430px){
+  #joy{width:110px;height:110px}
+  #joyKnob{width:44px;height:44px;margin:-22px 0 0 -22px}
+  #touch .group{grid-template-columns:repeat(3,52px);grid-auto-rows:38px;gap:6px}
+  #touch .group button{width:52px;min-height:38px;font-size:11px}
+  #touch #shoot{width:62px!important;height:62px!important;margin:-12px 0 0 -5px;font-size:13px!important}
+  body.is-touch #touch:not(.off){bottom:20px}
+ }
 `;
 document.head.appendChild(joyCss);
 const DEFAULT_POS = () => coarse ? { left: Math.min(innerWidth * .1, 120), bottom: innerHeight >= 600 ? 54 : 26 } : { left: 222, bottom: 18 };
@@ -62,6 +77,77 @@ surface.addEventListener('mousedown', e => e.stopPropagation());
 surface.addEventListener('contextmenu', e => e.preventDefault());
 // If the game leaves play mode (panel opens, player dies) while a finger is down, release the stick.
 function releaseStick(){ if (joyPtr != null){ joyPtr = null; stick.x = 0; stick.y = 0; setKnob(0, 0); joyEl.classList.remove('on'); parkJoy(); } }
+
+// ---------- Right-screen Camera Look / Aim Zone ----------
+let lookZone = null;
+if (coarse){
+  lookZone = document.createElement('div');
+  lookZone.id = 'lookZone';
+  document.body.appendChild(lookZone);
+
+  let lookPtr = null, lastLookX = 0, lastLookY = 0;
+  lookZone.addEventListener('pointerdown', e => {
+    if (lookPtr != null) return;
+    if (e.target !== lookZone) return;
+    e.preventDefault(); e.stopPropagation(); ensureAudio();
+    lookPtr = e.pointerId;
+    lastLookX = e.clientX;
+    lastLookY = e.clientY;
+    try { lookZone.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  lookZone.addEventListener('pointermove', e => {
+    if (e.pointerId !== lookPtr) return;
+    e.preventDefault();
+    const dx = e.clientX - lastLookX, dy = e.clientY - lastLookY;
+    lastLookX = e.clientX;
+    lastLookY = e.clientY;
+    if (typeof turnView === 'function') turnView(dx * 0.0065, dy * 0.005);
+  });
+
+  const lookEnd = e => {
+    if (e.pointerId !== lookPtr) return;
+    lookPtr = null;
+  };
+  lookZone.addEventListener('pointerup', lookEnd);
+  lookZone.addEventListener('pointercancel', lookEnd);
+  lookZone.addEventListener('lostpointercapture', lookEnd);
+  lookZone.addEventListener('touchstart', e => { if (e.target === lookZone) e.preventDefault(); }, { passive: false });
+}
+
+// ---------- Fire & Aim on #shoot: Hold to shoot, drag to aim simultaneously ----------
+const shootBtn = document.getElementById('shoot');
+if (shootBtn){
+  let shootPtr = null, shootLastX = 0, shootLastY = 0;
+  shootBtn.addEventListener('pointerdown', e => {
+    e.preventDefault(); e.stopPropagation(); ensureAudio();
+    shootPtr = e.pointerId;
+    shootLastX = e.clientX;
+    shootLastY = e.clientY;
+    touch.shoot = true;
+    shootBtn.classList.add('held');
+    try { shootBtn.setPointerCapture(e.pointerId); } catch (_) {}
+  });
+
+  shootBtn.addEventListener('pointermove', e => {
+    if (e.pointerId !== shootPtr) return;
+    e.preventDefault();
+    const dx = e.clientX - shootLastX, dy = e.clientY - shootLastY;
+    shootLastX = e.clientX;
+    shootLastY = e.clientY;
+    if (typeof turnView === 'function') turnView(dx * 0.0055, dy * 0.0045);
+  });
+
+  const shootEnd = e => {
+    if (e.pointerId !== shootPtr) return;
+    shootPtr = null;
+    touch.shoot = false;
+    shootBtn.classList.remove('held');
+  };
+  shootBtn.addEventListener('pointerup', shootEnd);
+  shootBtn.addEventListener('pointercancel', shootEnd);
+  shootBtn.addEventListener('lostpointercapture', shootEnd);
+}
 
 // ---------- Extra touch button: RUN (hold to sprint) ----------
 let runHeld = false;
@@ -116,7 +202,11 @@ const _updJoy = update;
 update = function(){
   pollPad();
   const live = state === 'play' && player && !player.dead && !showMap;
-  if (coarse){ if (zone) zone.classList.toggle('live', live); joyEl.style.display = live ? 'block' : 'none'; }
+  if (coarse){
+    if (zone) zone.classList.toggle('live', live);
+    if (lookZone) lookZone.classList.toggle('live', live);
+    joyEl.style.display = live ? 'block' : 'none';
+  }
   else joyEl.style.display = live ? 'block' : 'none';
   if (!live) releaseStick();
   if (!padActive) gp.sprint = runHeld && state === 'play';

@@ -12,14 +12,16 @@ const WEAPONS = {
   molotov: { name:'MOLOTOV',   key:'4', price:600,  ammo:6,   pack:5,  ammoPrice:200, col:'#ff9a2a' },
   smg:     { name:'BAYOU SMG', key:'6', price:1700, ammo:120, pack:120, ammoPrice:220, col:'#81c5cf' },
   carbine: { name:'RANGER CARBINE', key:'7', price:2800, ammo:60, pack:60, ammoPrice:300, col:'#a6c183' },
-  pistol: {name:'MARSH PISTOL',key:'8',price:1200,ammo:48,pack:48,ammoPrice:180,col:'#92bcca'},
-  marksman: {name:'DELTA MARKSMAN',key:'9',price:4600,ammo:30,pack:30,ammoPrice:400,col:'#bcb894'},
-  snowball: {name:'FELICIA SNOWBALL',key:'0',price:180,ammo:6,pack:6,ammoPrice:180,col:'#a5e5f4'},
+  pistol:  { name:'MARSH PISTOL',key:'8',price:1200,ammo:48,pack:48,ammoPrice:180,col:'#92bcca'},
+  marksman:{ name:'DELTA MARKSMAN',key:'9',price:4600,ammo:30,pack:30,ammoPrice:400,col:'#bcb894'},
+  snowball:{ name:'FELICIA SNOWBALL',key:'0',price:180,ammo:6,pack:6,ammoPrice:180,col:'#a5e5f4'},
+  firework:{ name:'FIREWORKS', key:'-', price:350,  ammo:15,  pack:5,  ammoPrice:100, col:'#ff3366'},
+  flaregun:{ name:'FLARE GUN', key:'=', price:450,  ammo:10,  pack:4,  ammoPrice:120, col:'#ff8822'},
   bat:     { name:'BAT',       key:'5', price:150,  ammo:Infinity, pack:0, col:'#c9a37a' },
 };
-const WORDER = ['m240','shotgun','rpg','molotov','bat','smg','carbine','pistol','marksman','snowball'];
+const WORDER = ['m240','shotgun','rpg','molotov','bat','smg','carbine','pistol','marksman','snowball','firework','flaregun'];
 let arsenal = null, curW = 'm240', wheelOpen = false, wheelSel = 0, wFire = 0, batSwing = 0;
-function resetArsenal(){ arsenal = { m240: Infinity, bat: 0 }; arsenal.bat = undefined; delete arsenal.bat; curW = 'm240'; }
+function resetArsenal(){ arsenal = { m240: Infinity, bat: 0, firework: 15, flaregun: 10 }; arsenal.bat = undefined; delete arsenal.bat; curW = 'm240'; }
 resetArsenal();
 const hasW = w => arsenal[w] !== undefined;
 function giveW(w, n){ if (!hasW(w)) arsenal[w] = 0; if (arsenal[w] !== Infinity) arsenal[w] += (n == null ? WEAPONS[w].ammo : n); if (WEAPONS[w].ammo === Infinity) arsenal[w] = Infinity; }
@@ -33,6 +35,14 @@ fireWeapon = function(ox, oy, aim){
   if (curW !== 'bat' && arsenal[curW] <= 0){ if (frame % 30 === 0) toast('OUT OF ' + WEAPONS[curW].name + ' AMMO · Q TO SWITCH'); p.fireCd = 20; return; }
   if(curW==='snowball'){
     bullets.push({x:ox+Math.cos(aim)*22,y:oy+Math.sin(aim)*22,vx:Math.cos(aim)*11,vy:Math.sin(aim)*11,life:40,dmg:36,pierce:0,hit:new Set(),snowball:true});arsenal.snowball--;p.fireCd=35;p.flash=0;view.kick=.6;sfx('door');
+  }else if(curW==='firework'){
+    const sp=14,palette=['#ff3366','#ffdd33','#33ffaa','#33ddff','#dd33ff'];
+    fireworks.push({x:ox+Math.cos(aim)*24,y:oy+Math.sin(aim)*24,vx:Math.cos(aim)*sp,vy:Math.sin(aim)*sp,life:36,h:p.car?14:16,col:palette[Math.floor(Math.random()*palette.length)]});
+    arsenal.firework--;p.fireCd=34;p.flash=4;shake=Math.max(shake,3.5);sfx('bang');view.kick=1.4;
+  }else if(curW==='flaregun'){
+    const sp=18;
+    flares.push({x:ox+Math.cos(aim)*22,y:oy+Math.sin(aim)*22,vx:Math.cos(aim)*sp,vy:Math.sin(aim)*sp,life:180,burn:180,h:p.car?12:14});
+    arsenal.flaregun--;p.fireCd=40;p.flash=5;shake=Math.max(shake,2.5);sfx('bang');view.kick=1.8;
   }else if(curW==='pistol'||curW==='marksman'){
     const long=curW==='marksman',a=aim+rnd(long?-.008:-.035,long?.008:.035),sp=long?30:22;
     bullets.push({x:ox+Math.cos(a)*22,y:oy+Math.sin(a)*22,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:long?48:26,dmg:(long?10:3.5)*(window.level29Trading?.damage||1)+up.ap*.35,pierce:long?2:0,hit:new Set()});
@@ -60,7 +70,7 @@ fireWeapon = function(ox, oy, aim){
   }
   lastShotFrame = frame; heat = Math.min(5, heat + .02);
 };
-let rockets = [], throws = [], fires = [];
+let rockets = [], throws = [], fires = [], fireworks = [], flares = [];
 function boom(x, y, max, owner){ explosions.push({ x, y, r: 0, max: max || 120, playerOwned:!owner, owner:owner||0, t: 28, dealt: false }); sfx('explode'); shake = Math.max(shake, 16); decal(x, y, 'scorch', 1); for (let k=0;k<22;k++) parts.push({ k:'fire', x, y, vx: rnd(-5,5), vy: rnd(-5,5), t: rnd(20,45) }); }
 function updateWeapons(){
   const p = player;
@@ -75,6 +85,47 @@ function updateWeapons(){
     if (hit){ r.life = 0; boom(r.x, r.y, 130,r.owner); if (boss && !boss.dead && dist(r.x, r.y, boss.x, boss.y) < 140) damageBoss(10); }
   }
   rockets = rockets.filter(r => r.life > 0);
+  for (const fw of fireworks){
+    fw.x += fw.vx; fw.y += fw.vy; fw.life--;
+    if (frame % 2 === 0){
+      parts.push({ k:'spark', x: fw.x + rnd(-2,2), y: fw.y + rnd(-2,2), vx: rnd(-1,1), vy: rnd(-1,1), t: rnd(10,22), c: fw.col });
+      parts.push({ k:'smoke', x: fw.x, y: fw.y, vx: rnd(-.2,.2), vy: rnd(-.2,.2), t: 18 });
+    }
+    let hit = solidAt(fw.x, fw.y) || fw.life <= 0;
+    if (!hit) for (const z of zombies) if (z.alive && dist(fw.x, fw.y, z.x, z.y) < z.r + 8){ hit = true; break; }
+    if (!hit && boss && !boss.dead && dist(fw.x, fw.y, boss.x, boss.y) < boss.r + 8){ hit = true; damageBoss(14 + up.ap*3); }
+    if (!hit) for (const c of cars) if (!c.dead && c !== p.car && dist(fw.x, fw.y, c.x, c.y) < c.r){ hit = true; damageCar(c, 180, fw.owner?'remote':'player', fw.owner); break; }
+    if (hit){
+      fw.life = 0;
+      boom(fw.x, fw.y, 90, fw.owner);
+      const cols = ['#ff3366', '#ffdd33', '#33ffaa', '#33ddff', '#dd33ff', '#ffffff'];
+      for (let k = 0; k < 28; k++){
+        const a = (k / 28) * Math.PI * 2 + rnd(-0.2, 0.2), spd = rnd(2.5, 7.5);
+        parts.push({ k:'spark', x: fw.x, y: fw.y, vx: Math.cos(a)*spd, vy: Math.sin(a)*spd, t: rnd(25,50), c: cols[k % cols.length] });
+      }
+      alertZombies(fw.x, fw.y, 650);
+    }
+  }
+  fireworks = fireworks.filter(fw => fw.life > 0);
+  for (const fl of flares){
+    fl.x += fl.vx; fl.y += fl.vy; fl.vx *= 0.96; fl.vy *= 0.96; fl.life--;
+    if (frame % 2 === 0){
+      parts.push({ k:'fire', x: fl.x + rnd(-3,3), y: fl.y + rnd(-3,3), vx: rnd(-.5,.5), vy: rnd(-.5,.5), t: rnd(15,28), c: '#ff5522' });
+      if (frame % 4 === 0) parts.push({ k:'smoke', x: fl.x, y: fl.y, vx: rnd(-.2,.2), vy: rnd(-.4,-.1), t: 30 });
+    }
+    if (frame % 15 === 0) alertZombies(fl.x, fl.y, 800);
+    for (const z of zombies){
+      if (z.alive && dist(fl.x, fl.y, z.x, z.y) < 48){
+        z.killSource = fl.owner ? 'remote' : 'player';
+        z.lastHit = fl.owner || 0;
+        z.hp -= 0.8;
+        z.flash = 3;
+        if (z.hp <= 0) killZombie(z, fl.vx * 0.3, fl.vy * 0.3);
+      }
+    }
+    if (boss && !boss.dead && dist(fl.x, fl.y, boss.x, boss.y) < 55 + boss.r) damageBoss(0.9);
+  }
+  flares = flares.filter(fl => fl.life > 0);
   for (const t of throws){
     t.t++; const k = t.t / t.T; t.x = t.sx + (t.tx - t.sx) * k; t.y = t.sy + (t.ty - t.sy) * k; t.h = 14 + Math.sin(k * Math.PI) * 40;
     if (solidAt(t.x, t.y) || t.t >= t.T){ t.done = true; fires.push({ x: t.x, y: t.y, owner:t.owner||0, t: 300, r: 70 }); sfx('crash', 3); for (let j=0;j<30;j++) parts.push({ k:'fire', x: t.x + rnd(-30,30), y: t.y + rnd(-30,30), vx: rnd(-1,1), vy: rnd(-1,1), t: rnd(20,40) }); }
@@ -100,9 +151,10 @@ function openWheel(on,commit=true){
  if(wasOpen&&commit&&state==='play'){const w=WORDER[wheelSel];if(hasW(w))selectW(w);}
 }
 function wheelPointer(e){if(!wheelOpen)return;
+ const pt = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e;
  if(document.pointerLockElement===cv){wheelCursor.x=clamp(wheelCursor.x+(e.movementX||0),-SW/2,SW/2);wheelCursor.y=clamp(wheelCursor.y+(e.movementY||0),-SH/2,SH/2);}
- else{const r=cv.getBoundingClientRect();wheelCursor.x=(e.clientX-r.left)*SW/r.width-SW/2;wheelCursor.y=(e.clientY-r.top)*SH/r.height-SH/2;}
- if(Math.hypot(wheelCursor.x,wheelCursor.y)<30)return;const page=Math.floor(wheelSel/10),n=Math.min(10,WORDER.length-page*10),a=Math.atan2(wheelCursor.y,wheelCursor.x);wheelSel=page*10+((Math.round((a+Math.PI/2)/(Math.PI*2/n))%n)+n)%n;
+ else{const r=cv.getBoundingClientRect();wheelCursor.x=(pt.clientX-r.left)*SW/r.width-SW/2;wheelCursor.y=(pt.clientY-r.top)*SH/r.height-SH/2;}
+ if(Math.hypot(wheelCursor.x,wheelCursor.y)<22)return;const page=Math.floor(wheelSel/10),n=Math.min(10,WORDER.length-page*10),a=Math.atan2(wheelCursor.y,wheelCursor.x);wheelSel=page*10+((Math.round((a+Math.PI/2)/(Math.PI*2/n))%n)+n)%n;
 }
 function drawWheel(){
   if (!wheelOpen) return;if(state!=='play'){openWheel(false,false);return;}
@@ -117,7 +169,7 @@ function drawWheel(){
     hudText(am, x, y + bubble*.5, font, sel ? '#13191d' : own ? '#c9d1d4' : '#666', 'center', '700 ');
   });
   hudText('WEAPON WHEEL · '+(page+1)+'/'+Math.ceil(WORDER.length/10), X, Y - 22, 26, '#f4c355', 'center', '900 ');
-  hudText('mouse/arrows · scroll pages · release Q', X, Y + 10, 12, '#c9d1d4', 'center', '600 ');
+  hudText('swipe / click slice · tap WEAPON or release', X, Y + 10, 12, '#c9d1d4', 'center', '600 ');
 }
 function drawWeaponPanel(R, bw, y){
   const p = player, W = WEAPONS[curW];
@@ -189,6 +241,8 @@ const SHOP_ITEMS = () => [
   ...['smg','carbine'].map(id=>({id,label:WEAPONS[id].name,desc:id==='smg'?'Fast automatic fire with a wider spread.':'Accurate, hard-hitting semi-automatic rounds with penetration.',price:hasW(id)?WEAPONS[id].ammoPrice:WEAPONS[id].price,buy:hasW(id)?'+'+WEAPONS[id].pack+' ROUNDS':'BUY'})),
   { id:'shotgun', label:'Shotgun', desc:'9-pellet spread. Clears a crowd at close range.', price: hasW('shotgun') ? WEAPONS.shotgun.ammoPrice : WEAPONS.shotgun.price, buy: hasW('shotgun') ? '+24 SHELLS' : 'BUY' },
   { id:'rpg', label:'RPG launcher', desc:'Rocket with blast radius. Flattens bosses and cars.', price: hasW('rpg') ? WEAPONS.rpg.ammoPrice : WEAPONS.rpg.price, buy: hasW('rpg') ? '+4 ROCKETS' : 'BUY' },
+  { id:'firework', label:'Fireworks', desc:'Festive aerial rocket with colorful starburst blast radius.', price: hasW('firework') ? WEAPONS.firework.ammoPrice : WEAPONS.firework.price, buy: hasW('firework') ? '+5 ROCKETS' : 'BUY' },
+  { id:'flaregun', label:'Flare gun', desc:'Blazing emergency signal flare that illuminates and burns targets.', price: hasW('flaregun') ? WEAPONS.flaregun.ammoPrice : WEAPONS.flaregun.price, buy: hasW('flaregun') ? '+4 FLARES' : 'BUY' },
   { id:'molotov', label:'Molotov cocktails', desc:'Throw a pool of fire that burns for five seconds.', price: hasW('molotov') ? WEAPONS.molotov.ammoPrice : WEAPONS.molotov.price, buy: hasW('molotov') ? '+5 BOTTLES' : 'BUY' },
   { id:'bat', label:'Baseball bat', desc:'Silent, unlimited, knocks zombies back.', price: hasW('bat') ? 0 : WEAPONS.bat.price, buy: hasW('bat') ? 'OWNED' : 'BUY' },
   { id:'armor', label:'Body armor', desc:'Refill armor to full.', price: 400, buy: 'BUY' },
@@ -220,7 +274,7 @@ let shopCd = 0;
 const cheatEl = document.createElement('div'); cheatEl.id = 'cheat'; cheatEl.innerHTML = '<div class="sbox small"><div class="eyebrow">CHEAT CODE</div><input id="cheatIn" maxlength="24" autocomplete="off" spellcheck="false" placeholder="type a code"><p class="hint">Enter to apply · Esc to cancel</p></div>'; document.body.appendChild(cheatEl);
 const cheatIn = cheatEl.querySelector('input');
 const CHEATS = {
-  LEVEL29:     ['ALL WEAPONS + FULL AMMO', () => { for (const w of WORDER) giveW(w); arsenal.rpg = 20; arsenal.molotov = 20; arsenal.shotgun = 99; }],
+  LEVEL29:     ['ALL WEAPONS + FULL AMMO', () => { for (const w of WORDER) giveW(w); arsenal.rpg = 20; arsenal.molotov = 20; arsenal.shotgun = 99; arsenal.firework = 30; arsenal.flaregun = 20; }],
   JESTERMODE:  ['HEALTH + ARMOR MAXED', () => { player.hp = player.maxHp; player.armor = 50 + up.armor*25; }],
   BAYOUBLAST:  ['SPAWN A SPORTS COUPE', () => { const p = player; const c = makeCar(p.x + Math.cos(view.yaw)*42, p.y + Math.sin(view.yaw)*42, view.yaw, 'sports'); cars.push(c); }],
   SEMPERFI:    ['SPAWN A HUMVEE', () => { const p = player; const c = makeCar(p.x + Math.cos(view.yaw)*42, p.y + Math.sin(view.yaw)*42, view.yaw, 'humvee'); cars.push(c); }],
@@ -447,7 +501,7 @@ update = function(){
 // cars on traffic duty shouldn't be counted as 'parked' for re-entry: handled in enterExit via c.ai = null
 
 // travel/reset hooks
-const _travelTo = travelTo; travelTo = function(di){ _travelTo(di); world = null; rockets = []; throws = []; fires = []; rampage = null; };
+const _travelTo = travelTo; travelTo = function(di){ _travelTo(di); world = null; rockets = []; throws = []; fires = []; fireworks = []; flares = []; rampage = null; };
 const _startGame = startGame; startGame = function(i){ resetArsenal(); packagesFound = new Set(); jumpsDone = new Set(); rampagesDone = new Set(); for (const k in cheatFlags) cheatFlags[k] = false; _startGame(i); };
 
 // ---------- Input ----------
@@ -466,11 +520,40 @@ addEventListener('keydown', e => {
 addEventListener('keyup', e => { if (e.key.toLowerCase() === 'q' && wheelOpen) openWheel(false); });
 addEventListener('wheel', e => { if (state !== 'play')return;if(wheelOpen){const pages=Math.ceil(WORDER.length/10),page=(Math.floor(wheelSel/10)+(e.deltaY>0?1:pages-1))%pages;wheelSel=page*10;return;} const owned = WORDER.filter(hasW); const i = owned.indexOf(curW); selectW(owned[(i + (e.deltaY > 0 ? 1 : -1) + owned.length) % owned.length]); }, { passive: true });
 cv.addEventListener('mousemove',wheelPointer);
+cv.addEventListener('touchmove', e => { if (wheelOpen){ wheelPointer(e); e.preventDefault(); } }, { passive: false });
+cv.addEventListener('touchend', e => { if (wheelOpen && !wBtnHeld){ openWheel(false, true); e.preventDefault(); } });
 addEventListener('blur',()=>openWheel(false,false));
 document.addEventListener('visibilitychange',()=>{if(document.hidden)openWheel(false,false);});
 // touch: weapon button
-const wBtn = document.createElement('button'); wBtn.id = 'wbtn'; wBtn.textContent = 'WEAPON'; document.querySelector('#touch .group:last-child').prepend(wBtn);
-wBtn.addEventListener('click', e => { e.preventDefault(); const owned = WORDER.filter(hasW); const i = owned.indexOf(curW); selectW(owned[(i + 1) % owned.length]); });
+const wBtn = document.createElement('button'); wBtn.id = 'wbtn'; wBtn.textContent = 'WEAPON';
+const touchGroup = document.querySelector('#touch .group:last-child') || document.querySelector('#touch .group');
+if (touchGroup) touchGroup.prepend(wBtn);
+let wBtnPressTimer = null, wBtnHeld = false;
+wBtn.addEventListener('pointerdown', e => {
+  e.preventDefault(); e.stopPropagation(); ensureAudio();
+  wBtnHeld = false;
+  wBtnPressTimer = setTimeout(() => { wBtnHeld = true; openWheel(true); }, 260);
+});
+wBtn.addEventListener('pointerup', e => {
+  e.preventDefault(); e.stopPropagation();
+  if (wBtnPressTimer) { clearTimeout(wBtnPressTimer); wBtnPressTimer = null; }
+  if (wBtnHeld) {
+    wBtnHeld = false;
+    openWheel(false, true);
+  } else {
+    if (wheelOpen) openWheel(false, true);
+    else {
+      const owned = WORDER.filter(hasW);
+      const i = owned.indexOf(curW);
+      selectW(owned[(i + 1) % owned.length]);
+    }
+  }
+});
+wBtn.addEventListener('pointercancel', () => {
+  if (wBtnPressTimer) { clearTimeout(wBtnPressTimer); wBtnPressTimer = null; }
+  if (wheelOpen) openWheel(false, false);
+  wBtnHeld = false;
+});
 
 // ---------- HUD extras ----------
 const _drawHUD = drawHUD;
@@ -563,6 +646,22 @@ function ensurePools(){
     m.userData.finishMaterial=paint;extraWeap[id]=m;
   }
   const ice=new THREE.Group();const ball=new THREE.Mesh(new THREE.SphereGeometry(2.3,16,12),new THREE.MeshStandardMaterial({color:'#d3f4ff',roughness:.35}));ball.position.set(1,0,-5);ice.add(ball);arms(ice);extraWeap.snowball=ice;
+  g = new THREE.Group();
+  const fwTube = new THREE.Mesh(new THREE.CylinderGeometry(.7, .7, 12, 10), lam('#d82848'));
+  fwTube.rotation.x = Math.PI / 2; fwTube.position.set(0, .8, -5);
+  const fwNose = new THREE.Mesh(new THREE.ConeGeometry(1.1, 3.5, 10), lam('#ffd700'));
+  fwNose.rotation.x = -Math.PI / 2; fwNose.position.set(0, .8, -12);
+  const fwStick = box(.4, .4, 14, wood); fwStick.position.set(0, -.2, 1);
+  g.add(fwTube, fwNose, fwStick); arms(g); extraWeap.firework = g;
+
+  g = new THREE.Group();
+  const flareBody = box(1.8, 2.8, 6.5, lam('#ff5a18')); flareBody.position.set(0, .2, -2);
+  const flareGrip = box(1.4, 3.5, 2, blk); flareGrip.rotation.x = -0.22; flareGrip.position.set(0, -2, .5);
+  const flareBarrel = new THREE.Mesh(new THREE.CylinderGeometry(.75, .75, 7, 12), lam('#ff5a18'));
+  flareBarrel.rotation.x = Math.PI / 2; flareBarrel.position.set(0, .8, -6.5);
+  const flareBore = new THREE.Mesh(new THREE.CylinderGeometry(.55, .55, 1, 12), blk);
+  flareBore.rotation.x = Math.PI / 2; flareBore.position.set(0, .8, -10);
+  g.add(flareBody, flareGrip, flareBarrel, flareBore); arms(g); extraWeap.flaregun = g;
   for (const k in extraWeap){ extraWeap[k].scale.setScalar(k === 'rpg' ? .4 : .55); extraWeap[k].visible = false; vmScene.add(extraWeap[k]); }
 }
 function syncGta(){
@@ -597,3 +696,9 @@ if(!window.level29Boot)travelToMenu();
 if(!window.level29Boot)requestAnimationFrame(loop);
 window.render_game_to_text = () => JSON.stringify({ state, district: D.name, mission: mission && { n: mission.info.i+1, type: mission.info.type, phase: mission.phase, step: mission.step, kills: mission.kills, need: mission.need }, player: player && { x: Math.round(player.x), y: Math.round(player.y), hp: Math.round(player.hp), armor: Math.round(player.armor), inCar: !!player.car, carZ: player.car ? +(player.car.z || 0).toFixed(1) : 0, yaw: +view.yaw.toFixed(2) }, weapon: curW, arsenal: Object.fromEntries(Object.entries(arsenal).map(([k, v]) => [k, v === Infinity ? 'inf' : v])), view: { chase: view.chase, mode: lightMode }, zombies: zombies.length, traffic: cars.filter(c => c.ai && !c.dead).length, cash, heat: +heat.toFixed(2), boss: boss && { hp: Math.round(boss.hp), dead: boss.dead }, rampage: rampage && { kills: rampage.kills, need: rampage.r.need, t: Math.ceil(rampage.t/60) }, packages: packagesFound.size, jumps: jumpsDone.size, rampagesDone: rampagesDone.size, radio: RADIO[radioIdx] && RADIO[radioIdx][0], cheats: cheatFlags });
 window.__dc = { get player(){ return player; }, get mission(){ return mission; }, get cars(){ return cars; }, get boss(){ return boss; }, get zombies(){ return zombies; }, startGame, enterExit, get state(){ return state; }, set mission(v){ mission = v; }, beginMission, setMission(i){ missionIdx = i; placeMissionStart(); }, get city(){ return city; }, get music(){ return mus.name; }, get vo(){ return Object.keys(voBufs).length; }, get up(){ return up; }, view, get info(){ return renderer && renderer.info.render; }, get world(){ return world; }, applyCheat, selectW, giveW, set cash(v){ cash = v; } };
+if (typeof module !== 'undefined') {
+  module.exports = { WEAPONS, WORDER, openWheel, resetArsenal, selectW, giveW, hasW };
+}
+if (typeof window !== 'undefined') {
+  window.level29Weapons = { WEAPONS, WORDER, openWheel, drawWheel, resetArsenal, selectW, giveW, hasW, get arsenal(){ return arsenal; }, get curW(){ return curW; } };
+}
