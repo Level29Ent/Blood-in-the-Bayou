@@ -1,6 +1,6 @@
 'use strict';
 (function(){
-function budget(quality){return quality==='high'?{steps:24,volumes:4}:quality==='medium'?{steps:12,volumes:2}:{steps:0,volumes:0};}
+function budget(quality){return quality==='ultra'?{steps:32,volumes:6}:quality==='high'?{steps:24,volumes:4}:quality==='medium'?{steps:12,volumes:2}:{steps:0,volumes:0};}
 function ripple(age,distance){return age>=0&&age<4?Math.sin(distance*.55-age*8)*Math.exp(-Math.abs(distance-age*14)*.18)*(1-age/4):0;}
 const vertex='varying vec3 vWorld;void main(){vec4 w=modelMatrix*vec4(position,1.);vWorld=w.xyz;gl_Position=projectionMatrix*viewMatrix*w;}';
 const fragment=`precision highp float;varying vec3 vWorld;uniform vec3 center;uniform vec3 halfSize;uniform vec3 tint;uniform float clock;uniform float strength;uniform int samples;

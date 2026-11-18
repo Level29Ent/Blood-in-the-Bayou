@@ -3,9 +3,10 @@
 // Loaded last; wraps initGL/render the same way the other expansion files do.
 (function(){
   // Default lightweight; explicit user choice can opt into higher quality.
-  let quality='low';try{const q=localStorage.getItem('level29.graphics.stage1');if(['low','medium','high'].includes(q))quality=q;}catch(_){}
+  let quality='low';try{const q=localStorage.getItem('level29.graphics.stage1');if(['low','medium','high','ultra'].includes(q))quality=q;}catch(_){}
 
   const SHADOW = {
+    ultra:  { size: 4096, extent: 320, every: 1 },
     high:   { size: 2048, extent: 260, every: 1 },
     medium: { size: 1024, extent: 200, every: 2 },
     low:    null,
@@ -74,8 +75,8 @@
           float h = clamp(d.y, 0.0, 1.0);
           vec3 col = mix(horizon, zenith, pow(smoothstep(0.0, 0.85, h), 0.7));
           float s = max(dot(d, normalize(sunDir)), 0.0);
-          col += sunColor * (pow(s, 6.0) * 0.18 + pow(s, 64.0) * 0.35) * sunSize;
-          col += sunColor * smoothstep(0.9993, 0.9997, s) * 2.5 * sunSize;
+          col += sunColor * (pow(s, 5.0) * 0.22 + pow(s, 28.0) * 0.42 + pow(s, 128.0) * 0.65) * sunSize;
+          col += sunColor * smoothstep(0.9991, 0.9998, s) * 3.2 * sunSize;
           if (night > 0.0){
             vec3 cell = floor(d * 380.0);
             float star = step(0.9975, hash(cell)) * smoothstep(0.05, 0.35, h);
@@ -124,7 +125,9 @@
       const c = sh.camera;
       c.left = -cfg.extent; c.right = cfg.extent; c.top = cfg.extent; c.bottom = -cfg.extent;
       c.near = 10; c.far = 2000; c.updateProjectionMatrix();
-      sh.bias = -0.0004; sh.normalBias = 0.6; sh.radius = 2;
+      sh.bias = quality === 'ultra' ? -0.0003 : -0.0004;
+      sh.normalBias = quality === 'ultra' ? 0.5 : 0.6;
+      sh.radius = quality === 'ultra' ? 3.5 : 2;
     }
     scene.traverse(o => { if (o.material) { const ms = Array.isArray(o.material) ? o.material : [o.material]; ms.forEach(m => m.needsUpdate = true); } });
     if (vignette) vignette.style.opacity = quality === 'low' ? '0.6' : '1';
@@ -184,5 +187,14 @@
     baseRender.apply(this, arguments);
   };
 
-  window.level29Graphics={get quality(){return quality;},setQuality(q){if(!['low','medium','high'].includes(q))return;quality=q;try{localStorage.setItem('level29.graphics.stage1',q);}catch(_){}if(typeof renderer!=='undefined'&&renderer&&ready)applyQuality();}};
+  window.level29Graphics={
+    get quality(){return quality;},
+    setQuality(q){
+      if(!['low','medium','high','ultra'].includes(q))return;
+      quality=q;
+      try{localStorage.setItem('level29.graphics.stage1',q);}catch(_){}
+      if(typeof renderer!=='undefined'&&renderer&&ready)applyQuality();
+      if(typeof window.level29Cinematic!=='undefined'&&window.level29Cinematic.configure)window.level29Cinematic.configure();
+    }
+  };
 })();

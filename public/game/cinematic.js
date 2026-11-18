@@ -41,9 +41,24 @@ function setup(){
  if(quality()==='low'||composer||failed||!window.BayouPost||!renderer)return;
  try{
  aoSupported=renderer.capabilities.isWebGL2||(renderer.extensions.has('WEBGL_depth_texture')&&renderer.extensions.has('OES_texture_float'));
- const A=window.BayouPost;composer=new A.EffectComposer(renderer);renderPass=new A.RenderPass(scene,camera);ssao=new A.SSAOPass(scene,camera,256,256);ssao.needsSwap=true;ssao.kernelRadius=7;ssao.minDistance=.001;ssao.maxDistance=.035;
+ const A=window.BayouPost;composer=new A.EffectComposer(renderer);renderPass=new A.RenderPass(scene,camera);
+ const aoRadius=quality()==='ultra'?14:(quality()==='high'?9:7);
+ ssao=new A.SSAOPass(scene,camera,256,256);ssao.needsSwap=true;ssao.kernelRadius=aoRadius;ssao.minDistance=.0008;ssao.maxDistance=.045;
  const shader={uniforms:{tDiffuse:{value:null},contrast:{value:1},saturation:{value:1}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.0);}',fragmentShader:`uniform sampler2D tDiffuse;uniform float contrast;uniform float saturation;varying vec2 vUv;
- void main(){vec3 c=texture2D(tDiffuse,vUv).rgb;float l=dot(c,vec3(.2126,.7152,.0722));c=mix(vec3(l),c,saturation);c=(c-.18)*contrast+.18;gl_FragColor=LinearTosRGB(vec4(max(c,vec3(0.)),1.));
+ void main(){
+  vec2 d=vUv-0.5;float r2=dot(d,d);vec2 ca=d*(r2*0.0032);
+  vec3 c;c.r=texture2D(tDiffuse,vUv+ca).r;c.g=texture2D(tDiffuse,vUv).g;c.b=texture2D(tDiffuse,vUv-ca).b;
+  vec2 texel=vec2(0.002,0.002);
+  vec3 b1=texture2D(tDiffuse,vUv+vec2(-texel.x,-texel.y)*2.2).rgb;
+  vec3 b2=texture2D(tDiffuse,vUv+vec2( texel.x,-texel.y)*2.2).rgb;
+  vec3 b3=texture2D(tDiffuse,vUv+vec2(-texel.x, texel.y)*2.2).rgb;
+  vec3 b4=texture2D(tDiffuse,vUv+vec2( texel.x, texel.y)*2.2).rgb;
+  vec3 bloom=max(vec3(0.0),(b1+b2+b3+b4)*0.25-vec3(0.72))*0.38;
+  c+=bloom;
+  float l=dot(c,vec3(.2126,.7152,.0722));c=mix(vec3(l),c,saturation);c=(c-.18)*contrast+.18;
+  float dither=(fract(sin(dot(vUv,vec2(12.9898,78.233)))*43758.5453)-0.5)*0.008;
+  c+=vec3(dither);
+  gl_FragColor=LinearTosRGB(vec4(max(c,vec3(0.)),1.));
 }`};
  grade=new A.ShaderPass(shader);grade.material.toneMapped=false;composer.addPass(renderPass);composer.addPass(ssao);composer.addPass(grade);makeEnvironment();
  }catch(e){failed=true;dispose();console.warn('Cinematic pipeline unavailable; using direct renderer',e);}
@@ -75,7 +90,7 @@ function drawWorld(){
  try{renderer.outputEncoding=THREE.LinearEncoding;composer.render();}catch(e){failed=true;dispose();renderer.setRenderTarget(null);renderer.outputEncoding=encoding;renderer.clear();renderer.render(scene,camera);console.warn('Cinematic fallback',e);}finally{renderer.outputEncoding=encoding;}
 }
 const init=initGL;initGL=function(){init.apply(this,arguments);setup();};
-const make=makeCarMesh;makeCarMesh=function(c){const g=make.apply(this,arguments);const p=g.userData.paint;if(p?.isMeshStandardMaterial){p.roughness=g.userData.profile?.military?.7:.21;p.metalness=c.boat?.35:g.userData.profile?.military?.15:.55;p.envMapIntensity=.85;}
+const make=makeCarMesh;makeCarMesh=function(c){const g=make.apply(this,arguments);const p=g.userData.paint;if(p?.isMeshStandardMaterial){p.roughness=g.userData.profile?.military?.7:.18;p.metalness=c.boat?.35:g.userData.profile?.military?.15:.65;p.envMapIntensity=1.25;if(p.clearcoat!==undefined){p.clearcoat=1;p.clearcoatRoughness=0.06;}}
  g.traverse(o=>{if(!o.isMesh)return;const m=o.material;if(m?.isMeshPhysicalMaterial&&!['vehiclePaint','boatPaint'].includes(m.name)&&(m.transparent||m.name==='buildingGlass'||m.name==='boatGlass'))o.material=physicalGlass(m);});prepare(g);return g;};
 const sync=syncCars;
 syncCars=function(){sync.apply(this,arguments);for(const[c,m]of carMeshes){if(!c.boat||c.dead||!m.visible)continue;const t=frame/60;m.position.y=(c.z||0)+Math.sin(t*1.4+c.x*.015)*.65;m.rotation.x=Math.sin(t*1.1+c.y*.02)*.018;m.rotation.z=Math.sin(t*1.6+c.x*.01)*.014-clamp(c.v*.003,-.025,.025);}};
