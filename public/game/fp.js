@@ -327,8 +327,14 @@ function buildCity(){
   decalN = 0; decalMesh.count = 0;
   builtCity = city; cityGroup = new THREE.Group(); scene.add(cityGroup);
   // ground
-  const gt = new THREE.CanvasTexture(groundCv); gt.encoding=THREE.sRGBEncoding;gt.anisotropy = Math.min(4,renderer.capabilities.getMaxAnisotropy());
-  const ground = new THREE.Mesh(new THREE.PlaneGeometry(WORLD, WORLD), new THREE.MeshStandardMaterial({name:'worldGround',map:gt,roughness:1,metalness:0,envMapIntensity:0}));
+  const gt = new THREE.CanvasTexture(groundCv);
+  gt.encoding = THREE.sRGBEncoding;
+  gt.wrapS = gt.wrapT = THREE.ClampToEdgeWrapping;
+  gt.generateMipmaps = true;
+  gt.minFilter = THREE.LinearMipmapLinearFilter;
+  gt.magFilter = THREE.LinearFilter;
+  gt.anisotropy = renderer ? Math.min(16, renderer.capabilities.getMaxAnisotropy()) : 4;
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(WORLD, WORLD), new THREE.MeshStandardMaterial({name:'worldGround',map:gt,roughness:0.85,metalness:0.04,envMapIntensity:0.25}));
   ground.rotation.x = -Math.PI/2; ground.position.set(WORLD/2, 0, WORLD/2); cityGroup.add(ground);
   const sea = new THREE.Mesh(new THREE.PlaneGeometry(9000, 9000), lam(D.id==='pi' ? '#35574f' : '#1f4b66')); sea.rotation.x = -Math.PI/2; sea.position.set(WORLD/2, -1, WORLD/2); cityGroup.add(sea);
   // curbs along sidewalks (thin raised edges)
@@ -704,7 +710,12 @@ function syncViewModel(){
   view.kick *= .72;
   const moving = !p.car && Math.hypot(p.vx, p.vy) > .4, sprint = moving && keys['shift'];
   const bobX = moving ? Math.sin(p.anim * .5) * .35 : 0, bobY = moving ? -Math.abs(Math.cos(p.anim * .5)) * .3 : 0;
-  gun.position.set((inCar ? 3.2 : 4.2) + bobX, (inCar ? -3.8 : -4.4) + bobY - (sprint ? 1 : 0), -12 + view.kick * .8);
+  const isMobileView = (typeof window !== 'undefined' && (window.innerWidth < 700 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)));
+  const defaultGx = inCar ? 3.2 : (isMobileView ? 2.9 : 4.2);
+  const defaultGy = inCar ? -3.8 : (isMobileView ? -5.0 : -4.4);
+  gun.position.set(defaultGx + bobX, defaultGy + bobY - (sprint ? 1 : 0), -12 + view.kick * .8);
+  if (isMobileView && !inCar) gun.scale.setScalar(0.78);
+  else if (!inCar) gun.scale.setScalar(1.0);
   gun.rotation.set(view.kick * .07 + (sprint ? -.25 : 0), (sprint ? .35 : 0), 0);
   gun.userData.barrel.emissive.setRGB(Math.pow(p.heat / 100, 2) * .9, Math.pow(p.heat / 100, 3) * .2, 0);
   muzzle.visible = p.flash > 0; muzzle.rotation.z = Math.random() * 7; muzzle.scale.setScalar(.8 + Math.random() * .6);
@@ -723,7 +734,9 @@ function render(){
   syncViewModel();
   document.getElementById('gl').style.filter = state==='dead' ? 'grayscale(1) contrast(1.1)' : '';
   renderer.info.reset(); renderer.clear(); if(window.level29Cinematic)level29Cinematic.drawWorld();else renderer.render(scene, camera);
-  renderer.clearDepth(); renderer.render(vmScene, vmCam);
+  if (!view || !view.chase) {
+    renderer.clearDepth(); renderer.render(vmScene, vmCam);
+  }
   if (view.hit > 0) view.hit--;
   cx.setTransform(DPR, 0, 0, DPR, 0, 0); cx.clearRect(0, 0, SW, SH);
   if (state!=='menu' && player) drawHUD();

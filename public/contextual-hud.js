@@ -175,10 +175,11 @@
     }
     @media (max-width: 700px) {
       #contextualPrompts {
-        bottom: 92px;
+        bottom: clamp(230px, 32vh, 290px);
         gap: 6px;
         padding: 5px 10px;
         font-size: 11px;
+        pointer-events: none;
       }
       #contextualPrompts .prompt-pill {
         padding: 2px 6px;

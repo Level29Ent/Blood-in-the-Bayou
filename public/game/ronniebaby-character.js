@@ -280,10 +280,10 @@
     const aspect = camera.aspect || ((typeof innerWidth !== 'undefined' && typeof innerHeight !== 'undefined') ? (innerWidth / innerHeight) : 1.77);
     const isPortrait = aspect < 1.0;
 
-    // In portrait orientation, back up camera slightly and moderate shoulder offset so Ronniebaby
-    // frames nicely on narrow phone screens without covering the center crosshair
-    const heightAbove = isPortrait ? 17.5 : 16.5; // Shoulder/head eye level
-    const shoulderRight = isPortrait ? 3.4 : 5.2; // Over-the-shoulder right offset
+    // Shift camera to the right by shoulderRight, placing Ronniebaby comfortably on the LEFT side of the screen
+    // so the center reticle / crosshair has a completely clear, unobstructed view ahead
+    const heightAbove = isPortrait ? 18.0 : 16.5; // Shoulder/head eye level
+    const shoulderRight = isPortrait ? 3.4 : 5.2; // Right offset puts Ronniebaby on the left third
     const maxChaseDistance = isPortrait ? 40 : 32;
 
     const cosYaw = Math.cos(yaw);
@@ -292,9 +292,9 @@
     const cosPitch = Math.cos(clampedPitch);
     const sinPitch = Math.sin(clampedPitch);
 
-    // Right vector (perpendicular to yaw on the XZ plane)
-    const rightX = Math.cos(yaw + Math.PI / 2);
-    const rightZ = Math.sin(yaw + Math.PI / 2);
+    // Right vector (perpendicular to forward on the XZ plane)
+    const rightX = -sinYaw;
+    const rightZ = cosYaw;
 
     // Obstacle avoidance: cast back from player to find clear chase distance
     let targetDistance = maxChaseDistance;
@@ -307,16 +307,16 @@
       }
     }
 
-    // Camera world position
+    // Camera world position (offset behind and to the right)
     const camX = p.x - cosYaw * (targetDistance * cosPitch) + rightX * shoulderRight;
     const camZ = p.y - sinYaw * (targetDistance * cosPitch) + rightZ * shoulderRight;
     const camY = groundY + heightAbove - sinPitch * targetDistance;
 
-    // Look-at point: forward focus point down crosshair with slight shoulder compensation
-    const focusDist = 120;
-    const focusX = p.x + cosYaw * focusDist + rightX * (shoulderRight * 0.25);
-    const focusZ = p.y + sinYaw * focusDist + rightZ * (shoulderRight * 0.25);
-    const focusY = groundY + heightAbove + sinPitch * focusDist;
+    // Parallel forward aiming: camera looks straight along the forward direction
+    const focusDist = 200;
+    const focusX = camX + cosYaw * (focusDist * cosPitch);
+    const focusZ = camZ + sinYaw * (focusDist * cosPitch);
+    const focusY = camY + sinPitch * focusDist;
 
     camera.position.set(camX, camY, camZ);
     camera.lookAt(focusX, focusY, focusZ);
@@ -727,10 +727,13 @@
             for (const k in extraWeap) if (extraWeap[k]) extraWeap[k].visible = false;
           }
           if (typeof vmScene !== 'undefined' && vmScene) {
+            vmScene.visible = false;
             for (const child of vmScene.children) {
               if (child.isGroup || child.isMesh) child.visible = false;
             }
           }
+        } else if (typeof vmScene !== 'undefined' && vmScene) {
+          vmScene.visible = true;
         }
       };
     }

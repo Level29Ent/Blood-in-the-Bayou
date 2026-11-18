@@ -257,8 +257,11 @@ update = function(){
     if (zone) zone.classList.toggle('live', live);
     if (lookZone) lookZone.classList.toggle('live', live);
     joyEl.style.display = live ? 'block' : 'none';
+  } else {
+    joyEl.style.display = 'none';
+    if (zone) zone.classList.remove('live');
+    if (lookZone) lookZone.classList.remove('live');
   }
-  else joyEl.style.display = live ? 'block' : 'none';
   if (!live) releaseStick();
   if (!padActive) gp.sprint = runHeld && state === 'play';
   if (state !== 'play' && joyPtr == null && !padActive){ stick.x = 0; stick.y = 0; }

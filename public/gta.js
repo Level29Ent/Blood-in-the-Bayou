@@ -683,8 +683,11 @@ function syncGta(){
   for (const k in extraWeap){
     const m = extraWeap[k]; if(m.userData.finishMaterial)m.userData.finishMaterial.color.set(window.level29Trading?.color||'#353c41'); m.visible = !!(useExtra && k === curW); if (!m.visible) continue;
     const moving = !p.car && Math.hypot(p.vx, p.vy) > .4, bobX = moving ? Math.sin(p.anim * .5) * .35 : 0, bobY = moving ? -Math.abs(Math.cos(p.anim * .5)) * .3 : 0;
-    if (k === 'bat'){ const s = batSwing / 14; m.position.set(4.5 + bobX - s * 6, -5 + bobY + s * 2, -10); m.rotation.set(-.3 - s * .4, 0, -.5 + s * 1.8); }
-    else { m.position.set((k === 'rpg' ? 5.2 : 4.2) + bobX, (k === 'rpg' ? -3.6 : -4.4) + bobY, -12 + view.kick * .8); m.rotation.set(view.kick * .06, 0, 0); }
+    const isMobileView = (typeof window !== 'undefined' && (window.innerWidth < 700 || (window.matchMedia && window.matchMedia('(pointer: coarse)').matches)));
+    if (k === 'bat'){ const s = batSwing / 14; m.position.set((isMobileView ? 3.2 : 4.5) + bobX - s * 6, (isMobileView ? -5.8 : -5) + bobY + s * 2, -10); m.rotation.set(-.3 - s * .4, 0, -.5 + s * 1.8); }
+    else { m.position.set(((k === 'rpg' ? 5.2 : 4.2) * (isMobileView ? 0.75 : 1)) + bobX, ((k === 'rpg' ? -3.6 : -4.4) - (isMobileView ? 0.8 : 0)) + bobY, -12 + view.kick * .8); m.rotation.set(view.kick * .06, 0, 0); }
+    if (isMobileView) m.scale.setScalar(0.8);
+    else m.scale.setScalar(1.0);
     if (k === 'molotov') m.userData.rag.scale.setScalar(.8 + Math.random() * .5);
   }
 }

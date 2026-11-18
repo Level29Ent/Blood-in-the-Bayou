@@ -221,9 +221,24 @@ buildCity=function(){const r=prevBuild.apply(this,arguments);if(!cityGroup)retur
 // ---------------------------------------------------------------- sky: clouds, the flying jet, birds
 function ensureSky(){
   if(!scene)return;
-  if(!clouds.length){const m=new THREE.MeshLambertMaterial({color:'#ffffff',transparent:true,opacity:.82});
-    for(let i=0;i<26;i++){const c=new THREE.Group();const n=3+Math.floor(Math.random()*3);for(let k=0;k<n;k++){const s=new THREE.Mesh(new THREE.SphereGeometry(rnd(26,46),10,8),m);s.position.set(k*34-n*17,rnd(-6,8),rnd(-14,14));s.scale.y=.6;c.add(s);}
-      c.userData.v=rnd(.15,.45);c.position.set(player.x+rnd(-1300,1300),rnd(300,420),player.y+rnd(-1300,1300));clouds.push(c);}}
+  if(!clouds.length){
+    const m=new THREE.MeshLambertMaterial({color:'#ffffff',transparent:true,opacity:.42,depthWrite:false});
+    for(let i=0;i<24;i++){
+      const c=new THREE.Group();
+      const n=5+Math.floor(Math.random()*4);
+      for(let k=0;k<n;k++){
+        const r=rnd(45,85),ang=(k/n)*Math.PI*2+rnd(-.3,.3),dist=rnd(0,60);
+        const s=new THREE.Mesh(new THREE.SphereGeometry(r,12,8),m);
+        s.position.set(Math.cos(ang)*dist,rnd(-8,8),Math.sin(ang)*dist);
+        s.scale.set(rnd(.9,1.4),.32,rnd(.9,1.4));
+        c.add(s);
+      }
+      c.name='weather-cloud';
+      c.userData.v=rnd(.12,.32);
+      c.position.set(player.x+rnd(-1800,1800),rnd(850,1350),player.y+rnd(-1800,1800));
+      clouds.push(c);
+    }
+  }
   for(const c of clouds)if(!c.parent)scene.add(c);
   if(!flyer){flyer=planeMesh(false);flyer.userData.a=0;}
   if(isWorld(city)&&!flyer.parent)scene.add(flyer);
@@ -243,8 +258,12 @@ function updateBirds(){
   birds=birds.filter(b=>{const keep=(b.alive||b.h>0)&&d2(b.x,b.y,player.x,player.y)<1100;if(!keep&&b.mesh.parent)b.mesh.parent.remove(b.mesh);return keep;});
 }
 function updateSky(){
-  for(const c of clouds){c.position.x+=c.userData.v;const dx=c.position.x-player.x,dz=c.position.z-player.y;
-    if(Math.abs(dx)>1400)c.position.x=player.x-Math.sign(dx)*1350;if(Math.abs(dz)>1400)c.position.z=player.y-Math.sign(dz)*1350;}
+  for(const c of clouds){
+    c.position.x+=c.userData.v;
+    const dx=c.position.x-player.x,dz=c.position.z-player.y;
+    if(Math.abs(dx)>2000)c.position.x=player.x-Math.sign(dx)*1900;
+    if(Math.abs(dz)>2000)c.position.z=player.y-Math.sign(dz)*1900;
+  }
   if(flyer&&flyer.parent){const a=(flyer.userData.a+=.0025),R=WORLD*.33,cx=WORLD/2,cy=WORLD/2;
     flyer.position.set(cx+Math.cos(a)*R,240,cy+Math.sin(a)*R);flyer.rotation.set(0,-(a+Math.PI/2),0);flyer.rotateX(-.25);}
   for(const s of spins)s.rotation.y+=.006;

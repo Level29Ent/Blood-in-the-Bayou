@@ -1453,7 +1453,31 @@ function drawHUD(){
   if (areaShow > 0 && !boss){ cx.globalAlpha = Math.min(1, areaShow / 30); if (small && SH >= 600){ hudText(areaName, 18, SH - 350, 17, '#f6f3e6', 'left'); hudText(D.name, 18, SH - 328, 12, '#f4c355', 'left', '600 '); } else { hudText(areaName, SW - 18, SH - (small ? 150 : 104), small ? 20 : 28, '#f6f3e6', 'right'); hudText(D.name, SW - 18, SH - (small ? 124 : 76), 13, '#f4c355', 'right', '600 '); } cx.globalAlpha = 1; }
   if (vehShow){ cx.globalAlpha = Math.min(1, vehShow.t / 30); hudText(vehShow.txt, SW - 18, SH - (small ? 176 : 138), 18, '#9fd0ff', 'right'); cx.globalAlpha = 1; }
   // toast
-  if (toastQ){ cx.globalAlpha = Math.min(1, toastQ.life / 30); hudText(toastQ.t, SW/2, small ? 120 : 90, 18, '#f4c355', 'center'); cx.globalAlpha = 1; }
+  if (toastQ){
+    const a = Math.min(1, toastQ.life / 30);
+    cx.save();
+    cx.globalAlpha = a;
+    const txt = String(toastQ.t || '');
+    const fs = small ? 14 : 16;
+    cx.font = "800 " + fs + "px 'Barlow Condensed', sans-serif";
+    const tw = cx.measureText(txt).width;
+    const ph = small ? 26 : 30, pw = Math.max(80, tw + 28);
+    const px = Math.round(SW/2 - pw/2), py = Math.round(small ? 104 : 86);
+    cx.fillStyle = 'rgba(15, 20, 24, 0.88)';
+    cx.strokeStyle = 'rgba(244, 195, 85, 0.55)';
+    cx.lineWidth = 1.5;
+    if (typeof cx.roundRect === 'function') {
+      cx.beginPath();
+      cx.roundRect(px, py, pw, ph, 6);
+      cx.fill();
+      cx.stroke();
+    } else {
+      cx.fillRect(px, py, pw, ph);
+      cx.strokeRect(px, py, pw, ph);
+    }
+    hudText(txt, SW/2, py + (small ? 5 : 6), fs, '#f4c355', 'center');
+    cx.restore();
+  }
   // Portrait captions for every speaking character.
   if(subtitle&&window.drawCharacterCaption)window.drawCharacterCaption(subtitle);
   // banner

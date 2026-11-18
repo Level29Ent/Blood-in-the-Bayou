@@ -19,6 +19,39 @@ function textures(kind){if(sets.has(kind))return sets.get(kind);const n=256,heig
  const out={map:tex(rgb,true),normalMap:tex(normal),roughnessMap:tex(rough)};sets.set(kind,out);return out;
 }
 function kind(color,metal){if(metal>.4)return 'metal';const c=new THREE.Color(color),r=c.r,g=c.g,b=c.b;if(r>g*1.1&&g>b*1.1)return 'wood';if(r<.25&&g<.25&&b<.25)return 'asphalt';return 'plaster';}
-function apply(m,type='plaster',albedo=true){if(!m?.isMeshStandardMaterial||m.transparent||m.userData?.pbrDetail||m.name==='worldGround'||m.vertexColors)return m;if(m.name==='vehiclePaint'||m.name==='boatPaint')return m;const t=textures(type);if(albedo&&!m.map)m.map=t.map;if(!m.normalMap&&!m.bumpMap){m.normalMap=t.normalMap;m.normalScale.set(type==='brick'?.45:.22,type==='brick'?.45:.22);}if(!m.roughnessMap)m.roughnessMap=t.roughnessMap;m.userData={...m.userData,pbrDetail:true};m.needsUpdate=true;return m;}
+function apply(m,type='plaster',albedo=true){
+  if(!m?.isMeshStandardMaterial||m.transparent||m.userData?.pbrDetail||m.vertexColors)return m;
+  if(m.name==='vehiclePaint'||m.name==='boatPaint')return m;
+  if(m.name==='worldGround'){
+    const t=textures('asphalt');
+    if(!m.normalMap){
+      const nm=t.normalMap.clone();
+      nm.wrapS=nm.wrapT=THREE.RepeatWrapping;
+      nm.repeat.set(240,240);
+      nm.needsUpdate=true;
+      m.normalMap=nm;
+      m.normalScale.set(0.35,0.35);
+    }
+    if(!m.roughnessMap){
+      const rm=t.roughnessMap.clone();
+      rm.wrapS=rm.wrapT=THREE.RepeatWrapping;
+      rm.repeat.set(240,240);
+      rm.needsUpdate=true;
+      m.roughnessMap=rm;
+    }
+    m.roughness=0.85;
+    m.metalness=0.04;
+    m.userData={...m.userData,pbrDetail:true};
+    m.needsUpdate=true;
+    return m;
+  }
+  const t=textures(type);
+  if(albedo&&!m.map)m.map=t.map;
+  if(!m.normalMap&&!m.bumpMap){m.normalMap=t.normalMap;m.normalScale.set(type==='brick'?.45:.22,type==='brick'?.45:.22);}
+  if(!m.roughnessMap)m.roughnessMap=t.roughnessMap;
+  m.userData={...m.userData,pbrDetail:true};
+  m.needsUpdate=true;
+  return m;
+}
 window.level29SurfaceDetail={textures,apply,kind,get count(){return sets.size;}};
 })();
