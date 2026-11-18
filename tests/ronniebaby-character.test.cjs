@@ -446,3 +446,149 @@ test('Mobile 3PV touch button #camBtn creation and label synchronization', () =>
   delete global.view;
 });
 
+test('HUD camera toggle button #hudCamBtn setup, styling, and view synchronization', () => {
+  const mockElements = new Map();
+  const mockHudActions = {
+    id: 'hudMapActions',
+    children: [],
+    prepend(child) {
+      this.children.unshift(child);
+      mockElements.set(child.id, child);
+    }
+  };
+  mockElements.set('hudMapActions', mockHudActions);
+
+  global.document = {
+    getElementById(id) { return mockElements.get(id) || null; },
+    createElement(tag) {
+      const el = {
+        tagName: tag.toUpperCase(),
+        id: '',
+        textContent: '',
+        classList: {
+          classes: new Set(),
+          add(c) { this.classes.add(c); },
+          remove(c) { this.classes.delete(c); },
+          toggle(c, force) {
+            if (force === undefined) {
+              if (this.classes.has(c)) this.classes.delete(c);
+              else this.classes.add(c);
+            } else if (force) {
+              this.classes.add(c);
+            } else {
+              this.classes.delete(c);
+            }
+          },
+          contains(c) { return this.classes.has(c); }
+        },
+        attrs: {},
+        style: {},
+        setAttribute(k, v) { this.attrs[k] = v; },
+        getAttribute(k) { return this.attrs[k]; },
+        listeners: {},
+        addEventListener(evt, fn) { this.listeners[evt] = fn; }
+      };
+      return el;
+    }
+  };
+
+  global.view = { chase: false };
+
+  const btn = characterModule.setupHudCamButton();
+  assert.ok(btn, '#hudCamBtn created');
+  assert.equal(btn.id, 'hudCamBtn');
+  assert.ok(btn.textContent.includes('3PV'), 'Button indicates 3PV toggle in 1PV');
+  assert.ok(mockHudActions.children.includes(btn), 'Docked in #hudMapActions');
+
+  // Click #hudCamBtn
+  btn.listeners['click']({ preventDefault() {}, stopPropagation() {} });
+  assert.equal(global.view.chase, true, 'Clicking #hudCamBtn toggled view.chase to true');
+  assert.ok(btn.textContent.includes('1PV'), 'Button indicates 1PV toggle in 3PV');
+  assert.equal(btn.classList.contains('on'), true, 'Button has .on class in 3PV');
+
+  // Click #hudCamBtn again
+  btn.listeners['click']({ preventDefault() {}, stopPropagation() {} });
+  assert.equal(global.view.chase, false, 'Clicking #hudCamBtn again toggled back to 1PV');
+  assert.ok(btn.textContent.includes('3PV'), 'Button indicates 3PV toggle in 1PV');
+
+  delete global.document;
+  delete global.view;
+});
+
+test('makeFigure compatibility protects makeRonnie and story figures from crashing', () => {
+  class TestMesh {
+    constructor(geometry, material) {
+      this.geometry = geometry;
+      this.material = material;
+      this.isMesh = true;
+      this.children = [];
+      this.userData = {};
+      this.rotation = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.scale = { x: 1, y: 1, z: 1, set(x, y, z) { this.x = x; this.y = y; this.z = z; }, multiply() { return this; } };
+      this.position = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+    }
+    add(child) { this.children.push(child); }
+  }
+  class TestGroup {
+    constructor() {
+      this.children = [];
+      this.userData = {};
+      this.position = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.rotation = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.scale = { x: 1, y: 1, z: 1, set(x, y, z) { this.x = x; this.y = y; this.z = z; }, setScalar(s) { this.x = s; this.y = s; this.z = s; }, multiply() { return this; } };
+    }
+    updateMatrixWorld() {}
+    add(...nodes) {
+      for (const n of nodes) {
+        if (n) {
+          n.parent = this;
+          this.children.push(n);
+        }
+      }
+    }
+    traverse(fn) {
+      fn(this);
+      for (const c of this.children) {
+        if (c.traverse) c.traverse(fn);
+        else fn(c);
+      }
+    }
+  }
+
+  global.THREE = {
+    Group: TestGroup,
+    Mesh: TestMesh,
+    Color: class { constructor(c) { this.hex = c; } set(c) { this.hex = c; return this; } copy(c) { this.hex = c.hex; return this; } lerp() { return this; } getHSL(t) { t.h=0;t.s=0;t.l=0.5;return t; } setHSL() { return this; } },
+    MeshStandardMaterial: class { constructor(opts) { Object.assign(this, opts); } },
+    MeshBasicMaterial: class { constructor(opts) { Object.assign(this, opts); } },
+    BoxGeometry: class {},
+    SphereGeometry: class { scale() {} },
+    CylinderGeometry: class {},
+    PlaneGeometry: class {},
+    TorusGeometry: class {},
+    Box3: class { setFromObject() { return { min: { x: -0.4, y: 0, z: -0.2 }, max: { x: 0.4, y: 1.8, z: 0.2 } }; } }
+  };
+
+  const npcSystem = require('../public/game/npc-system.js');
+  const npc = npcSystem.spawnNPC({ district: 'nola' });
+
+  assert.ok(npc, 'spawnNPC returned valid root');
+  assert.ok(npc.userData.armL, 'userData.armL exists');
+  assert.ok(Array.isArray(npc.userData.armL.children), 'armL has children array');
+  assert.ok(npc.userData.armL.children.length > 0, 'armL has child sleeve mesh');
+  assert.ok(npc.userData.armR.children.length > 0, 'armR has child sleeve mesh');
+  assert.ok(npc.userData.torso, 'torso mesh exists');
+  assert.ok(npc.userData.body, 'body group exists');
+  assert.ok(npc.userData.hair, 'hair mesh exists');
+
+  // Verify sleeve material assignment (which crashed in ronnie.js)
+  const fakeSleeve = { map: null, needsUpdate: false };
+  for (const arm of [npc.userData.armL, npc.userData.armR]) {
+    arm.children[0].material = fakeSleeve;
+  }
+  assert.equal(npc.userData.armL.children[0].material, fakeSleeve, 'armL.children[0].material assignable without throwing');
+  assert.equal(npc.userData.armR.children[0].material, fakeSleeve, 'armR.children[0].material assignable without throwing');
+
+  delete global.THREE;
+});
+

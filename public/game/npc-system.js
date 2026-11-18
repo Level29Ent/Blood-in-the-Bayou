@@ -830,22 +830,77 @@
     }
 
     // Compatibility userData layer for legacy engine hooks & tests
+    const body = new T.Group();
+    npcRoot.add(body);
+
+    const skinColor = new T.Color(skinTone);
+    const shirtColor = new T.Color(palette.shirt);
+    const pantsColor = new T.Color(palette.pants);
+    const hairColorObj = new T.Color(hairColor);
+
+    const skinMat = (typeof T.MeshStandardMaterial === 'function' ? new T.MeshStandardMaterial({ color: skinColor }) : (typeof T.MeshBasicMaterial === 'function' ? new T.MeshBasicMaterial({ color: skinColor }) : { color: skinColor, emissive: { setRGB() {} } }));
+    const shirtMat = (typeof T.MeshStandardMaterial === 'function' ? new T.MeshStandardMaterial({ color: shirtColor }) : (typeof T.MeshBasicMaterial === 'function' ? new T.MeshBasicMaterial({ color: shirtColor }) : { color: shirtColor, emissive: { setRGB() {} } }));
+    const pantsMat = (typeof T.MeshStandardMaterial === 'function' ? new T.MeshStandardMaterial({ color: pantsColor }) : (typeof T.MeshBasicMaterial === 'function' ? new T.MeshBasicMaterial({ color: pantsColor }) : { color: pantsColor, emissive: { setRGB() {} } }));
+    const hairMat = (typeof T.MeshStandardMaterial === 'function' ? new T.MeshStandardMaterial({ color: hairColorObj }) : (typeof T.MeshBasicMaterial === 'function' ? new T.MeshBasicMaterial({ color: hairColorObj }) : { color: hairColorObj, emissive: { setRGB() {} } }));
+
+    const BoxGeo = typeof T.BoxGeometry === 'function' ? T.BoxGeometry : (typeof T.BufferGeometry === 'function' ? T.BufferGeometry : class {});
+    const SphereGeo = typeof T.SphereGeometry === 'function' ? T.SphereGeometry : (typeof T.BufferGeometry === 'function' ? T.BufferGeometry : class {});
+
+    const armL = new T.Group();
+    const armLSleeve = new T.Mesh(new BoxGeo(1, 1, 1), shirtMat);
+    armL.add(armLSleeve);
+    body.add(armL);
+
+    const armR = new T.Group();
+    const armRSleeve = new T.Mesh(new BoxGeo(1, 1, 1), shirtMat);
+    armR.add(armRSleeve);
+    body.add(armR);
+
+    const legL = new T.Group();
+    body.add(legL);
+    const legR = new T.Group();
+    body.add(legR);
+
+    const torso = new T.Mesh(new BoxGeo(1, 1, 1), shirtMat);
+    body.add(torso);
+
+    const head = new T.Mesh(new BoxGeo(1, 1, 1), skinMat);
+    body.add(head);
+
+    const jaw = new T.Group();
+    body.add(jaw);
+
+    const hairMesh = new T.Mesh(new SphereGeo(1, 8, 8), hairMat);
+    hairMesh.position.y = 20.4;
+    body.add(hairMesh);
+
+    const face = new T.Group();
+    body.add(face);
+
+    const eyes = new T.Group();
+    body.add(eyes);
+
+    const helmet = new T.Mesh(new SphereGeo(1, 8, 8), shirtMat);
+    helmet.visible = false;
+    body.add(helmet);
+
     const u = {
-      body: new T.Group(),
-      head: new T.Group(),
-      hair: { material: { color: new T.Color('#3a2a1a') }, position: { y: 20.4 } },
+      body,
+      head,
+      hair: hairMesh,
       longHair: { visible: false },
-      jaw: new T.Group(),
-      face: new T.Group(),
-      legL: { rotation: { z: 0 } },
-      legR: { rotation: { z: 0 } },
-      armL: { rotation: { z: 0 } },
-      armR: { rotation: { z: 0, x: 0 } },
-      skin: { color: new T.Color('#d4aa88'), emissive: { setRGB() {} } },
-      shirt: { color: new T.Color('#394e5e'), emissive: { setRGB() {} } },
-      pants: { color: new T.Color('#252e3b') },
-      eyes: { visible: false },
-      helmet: { visible: false, scale: { set() {} } },
+      jaw,
+      face,
+      legL,
+      legR,
+      armL,
+      armR,
+      torso,
+      skin: skinMat,
+      shirt: shirtMat,
+      pants: pantsMat,
+      eyes,
+      helmet,
       // NPC System State
       model: innerModel,
       mixer,
@@ -991,6 +1046,15 @@
     if (typeof makeFigure === 'function') {
       const baseMakeFigure = makeFigure;
       makeFigure = function(zombie) {
+        // If called by specialized procedural character constructors (makeRonnie, Sheldon wardrobe preview,
+        // Sgt Powell, Captain Smith, Felicia trailer, etc.), preserve the original base figure geometry
+        try {
+          const stack = new Error().stack || '';
+          if (/makeRonnie|syncRonnie|wardrobe|sheldon|powell|smith|trailer|rental/i.test(stack)) {
+            return baseMakeFigure.apply(this, arguments);
+          }
+        } catch (_) {}
+
         // If templates are loaded and ready, spawn realistic rigged GLB NPC
         const d = (typeof D !== 'undefined' ? D?.id : 'nola');
         const npc = spawnNPC({ zombie: !!zombie, district: d });

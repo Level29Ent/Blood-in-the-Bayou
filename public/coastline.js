@@ -195,7 +195,7 @@ function ballMaterial(){if(!ballTex){const cv=document.createElement('canvas');c
   ballTex=new THREE.CanvasTexture(cv);}
   return new THREE.MeshStandardMaterial({map:ballTex,roughness:.55});}
 function numPlate(g,text,fg,bg,z,rotY){const m=new THREE.Mesh(new THREE.PlaneGeometry(3.2,3.2),new THREE.MeshBasicMaterial({map:textTex(text,fg,bg,128,128),side:THREE.DoubleSide}));m.position.set(0,12.2,z);if(rotY)m.rotation.y=rotY;g.add(m);}
-function makeFigure(jersey,trim,skin,num){
+function makeHoopsFigure(jersey,trim,skin,num){
   const g=new THREE.Group(),J=std(jersey,{roughness:.6}),S=std(skin,{roughness:.7}),Tm=std(trim,{roughness:.6}),shoe=std('#f4f4f4');
   const limb=(x,y,w,h,m)=>{const p=new THREE.Group();p.position.set(x,y,0);g.add(p);box(p,w,h,w,0,-h/2,0,m);return p;};
   const legL=limb(-1.1,7.2,1.7,7,S),legR=limb(1.1,7.2,1.7,7,S);
@@ -208,7 +208,7 @@ function makeFigure(jersey,trim,skin,num){
   return {g,legL,legR,armL,armR,x:0,z:0,ph:Math.random()*6};
 }
 function makeMascot(){
-  const f=makeFigure('#5b2a86',L29.gold,'#f6f1e8',29),hatCols=[L29.green,L29.gold,'#7a3fb8'];
+  const f=makeHoopsFigure('#5b2a86',L29.gold,'#f6f1e8',29),hatCols=[L29.green,L29.gold,'#7a3fb8'];
   for(let i=0;i<10;i++){const a=i/10*Math.PI*2,c=new THREE.Mesh(new THREE.ConeGeometry(.9,2.6,6),std(i%2?L29.green:L29.gold));c.position.set(Math.cos(a)*2.4,14.9,Math.sin(a)*1.6);c.rotation.set(Math.sin(a)*1.3,0,-Math.cos(a)*1.3);f.g.add(c);}
   for(let i=0;i<3;i++){const p=new THREE.Group();p.position.set(0,18.4,0);p.rotation.z=(i-1)*.85;f.g.add(p);
     const c=new THREE.Mesh(new THREE.ConeGeometry(1.4,6.4,10),std(hatCols[i]));c.position.y=3.1;p.add(c);
@@ -270,7 +270,7 @@ function buildCourt(g){
   sign(grp,'BAYOU JESTER · LEVEL 29 MASCOT',34,4.5,mx,30,mz+3,L29.gold,'#22093b',Math.PI);
   // Players for the live 2v2 game.
   const rig=new THREE.Group();rig.visible=false;grp.add(rig);
-  const P={you:makeFigure(L29.dkgreen,L29.gold,'#8a5a3c',29),mate:makeFigure(L29.dkgreen,L29.gold,'#c69072',7),o1:makeFigure('#d9a92f',L29.purple,'#5e3b2a',3),o2:makeFigure('#d9a92f',L29.purple,'#e0b998',11)};
+  const P={you:makeHoopsFigure(L29.dkgreen,L29.gold,'#8a5a3c',29),mate:makeHoopsFigure(L29.dkgreen,L29.gold,'#c69072',7),o1:makeHoopsFigure('#d9a92f',L29.purple,'#5e3b2a',3),o2:makeHoopsFigure('#d9a92f',L29.purple,'#e0b998',11)};
   for(const k in P)rig.add(P[k].g);
   sign(P.you.g,'YOU',5,2.2,0,22.5,0,'#0b0612',L29.gold);
   const ball=new THREE.Mesh(new THREE.SphereGeometry(1.5,18,14),ballMaterial());rig.add(ball);

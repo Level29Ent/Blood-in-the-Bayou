@@ -219,18 +219,24 @@ function patchTex(){
   const t = new THREE.CanvasTexture(c); t.magFilter = THREE.NearestFilter; return t;
 }
 function makeRonnie(){
-  const g = makeFigure(false), u = g.userData;
+  const g = makeFigure(false), u = g ? g.userData : {};
+  if (!u) return g;
   const skinCol = '#5b3a27';
-  setFigureColors(g, skinCol, '#ffffff', '#111113', '#120d0a');
-  u.shirt.map = patchTex(); u.shirt.needsUpdate = true;
+  if (typeof setFigureColors === 'function') setFigureColors(g, skinCol, '#ffffff', '#111113', '#120d0a');
+  if (u.shirt) { u.shirt.map = patchTex(); u.shirt.needsUpdate = true; }
   u.eyes = null;
   if (u.face) u.face.visible = false;
   // sleeves: patchwork arms + hands
-  const sleeve = u.shirt, handM = lam(skinCol);
-  for (const arm of [u.armL, u.armR]){ arm.children[0].material = sleeve; const h = box(2.2, 1.6, 2.2, handM); h.position.y = -7.6; arm.add(h); }
+  const sleeve = u.shirt, handM = (typeof lam === 'function' ? lam(skinCol) : null);
+  for (const arm of [u.armL, u.armR]){
+    if (arm && arm.children && arm.children[0] && sleeve) arm.children[0].material = sleeve;
+    if (arm && typeof box === 'function' && handM) { const h = box(2.2, 1.6, 2.2, handM); h.position.y = -7.6; arm.add(h); }
+  }
   // oversized jacket: slightly wider torso + hem
-  u.torso.scale.set(1.12, 1.08, 1.08);
-  const hem = box(5.4, 1.4, 8.2, sleeve); hem.position.y = 7.9; u.body.add(hem);
+  if (u.torso && u.torso.scale && u.torso.scale.set) u.torso.scale.set(1.12, 1.08, 1.08);
+  if (u.body && typeof box === 'function') {
+    const hem = box(5.4, 1.4, 8.2, sleeve); hem.position.y = 7.9; u.body.add(hem);
+  }
   // face: eyes, mustache + chin hair
   const dark = lam('#0d0a08');
   for (const z of [-1.05, 1.05]){ const e = box(.3, .55, .8, dark); e.position.set(2.24, 18.5, z); u.body.add(e); }

@@ -340,10 +340,38 @@
 
   function setupMobileCamButton() {
     if (typeof document === 'undefined') return null;
-    if (camBtn && camBtn.parentElement) return camBtn;
+    if (camBtn && camBtn.parentElement) {
+      updateMobileCamButton();
+      return camBtn;
+    }
     const existing = document.getElementById('camBtn');
     if (existing) {
       camBtn = existing;
+      updateMobileCamButton();
+      if (!camBtn._hasCamListener) {
+        camBtn._hasCamListener = true;
+        camBtn.addEventListener('pointerdown', function(e) {
+          e.preventDefault();
+          e.stopPropagation();
+          if (typeof ensureAudio === 'function') ensureAudio();
+
+          if (typeof player !== 'undefined' && player && player.car) {
+            if (typeof view !== 'undefined') {
+              view.chase = !view.chase;
+              if (typeof toast === 'function') {
+                toast(view.chase ? 'CHASE CAMERA' : 'COCKPIT CAMERA');
+              }
+            }
+          } else {
+            toggleView();
+          }
+          updateMobileCamButton();
+          updateHudCamButton();
+        });
+        for (const evt of ['click', 'pointerup', 'touchstart', 'touchend']) {
+          camBtn.addEventListener(evt, e => e.stopPropagation());
+        }
+      }
       return camBtn;
     }
 
@@ -353,6 +381,7 @@
     camBtn.setAttribute('aria-label', 'Toggle 3rd Person View (1PV / 3PV)');
     camBtn.textContent = (typeof view !== 'undefined' && view.chase) ? '1PV' : '3PV';
     if (typeof view !== 'undefined' && view.chase) camBtn.classList.add('on');
+    camBtn._hasCamListener = true;
 
     camBtn.addEventListener('pointerdown', function(e) {
       e.preventDefault();
@@ -370,6 +399,7 @@
         toggleView();
       }
       updateMobileCamButton();
+      updateHudCamButton();
     });
 
     for (const evt of ['click', 'pointerup', 'touchstart', 'touchend']) {
@@ -383,6 +413,58 @@
       document.body.appendChild(camBtn);
     }
     return camBtn;
+  }
+
+  // Desktop / HUD camera toggle button state and setup (#hudCamBtn)
+  let hudCamBtn = null;
+  function updateHudCamButton() {
+    if (!hudCamBtn) {
+      if (typeof document !== 'undefined') hudCamBtn = document.getElementById('hudCamBtn');
+      if (!hudCamBtn) return;
+    }
+    const is3PV = (typeof view !== 'undefined' && !!view.chase);
+    hudCamBtn.textContent = is3PV ? '1PV · [C]' : '3PV · [C]';
+    hudCamBtn.classList.toggle('on', is3PV);
+    hudCamBtn.setAttribute('aria-pressed', String(is3PV));
+  }
+
+  function setupHudCamButton() {
+    if (typeof document === 'undefined') return null;
+    if (hudCamBtn && hudCamBtn.parentElement) {
+      updateHudCamButton();
+      return hudCamBtn;
+    }
+    let existing = document.getElementById('hudCamBtn');
+    if (!existing) {
+      existing = document.createElement('button');
+      existing.id = 'hudCamBtn';
+      existing.setAttribute('type', 'button');
+      existing.setAttribute('aria-label', 'Toggle First/Third Person View (1PV / 3PV)');
+      existing.style.cssText = 'min-height:36px;font:800 11px monospace;background:#15242cee;color:#ffd86b;border:1.5px solid #d4a948;border-radius:4px;cursor:pointer;padding:6px 10px;text-transform:uppercase;box-shadow:0 3px 10px rgba(0,0,0,0.5);margin:2px 0;';
+      existing.textContent = (typeof view !== 'undefined' && view.chase) ? '1PV · [C]' : '3PV · [C]';
+      if (typeof view !== 'undefined' && view.chase) existing.classList.add('on');
+    }
+    hudCamBtn = existing;
+    updateHudCamButton();
+
+    if (!hudCamBtn._hasCamListener) {
+      hudCamBtn._hasCamListener = true;
+      hudCamBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        if (typeof ensureAudio === 'function') ensureAudio();
+        toggleView();
+      });
+      hudCamBtn.addEventListener('pointerdown', e => e.stopPropagation());
+    }
+
+    const slot = document.getElementById('hudMapActions');
+    if (slot && hudCamBtn.parentElement !== slot) {
+      slot.prepend(hudCamBtn);
+    } else if (!hudCamBtn.parentElement) {
+      document.body.appendChild(hudCamBtn);
+    }
+    return hudCamBtn;
   }
 
   // Toggle view between 1st-person and 3rd-person
@@ -406,11 +488,12 @@
       }
       if (typeof vmScene !== 'undefined' && vmScene) {
         for (const child of vmScene.children) {
-          if (child.isGroup) child.visible = false;
+          if (child.isGroup || child.isMesh) child.visible = false;
         }
       }
     }
     updateMobileCamButton();
+    updateHudCamButton();
     if (typeof toast === 'function') {
       const isTouch = (typeof matchMedia !== 'undefined' && matchMedia('(pointer: coarse)').matches) ||
                       (typeof document !== 'undefined' && document.body.classList.contains('is-touch'));
@@ -558,7 +641,7 @@
   if (typeof window !== 'undefined') {
     // Key listener for 'C' view toggle on foot
     window.addEventListener('keydown', function(e) {
-      if (e.key.toLowerCase() === 'c' && !e.repeat && typeof state !== 'undefined' && state === 'play') {
+      if ((e.key.toLowerCase() === 'c' || e.code === 'KeyC') && !e.repeat && typeof state !== 'undefined' && state === 'play') {
         if (typeof player !== 'undefined' && player && !player.car) {
           e.preventDefault();
           e.stopPropagation();
@@ -580,6 +663,26 @@
       };
     }
 
+    // Hook syncViewModel to ensure ViewModel (1st person gun/arms) stays hidden in 3PV
+    if (typeof syncViewModel === 'function') {
+      const baseSyncVM = syncViewModel;
+      syncViewModel = function() {
+        baseSyncVM.apply(this, arguments);
+        if (typeof view !== 'undefined' && view.chase) {
+          if (typeof gun !== 'undefined' && gun) gun.visible = false;
+          if (typeof dash !== 'undefined' && dash) dash.visible = false;
+          if (typeof extraWeap !== 'undefined' && extraWeap) {
+            for (const k in extraWeap) if (extraWeap[k]) extraWeap[k].visible = false;
+          }
+          if (typeof vmScene !== 'undefined' && vmScene) {
+            for (const child of vmScene.children) {
+              if (child.isGroup || child.isMesh) child.visible = false;
+            }
+          }
+        }
+      };
+    }
+
     // Hook render for per-frame animation and mesh update
     if (typeof render === 'function') {
       const baseRender = render;
@@ -588,12 +691,21 @@
         const dt = lastTime ? Math.min((now - lastTime) / 1000, 0.1) : 0.016;
         lastTime = now;
 
-        // Ensure mobile camera toggle button is created and synced
+        // Ensure camera toggle buttons are created and synced
         if (!camBtn && typeof document !== 'undefined') {
           setupMobileCamButton();
         }
         if (camBtn) {
           updateMobileCamButton();
+        }
+        if (!hudCamBtn && typeof document !== 'undefined') {
+          setupHudCamButton();
+        }
+        if (hudCamBtn) {
+          updateHudCamButton();
+          if (typeof state !== 'undefined') {
+            hudCamBtn.style.display = (state === 'play') ? 'block' : 'none';
+          }
         }
 
         // Ensure character mesh is added to active scene and updated BEFORE drawing
@@ -611,16 +723,28 @@
           if (typeof gun !== 'undefined' && gun) gun.visible = false;
           if (typeof dash !== 'undefined' && dash) dash.visible = false;
           if (typeof localAvatar !== 'undefined' && localAvatar) localAvatar.visible = false;
+          if (typeof extraWeap !== 'undefined' && extraWeap) {
+            for (const k in extraWeap) if (extraWeap[k]) extraWeap[k].visible = false;
+          }
+          if (typeof vmScene !== 'undefined' && vmScene) {
+            for (const child of vmScene.children) {
+              if (child.isGroup || child.isMesh) child.visible = false;
+            }
+          }
         }
       };
     }
 
-    // Set up mobile camera toggle button if DOM is ready
+    // Set up camera toggle buttons if DOM is ready
     if (typeof document !== 'undefined') {
-      if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', setupMobileCamButton);
-      } else {
+      const onReady = () => {
         setupMobileCamButton();
+        setupHudCamButton();
+      };
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', onReady);
+      } else {
+        onReady();
       }
     }
 
@@ -649,7 +773,10 @@
     initCharacter: loadCharacterModel,
     setupMobileCamButton,
     updateMobileCamButton,
+    setupHudCamButton,
+    updateHudCamButton,
     get camBtn() { return camBtn; },
+    get hudCamBtn() { return hudCamBtn; },
     get characterMesh() { return characterMesh; },
     get mixer() { return mixer; },
     get actions() { return actions; },
