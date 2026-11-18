@@ -7,6 +7,15 @@ const vm = require('node:vm');
 
 const npcModule = require('../public/game/npc-system.js');
 
+class TestColor {
+  constructor(c) { this.hex = c; }
+  set(c) { this.hex = c; return this; }
+  copy(c) { this.hex = c.hex; return this; }
+  lerp() { return this; }
+  getHSL(target) { target.h = 0; target.s = 0; target.l = 0.5; return target; }
+  setHSL() { return this; }
+}
+
 test('Realistic human .glb models exist in public/assets/models/npcs with valid GLTF magic', () => {
   const dir = path.resolve(__dirname, '../public/assets/models/npcs');
   assert.ok(fs.existsSync(dir), 'public/assets/models/npcs directory exists');
@@ -17,6 +26,9 @@ test('Realistic human .glb models exist in public/assets/models/npcs with valid 
     'npc_bayou_local.glb',
     'npc_civilian_03.glb',
     'npc_civilian_04.glb',
+    'npc_anthony.glb',
+    'npc_drako.glb',
+    'npc_ronnie_crew.glb',
     'tripo_convert_76e7a4f4-0853-40fa-855d-89ea8d8bdad9.glb',
     'tripo_convert_5ccbf298-3609-41e5-9b5c-abb168e8d3aa.glb',
     'tripo_convert_c5fa3aab-73ad-4057-a1e1-c6aa5923ce19.glb',
@@ -224,7 +236,7 @@ test('Capsule/Standard PBR human proxy fallback constructs properly with PBR mat
   const mockThree = {
     Group: MockGroup,
     Mesh: MockMesh,
-    MeshStandardMaterial: class { constructor(opts) { Object.assign(this, opts); } },
+    MeshStandardMaterial: class { constructor(opts) { Object.assign(this, opts); if (typeof this.color === 'string') this.color = new TestColor(this.color); } },
     CapsuleGeometry: class { constructor(r, h) { this.r = r; this.h = h; } },
     SphereGeometry: class { constructor(r) { this.r = r; } }
   };
@@ -286,19 +298,239 @@ test('Automatic Animation Playback crossfades between Idle, Walk, Run based on v
   assert.equal(fakeNPC.userData.isReacting, true, 'isReacting flag set during reaction');
 });
 
-test('Variety Across Districts selects valid variants and randomizes subtle tint and scale variations', () => {
-  const v1 = npcModule.selectVariantForDistrict('nola');
-  const v2 = npcModule.selectVariantForDistrict('bayou');
+test('Extended Model Variants includes Anthony, Drako, Ronnie crew, and role tags', () => {
+  assert.ok(npcModule.NPC_VARIANTS.length >= 12, 'Includes at least 12 model variants');
+  const ids = npcModule.NPC_VARIANTS.map(v => v.id);
+  assert.ok(ids.includes('anthony'), 'Includes Anthony variant');
+  assert.ok(ids.includes('drako'), 'Includes Drako variant');
+  assert.ok(ids.includes('ronnie_crew'), 'Includes Ronnie crew variant');
 
-  assert.ok(v1 && v1.file, 'New Orleans variant returned');
-  assert.ok(v2 && v2.file, 'Bayou variant returned');
-
-  // Test random scale variation in spawnNPC options
-  assert.ok(npcModule.NPC_VARIANTS.length >= 5, 'Contains multiple NPC variants');
   const files = npcModule.NPC_VARIANTS.map(v => v.file);
-  assert.ok(files.includes('npc_civilian_01.glb'), 'Includes npc_civilian_01.glb');
-  assert.ok(files.includes('npc_civilian_02.glb'), 'Includes npc_civilian_02.glb');
-  assert.ok(files.includes('npc_bayou_local.glb'), 'Includes npc_bayou_local.glb');
+  assert.ok(files.includes('npc_anthony.glb'), 'References npc_anthony.glb');
+  assert.ok(files.includes('npc_drako.glb'), 'References npc_drako.glb');
+  assert.ok(files.includes('npc_ronnie_crew.glb'), 'References npc_ronnie_crew.glb');
+
+  // Verify role matching
+  const workerVariant = npcModule.selectVariantForDistrict('canal', 'worker');
+  assert.ok(workerVariant, 'Finds role-matched variant for canal worker');
+});
+
+test('Demographic Skin Tones and District Wardrobe Palettes cover all 7 districts', () => {
+  assert.ok(npcModule.SKIN_TONES.length >= 10, 'Rich Fitzpatrick skin tone spectrum (>=10 tones)');
+  assert.ok(npcModule.HAIR_COLORS.length >= 6, 'Natural hair color range (>=6 colors)');
+
+  const districts = ['nola', 'fq', 'treme', 'canal', 'bayou', 'forest', 'gardens'];
+  for (const d of districts) {
+    assert.ok(npcModule.DISTRICT_PALETTES[d], 'Palette defined for ' + d);
+    assert.ok(npcModule.DISTRICT_PALETTES[d].length >= 3, d + ' has multiple curated colorways');
+  }
+
+  // Workwear filtering for Industrial Canal
+  const workwearPalette = npcModule.selectOutfitPalette('canal', true);
+  assert.ok(workwearPalette.isWorkwear, 'Selects high-vis workwear for canal workers');
+  assert.ok(workwearPalette.shirt, 'Workwear has shirt color');
+});
+
+test('NPC Archetypes system spans diverse Louisiana roles and selects district-specific archetypes', () => {
+  assert.ok(npcModule.NPC_ARCHETYPES.length >= 10, 'Defines at least 10 distinct NPC archetypes');
+  const archetypeIds = npcModule.NPC_ARCHETYPES.map(a => a.id);
+  assert.ok(archetypeIds.includes('civilian'), 'Includes civilian');
+  assert.ok(archetypeIds.includes('tourist'), 'Includes tourist');
+  assert.ok(archetypeIds.includes('musician'), 'Includes musician');
+  assert.ok(archetypeIds.includes('worker'), 'Includes worker');
+  assert.ok(archetypeIds.includes('angler'), 'Includes angler');
+  assert.ok(archetypeIds.includes('ranger'), 'Includes ranger');
+  assert.ok(archetypeIds.includes('vip'), 'Includes vip');
+  assert.ok(archetypeIds.includes('guard'), 'Includes guard');
+  assert.ok(archetypeIds.includes('hustler'), 'Includes hustler');
+  assert.ok(archetypeIds.includes('jogger'), 'Includes jogger');
+
+  const bayouArch = npcModule.selectArchetypeForDistrict('bayou');
+  assert.ok(bayouArch && bayouArch.id, 'Bayou archetype selected');
+
+  const canalArch = npcModule.selectArchetypeForDistrict('canal');
+  assert.ok(canalArch && canalArch.id, 'Canal archetype selected');
+});
+
+test('Procedural Accessories and Props generate valid 3D meshes with shadows and proper attachments', () => {
+  class TestColor {
+    constructor(c) { this.set(c); }
+    set(c) { this.hex = c; return this; }
+    copy(c) { this.hex = c.hex; return this; }
+    lerp() { return this; }
+    getHSL(target) { target.h = 0; target.s = 0; target.l = 0.5; return target; }
+    setHSL() { return this; }
+  }
+  class TestMesh {
+    constructor(geo, mat) {
+      this.isMesh = true;
+      this.geometry = geo;
+      this.material = mat || {};
+      this.position = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.rotation = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.scale = { x: 1, y: 1, z: 1, set(x, y, z) { this.x = x; this.y = y; this.z = z; }, setScalar(s) { this.x = s; this.y = s; this.z = s; } };
+      this.name = '';
+    }
+  }
+  class TestGroup {
+    constructor() {
+      this.children = [];
+      this.userData = {};
+      this.position = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.rotation = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.scale = { x: 1, y: 1, z: 1, set(x, y, z) { this.x = x; this.y = y; this.z = z; }, setScalar(s) { this.x = s; this.y = s; this.z = s; } };
+      this.name = '';
+    }
+    add(...nodes) {
+      for (const n of nodes) {
+        if (n) {
+          n.parent = this;
+          this.children.push(n);
+        }
+      }
+    }
+    traverse(fn) {
+      fn(this);
+      for (const c of this.children) {
+        if (c.traverse) c.traverse(fn);
+        else fn(c);
+      }
+    }
+  }
+
+  const mockThree = {
+    Group: TestGroup,
+    Mesh: TestMesh,
+    Color: TestColor,
+    MeshStandardMaterial: class { constructor(opts) { Object.assign(this, opts); if (typeof this.color === 'string') this.color = new TestColor(this.color); } },
+    MeshBasicMaterial: class { constructor(opts) { Object.assign(this, opts); } },
+    BoxGeometry: class {},
+    SphereGeometry: class { scale() {} },
+    CylinderGeometry: class {},
+    PlaneGeometry: class {},
+    TorusGeometry: class {}
+  };
+
+  const shades = npcModule.createShades(mockThree);
+  assert.equal(shades.name, 'prop_shades', 'createShades builds prop_shades');
+
+  const cap = npcModule.createCap(mockThree, '#1e293b');
+  assert.equal(cap.name, 'prop_cap', 'createCap builds prop_cap');
+
+  const fedora = npcModule.createFedora(mockThree, '#202226', '#ecc35c');
+  assert.equal(fedora.name, 'prop_fedora', 'createFedora builds prop_fedora');
+
+  const hardhat = npcModule.createHardHat(mockThree, '#facc15');
+  assert.equal(hardhat.name, 'prop_hardhat', 'createHardHat builds prop_hardhat');
+
+  const beanie = npcModule.createBeanie(mockThree, '#3b4252');
+  assert.equal(beanie.name, 'prop_beanie', 'createBeanie builds prop_beanie');
+
+  const chain = npcModule.createGoldChain(mockThree);
+  assert.equal(chain.name, 'prop_gold_chain', 'createGoldChain builds prop_gold_chain');
+
+  const vest = npcModule.createSafetyVest(mockThree, '#ea580c');
+  assert.equal(vest.name, 'prop_safety_vest', 'createSafetyVest builds prop_safety_vest');
+
+  const phone = npcModule.createHandProp(mockThree, 'phone');
+  assert.equal(phone.name, 'prop_phone', 'createHandProp builds prop_phone');
+
+  // Test attachment to model
+  const root = new TestGroup();
+  const inner = new TestGroup();
+  root.add(inner);
+
+  const archetype = { id: 'worker', shades: 1.0, hats: ['hardhat'], goldChain: true, vest: true, prop: 'clipboard' };
+  const attached = npcModule.attachAccessories(root, inner, archetype, { district: 'canal' }, mockThree);
+
+  assert.ok(attached.includes('shades'), 'Attached shades');
+  assert.ok(attached.includes('hardhat'), 'Attached hardhat');
+  assert.ok(attached.includes('goldChain'), 'Attached gold chain');
+  assert.ok(attached.includes('vest'), 'Attached safety vest');
+  assert.ok(attached.includes('clipboard'), 'Attached clipboard');
+});
+
+test('spawnNPC populates rich variation metadata, physical proportions, and attaches accessories', () => {
+  class TestColor {
+    constructor(c) { this.set(c); }
+    set(c) { this.hex = c; return this; }
+    copy(c) { this.hex = c.hex; return this; }
+    lerp() { return this; }
+    getHSL(target) { target.h = 0; target.s = 0; target.l = 0.5; return target; }
+    setHSL() { return this; }
+  }
+  class TestMesh {
+    constructor(geo, mat) {
+      this.isMesh = true;
+      this.geometry = geo;
+      this.material = mat || {};
+      this.position = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.rotation = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.scale = { x: 1, y: 1, z: 1, set(x, y, z) { this.x = x; this.y = y; this.z = z; }, setScalar(s) { this.x = s; this.y = s; this.z = s; } };
+      this.name = '';
+    }
+  }
+  class TestGroup {
+    constructor() {
+      this.children = [];
+      this.userData = {};
+      this.position = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.rotation = { x: 0, y: 0, z: 0, set(x, y, z) { this.x = x; this.y = y; this.z = z; } };
+      this.scale = { x: 1, y: 1, z: 1, set(x, y, z) { this.x = x; this.y = y; this.z = z; }, setScalar(s) { this.x = s; this.y = s; this.z = s; } };
+      this.name = '';
+    }
+    add(...nodes) {
+      for (const n of nodes) {
+        if (n) {
+          n.parent = this;
+          this.children.push(n);
+        }
+      }
+    }
+    traverse(fn) {
+      fn(this);
+      for (const c of this.children) {
+        if (c.traverse) c.traverse(fn);
+        else fn(c);
+      }
+    }
+    updateMatrixWorld() {}
+  }
+
+  const mockThree = {
+    Group: TestGroup,
+    Mesh: TestMesh,
+    Color: TestColor,
+    MeshStandardMaterial: class { constructor(opts) { Object.assign(this, opts); if (typeof this.color === 'string') this.color = new TestColor(this.color); } },
+    MeshBasicMaterial: class { constructor(opts) { Object.assign(this, opts); } },
+    BoxGeometry: class {},
+    SphereGeometry: class { scale() {} },
+    CylinderGeometry: class {},
+    PlaneGeometry: class {},
+    TorusGeometry: class {},
+    Box3: class {
+      setFromObject() {
+        return { min: { x: -0.4, y: 0, z: -0.2 }, max: { x: 0.4, y: 1.80, z: 0.2 } };
+      }
+    }
+  };
+  global.THREE = mockThree;
+
+  const npc = npcModule.spawnNPC({ district: 'canal', archetype: 'worker' });
+  assert.ok(npc, 'NPC spawned');
+  assert.equal(npc.userData.district, 'canal', 'District recorded in userData');
+  assert.equal(npc.userData.archetype, 'worker', 'Archetype recorded in userData');
+  assert.ok(npc.userData.skinTone, 'Skin tone assigned');
+  assert.ok(npc.userData.palette, 'Palette assigned');
+  assert.ok(npc.userData.targetHeight >= 1.65 && npc.userData.targetHeight <= 1.95, 'Target height within natural human bounds');
+  assert.ok(npc.userData.widthRatio > 0.85 && npc.userData.widthRatio < 1.15, 'Width ratio assigned');
+  assert.ok(npc.userData.depthRatio > 0.85 && npc.userData.depthRatio < 1.15, 'Depth ratio assigned');
+
+  // Test setFigureColors color update hook
+  npcModule.applyColorsToModel(npc, '#5a3826', '#ea580c', '#1e293b', '#151210', mockThree);
+  assert.equal(npc.userData.skin.color.hex, '#5a3826', 'Skin color updated');
+  assert.equal(npc.userData.shirt.color.hex, '#ea580c', 'Shirt color updated');
+  assert.equal(npc.userData.pants.color.hex, '#1e293b', 'Pants color updated');
 });
 
 test('Script tag for npc-system.js is present in public/game/index.html after GLTFLoader', () => {
