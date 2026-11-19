@@ -106,6 +106,7 @@
     const z = mode === 'night' ? NIGHT_ZENITH : mode === 'dusk' ? DUSK_ZENITH : DAY_ZENITH;
     u.zenith.value.copy(u.horizon.value).lerp(z, mode === 'night' ? 0.85 : 0.65);
     u.sunColor.value.copy(sun.color);
+    updateSunDirection();
     u.sunDir.value.copy(sunDir);
     u.night.value = mode === 'night' ? 1 : 0;
     u.sunSize.value = mode === 'night' ? 0.25 : 1;
@@ -132,6 +133,12 @@
     if (vignette) vignette.style.opacity = quality === 'low' ? '0.6' : '1';
   }
 
+  function updateSunDirection(){
+    const hour=window.level29TimeOfDay?.hour;
+    if(!Number.isFinite(hour))return;
+    const a=(hour-6)/24*Math.PI*2;
+    sunDir.set(Math.cos(a)*300,Math.max(35,Math.sin(a)*300),100).normalize();
+  }
   function updateShadowCamera(){
     const cfg = window.level29MobileBudget?.mobile?null:SHADOW[quality];
     if (!cfg) return;

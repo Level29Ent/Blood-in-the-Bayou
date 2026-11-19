@@ -7,11 +7,12 @@ function textures(kind){if(sets.has(kind))return sets.get(kind);const n=256,heig
  if(kind==='brick'){const row=Math.floor(y/32),xx=(x+(row%2)*32)%64;h=xx<3||y%32<3?.16:.65+(grain-.5)*.12;}
  if(kind==='tile')h=x%64<2||y%64<2?.25:.7+(grain-.5)*.035;
  if(kind==='wood')h=.5+.13*Math.sin(x*.35+Math.sin(y*.045)*2)+.035*(grain-.5);
+ if(kind==='water')h=.5+.12*Math.sin(x*Math.PI/16+Math.sin(y*Math.PI/32)*2)+.07*Math.cos((x+y)*Math.PI/32);
  if(kind==='metal')h=.5+(grain-.5)*.055+.035*Math.sin(y*2.3);
  if(kind==='fabric')h=.5+.07*Math.sin(x*Math.PI/2)*Math.cos(y*Math.PI/2);
  if(kind==='plaster'){const pore=Math.sin(x*19.7+y*73.1)*43758.54;h-=pore-Math.floor(pore)>.975?.14:0;h+=.022*Math.sin(x*.09)*Math.cos(y*.11);}
  if(kind==='concrete')h+=.045*Math.sin(x*.12)*Math.cos(y*.09);height[k]=h;const value=Math.round(218+(h-.5)*38),rv=kind==='metal'?150:kind==='tile'?170:kind==='wood'?210:235;
- rgb.set([value,value,value,255],k*4);rough.set([rv,rv,rv,255],k*4);metal.set([255,255,255,255],k*4);
+ rgb.set([value,value,value,255],k*4);rough.set([Math.round(rv*(.65+grain*.35)),Math.round(rv*(.65+grain*.35)),Math.round(rv*(.65+grain*.35)),255],k*4);metal.set([255,255,255,255],k*4);
  }
  for(let y=0;y<n;y++)for(let x=0;x<n;x++){const dx=height[y*n+(x+n-1)%n]-height[y*n+(x+1)%n],dy=height[((y+n-1)%n)*n+x]-height[((y+1)%n)*n+x],v=new THREE.Vector3(dx,dy,1).normalize();normal.set([Math.round((v.x*.5+.5)*255),Math.round((v.y*.5+.5)*255),Math.round((v.z*.5+.5)*255),255],(y*n+x)*4);}
  const tex=(a,color=false)=>{const t=new THREE.DataTexture(a,n,n);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.magFilter=THREE.LinearFilter;t.minFilter=THREE.LinearMipmapLinearFilter;t.generateMipmaps=true;t.repeat.set(2,2);if(color)t.encoding=THREE.sRGBEncoding;t.needsUpdate=true;return t;};
