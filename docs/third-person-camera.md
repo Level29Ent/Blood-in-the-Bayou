@@ -11,7 +11,7 @@
 
 ## Preserve existing cameras/gameplay
 
-Independent on-foot preference does not replace C's existing vehicle cockpit/chase selection. Vehicles, aircraft, park/coast rides, scopes, dressing preview, city-story cutscenes, peaceful prologue, swimming, the bank vault and underground/metro travel retain their original camera behavior. Menus/death do not show third-person avatar. An enabled preference may be temporarily inactive during these modes. Tight interiors can fall back to first person, while ordinary roomy interiors use collision-limited shoulder view. Streamed 32-unit floors use a tighter vertical cap.
+Independent on-foot preference does not replace C's existing vehicle cockpit/chase selection. Vehicles, aircraft, park/coast rides, scopes, dressing preview, city-story cutscenes, swimming, the bank vault and underground/metro travel retain their original camera behavior. Menus/death do not show third-person avatar. An enabled preference may be temporarily inactive during these modes. Tight interiors can fall back to first person, while ordinary roomy interiors use collision-limited shoulder view. Streamed 32-unit floors use a tighter vertical cap.
 
 No campaign/save state, movement speed, character collision radius, projectile origins, spread, ammo, damage, recoil or combat/mission scoring changes. Weapons still use the game's existing player-origin firing and assist rules. Camera points toward the player's existing forward aim line, converging at a fixed distant target; close-range parallax and original horizontal projectile constraints remain. This is not a new camera-ray shooting system and requires actual combat playtesting before claiming close-range crosshair accuracy in every weapon mode.
 
@@ -22,3 +22,12 @@ Preference is a separate local `level29.camera.v1` first/third setting. Storage 
 Pure math checks cover yaw/pitch/floor/jump shoulder pose, shorter firing view, finite outputs, thin-wall sweep and eye fallback. VM tests exercise first-person default, pre-render clothed-avatar synchronization, one attached weapon across switches, restore of viewmodel scene, collision-context restoration even on exception, invalid space/floor/ceiling checks, saved/touch mode switching, vehicle preference separation and special-camera priority. Existing wardrobe construction/equipment and full source tests remain. Actual wardrobe sync is exercised for one avatar, outfit changes and same-frame pose/visibility. Source-order checks ensure late camera wrapper loads after existing owners.
 
 Production build/full-suite results and deployment availability are recorded on PR. None of these checks is a rendered full-city playthrough, proof all near-plane clipping is eliminated, a visual judgment of weapon grips or an FPS/device benchmark. Browser/device verification remains required. No external assets/dependencies, additional real-time lights, timers or global scene scans are added; collision sampling is bounded by the short camera boom, and venue containment is checked once per pose, not per sample.
+
+## Peaceful story camera repair
+
+The on-foot third-person preference also works during the peaceful opening story.
+Peacefulness suppresses weapons and firing, not the player camera or avatar.
+Both the procedural fallback and animated Ronniebaby remain unarmed until the
+outbreak. Cutscene render ownership and special-camera/collision fallbacks are
+unchanged. This repairs the former misleading state where the toggle reported
+third person but the entire peaceful prologue forced first person.
