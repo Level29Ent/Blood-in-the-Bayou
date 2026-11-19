@@ -40,7 +40,7 @@ function start({T,mount,id,actors,onEnd=()=>{},onError=()=>{},rendererFactory,ra
   }else if(id==='mallVideo'){
    lead=actor(actors.ahmad,0,0);resident=actor(actors.seated,12,0);resident.root.name='Seated mall resident';
    vial=set.cylinder(.8,.8,3,0,0,0,'#839d7b');vial.name='Hand-held X29 vial';attach(lead,vial);
-   if(resident.legL)resident.legL.rotation.z=-1.35;if(resident.legR)resident.legR.rotation.z=-1.35;
+   resident.root.rotation.y=-Math.PI/2;if(resident.legL)resident.legL.rotation.z=1.35;if(resident.legR)resident.legR.rotation.z=1.35;
   }else{
    lead=actor(actors.ronnie,0,0);bat=box(1.5,15,1.5,0,0,0,'#76513a');bat.name='Ronniebaby cutscene melee bat';attach(lead,bat,0,-11,0);
    for(let i=0;i<3;i++){const z=actor(actors.zombie,15+i*8,-12+i*12);z.root.name='Cutscene zombie '+(i+1);const skin=actors.zombie.userData.skin?.color;z.root.traverse(o=>{if(o.material?.color&&skin&&o.material.color.equals(skin))o.material.color.set('#789462');});// The story resident is the infection source: retain identity, add restrained socket/lesion cues.
@@ -66,14 +66,14 @@ function start({T,mount,id,actors,onEnd=()=>{},onError=()=>{},rendererFactory,ra
    if(id==='mallVideo'){
     if(lead.arm)lead.arm.rotation.z=.45+staging.ease(b.t/3)*.8-staging.ease((b.t-7)/2)*.9;
     const distress=staging.ease((b.t-12)/4);if(resident.body)resident.body.rotation.z=distress*.13;
-    resident.root.rotation.y=distress*.06*Math.sin(b.t*2);if(resident.arm)resident.arm.rotation.z=.2+distress*.45;
+    resident.root.rotation.y=-Math.PI/2+distress*.06*Math.sin(b.t*2);if(resident.arm)resident.arm.rotation.z=.2+distress*.45;
    }
    if(id==='ronnieVideo'){
     const n=Math.min(2,Math.floor(b.t/5)),local=b.t-n*5,approach=staging.ease(local/1.7),swing=staging.ease((local-1.7)/.25)*(1-staging.ease((local-2.15)/.6));
     lead.root.position.set(n*8+approach*5,0,-12+n*12);
     if(animated){const name=local<1.7?'walk':'slash',next=animated.actions[name];if(next){if(actionName!==name||actionSegment!==n){animated.mixer.stopAllAction();next.reset().setLoop(T.LoopOnce,1);next.clampWhenFinished=true;next.play();actionName=name;actionSegment=n;}next.time=local<1.7?local%Math.max(.01,next.getClip().duration):Math.min(next.getClip().duration,(local-1.7)*1.5);animated.mixer.update(0);}lead.root.rotation.y=Math.PI/2;}
     if(lead.arm)lead.arm.rotation.z=.4+swing*1.4;else if(!animated)bat.rotation.z=.4+swing*1.4;
-    victims.forEach((z,i)=>{const fall=staging.ease((b.t-(i*5+2.15))/1.15);z.root.rotation.z=-fall*Math.PI/2;z.root.position.y=fall*3;z.root.position.x=15+i*8+fall*5;});
+    victims.forEach((z,i)=>{const fall=staging.ease((b.t-(i*5+2.15))/1.15);z.root.rotation.y=Math.PI;z.root.rotation.z=-fall*Math.PI/2;if(z.arm)z.arm.rotation.z=.9;if(z.armL)z.armL.rotation.z=.95;if(z.legL)z.legL.rotation.z=(1-fall)*Math.sin(b.t*2+i)*.1;if(z.legR)z.legR.rotation.z=-(1-fall)*Math.sin(b.t*2+i)*.1;z.root.position.y=fall*3;z.root.position.x=15+i*8+fall*5;});
    }
    const framing=staging.shot(id,b.t);camera.position.fromArray(framing.position);camera.lookAt(...framing.look);if(camera.fov!==framing.fov){camera.fov=framing.fov;camera.updateProjectionMatrix();}
    try{renderer.render(scene,camera);}catch(error){cleanup();onError(error);return;}
