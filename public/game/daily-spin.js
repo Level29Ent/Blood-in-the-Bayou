@@ -13,7 +13,8 @@
   catch(error){if(previous===null)storage.removeItem(KEY);else storage.setItem(KEY,previous);throw error;}
   return {ok:true,...receipt};
  }
- const model={KEY,DAY,PRIZES,read,available,pick,claim};
+ function prizeLabels(){return PRIZES.map(n=>'$'+n.toLocaleString('en-US')).join(' · ');}
+ const model={KEY,DAY,PRIZES,read,available,pick,claim,prizeLabels};
  if(typeof module!=='undefined')module.exports=model;
  if(typeof window==='undefined')return;
  let busy=false,turn=0,previousFocus=null;
@@ -30,7 +31,7 @@
  @media(prefers-reduced-motion:reduce){#spinWheel{transition:none}}
  `;document.head.appendChild(css);
  const panel=document.createElement('div');panel.id='spinPanel';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');panel.setAttribute('aria-labelledby','spinTitle');
- panel.innerHTML='<div class="sbox"><div class="eyebrow">LEVEL 29 · FREE DAILY BONUS</div><h2 id="spinTitle">Daily Spin</h2><p class="spinRules">One free spin every 24 hours. In-game cash only — no purchase, ads or real-money prizes. Each of the 8 prizes has an equal chance.</p><div id="spinFrame" aria-hidden="true"><div id="spinPointer"></div><div id="spinWheel">'+PRIZES.map((n,i)=>'<span style="--angle:'+i*45+'deg">$'+n.toLocaleString()+'</span>').join('')+'</div></div><p id="spinStatus" role="status" aria-live="polite"></p><button id="spinNow" type="button">SPIN FREE</button><button id="spinClose" type="button">RETURN TO CITY</button></div>';
+ panel.innerHTML='<div class="sbox"><div class="eyebrow">LEVEL 29 · FREE DAILY BONUS</div><h2 id="spinTitle">Daily Spin</h2><p class="spinRules">One free spin every 24 hours. In-game cash only — no purchase, ads or real-money prizes. Each of the 8 prizes has an equal chance.</p><div id="spinFrame" aria-hidden="true"><div id="spinPointer"></div><div id="spinWheel">'+PRIZES.map((n,i)=>'<span style="--angle:'+i*45+'deg">$'+n.toLocaleString()+'</span>').join(' ')+'</div></div><p class="spinPrizeList" aria-label="Possible prizes">'+prizeLabels()+'</p><p id="spinStatus" role="status" aria-live="polite"></p><button id="spinNow" type="button">SPIN FREE</button><button id="spinClose" type="button">RETURN TO CITY</button></div>';
  document.body.appendChild(panel);
  const wheel=panel.querySelector('#spinWheel'),status=panel.querySelector('#spinStatus'),spin=panel.querySelector('#spinNow'),exit=panel.querySelector('#spinClose');
  const ready=()=>available(read(localStorage),Date.now());

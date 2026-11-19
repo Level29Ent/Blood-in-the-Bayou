@@ -210,7 +210,8 @@
   addEventListener("blur", release);
   function refreshLabels() {
     const node=document.querySelector('#menu .keys');
-    if(node)node.textContent=Object.entries(bindings).map(([action,key])=>key.toUpperCase()+' · '+action.replace(/^slot/,'weapon ')).join(' • ')+' • MOUSE / DRAG look • CLICK / FIRE shoot • Q weapon wheel • 5–9 additional weapons • U legacy use • TAB map • P settings / pause • SHIFT run • C vehicle camera';
+    if(node)node.textContent=['forward','back','left','right'].map(a=>bindings[a].toUpperCase()).join('/')+' move · MOUSE / DRAG aim · CLICK / FIRE shoot · '+bindings.interact.toUpperCase()+' / USE interact';
+    window.level29Landing?.refresh();
     for(const node of document.querySelectorAll('[data-binding]'))node.textContent=(bindings[node.dataset.binding]||'').toUpperCase();
   }
   addEventListener('DOMContentLoaded',refreshLabels);

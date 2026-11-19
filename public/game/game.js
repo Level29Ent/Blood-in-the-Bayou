@@ -920,7 +920,7 @@ function applyPower(k, announce){
   if (announce){ banner = { big:'POWER-UP', small: name + (id==='nitro' ? ' · HOLD SHIFT IN A CAR' : ''), t:220, good:true }; snd('power'); if (id==='armor') player.armor = up.armor*25; player.hp = player.maxHp; }
   return name;
 }
-document.getElementById('start').addEventListener('click', () => {const i=+document.getElementById('district').value;const begin=()=>startGame(i);if(window.level29FirstFrame?.queue)level29FirstFrame.queue(begin,document.getElementById('start'));else begin();});
+document.getElementById('start').addEventListener('click', () => {if(window.level29Boot?.enter&&!window.level29Boot.enter())return;const i=+document.getElementById('district').value;const begin=()=>startGame(i);if(window.level29FirstFrame?.queue)level29FirstFrame.queue(begin,document.getElementById('start'));else begin();});
 
 // ---------- Update ----------
 function update(){

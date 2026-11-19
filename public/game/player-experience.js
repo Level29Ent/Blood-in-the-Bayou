@@ -363,7 +363,7 @@
   // Convert the old menu's wall of shortcuts into a short baseline and one controls entry.
   for (const el of document.querySelectorAll("#menu .keys"))
     el.textContent =
-      "WASD move · Mouse aim · Click fire · E use · G vehicle · 1–4 weapons";
+      "WASD move · Mouse / right-side drag aim · Click / FIRE shoot · E / USE interact";
   const menu = document.getElementById("main-view-3");
   if (menu) add("CONTROLS / HUD / JOURNAL", () => open(), menu);
   let lastTipCheck = 0;
@@ -425,7 +425,7 @@
       e.target?.closest?.("input,textarea,select,dialog[open]")
     )
       return;
-    if (e.key.toLowerCase() === "t")
+    if (e.key.toLowerCase() === "t" && !window.level29Buildings?.active)
       note(
         "cheats",
         "T opens the optional cheat console. Close it with Escape.",

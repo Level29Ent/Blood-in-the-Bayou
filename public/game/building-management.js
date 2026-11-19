@@ -214,7 +214,7 @@ addEventListener('keydown',e=>{
   const k=e.key.toLowerCase();
   if(panelOpen&&(k==='y'||k==='escape')){e.preventDefault();e.stopImmediatePropagation();closePanel();return;}
   if(k==='y'&&!e.repeat&&state==='play'){e.preventDefault();e.stopImmediatePropagation();openPanel();return;}
-  if(k==='t'&&!e.repeat&&state==='play'&&!panelOpen){e.preventDefault();gridOn=!gridOn;toast('BUILD GRID '+(gridOn?'ON':'OFF'));return;}
+  if(k==='t'&&!e.repeat&&state==='play'&&!panelOpen){e.preventDefault();e.stopImmediatePropagation();gridOn=!gridOn;toast('BUILD GRID '+(gridOn?'ON':'OFF'));return;}
   if(panelOpen&&/^[1-7]$/.test(k)){const id=Object.keys(BLUEPRINTS)[+k-1];if(id){sel=id;renderPanel();}return;}
   if(k==='x'&&state==='play'&&!panelOpen){e.preventDefault();e.stopImmediatePropagation();tryPlace();return;}
 },true);
@@ -254,5 +254,5 @@ drawHUD=function(){oldDrawHUD.apply(this,arguments);
 };
 // ---- Sync on load ----
 cloudPull().then(()=>{if(city)rebuildMeshes();});
-window.level29Buildings={BLUEPRINTS,costFor,yieldRateFor,validatePlacement,accrue,finishedAt,structs:()=>structs(),state:()=>data,persist,tryPlace,openPanel,closePanel,setBlueprint:id=>{sel=id;}};
+window.level29Buildings={get active(){return !!visible()&&!panelOpen;},get gridSnapping(){return gridOn;},BLUEPRINTS,costFor,yieldRateFor,validatePlacement,accrue,finishedAt,structs:()=>structs(),state:()=>data,persist,tryPlace,openPanel,closePanel,setBlueprint:id=>{sel=id;}};
 })();

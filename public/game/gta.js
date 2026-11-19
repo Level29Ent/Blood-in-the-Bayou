@@ -469,6 +469,7 @@ addEventListener('keydown', e => {
   if (k === 'q' && !e.repeat && !window.level29Apache?.active){ e.preventDefault();openWheel(true);return; }
   if (wheelOpen){ if(k==='escape'){openWheel(false,false);e.preventDefault();e.stopImmediatePropagation();return;}if(k.startsWith('arrow')){e.preventDefault();e.stopImmediatePropagation();}if (k === 'arrowleft' || k === 'arrowup') wheelSel = (wheelSel + WORDER.length - 1) % WORDER.length; if (k === 'arrowright' || k === 'arrowdown') wheelSel = (wheelSel + 1) % WORDER.length;return; }
   const numbered=Object.keys(WEAPONS).find(id=>WEAPONS[id].key===k);if(numbered)selectW(numbered);
+  if (k === 't' && window.level29Buildings?.active)return;
   if (k === 't' && !e.repeat && !window.level29Apache?.active){ e.preventDefault(); openCheat(); return; }
   if (k.length === 1 && /[a-z0-9]/.test(k)){ typed = (typed + k).slice(-12).toUpperCase(); for (const c of [...Object.keys(CHEATS), 'KILO3028']) if (typed.endsWith(c)){ applyCheat(c); typed = ''; } }
 }, true);

@@ -74,7 +74,7 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 .mpjoin{display:flex;gap:8px}.mpjoin input{margin:0;width:90px}.mpl{display:block;font:600 11px 'IBM Plex Mono',monospace;letter-spacing:.12em;color:#e8bd52}
 .mpstatus.bad{color:#ff8a8a}
 @media(max-width:560px){.sbox{padding:16px}.sbox h2{font-size:32px}.rbhead img{width:76px;height:76px}.mpcols{grid-template-columns:1fr}.sbox .item{flex-direction:column;align-items:stretch}.sbox .item button{min-width:0}}
-</style><link rel="stylesheet" href="foundation-menu.css?v=1"><link rel="stylesheet" href="casino-controls.css?v=1"><script id="level29-google-tag-manager">
+</style><link rel="stylesheet" href="foundation-menu.css?v=landing-polish-1"><link rel="stylesheet" href="casino-controls.css?v=1"><script id="level29-google-tag-manager">
 (function(w,d){
   'use strict';
   // Web only: native game builds keep their existing privacy/ads integration.
@@ -93,21 +93,25 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 })(window,document);
 </script>
 </head><body>
-<div id="entryGate" role="dialog" aria-modal="true" aria-label="Enter Blood in the Bayou"><div><small>LEVEL 29 PRODUCTION</small><h1>BLOOD IN THE BAYOU</h1><button id="entryButton" type="button" disabled>CLICK TO ENTER</button><div id="loadTrack" role="progressbar" aria-label="Asset loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="loadFill"></div></div><p id="loadStatus" role="status">CLICK TO UNLOCK GAME AUDIO</p></div></div><script src="startup-diagnostics.js?v=startup-unblock-1"></script>
-<script src="boot-gate.js?v=menu-deferred-2-startup-unblock-1"></script>
+<div id="entryGate" hidden aria-hidden="true"><div id="loadTrack" role="progressbar" aria-label="Optional asset loading" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="loadFill"></div></div><p id="loadStatus" role="status">PREPARING MENU</p></div><script src="startup-diagnostics.js?v=startup-unblock-1"></script>
+<script src="boot-gate.js?v=single-entry-1"></script>
 <canvas id="gl"></canvas><canvas id="c"></canvas>
 <div id="menu"><div class="copy">
 <div class="eyebrow">Level 29 / First-person open-world survival</div>
 <div class="logo" id="jesterLogo"><img src="logo.png" alt="Level 29 jester logo"></div>
-<h1>Blood in<span>the Bayou.</span></h1>
+<h1>Blood in <span>the Bayou</span></h1>
 <p class="blurb">Before the outbreak, meet Sam Butcher, find Ahmad in Tremé’s second line and uncover what is happening to the city. Survive the opening story, then meet Ronniebaby and enter the original 210-mission campaign.</p>
 <div class="row"><select id="district" hidden aria-hidden="true" tabindex="-1" style="display:none"><option value="0" selected>Level 29 City</option></select>
-<button id="start">Enter the city</button></div>
-<div class="keys"><b>MOUSE</b> look &bull; <b>CLICK</b> fire &bull; <b>W/S</b> move &bull; <b>A/D</b> strafe &bull; <b>&larr; &rarr;</b> turn<br>
-<b>U</b> story / use &bull; <b>E</b> enter / exit vehicle &bull; <b>C</b> car camera &bull; <b>SHIFT</b> sprint / nitro &bull; <b>SPACE</b> brake<br>
-<b>F</b> fire with aim assist &bull; <b>Q</b> weapon wheel &bull; <b>1-7</b> weapons &bull; <b>T</b> cheat code<br>
-<b>R</b> Spotify car playlist &bull; <b>TAB</b> map &bull; <b>P</b> pause &bull; <b>N</b> music &bull; <b>M</b> mute<br>
-<b>JOYSTICK</b> on touch screens moves you, drag the screen to look &bull; plug in an Xbox or PlayStation controller to play with sticks. 210 missions, a boss every fifth. <b>MULTIPLAYER</b> lets up to 6 Jesters team up with a room code.</div>
+<button id="start" disabled>Enter the City</button></div>
+<p class="keys">WASD move · Mouse / right-side drag aim · Click / FIRE shoot · E / USE interact</p>
+<details id="landingControls"><summary>Controls · all shortcuts</summary><div id="landingControlsBody">
+<p>Move: WASD / left joystick. Aim: mouse / right-side drag / right stick. Click or FIRE to shoot.</p>
+<p>Use / talk: E (legacy U). Enter or exit vehicle: G. C: first/third-person camera. Shift: sprint / nitro. Space: jump on foot / brake in a vehicle.</p>
+<p>Hold Q: weapon wheel. 1–4: primary slots. R: reload / context radio. Tab: map. P / Escape: pause and settings. N: music. M: mute.</p>
+<p>Y: construction menu. X: place preview. T: grid snapping while construction preview is active; otherwise cheat console. F6/F7: dispatch. F8/F9: utility equipment.</p>
+<p>Controller: left stick move, right stick aim, RT fire. Touch: joystick, look area and labelled action buttons. Remap movement/use/vehicle keys in Settings → Controls.</p>
+</div></details>
+<section id="campaignZones" aria-labelledby="campaignZonesTitle"><h2 id="campaignZonesTitle">Campaign zones · Missions 1–210</h2><ol id="campaignZoneList"></ol><p>The opening story comes first. These are campaign chapters, not a mission-skip selector.</p></section>
 </div></div>
 <button id="audio">SOUND ON</button>
 <div id="touch" class="off"><div class="group"><button id="shoot">FIRE</button><button id="enter">ENTER</button></div></div>
@@ -125,8 +129,8 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 <script src="gameplay-math.js?v=restored-world-9"></script>
 <script src="mobile-viewport.js?v=hud-clearance-1"></script>
 <script src="runtime-policy.js?v=mobile-performance-1"></script>
-<script src="input-bindings.js?v=1"></script>
-<script src="game.js?v=starter-bike-1"></script>
+<script src="input-bindings.js?v=landing-polish-2"></script>
+<script src="game.js?v=landing-polish-1"></script>
 <script src="npc-appearance.js?v=natural-residents-1"></script>
 <script src="fp.js?v=character-polish-1-pbr-1"></script>
 <script src="city-depth-render.js?v=2"></script>
@@ -134,9 +138,9 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 <script src="dialogue-sequencer.js?v=restored-world-9"></script>
 <script src="ronnie.js?v=pause-advanced-1"></script>
 <script src="traffic-clearance.js?v=airport-perf-1"></script>
-<script src="gta.js?v=nola-services-1"></script>
+<script src="gta.js?v=landing-polish-1"></script>
 <script src="arsenal-visuals.js?v=experience-1"></script>
-<script src="mp.js?v=character-polish-1"></script>
+<script src="mp.js?v=character-polish-1-landing-polish-1"></script>
 <script src="joy.js?v=hud-clearance-1"></script>
 <script src="business-economy.js?v=1"></script>
 <script src="liquor-store-interior.js?v=reference-liquor-1"></script>
@@ -165,13 +169,13 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 <script src="iron-gym.js?v=strength-floor-1"></script><script src="places.js?v=resolved-police-shops-1"></script>
 <script src="guard.js?v=nola-activity-gates-1"></script>
 <script src="jobs.js?v=nola-activity-gates-1"></script>
-<script src="daily-spin.js?v=restored-world-9"></script>
+<script src="daily-spin.js?v=landing-polish-1"></script>
 <script src="dailyreward.js?v=restored-world-9"></script>
 <script src="campaign.js?v=restored-world-9"></script>
 <script src="penthouse-luxury.js?v=neighborhood-culling-1"></script>
 <script src="estate.js?v=resolved-venue-merges-1"></script>
 <script src="bayou-polish-core.js?v=1"></script>
-<script src="savegame.js?v=balanced-1"></script>
+<script src="savegame.js?v=landing-polish-1"></script>
 <script src="life.js?v=no-world-warmup-1"></script>
 <script src="graphics.js?v=cinematic-bayou-1"></script>
 <script src="smooth.js?v=mobile-performance-1"></script>
@@ -189,7 +193,7 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 <script src="vet-clinic-interior.js?v=reference-vet-1"></script>
 <script src="access.js?v=reference-tires-1"></script>
 <script src="trading.js?v=restored-world-9"></script>
-<script src="building-management.js?v=construction-1"></script>
+<script src="building-management.js?v=landing-polish-1"></script>
 <script src="site-layout.js?v=restored-world-9"></script>
 <script src="armory-showroom.js?v=oak-glass-armory-2"></script>
 <script src="terrain-sites.js?v=restored-world-9"></script>
@@ -449,7 +453,7 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 <script src="mardi-gras-city.js?v=three-blocks-1"></script>
 <script src="prologue-director.js?v=three-blocks-1"></script>
 <link rel="stylesheet" href="player-experience.css?v=1"><script src="survival-expansion.js?v=night-diner-reference-1"></script>
-<script src="player-experience.js?v=pause-save-safety-2"></script>
+<script src="player-experience.js?v=landing-polish-1"></script>
 <script src="community-service.js?v=1"></script>
 <script src="community-bridge.js?v=1"></script>
 <script src="interior-realism.js?v=1"></script>
@@ -503,4 +507,5 @@ html,body{margin:0;height:100%;background:#0b0e10;overflow:hidden;font-family:'B
 <script src="character-acting.js?v=balanced-1"></script>
 <script src="balanced-survival-core.js?v=balanced-1"></script>
 <script src="balanced-survival.js?v=balanced-1"></script>
+<script src="landing-polish.js?v=single-entry-1"></script>
 </body></html>

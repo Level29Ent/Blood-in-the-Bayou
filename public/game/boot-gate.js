@@ -1,10 +1,18 @@
 'use strict';
 (function(){
-// Loaded before game scripts. The engine starts only after a real user gesture.
-let entered=false,started=false,failed=false;const gate=document.getElementById('entryGate'),button=document.getElementById('entryButton'),status=document.getElementById('loadStatus'),fill=document.getElementById('loadFill');let pending=0,total=0,done=0,ready=false;
-function paint(){const percent=total?Math.floor(done/total*100):0;fill.style.width=percent+'%';fill.parentElement.setAttribute('aria-valuenow',String(percent));status.textContent=failed?'ENGINE START FAILED · TAP RETRY; SAVED PROGRESS IS KEPT':!entered?'CLICK TO UNLOCK GAME AUDIO':!ready?'PREPARING MENU':pending?'LOADING ASSETS · '+done+' / '+total+' · '+percent+'%':'MENU READY · CHOOSE ENTER THE CITY OR CONTINUE';if(ready&&!failed){gate.classList.add('entered');setTimeout(()=>{gate.hidden=true;},350);}}
-window.level29Boot={get entered(){return entered;},get started(){return started;},codeReady(){button.disabled=false;status.textContent='CLICK TO UNLOCK GAME AUDIO';},ready(){ready=true;paint();},assetStart(){pending++;total++;paint();},assetEnd(){pending=Math.max(0,pending-1);done++;paint();}};
-function start(){if(failed){location.reload();return;}if(started||entered)return;entered=true;button.disabled=true;button.textContent='ENTERING…';try{ensureAudio();if(typeof actx!=='undefined'&&actx?.state==='suspended')actx.resume().catch(()=>{});}catch(_){}paint();
- requestAnimationFrame(()=>{try{window.level29SessionRecovery?.record('menu-ready','Audio unlocked; world and WebGL deferred until ENTER THE CITY / CONTINUE');started=true;last=performance.now();accT=0;requestAnimationFrame(loop);window.level29Boot.ready();}catch(e){failed=true;button.disabled=false;button.textContent='RETRY · RELOAD GAME';window.level29SessionRecovery?.record('startup-failed',e.message||String(e));console.error('Game startup failed',e);window.level29StartupDiagnostics?.report(e.message||e);paint();}});}
-button.addEventListener('click',e=>{e.stopPropagation();start();});for(const type of ['pointerdown','pointerup','click','touchstart','touchend','keydown','keyup','wheel'])gate.addEventListener(type,e=>e.stopPropagation());
+// Menu is readable immediately. Audio is unlocked synchronously in the same
+// real click that starts/continues play; WebGL/world work remains deferred.
+let entered=false,started=false,failed=false,ready=false,pending=0,total=0,done=0;
+const gate=document.getElementById('entryGate'),status=document.getElementById('loadStatus'),fill=document.getElementById('loadFill');
+function paint(){const percent=total?Math.floor(done/total*100):0;if(fill){fill.style.width=percent+'%';fill.parentElement?.setAttribute('aria-valuenow',String(percent));}if(status)status.textContent=failed?'STARTUP FAILED · RELOAD TO RETRY; SAVED PROGRESS IS KEPT':!ready?'PREPARING MENU':pending?'LOADING OPTIONAL ASSETS · '+done+' / '+total:'READY · ENTER THE CITY';}
+function enter(){if(failed)return false;if(started){try{if(typeof actx!=='undefined'&&actx?.state==='suspended')actx.resume().catch(()=>{});}catch(_){}return true;}
+ // Retrying a browser-suspended AudioContext needs the current user activation.
+ try{ensureAudio();if(typeof actx!=='undefined'&&actx?.state==='suspended')actx.resume().catch(()=>{});}catch(_){}
+ try{entered=true;last=performance.now();accT=0;requestAnimationFrame(loop);started=true;window.level29SessionRecovery?.record('menu-ready','Single play gesture unlocked audio; world entry follows');return true;}
+ catch(e){failed=true;window.level29StartupDiagnostics?.report(e.message||String(e));paint();return false;}
+}
+window.level29Boot={enter,get entered(){return entered;},get started(){return started;},codeReady(){ready=true;if(gate)gate.hidden=true;const start=document.getElementById('start');if(start)start.disabled=false;paint();},ready(){ready=true;paint();},assetStart(){pending++;total++;paint();},assetEnd(){pending=Math.max(0,pending-1);done++;paint();}};
+// Capture preserves the real gesture before first-frame queueing and supports
+// Continue, multiplayer and other play actions without an extra unlock screen.
+document.addEventListener('click',e=>{if(!ready)return;if(e.target?.closest?.('#start,#resume,#mpbtn,#mpStart,#mpHost,#mpJoin'))enter();},true);
 })();

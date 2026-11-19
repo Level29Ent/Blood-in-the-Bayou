@@ -250,10 +250,15 @@ test("real bindings refresh title instructions on defaults, rebind and reset", (
     ctx,
   );
   events.DOMContentLoaded();
-  assert.match(node.textContent, /E · interact/);
-  assert.match(node.textContent, /G · vehicle/);
+  assert.match(node.textContent, /E \/ USE interact/);
+  assert.equal(ctx.level29Bindings.label("vehicle"), "G");
+  assert.ok(!node.textContent.includes("vehicle"));
   ctx.level29Bindings.change("vehicle", "y");
-  assert.match(node.textContent, /Y · vehicle/);
+  assert.equal(ctx.level29Bindings.label("vehicle"), "Y");
+  assert.ok(!node.textContent.includes("vehicle"));
+  assert.equal(ctx.level29Bindings.change("interact", "g"), true);
+  assert.match(node.textContent, /G \/ USE interact/);
   ctx.level29Bindings.reset();
-  assert.match(node.textContent, /G · vehicle/);
+  assert.equal(ctx.level29Bindings.label("vehicle"), "G");
+  assert.ok(!node.textContent.includes("vehicle"));
 });
