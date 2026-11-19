@@ -831,6 +831,8 @@
 
     // Compatibility userData layer for legacy engine hooks & tests
     const body = new T.Group();
+    const invScale = 1 / (worldScale || 10);
+    body.scale.setScalar(invScale);
     npcRoot.add(body);
 
     const skinColor = new T.Color(skinTone);
@@ -1050,7 +1052,7 @@
         // Sgt Powell, Captain Smith, Felicia trailer, etc.), preserve the original base figure geometry
         try {
           const stack = new Error().stack || '';
-          if (/makeRonnie|syncRonnie|wardrobe|sheldon|powell|smith|trailer|rental/i.test(stack)) {
+          if (/makeRonnie|syncRonnie|wardrobe|sheldon|powell|smith|trailer|rental|dressGuard|buildFortress|places|guard\.js|chief/i.test(stack)) {
             return baseMakeFigure.apply(this, arguments);
           }
         } catch (_) {}

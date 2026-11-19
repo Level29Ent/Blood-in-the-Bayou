@@ -28,7 +28,7 @@ const oldBuild=buildCity;buildCity=function(){oldBuild();chiefs=[];if(!city||!ci
   q.box(70,3,46,x,1.5,y,material('#6d6a60'));q.box(66,2,44,x,50,y,iron);for(const [dx,dy] of [[-32,-20],[32,-20],[-32,20],[32,20]])q.box(3,48,3,x+dx,24,y+dy,iron);
   q.box(54,3,13,x,18,y+11,wood);q.box(54,16,3,x,9,y+16,wood);q.box(16,9,10,x+14,23,y+11,material('#1f2a2f'));
   addSign(g,'SECURITY OFFICE · GUARD JOBS',120,8,x,56,y+23,'#e0b24a');
-  const m=makeFigure(false);setFigureColors(m,'#9b6f4e','#1d2328','#161b1f','#2a2622');addPart(m,16,2,2,8,12,0,iron);g.add(m);
+  const m=makeFigure(false);setFigureColors(m,'#9b6f4e','#1d2328','#161b1f','#2a2622');if(!m.userData||!m.userData.model)addPart(m,16,2,2,8,12,0,iron);g.add(m);
   chiefs.push({m,x:x,y:y-4,sf,a:Math.PI/2});}
  q.finish();};
 const nearChief=()=>{if(!player||!city||player.car||player.dead)return null;return chiefs.find(c=>dist(player.x,player.y,c.x,c.y)<62)||null;};

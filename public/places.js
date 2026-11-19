@@ -157,6 +157,7 @@ function guardRifle(K){
 }
 function dressGuard(m,i){
  const K=guardMats(),u=m.userData;
+ if(u.model){m.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=true;}});return;}
  setFigureColors(m,GUARD_SKINS[i%GUARD_SKINS.length],'#232a31','#262b30','#16110d');
  const add=(parent,w,h,d,x,y,z,mat)=>{const b=box(w,h,d,mat);b.position.set(x,y,z);parent.add(b);return b;};
  const vest=new THREE.Mesh(new THREE.CylinderGeometry(1,.94,5.8,16),K.vest);vest.scale.set(2.78,1,4.1);vest.position.y=12.9;u.body.add(vest);
