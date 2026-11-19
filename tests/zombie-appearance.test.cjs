@@ -26,3 +26,26 @@ test('corpse renderer waits for the real-model ragdoll and resumes only after re
  const q={k:'corpse',x:0,y:0,a:0,t:100,ragdoll:{root:{parent:{}}}},u={eyes:{},legL:{rotation:{}},legR:{rotation:{}},armL:{rotation:{}},armR:{rotation:{}},body:{rotation:{set(){}},position:{}}};
  const c={parts:[q],far:600,camP:{x:0,z:0},dist:()=>0,configureZombieFigure(){},cPool:{begin(){},end(){},get(){requested++;return [{userData:u,position:{set(){}},rotation:{set(){}}},true];}}};vm.createContext(c);vm.runInContext(source.slice(a,b),c);assert.equal(requested,0);q.ragdoll.root.parent=null;vm.runInContext(source.slice(a,b),c);assert.equal(requested,1);
 });
+test('infected details share geometry, reset pooled head variants and never alter actor state',()=>{
+ const c=figure(),a=c.makeFigure(true),b=c.makeFigure(true),actor={type:'brute',x:25,y:60,hp:7,shirt:'#445566',v:.2};
+ const before=JSON.stringify(actor);c.configureZombieFigure(a,actor);assert.equal(JSON.stringify(actor),before);
+ assert.ok(a.userData.infectedDetails.children.length>=15);assert.equal(a.userData.infectedDetails.children[0].geometry,b.userData.infectedDetails.children[0].geometry);
+ assert.ok(a.userData.head.scale.x>2.2);c.configureZombieFigure(a,{type:'runner',v:.6});assert.equal(a.userData.head.scale.x,2.2);assert.equal(a.userData.head.scale.y,2.6);
+ c.configureZombieFigure(a,{type:'walker',v:.6});assert.equal(a.userData.head.scale.y,2.45);assert.equal(a.userData.jaw.scale.z,1.6);
+ a.updateMatrixWorld(true);a.traverse(o=>assert.ok(o.matrixWorld.elements.every(Number.isFinite)));
+});
+test('jester tailoring follows real wardrobe visibility and keeps local-avatar scene ownership',()=>{
+ const c=figure();c.THREE=T;c.box=(w,h,d,mat)=>new T.Mesh(new T.BoxGeometry(w,h,d),mat);c.scene=new T.Scene();
+ const mp=fs.readFileSync('public/game/mp.js','utf8');vm.runInContext(mp.slice(mp.indexOf('function makeJester('),mp.indexOf('function syncTeam(')),c);
+ const avatar=c.makeJester('#f2b51c',{local:true});assert.equal(c.scene.children.length,0);assert.equal(avatar.userData.isJester,true);
+ assert.ok(avatar.userData.jesterTailoring.children.length>=7);assert.equal(avatar.userData.face.visible,false);
+ for(const leg of [avatar.userData.legL,avatar.userData.legR])assert.ok(leg.children.length>=7);
+ const source=fs.readFileSync('public/game/wardrobe.js','utf8'),start=source.indexOf('function dress('),end=source.indexOf('function avatar()',start);
+ c.W={outfit:x=>x||{},catalog:[{id:'top',category:'tops',cut:0,color:'#336655'}]};c.saved={};c.add=(g,geo,mat,x,y,z)=>{const m=new T.Mesh(geo,mat);m.position.set(x,y,z);g.add(m);return m;};c.cub=(g,w,h,d,mat,x,y,z)=>c.add(g,new T.BoxGeometry(w,h,d),mat,x,y,z);
+ vm.runInContext(source.slice(start,end),c);c.dress(avatar,{tops:'top'});assert.equal(avatar.userData.jesterTailoring.visible,false);c.dress(avatar,{});assert.equal(avatar.userData.jesterTailoring.visible,true);
+ avatar.updateMatrixWorld(true);avatar.traverse(o=>assert.ok(o.matrixWorld.elements.every(Number.isFinite)));
+});
+test('art review constructors stay synchronized with production sources',()=>{
+ require('node:child_process').execFileSync(process.execPath,['scripts/build-character-review.cjs','--check']);
+ const html=fs.readFileSync('public/game/index.html','utf8');for(const file of ['fp.js','mp.js','wardrobe.js'])assert.ok(html.includes(file+'?v=character-polish-1'));
+});

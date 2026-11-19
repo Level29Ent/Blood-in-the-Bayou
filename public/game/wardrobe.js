@@ -5,7 +5,7 @@ let owned=[];try{owned=JSON.parse(localStorage.getItem('level29.wardrobe-owned.v
 let shopSite=null,cat='tops',dressing=false,preview=null,actorScene=null,localAvatar=null,avatarStamp='',turn=0;
 function add(g,geo,mat,x,y,z){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);g.add(m);return m;}
 function cub(g,w,h,d,mat,x,y,z){return add(g,new THREE.BoxGeometry(w,h,d),mat,x,y,z);}
-function dress(m,loadout=saved){const u=m.userData,old=u.wardrobe;u.shirt.color.set(u.isJester?'#8a1fb0':'#525975');u.pants.color.set(u.isJester?'#2fb33a':'#354757');if(u.jesterHat)u.jesterHat.visible=!W.outfit(loadout).headwear;if(u.jesterRuff)u.jesterRuff.visible=!W.outfit(loadout).tops;if(old){old.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});old.parent.remove(old);}const g=new THREE.Group();u.body.add(g);u.wardrobe=g;
+function dress(m,loadout=saved){const u=m.userData,old=u.wardrobe;u.shirt.color.set(u.isJester?'#8a1fb0':'#525975');u.pants.color.set(u.isJester?'#2fb33a':'#354757');if(u.jesterHat)u.jesterHat.visible=!W.outfit(loadout).headwear;if(u.jesterRuff)u.jesterRuff.visible=!W.outfit(loadout).tops;if(u.jesterTailoring)u.jesterTailoring.visible=!W.outfit(loadout).tops;if(old){old.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});old.parent.remove(old);}const g=new THREE.Group();u.body.add(g);u.wardrobe=g;
 
  // Separate attachment group follows each limb; do not dispose original shared figure geometry/materials.
  for(const o of u.wardrobeLimbs||[]){o.parent.remove(o);o.traverse(k=>{k.geometry?.dispose();k.material?.dispose();});}u.wardrobeLimbs=[];

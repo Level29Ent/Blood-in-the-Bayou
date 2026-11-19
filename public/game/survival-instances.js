@@ -17,8 +17,8 @@
    const root=new T.Group();root.name='Bounded survival horde instances';
    const sphere=()=>new T.SphereGeometry(1,10,8),cylinder=()=>new T.CylinderGeometry(1,.84,1,10),box=()=>new T.BoxGeometry();
    const parts=[
-    {offset:[0,12.4,0],kind:'shirt',pieces:[[cylinder(),[0,0,0],[2.38,7.2,3.75],'#ffffff']]},
-    {offset:[0,18.3,0],kind:'skin',pieces:[[sphere(),[.05,0,0],[2.2,2.45,2.12],'#ffffff'],[sphere(),[.45,-1.25,0],[1.55,1.05,1.6],'#ffffff'],[sphere(),[0,1.6,0],[2.22,.85,2.12],'#382c22'],...[-.95,.95].map(z=>[box(),[2.05,.3,z],[.4,.8,.9],'#ff3030'])]},
+    {offset:[0,12.4,0],kind:'shirt',pieces:[[cylinder(),[0,0,0],[2.38,7.2,3.75],'#ffffff'],...[-1.7,1.7].map(z=>[box(),[2.2,.1,z],[.16,2.2,.24],'#563d36'])]},
+    {offset:[0,18.3,0],kind:'skin',pieces:[[sphere(),[.05,0,0],[2.2,2.45,2.12],'#ffffff'],[sphere(),[.45,-1.25,0],[1.55,1.05,1.6],'#ffffff'],[sphere(),[0,1.6,0],[2.22,.85,2.12],'#382c22'],...[-.95,.95].map(z=>[sphere(),[1.82,.32,z],[.25,.7,.67],'#26332d']),...[-.95,.95].map(z=>[box(),[2.05,.3,z],[.4,.8,.9],'#ff3030']),[sphere(),[2.14,-.34,0],[.48,.67,.42],'#ffffff'],[box(),[2.22,-1.2,0],[.18,.4,1.8],'#26332d'],...[-.6,0,.6].map(z=>[box(),[2.34,-1.13,z],[.14,.28,.26],'#f2efe8'])]},
     ...[-1,1].map(side=>({offset:[0,15,side*4.9],kind:'skin',arm:true,pieces:[[cylinder(),[0,-3.5,0],[1.05,7,1.05],'#ffffff'],[sphere(),[.1,-7.7,0],[.95,1.18,.8],'#ffffff']]})),
     ...[-1,1].map(side=>({offset:[0,8,side*1.8],kind:'pants',leg:true,pieces:[[cylinder(),[0,-3.7,0],[1.6,7.4,1.5],'#ffffff'],[box(),[.55,-7.35,0],[4.3,1.3,2.7],'#222226']]}))
    ];

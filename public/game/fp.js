@@ -122,6 +122,7 @@ function figParts(){
     humanEye: sph(1,12,8), iris: sph(1,10,8), lip: sph(1,12,6), cheek: sph(1,12,8),
     eyeW: new THREE.BoxGeometry(.18, .5, .72), pupil: new THREE.BoxGeometry(.14, .38, .36), brow: new THREE.BoxGeometry(.18, .22, .95), mouth: new THREE.BoxGeometry(.16, .2, 1.05),
     sleeve: cyl(1.3, 1.12, 3.8, 12), elbow: sph(1.08, 10, 8), forearm: cyl(1.02, .84, 3.6, 10), hand: sph(.95, 10, 8),
+    detail: new THREE.BoxGeometry(1,1,1), scarMat: lam('#563d36'), socketMat: lam('#26332d'),
     hairCap, longHair, zEye: new THREE.BoxGeometry(.4, .8, .9),
     shoeMat: lam('#1a1a1c'), soleMat: lam('#d8d4ca'), beltMat: lam('#231c16'), buckleMat: lam('#c9a44a', { emissive: 0x2a1e00 }),
     whiteMat: lam('#f2efe8'), pupilMat: lam('#1b120c'), mouthMat: lam('#7a3a34')
@@ -187,9 +188,26 @@ function makeFigure(zombie){
 
   let eyes = null;
   if (zombie){ eyes = new THREE.Group(); for (const z of [-.95, .95]){ const e = new THREE.Mesh(P.zEye, MAT.eye); e.position.set(2.05, 18.6, z); eyes.add(e); } body.add(eyes); }
+  // Small shared details follow the existing rig; no collision or root-scale changes.
+  let infectedDetails=null;
+  if(zombie){
+    infectedDetails=new THREE.Group();infectedDetails.name='Infected facial anatomy';body.add(infectedDetails);
+    for(const side of [-1,1]){
+      add(infectedDetails,P.cheek,P.socketMat,1.82,18.62,side*.96,.25,.7,.67);
+      add(infectedDetails,P.ear,skin,-.1,18.2,side*2.15,.4,.68,.28);
+      const brow=add(infectedDetails,P.detail,skin,2.08,19.3,side*.94,.35,.3,1.5);brow.rotation.x=side*.18;
+    }
+    add(infectedDetails,P.nose,skin,2.14,17.96,0,.48,.67,.42);
+    add(infectedDetails,P.jaw,P.socketMat,1.95,17.1,0,.3,.36,1.12);
+    for(let i=0;i<4;i++)add(infectedDetails,P.detail,P.whiteMat,2.25,17.2-(i%2)*.12,-.82+i*.52,.16,.34,.28);
+    const scar=add(infectedDetails,P.detail,P.scarMat,2.1,18.1,1.42,.12,1.3,.14);scar.rotation.x=.35;
+    // Torn collar/hem and a worn shoulder patch inherit each zombie's shirt color.
+    for(const side of [-1,1])add(infectedDetails,P.detail,P.scarMat,2.2,12.5,side*1.7,.15,2.2,.24);
+    for(let i=0;i<3;i++)add(infectedDetails,P.detail,shirt,1.1,9.1,-2+i*2,1.2,1+(i%2)*.6,1.1);
+  }
   const helmet = new THREE.Mesh(new THREE.SphereGeometry(3, 16, 8, 0, Math.PI*2, 0, Math.PI/2), lam('#4b5320')); helmet.position.y = 19.6; helmet.scale.set(1, .8, 1); helmet.visible = false; body.add(helmet);
   g.traverse(o => { if (o.isMesh){ o.castShadow = true; o.receiveShadow = false; } });
-  g.userData = { body, legL, legR, armL, armR, torso, head, jaw, hair, longHair, face, eyes, helmet, skin, shirt, pants };
+  g.userData = { body, legL, legR, armL, armR, torso, head, jaw, hair, longHair, face, eyes, helmet, skin, shirt, pants, infectedDetails };
   if(typeof window!=='undefined'&&window.level29NPCAppearance)window.level29NPCAppearance.apply(THREE,g);
   return g;
 }
@@ -596,6 +614,11 @@ const _c = new THREE.Color();
 function configureZombieFigure(m,z){
  const u=m.userData,skin=z.type==='runner'?'#a3bc6c':z.type==='brute'?'#6f8a58':'#86a46e';
  setFigureColors(m,skin,z.shirt||'#555555',z.military?CAMO[0]:'#2e3a52');
+ if(u.infectedDetails){
+   u.infectedDetails.scale.set(1,1,1);
+   u.jaw.scale.set(z.type==='brute'?1.8:1.55,1.05,z.type==='runner'?1.38:1.6);
+   u.head.scale.set(z.type==='brute'?2.45:2.2,z.type==='runner'?2.6:2.45,z.type==='runner'?1.95:2.12);
+ }
  u.helmet.visible=!!z.military&&z.v<.5;u.hair.visible=!u.helmet.visible;
  u.hair.scale.set(1,1,1);u.hair.position.set(0,20.4,0);
  u.longHair.visible=!!z.fem&&!u.helmet.visible;
