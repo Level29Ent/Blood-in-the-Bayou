@@ -161,7 +161,7 @@ renderGround=function(){
 };
 function addPart(group,w,h,d,x,y,z,mat){const m=box(w,h,d,mat);m.position.set(x,y,z);group.add(m);return m;}
 function addSign(group,text,w,h,x,y,z,col){
-  const cv=document.createElement('canvas');cv.width=1024;cv.height=Math.max(64,Math.round(1024*h/w));const c=cv.getContext('2d');
+  const budget=window.level29StartupTextures?.size(w,h,window.level29Graphics?.quality||'low')||{width:1024,height:Math.max(64,Math.round(1024*h/w))};const cv=document.createElement('canvas');cv.width=budget.width;cv.height=budget.height;const c=cv.getContext('2d');
   c.fillStyle='#172127';c.fillRect(0,0,cv.width,cv.height);c.strokeStyle=col;c.lineWidth=7;c.strokeRect(5,5,cv.width-10,cv.height-10);
   let size=Math.round(cv.height*.62);c.font='800 '+size+"px 'Barlow Condensed', sans-serif";
   while(c.measureText(text).width>cv.width-60&&size>12){size-=2;c.font='800 '+size+"px 'Barlow Condensed', sans-serif";}
