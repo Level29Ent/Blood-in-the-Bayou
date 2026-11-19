@@ -249,8 +249,7 @@ const oldDrawHUD=drawHUD;
 drawHUD=function(){oldDrawHUD.apply(this,arguments);
   if(!visible()||panelOpen)return;
   const bp=BLUEPRINTS[sel];
-  const mobile=typeof touch!=='undefined'&&Object.values(touch).some(Boolean);
-  hudText('Y · CONSTRUCT   '+bp.short+' ('+money(costFor(bp,countOf(sel)))+')   X · PLACE   T · GRID '+(gridOn?'ON':'OFF'),SW/2,SH-(mobile?180:120),11,'#e0b64f','center','700 ');
+  window.level29HudPrompts?.set('construction','Y · CONSTRUCT · '+bp.short+' ('+money(costFor(bp,countOf(sel)))+') · X · PLACE · T · GRID '+(gridOn?'ON':'OFF'));
 };
 // ---- Sync on load ----
 cloudPull().then(()=>{if(city)rebuildMeshes();});

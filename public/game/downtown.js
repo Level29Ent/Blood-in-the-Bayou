@@ -637,7 +637,7 @@ update=function(){const r=prevUpdate.apply(this,arguments);
 const prevHUD=drawHUD;
 drawHUD=function(){const r=prevHUD.apply(this,arguments);try{
   cx.save();cx.textAlign='center';cx.textBaseline='middle';
-  if(curSpot&&!coarse()){const t='E · '+curSpot.label;cx.font="800 18px 'Barlow Condensed'";const w=cx.measureText(t).width+28;cx.fillStyle='rgba(20,10,34,.85)';cx.fillRect(SW/2-w/2,SH-128,w,34);cx.strokeStyle=COL.gold;cx.strokeRect(SW/2-w/2,SH-128,w,34);cx.fillStyle='#fff';cx.fillText(t,SW/2,SH-111);}
+  if(curSpot&&!coarse())window.level29HudPrompts?.set('downtown','E · '+curSpot.label);
   if(ride){cx.fillStyle='rgba(120,10,20,.12)';cx.fillRect(0,0,SW,SH);cx.strokeStyle='#ffd36b';cx.lineWidth=2;cx.beginPath();cx.arc(SW/2,SH/2,34,0,6.283);cx.moveTo(SW/2-50,SH/2);cx.lineTo(SW/2+50,SH/2);cx.moveTo(SW/2,SH/2-50);cx.lineTo(SW/2,SH/2+50);cx.stroke();
     cx.font="800 26px 'Barlow Condensed'";cx.fillStyle='#ffd36b';cx.fillText('B-29 · '+level29BomberRoutes.NAMES[ride.routeIndex]+' · '+(ride.t/60).toFixed(1)+'s · KILLS '+ride.kills,SW/2,70);}
   if(run&&course){cx.font="800 24px 'Barlow Condensed'";cx.fillStyle=COL.gold;const p=course.pts[run.i];cx.fillText('COURSE '+((frame-run.t0)/60).toFixed(1)+'s · '+(p.name||'')+(p.hold?' · HOLD '+Math.round((run.hold||0)/p.hold*100)+'%':'')+' ('+run.i+'/'+(course.pts.length-1)+')',SW/2,70);}
