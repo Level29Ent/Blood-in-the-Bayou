@@ -8,7 +8,7 @@ const app = path.join(root, 'native/ios-app');
 const www = path.join(app, 'www');
 fs.rmSync(www, { recursive: true, force: true });
 const gameRoot=path.join(root,'public/game');
-fs.cpSync(gameRoot, www, { recursive: true, filter(source){const relative=path.relative(gameRoot,source).split(path.sep);if(relative[0]==='models'&&relative.length>1)return ['characters','watercraft','optimized'].includes(relative[1]);return true;} });
+fs.cpSync(gameRoot, www, { recursive: true, filter(source){const relative=path.relative(gameRoot,source).split(path.sep);if(relative[0]==='models'&&relative.length>1)return ['characters','watercraft','optimized','Ronniebaby_character.glb'].includes(relative[1]);return true;} });
 fs.mkdirSync(path.join(www, 'icons'), { recursive: true });
 for (const icon of ['bayou-32.png', 'bayou-apple-180.png']) {
   fs.copyFileSync(path.join(root, 'public/icons', icon), path.join(www, 'icons', icon));
