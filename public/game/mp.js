@@ -390,6 +390,22 @@ function makeJester(col,{local=false}={}){
   }
   const tag = new THREE.Mesh(new THREE.TorusGeometry(2.3, .4, 6, 18).rotateX(Math.PI / 2), lam(col, { emissive: 0x111111 })); tag.position.y = .2;
   ruff.add(tag); u.body.add(ruff);u.jesterRuff=ruff;
+  // Tailored courier jacket and face planes; retain the recognizable Level 29 mask.
+  const P=figParts(),tailoring=new THREE.Group();tailoring.name='Jester jacket tailoring';u.body.add(tailoring);u.jesterTailoring=tailoring;
+  const detail=(parent,geo,mat,x,y,z,sx,sy,sz)=>{const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.scale.set(sx,sy,sz);parent.add(m);return m;};
+  for(const side of [-1,1]){
+    const lapel=detail(tailoring,P.detail,bellMat,2.45,13.3,side*1.6,.25,4,.34);lapel.rotation.x=side*.18;
+    const diamond=detail(tailoring,P.detail,side<0?u.pants:bellMat,2.55,12,side*1.2,.2,1.1,1.1);diamond.rotation.x=Math.PI/4;
+    detail(u.body,P.cheek,u.skin,1.6,17.7,side*1.5,.58,.54,.46);
+    const brow=detail(u.body,P.detail,ink,2.3,19.25,side*1.05,.18,.22,1.6);brow.rotation.x=side*.2;
+  }
+  detail(tailoring,P.detail,ink,-2.3,12.5,0,1.4,5.4,5.6);
+  detail(tailoring,P.detail,bellMat,-3.05,12.5,0,.2,.4,5.8);
+  detail(tailoring,P.detail,bellMat,2.5,10,0,.24,.6,5.2);
+  for(const leg of [u.legL,u.legR]){
+    detail(leg,P.detail,P.beltMat,1.45,-4,0,.35,1.8,1.7);
+    detail(leg,P.detail,P.buckleMat,2.3,-7.25,0,.3,.35,1.5);
+  }
   if(!local){const gun = box(9, 2, 1.6, lam('#1b1d1f')); gun.position.set(5, 12, 2.4); u.body.add(gun);}
   g.scale.setScalar(1.05);if(!local)scene.add(g);return g;
 }

@@ -10,6 +10,7 @@
     "build:postprocessing": "node scripts/build-postprocessing.cjs",
     "ios:sync": "pnpm --filter blood-in-the-bayou-ios sync",
     "ios:archive": "pnpm ios:sync && node scripts/archive-ios.cjs",
+    "build:character-review": "node scripts/build-character-review.cjs",
     "build:community": "node scripts/build-community.cjs"
   },
   "dependencies": {
