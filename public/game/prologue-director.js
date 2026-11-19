@@ -26,7 +26,7 @@ function openVideo(){const st=stage();if(!st?.video||modal)return;openModal('vid
  const mount=document.createElement('div');section.appendChild(mount);
  const play=button('PLAY SCENE',()=>{if(cutscene)return;play.disabled=true;
   try{if(!window.level29StoryCutscenes)throw Error('Scene player is unavailable');
-   cutscene=level29StoryCutscenes.start({T:THREE,mount,id:st.id,actors:{ahmad:actors.ahmad,seated:actors.seated,ronnie:actors.ronnie,zombie:actors.seated},onEnd:()=>advance('videoDone'),onError:()=>{cutscene=null;play.disabled=false;const notice=document.createElement('p');notice.textContent='Scene interrupted. Retry, skip, or return later; your checkpoint is kept.';mount.appendChild(notice);}});
+   cutscene=level29StoryCutscenes.start({T:THREE,mount,id:st.id,actors:{ahmad:actors.ahmad,seated:actors.seated,ronnie:actors.ronnie,zombie:actors.seated},loadRonnie:window.level29PbrAssets?()=>{window.level29PbrAssets.init(renderer);return window.level29PbrAssets.load('models/Ronniebaby_character.glb');}:undefined,onEnd:()=>advance('videoDone'),onError:()=>{cutscene=null;play.disabled=false;const notice=document.createElement('p');notice.textContent='Scene interrupted. Retry, skip, or return later; your checkpoint is kept.';mount.appendChild(notice);}});
   }catch(error){cutscene=null;play.disabled=false;let notice=mount.querySelector('p');if(!notice){notice=document.createElement('p');mount.appendChild(notice);}notice.textContent='Scene could not start. Retry, skip, or return later; your checkpoint is kept.';console.warn('Story cutscene unavailable',error);}
  });
  button('SKIP SCENE / CONTINUE STORY',()=>advance('videoDone'));button('RETURN TO GAME · WATCH LATER',()=>closeModal());save();}
