@@ -13,8 +13,8 @@ function advance(a,nav,width,dt,panic=false,zombies=[],movement=null){
  let arrived=d<=step+.01;if(movement){arrived=movement(a,a.target,step);}else{a.a=Math.atan2(dy,dx);if(d){a.x+=dx/d*step;a.y+=dy/d*step;a.anim+=step*.15;}}
  if(arrived){a.previous=a.cell;a.cell=a.target.cell;a.target=null;if(!panic&&['talk','rest','shop'].includes(a.activity))a.wait=1+a.id%4;}
 }
-function spectators(route,tileAt,blocked,count=384){
- const out=[],outbound=route.slice(0,Math.max(1,Math.floor(route.length/2)+1)),stations=[];
+function spectators(route,tileAt,blocked,count=384,closedLoop=false){
+ const out=[],outbound=closedLoop?route.concat([route[0]]):route.slice(0,Math.max(1,Math.floor(route.length/2)+1)),stations=[];
  for(let i=1;i<outbound.length;i++){const p=outbound[i-1],q=outbound[i],len=Math.hypot(q.x-p.x,q.y-p.y);for(let d=0;d<len;d+=14){const t=d/len;stations.push({x:p.x+(q.x-p.x)*t,y:p.y+(q.y-p.y)*t,a:Math.atan2(q.y-p.y,q.x-p.x)});}}
  if(!stations.length)return out;
  // Fill one rank across the entire route before deepening both sidewalk audiences.
@@ -59,7 +59,7 @@ function create(T,capacity=72){
 function pose(T,root,actors,height){
  const dummy=new T.Object3D(),base=new T.Object3D(),local=new T.Matrix4(),matrix=new T.Matrix4(),color=new T.Color();for(const m of root.children)m.count=0;
  for(const a of actors.slice(0,root.userData.capacity)){
-  const profile=character(a.id),skin=a.skin||profile.skin||SKIN[Math.floor(a.id/2)%SKIN.length],shirt=a.festival?['#713b91','#ceac3e','#32825d'][a.id%3]:CLOTH[(a.id*5+Math.floor(a.id/12))%CLOTH.length],sw=a.wait>0?0:Math.sin(a.anim||0),s=a.scale||(.94+(a.id%7)*.018),look={...profile,...a},woman=look.gender==='woman',build=look.build%4;const torsoWidth=woman?[3.25,3.55,3.6,3.45][build]:[3.45,3.75,4.05,3.6][build];
+  const profile=a.gender&&a.hairstyle?a:character(a.id),skin=a.skin||profile.skin||SKIN[Math.floor(a.id/2)%SKIN.length],shirt=a.festival?['#713b91','#ceac3e','#32825d'][a.id%3]:CLOTH[(a.id*5+Math.floor(a.id/12))%CLOTH.length],sw=a.wait>0?0:Math.sin(a.anim||0),s=a.scale||(.94+(a.id%7)*.018),look=profile===a?a:{...profile,...a},woman=look.gender==='woman',build=look.build%4;const torsoWidth=woman?[3.25,3.55,3.6,3.45][build]:[3.45,3.75,4.05,3.6][build];
   base.position.set(a.x,height(a.x,a.y),a.y);base.rotation.set(0,-a.a,0);base.scale.setScalar(s);base.updateMatrix();
   const put=(index,p,scale,c,rz=0,rx=0)=>{const m=root.children[index],i=m.count++;dummy.position.set(...p);dummy.scale.set(...scale);dummy.rotation.set(rx,0,rz);dummy.updateMatrix();local.copy(dummy.matrix);matrix.multiplyMatrices(base.matrix,local);m.setMatrixAt(i,matrix);color.set(c);m.setColorAt(i,color);};
   put(0,[0,woman&&look.outfit==='tunic'?11.9:12.4,0],[woman?2.15:2.38,woman&&look.outfit==='tunic'?8.2:7.2,torsoWidth],shirt);put(1,[.05,18.3,0],root.userData.detailed?[woman?1.56:1.63,1.98,woman?1.48:1.55]:[2.05,2.35,1.95],skin);
