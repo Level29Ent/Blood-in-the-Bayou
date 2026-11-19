@@ -124,7 +124,7 @@ function figParts(){
     sleeve: cyl(1.3, 1.12, 3.8, 12), elbow: sph(1.08, 10, 8), forearm: cyl(1.02, .84, 3.6, 10), hand: sph(.95, 10, 8),
     detail: new THREE.BoxGeometry(1,1,1), scarMat: lam('#563d36'), socketMat: lam('#26332d'),
     hairCap, longHair, zEye: new THREE.BoxGeometry(.4, .8, .9),
-    shoeMat: lam('#1a1a1c'), soleMat: lam('#d8d4ca'), beltMat: lam('#231c16'), buckleMat: lam('#c9a44a', { emissive: 0x2a1e00 }),
+    shoeMat: lam('#1a1a1c'), soleMat: lam('#d8d4ca'), beltMat: lam('#231c16'), buckleMat: lam('#c9a44a', { name:'belt buckle metal',emissive: 0x2a1e00 }),
     whiteMat: lam('#f2efe8'), pupilMat: lam('#1b120c'), mouthMat: lam('#7a3a34')
   };
   return FIG;

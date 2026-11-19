@@ -24,7 +24,7 @@ function figure(who){const m=makeFigure(false),u=m.userData;
  }
  // Small stitched seams, button placket and cuffs give named business actors readable tailoring.
  for(const z of [-3,3])box(u.body,.18,4,.18,2.35,12,z,'#686e70');for(let n=0;n<3;n++)box(u.body,.3,.3,.3,2.7,11+n*1.3,0,'#d0bf98');
- m.traverse(o=>{o.userData.noBatch=true;});m.userData.identity=who;window.level29People?.identify(m,who);return m;
+ m.traverse(o=>{o.userData.noBatch=true;});m.userData.identity=who;window.level29People?.identify(m,who);window.level29CharacterMaterials?.apply(THREE,m);return m;
 }
 function kitchen(v){const g=new THREE.Group();g.name='Major Cajun kitchen';v.mesh.add(g);const b=v.b,x=b.x+b.w*.3,z=b.y+24;
  box(g,42,9,20,x,4.5,z,'#838c8e');box(g,44,1,22,x,9.5,z,'#bdc4bc');for(const dx of [-12,10])add(g,new THREE.TorusGeometry(5,.5,6,20),x+dx,10.3,z,'#222a2a').rotation.x=Math.PI/2;
