@@ -333,8 +333,8 @@ update=function(){prevUpdate();if(!player||!isEastCity(city))return;
 const compass=a=>['E','SE','S','SW','W','NW','N','NE'][Math.round(((a%(Math.PI*2))+Math.PI*2)%(Math.PI*2)/(Math.PI/4))%8];
 const prevHUD=drawHUD;
 drawHUD=function(){prevHUD();if(!player||state==='menu'||!isEastCity(city))return;
-  if(state==='play'&&!shift){if(nearDoor())hudText('BOOMCITY CASINO · PRESS U OR TAP CASINO',SW/2,SH-140,20,'#ff7ab4','center');
-    else if(nearCaptain())hudText('NATCHEZ SHRIMP CO. · PRESS U OR TAP JOBS',SW/2,SH-140,20,'#ffd36b','center');}
+  if(state==='play'&&!shift){if(nearDoor())window.level29HudPrompts?.set('boat','BOOMCITY CASINO · PRESS U OR TAP CASINO');
+    else if(nearCaptain())window.level29HudPrompts?.set('boat','NATCHEZ SHRIMP CO. · PRESS U OR TAP JOBS');}
   if(!shift)return;const s=shift,b=s.boat,tgt=s.phase==='board'?b:s.phase==='ground'?s.grounds[s.idx]:DOCK,from=player.car||player;
   const d=tgt?dist(from.x,from.y,tgt.x,tgt.y):0,dir=tgt?compass(Math.atan2(tgt.y-from.y,tgt.x-from.x)):'';
   const W=Math.min(460,SW-24),X=SW/2-W/2,Y=Math.max(70,SH*.11);

@@ -1,0 +1,58 @@
+/* No fixed SH-120/SH-140 canvas hints: rows and buttons share normal flow. */
+#hudPromptStack {
+  position: fixed;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom, 0px) + 80px);
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  width: min(440px, calc(100vw - 32px));
+  max-height: 38dvh;
+  overflow: auto;
+  pointer-events: auto;
+}
+#hudPromptStack[hidden], #hudPromptStack [hidden] { display: none !important; }
+#hudPromptStack > * { flex: 0 0 auto; box-sizing: border-box; }
+#hudPromptStack #prologueAction,
+#hudPromptStack #riverboatControls {
+  position: static !important;
+  inset: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  width: 100%;
+  max-width: 100% !important;
+  pointer-events: auto;
+}
+#hudPromptStack button, .hud-prompt-row {
+  box-sizing: border-box;
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  line-height: 1.45;
+  text-align: center;
+}
+#hudPromptStack #riverboatControlsToggle { width: 100%; max-width: 100%; }
+.hud-prompt-row {
+  padding: 8px 12px;
+  border: 1px solid #a99b6b;
+  background: #10212bf2;
+  color: #f0d69c;
+  font: 600 13px/1.45 monospace;
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+  #hudPromptStack { width: 38vw; }
+  #interactionTutorial { width: 29vw !important; }
+}
+@media (max-width: 760px), (pointer: coarse) {
+  #hudPromptStack { bottom: calc(env(safe-area-inset-bottom, 0px) + 214px); max-height: 30dvh; }
+  #interactionTutorial { bottom: auto !important; top: calc(var(--hud-mission-bottom, 128px) + 12px); max-height: 30dvh !important; }
+}
+@media (max-height: 500px) {
+  #nolaEquipmentActions { max-width: 26vw !important; }
+  #nolaEquipmentActions button { max-width: 100%; white-space: normal; }
+  #hudPromptStack { bottom: calc(env(safe-area-inset-bottom, 0px) + 12px); width: 38vw; max-height: 45dvh; }
+  #interactionTutorial { width: 28vw !important; bottom: 12px !important; top: auto !important; max-height: 42dvh !important; }
+}
