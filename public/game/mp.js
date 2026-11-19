@@ -45,6 +45,7 @@ function mpReset(){ const oldPeer=MP.peer;MP.peer=null;MP.hostConn=null;try { ol
 
 // ---------- Hosting ----------
 function mpHost(tries){
+  if(window.level29Boot?.enter&&!window.level29Boot.enter())return;
   if (typeof Peer === 'undefined'){ mpSetStatus('Loading multiplayer…');window.level29Peer?.load().then(()=>mpHost(tries)).catch(e=>mpSetStatus(e.message,true));return; }
   mpReadName(); mpReset(); tries = tries || 0;
   const code = mpCode();
@@ -144,6 +145,7 @@ function mpSnapshot(){
 
 // ---------- Joining ----------
 function mpJoin(code){
+  if(window.level29Boot?.enter&&!window.level29Boot.enter())return;
   code = String(code || '').toUpperCase().trim();
   if (!/^[A-Z0-9]{4}$/.test(code)){ mpSetStatus('Room codes are 4 letters or numbers.', true); return; }
   if (typeof Peer === 'undefined'){mpSetStatus('Loading multiplayer…');window.level29Peer?.load().then(()=>mpJoin(code)).catch(e=>mpSetStatus(e.message,true));return;}
