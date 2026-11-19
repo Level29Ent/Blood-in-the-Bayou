@@ -6,7 +6,7 @@ const panel=document.createElement('section');panel.id='pauseControls';panel.sty
 panel.querySelector('#pauseJournal').onclick=()=>window.level29CityCareers?.show('map');
 const sensitivity=panel.querySelector('#pauseSensitivity'),shakeSlider=panel.querySelector('#pauseShake');sensitivity.value=settings.sensitivity;shakeSlider.value=settings.shake;
 function saveOptions(){settings.sensitivity=+sensitivity.value;settings.shake=+shakeSlider.value;try{localStorage.setItem('level29.pause-controls.v1',JSON.stringify(settings));}catch(_){}}sensitivity.onchange=saveOptions;shakeSlider.onchange=saveOptions;
-panel.querySelector('#pauseResume').onclick=()=>{settings.sensitivity=+sensitivity.value;settings.shake=+shakeSlider.value;try{localStorage.setItem('level29.pause-controls.v1',JSON.stringify(settings));}catch(_){}state='play';};
+panel.querySelector('#pauseResume').onclick=()=>{settings.sensitivity=+sensitivity.value;settings.shake=+shakeSlider.value;try{localStorage.setItem('level29.pause-controls.v1',JSON.stringify(settings));}catch(_){}window.level29Save?.save('PROGRESS SAVED');state='play';};
 for(const type of ['pointerdown','pointerup','click','touchstart','touchend','wheel','keydown','keyup'])panel.addEventListener(type,e=>e.stopPropagation());
 window.level29Pause={open(){if(state!=='play'||mpRole)return;mouse.down=false;for(const k in keys)keys[k]=false;document.exitPointerLock?.();state='pause';},get panel(){return panel;}};
 const turn=turnView;turnView=function(dx,dy){return turn.call(this,dx*settings.sensitivity,dy*settings.sensitivity);};const place=placeCamera;placeCamera=function(){const saved=shake;shake=saved*settings.shake;try{return place.apply(this,arguments);}finally{shake=saved;}};

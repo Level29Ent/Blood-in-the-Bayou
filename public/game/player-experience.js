@@ -54,12 +54,31 @@
   }
   function clearInput() {
     mouse.down = false;
+    if (typeof releaseTouchGesture === "function") releaseTouchGesture();
     window.level29Bindings.release();
     for (const k in keys) keys[k] = false;
     for (const k in touch) touch[k] = false;
     gp.fire = gp.sprint = gp.brake = false;
     stick.x = stick.y = 0;
   }
+  function saveProgress() {
+    if (!player || player.dead || mpRole) {
+      return "Local saving is available while alive in solo play.";
+    }
+    return window.level29Save?.save()
+      ? "Progress saved on this browser. Use Journal → Cloud Save / Local Backups to move it."
+      : "Could not save. Check browser storage access; progress is not confirmed saved.";
+  }
+  function loseFocus() {
+    clearInput();
+    if (state !== "play" || mpRole || !player || player.dead) return;
+    open();
+    text("AUTO-PAUSED · You left the game. Resume when you are ready.");
+  }
+  addEventListener("blur", loseFocus);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden) loseFocus();
+  });
   function close() {
     window.level29Bindings.cancel();
     if (dialog.open) dialog.close();
@@ -130,6 +149,13 @@
         nav,
       );
     add("CLOSE / RESUME", close, nav);
+    if (player && !player.dead && !mpRole && previous !== "menu") {
+      const status = text("");
+      status.setAttribute("role", "status");
+      add("SAVE PROGRESS", () => { status.textContent = saveProgress(); });
+      text("CURRENT OBJECTIVE · " + (typeof objective === "string" && objective
+        ? objective : "Explore the city and meet your contacts."));
+    }
     if (page === "settings") {
       text(
         "Graphics presets are saved. Mobile uses effective Low quality, attempts 60 FPS and falls back to 30 FPS under sustained load; the requested preset stays saved.",
