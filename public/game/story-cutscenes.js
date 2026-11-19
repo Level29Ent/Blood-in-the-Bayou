@@ -23,6 +23,15 @@ function animatedActor(T,gltf,resources){
  rig.traverse(o=>{if(o.isMesh){o.castShadow=o.receiveShadow=true;o.frustumCulled=false;resources.geometries.add(o.geometry);for(const m of Array.isArray(o.material)?o.material:[o.material]){resources.materials.add(m);for(const t of Object.values(m))if(t?.isTexture)resources.textures.add(t);}}});
  return {root,mixer,actions,rig,hand:rig.getObjectByName('mixamorig:RightHand')||rig.getObjectByName('mixamorigRightHand'),scale};
 }
+function seatLeg(T,leg,resources){
+ if(!leg||leg.children.length<4)return;const parts=leg.children.slice(),upper=parts[0],feet=parts.filter(o=>o.position.y< -6);
+ if(!upper.isMesh||!feet.length)return;upper.position.y=-1.8;upper.scale.y*=.48;
+ const knee=parts.find(o=>o!==upper&&o.position.y< -3&&o.position.y> -5);if(knee)knee.position.y=-3.6;
+ const lower=new T.Group();lower.position.y=-3.6;lower.rotation.z=-1.35;leg.add(lower);
+ const geo=new T.CylinderGeometry(1.25,1.05,6.2,12);resources.geometries.add(geo);const shin=new T.Mesh(geo,upper.material);shin.position.y=-3.1;shin.castShadow=shin.receiveShadow=true;lower.add(shin);
+ for(const foot of feet){leg.remove(foot);foot.position.y+=1;lower.add(foot);}
+ leg.rotation.z=1.35;
+}
 function start({T,mount,id,actors,onEnd=()=>{},onError=()=>{},rendererFactory,raf=requestAnimationFrame,cancel=cancelAnimationFrame,hidden=()=>document.hidden,loadRonnie}){
  beat(id,0);const resources={geometries:new Set(),materials:new Set(),textures:new Set()},scene=new T.Scene(),camera=new T.PerspectiveCamera(43,16/9,.1,500);scene.background=new T.Color(id==='ronnieVideo'?'#17241f':'#303d35');scene.fog=new T.FogExp2(scene.background,.004);scene.add(new T.HemisphereLight('#b5c2af','#343227',.65));const sun=new T.DirectionalLight(id==='ronnieVideo'?'#a9c4d2':'#ffe1ac',id==='ronnieVideo'?1.5:1.8);sun.position.set(20,65,35);sun.castShadow=true;sun.shadow.mapSize.set(512,512);Object.assign(sun.shadow.camera,{left:-85,right:85,top:85,bottom:-85,near:1,far:180});sun.shadow.normalBias=.12;scene.add(sun);
  const canvas=document.createElement('canvas');canvas.setAttribute('aria-label','Animated in-game story scene');canvas.style.cssText='display:block;width:100%;height:auto;aspect-ratio:16/9;box-shadow:0 8px 30px #0008;max-height:52dvh;object-fit:contain;background:#14232b';
@@ -40,7 +49,7 @@ function start({T,mount,id,actors,onEnd=()=>{},onError=()=>{},rendererFactory,ra
   }else if(id==='mallVideo'){
    lead=actor(actors.ahmad,0,0);resident=actor(actors.seated,12,0);resident.root.name='Seated mall resident';
    vial=set.cylinder(.8,.8,3,0,0,0,'#839d7b');vial.name='Hand-held X29 vial';attach(lead,vial);
-   resident.root.rotation.y=-Math.PI/2;if(resident.legL)resident.legL.rotation.z=1.35;if(resident.legR)resident.legR.rotation.z=1.35;
+   resident.root.rotation.y=-Math.PI/2;seatLeg(T,resident.legL,resources);seatLeg(T,resident.legR,resources);
   }else{
    lead=actor(actors.ronnie,0,0);bat=box(1.5,15,1.5,0,0,0,'#76513a');bat.name='Ronniebaby cutscene melee bat';attach(lead,bat,0,-11,0);
    for(let i=0;i<3;i++){const z=actor(actors.zombie,15+i*8,-12+i*12);z.root.name='Cutscene zombie '+(i+1);const skin=actors.zombie.userData.skin?.color;z.root.traverse(o=>{if(o.material?.color&&skin&&o.material.color.equals(skin))o.material.color.set('#789462');});// The story resident is the infection source: retain identity, add restrained socket/lesion cues.
@@ -83,5 +92,5 @@ function start({T,mount,id,actors,onEnd=()=>{},onError=()=>{},rendererFactory,ra
  }catch(error){cleanup();throw error;}
  return {dispose:cleanup,get done(){return ended;},get elapsed(){return time;},scene};
 }
-const api={beat,copyActor,animatedActor,start,LENGTH};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29StoryCutscenes=api;
+const api={beat,copyActor,animatedActor,seatLeg,start,LENGTH};if(typeof module!=='undefined')module.exports=api;if(typeof window!=='undefined')window.level29StoryCutscenes=api;
 })();
